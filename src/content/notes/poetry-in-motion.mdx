@@ -1,13 +1,88 @@
 ---
-title: CSS and JavaScript, poetry in motion
-description: A small motion experiment, set to “The River” by Javier Heraud.
-date: 2025-04-02 # placeholder date — confirm
+title: CSS and JavaScript, poetry in *motion*
+description: Andy Clarke’s piece on shape-outside got me wondering what would happen if the text could move too. A pinch of GSAP later, rivers of text that flow like water.
+date: 2025-10-09 # demo repo's first commit — confirm against the LinkedIn post
 tag: PROCESS
-imageLabel: video — motion experiment
+topic: Creative coding
+imageLabel: video — rivers of text
+tools:
+  - CSS shape-outside
+  - GSAP ScrollTrigger
+  - React + Vite
 ---
 
-<Lead>A small motion experiment, set to “The River” by Javier Heraud.</Lead>
+<Lead>Andy Clarke’s latest on CSS-Tricks, about shape-outside, got me thinking: what if the text could move too?</Lead>
 
-{/* TODO: write this post. */}
+In [Getting Creative With shape-outside](https://css-tricks.com/getting-creative-with-shape-outside/), Andy shows how a float can carry any shape you like. Text wraps around the outline of an image instead of its rectangular box, so layouts can look like magazine spreads. His examples are all still, though. I wanted to see what happens when the shape moves and the text has to keep finding its way around it.
 
-Full write-up coming soon.
+A pinch of GreenSock magic later: rivers of text that flow like water. **[See the live demo ↗](https://shape-outside-scroll.netlify.app/)** or [browse the source on GitHub](https://github.com/joeydi/shape-outside-scroll).
+
+<Figure label="video — rivers of text" caption="01 / The River, in motion" dark />
+
+## A river, not a rectangle
+
+The poem is “The River” by the Peruvian poet Javier Heraud, which was about as literal a choice as I could make. It’s a poem about becoming a river, and every line of it moves:
+
+> I am a river.\
+> I am the river of eternal happiness.\
+> I feel the neighbourly breezes,\
+> I feel the wind on my face, till my journey\
+> – across mountains, rivers, lakes and prairies –\
+> becomes endless.\
+> — *The River*, Javier Heraud
+
+Beside the poem sits a single invisible image: a tall PNG of a winding river, floated left, with `shape-outside` pointing at the same file. The browser reads the image’s alpha channel and uses the painted pixels as the float’s outline. The image is set to `opacity: 0`, so you never see the river itself. You only see the text being pushed around it.
+
+```css
+.river {
+  float: left;
+  width: 30vw;
+  height: 200vh;
+  opacity: 0;
+  shape-outside: url(/river.png);
+}
+
+.line {
+  display: block;
+  white-space: nowrap;
+}
+```
+
+Each line of the poem is its own `nowrap` block, so it never breaks. It just starts wherever the river’s bank happens to be at that height.
+
+## Making the water move
+
+There’s no clever geometry in the JavaScript. A ScrollTrigger timeline scrubs the float’s `margin-top` from zero to minus the height of the poem as you scroll. When the float slides up, the browser works out the wrap again, and every line slides sideways to follow the new shoreline.
+
+```js
+gsap.set(river, { height: poem.clientHeight * 2 });
+
+gsap.timeline({
+  scrollTrigger: { trigger: poem, start: "top bottom", end: "bottom top", scrub: 2 },
+}).fromTo(river, { marginTop: 0 }, { marginTop: -poem.clientHeight, ease: "none" });
+```
+
+The float is twice the height of the poem so there is always some river left beside the text as it scrolls. `scrub: 2` adds a couple of seconds of lag, so the lines drift into place instead of snapping.
+
+## Surfacing and sinking
+
+The sideways drift comes from layout. Each line also gets its own scrubbed timeline for the up-and-down motion. It rises from half a screen below, sharpens out of a heavy blur and shrinks from 1.5× to 0.5× scale on the way through. On the way out it drops back into the blur and fades away. With expo easing on both ends, each line seems to come up from under the water, hang there for a moment and sink again.
+
+```js
+lines.forEach((line) => {
+  const text = line.querySelector("span");
+  gsap.set(text, { y: innerHeight / 2, scale: 1.5, filter: "blur(40px)", transformOrigin: "0% 50%" });
+
+  gsap.timeline({ scrollTrigger: { trigger: line, start: "top bottom", end: "bottom top", scrub: true } })
+    .to(text, { scale: 0.5, ease: "none", duration: 2 }, 0)
+    .to(text, { y: 0, filter: "blur(0px)", ease: "expo.out", duration: 1 }, 0)
+    .to(text, { opacity: 0, ease: "power2.in", duration: 1 }, 1)
+    .to(text, { y: -innerHeight / 2, filter: "blur(40px)", ease: "expo.in", duration: 1 }, 1);
+});
+```
+
+A slow parallax on the background photo finishes it off. The two layers move at different speeds, so the page feels deep, like looking down into water.
+
+<PullQuote>The browser already knows how to wrap text around a shape. All I did was *keep the shape moving.*</PullQuote>
+
+It’s a small experiment, and I like that most of the work is done by the layout engine rather than by the animation code. Thanks to Andy for the nudge. If you haven’t read [his article](https://css-tricks.com/getting-creative-with-shape-outside/) yet, go read it. Then go and make something move.
