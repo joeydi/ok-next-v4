@@ -1,0 +1,81 @@
+/* Hero illustrations — see primitives.tsx. Keyframes are copied verbatim from the design handoff. */
+
+@layer components {
+.ok-illo {
+  position: relative;
+  aspect-ratio: 620 / 660;
+  container-type: inline-size;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Fixed 620×660 drawing surface, scaled to the container's width. */
+.ok-illo-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 620px;
+  height: 660px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  scale: tan(atan2(100cqw, 620px));
+}
+
+.ok-illo-label {
+  position: absolute;
+  left: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: normal;
+  letter-spacing: 0.06em;
+}
+
+.ok-illo-scene {
+  position: absolute;
+  left: 150px;
+  top: 250px;
+  width: 300px;
+  height: 300px;
+  transform-style: preserve-3d;
+  transform: rotateX(58deg) rotateZ(-45deg);
+}
+
+.ok-illo-grid {
+  position: absolute;
+  inset: -90px;
+  transform: translateZ(-30px);
+  background-image:
+    linear-gradient(#c9bfb0 1px, transparent 1px),
+    linear-gradient(90deg, #c9bfb0 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.7;
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent);
+}
+}
+
+/* Motion off: every element falls back to its still transform — matches the design's motion=false state. */
+@media (prefers-reduced-motion: reduce) {
+  .ok-illo *,
+  .ok-illo *::before,
+  .ok-illo *::after {
+    animation: none !important;
+  }
+}
+
+/* Quick build (Creative production) */
+@keyframes okDrop0{0%,4%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}14%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop1{0%,16%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}26%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop2{0%,28%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}38%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop3{0%,40%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}50%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+
+/* Dashboard (Tools) */
+@keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
+
+/* Migration, conveyor (CMS & integrations) */
+@keyframes okConvey{0%,1.67%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}5.8%{transform:translate3d(0,-180px,0) scale3d(.001,.001,.001)}5.84%{transform:translate3d(0,300px,0) scale3d(.001,.001,.001)}10%,26.67%{transform:translate3d(0,240px,0) scale3d(1,1,1)}35%,51.67%{transform:translate3d(0,120px,0) scale3d(1,1,1)}60%,76.67%{transform:translate3d(0,0,0) scale3d(1,1,1)}85%,100%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}}
+@keyframes okFill{0%,5.8%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}5.84%,64.9%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}65%,100%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}}
+@keyframes okHop2{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}6%,45%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}55%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}65%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}65.1%,100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}

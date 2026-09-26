@@ -1,0 +1,165 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Accent } from "@/components/Accent";
+import { Contact, SiteFooter } from "@/components/Footer";
+import { Placeholder } from "@/components/Placeholder";
+import { SITE } from "@/data/site";
+import { formatDate, getAllNotes, getNote } from "@/lib/notes";
+import headshot from "../../../../public/assets/headshot.jpg";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getAllNotes().map((n) => ({ slug: n.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): Promise<Metadata> {
+  const note = getNote((await params).slug);
+  if (!note) return {};
+  const { meta } = note;
+  return {
+    title: meta.plainTitle,
+    description: meta.description,
+    alternates: { canonical: `/notes/${meta.slug}` },
+    openGraph: { type: "article", siteName: SITE.name, publishedTime: meta.date, title: meta.plainTitle, description: meta.description },
+  };
+}
+
+export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
+  const { slug } = await params;
+  const note = getNote(slug);
+  if (!note) notFound();
+  const { meta, toc } = note;
+  const { default: Body } = await import(`@/content/notes/${slug}.mdx`);
+  const more = getAllNotes()
+    .filter((n) => n.slug !== slug)
+    .slice(0, 3);
+
+  const project = [
+    ["Client", meta.client],
+    ["Role", meta.role],
+    ["Year", meta.year],
+  ].filter((p): p is [string, string] => Boolean(p[1]));
+
+  return (
+    <>
+      <main id="main">
+        <article>
+          <header className="grid-12 gap-y-fl-24 px-page pt-fl-72 pb-fl-64">
+            <div className="mono-label col-span-12 flex flex-wrap gap-x-fl-24 text-muted">
+              <Link href="/notes">/ Notes</Link>
+              <time dateTime={meta.date}>{formatDate(meta.date)}</time>
+              <span>{meta.topic ?? meta.tag}</span>
+            </div>
+            <h1 className="display col-span-12 mt-fl-40 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[73.61vw]">
+              <Accent text={meta.title} />
+            </h1>
+            <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
+              <Image
+                src={headshot}
+                alt=""
+                width={56}
+                height={56}
+                placeholder="blur"
+                className="size-14 rounded-[2px] object-cover"
+              />
+              <div className="font-mono text-fl-14 leading-[1.6] text-muted">
+                JOE DI STEFANO
+                <br />
+                {meta.byline}
+              </div>
+            </div>
+          </header>
+
+          <figure className="px-page">
+            <Placeholder
+              label={meta.imageLabel}
+              src={meta.image}
+              alt=""
+              priority
+              className="aspect-[1312/720]"
+            />
+          </figure>
+
+          <div className="note-body px-page pt-fl-96 pb-fl-64">
+            {(toc.length > 0 || meta.tools?.length || project.length > 0) && (
+              <aside className="note-aside">
+                {toc.length > 0 && (
+                  <nav aria-label="In this post" className="flex flex-col gap-1.5">
+                    <span className="text-ink">IN THIS POST</span>
+                    {toc.map((t) => (
+                      <a key={t.id} href={`#${t.id}`}>
+                        {t.label}
+                      </a>
+                    ))}
+                  </nav>
+                )}
+                {project.length > 0 && (
+                  <dl className="flex flex-col gap-1.5">
+                    {project.map(([k, v]) => (
+                      <div key={k}>
+                        <dt className="text-ink uppercase">{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
+                    {meta.link && (
+                      <a href={meta.link} target="_blank" rel="noopener noreferrer" className="text-pink-ink">
+                        VISIT THE SITE ↗
+                      </a>
+                    )}
+                  </dl>
+                )}
+                {meta.tools && meta.tools.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-ink">TOOLS</span>
+                    <ul className="flex flex-col gap-1.5">
+                      {meta.tools.map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </aside>
+            )}
+            <Body />
+          </div>
+        </article>
+
+        {more.length > 0 && (
+          <section aria-labelledby="more-notes" className="px-page pt-fl-64 pb-fl-120">
+            <div className="mb-fl-32 flex items-baseline justify-between">
+              <h2 id="more-notes" className="mono-label text-muted">
+                / More notes
+              </h2>
+              <Link href="/notes" className="mono-label text-pink-ink">
+                All notes <span className="nudge">→</span>
+              </Link>
+            </div>
+            <ul>
+              {more.map((n) => (
+                <li key={n.slug}>
+                  <Link href={`/notes/${n.slug}`} className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28">
+                    <span className="col-span-12 font-mono text-fl-14 tracking-label-tight text-muted md:col-span-2">
+                      {n.tag}
+                    </span>
+                    <span className="display col-span-11 text-fl-36 leading-[1.1] tracking-[-.015em] md:col-span-7 md:col-start-3">
+                      {n.plainTitle}
+                    </span>
+                    <span aria-hidden="true" className="col-span-1 text-right text-fl-24 md:col-start-12">
+                      <span className="nudge">→</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </main>
+      <SiteFooter className="px-page pt-fl-96 pb-fl-40">
+        <Contact />
+      </SiteFooter>
+    </>
+  );
+}
