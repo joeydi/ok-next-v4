@@ -28,7 +28,7 @@
   flex-direction: column;
   gap: 4px;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 10px;
   line-height: normal;
   letter-spacing: 0.06em;
 }
