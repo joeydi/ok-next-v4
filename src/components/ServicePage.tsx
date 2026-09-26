@@ -38,9 +38,7 @@ export function ServicePage({ service: s }: { service: Service }) {
             ))}
           </h1>
           <Illustration
-            className={`mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[2.78vw] lg:mt-0 lg:w-[49.51vw] lg:max-w-none ${
-              s.illustration === "conveyor" ? "lg:right-[2.78vw]" : "lg:right-0"
-            }`}
+            className={`mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[2.78vw] lg:mt-0 lg:w-[49.51vw] lg:max-w-none lg:right-0`}
           />
           <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[47.22vw]">
             <p className="text-fl-24 leading-normal text-pretty text-ink-3">{s.intro}</p>
