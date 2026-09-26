@@ -3,6 +3,7 @@ import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Nav } from "@/components/Nav";
+import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
 import "./globals.css";
 
@@ -46,7 +47,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${hanken.variable} ${plexMono.variable}`}>
+    // data-scroll-behavior: route changes jump to the top instead of smooth-scrolling,
+    // so the page transition captures the new page at the top.
+    <html lang="en" data-scroll-behavior="smooth" className={`${hanken.variable} ${plexMono.variable}`}>
       <head>
         {/* Gelica (display) — Adobe Fonts kit. Add each live domain to the kit. */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
@@ -61,7 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <Nav />
         {/* Each page renders its own <main id="main"> followed by its footer variant. */}
-        {children}
+        <PageTransition>{children}</PageTransition>
         <Analytics />
         <SpeedInsights />
       </body>

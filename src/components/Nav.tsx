@@ -32,13 +32,14 @@ export function Nav() {
 
   // Sticky rather than fixed: as a direct child of <body> it stays put for the whole
   // page but keeps its space in the flow. The bar reaches half a gutter past the
-  // content so the links stay on the page grid once its background shows.
+  // content so the links stay on the page grid once its background shows. Its view
+  // transition name holds it still above the pages as they transition.
   return (
     <Container className="pointer-events-none sticky top-0 z-40 py-fl-12 lg:py-3">
       <nav
         aria-label="Primary"
         className={cn(
-          "grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[background-color,border-color,backdrop-filter] duration-200 motion-reduce:transition-none lg:py-[17px]",
+          "grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[background-color,border-color,backdrop-filter] duration-200 motion-reduce:transition-none lg:py-[17px]",
           scrolled && "border-rule-dark/10 bg-paper-light/50 backdrop-blur-md",
         )}
       >
