@@ -67,7 +67,7 @@ function Hero() {
 
 function Approach() {
   return (
-    <Container as="section" id="approach" className="grid-12 scroll-mt-6 gap-y-fl-48 py-fl-96">
+    <Container as="section" id="approach" className="grid-12 gap-y-fl-48 py-fl-96">
       <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4">
         <Eyebrow n="01">How I work</Eyebrow>
         <h2 className="display text-fl-60 leading-none tracking-heading text-balance">A partner, not a vendor.</h2>
@@ -87,7 +87,7 @@ function Approach() {
 
 function Services() {
   return (
-    <Container as="section" id="services" className="scroll-mt-6 py-fl-96">
+    <Container as="section" id="services" className="py-fl-96">
       <div className="mb-fl-48 flex flex-col justify-between gap-fl-24 md:flex-row md:items-end">
         <div className="flex flex-col gap-fl-20">
           <Eyebrow n="02">How I help</Eyebrow>

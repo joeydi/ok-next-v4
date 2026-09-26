@@ -37,13 +37,21 @@
     /* 1vw that stops growing at the page max width. Use it for sizes measured
        off the 1440 comp as a share of the viewport: `lg:w-[calc(43.06*var(--pvw))]`. */
     --pvw: min(1vw, var(--container-page) / 100);
+
+    /* Height of the sticky nav (see Nav.tsx): wrapper + bar padding, border, logo. */
+    --nav-h: calc(2 * (var(--spacing-fl-12) + var(--spacing-fl-16) + 1px) + 1.5rem);
+
+    @media (width >= 64rem) {
+      --nav-h: 5.5rem;
+    }
   }
 
   html {
     background: var(--color-paper);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    scroll-padding-top: 24px;
+    /* Anchor jumps land below the sticky nav; targets add their own breathing room. */
+    scroll-padding-top: var(--nav-h);
   }
 
   body {
