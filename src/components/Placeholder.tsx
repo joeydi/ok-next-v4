@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cn } from "@/lib/cn";
 
 /**
  * Image slot. Renders the design's striped, labelled placeholder until a real
@@ -12,7 +13,7 @@ export function Placeholder({
   dark = false,
   small = false,
   priority = false,
-  className = "",
+  className,
 }: {
   label: string;
   src?: string;
@@ -25,7 +26,7 @@ export function Placeholder({
 }) {
   if (src) {
     return (
-      <div className={`relative overflow-hidden bg-sand ${className}`}>
+      <div className={cn("relative overflow-hidden bg-sand", className)}>
         <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
       </div>
     );
@@ -33,9 +34,12 @@ export function Placeholder({
   return (
     <div
       {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })}
-      className={`flex items-end font-mono text-muted ${dark ? "stripes-dark" : "stripes"} ${
-        small ? "p-fl-12 text-fl-12" : "p-fl-20 text-fl-14"
-      } ${className}`}
+      className={cn(
+        "flex items-end font-mono text-muted",
+        dark ? "stripes-dark" : "stripes",
+        small ? "p-fl-12 text-fl-12" : "p-fl-20 text-fl-14",
+        className,
+      )}
     >
       {label}
     </div>

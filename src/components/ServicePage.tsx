@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import type { Service } from "@/data/services";
+import { cn } from "@/lib/cn";
 import { Accent } from "./Accent";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
@@ -38,7 +39,7 @@ export function ServicePage({ service: s }: { service: Service }) {
             ))}
           </h1>
           <Illustration
-            className={`mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[2.78vw] lg:mt-0 lg:w-[49.51vw] lg:max-w-none lg:right-0`}
+            className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[2.78vw] lg:mt-0 lg:w-[49.51vw] lg:max-w-none lg:right-0"
           />
           <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[47.22vw]">
             <p className="text-fl-24 leading-normal text-pretty text-ink-3">{s.intro}</p>
@@ -53,22 +54,24 @@ export function ServicePage({ service: s }: { service: Service }) {
           <SectionHead n="01" eyebrow={s.capabilities.eyebrow} className="mb-fl-48">
             {s.capabilities.heading}
           </SectionHead>
-          <div className={`grid gap-fl-24 md:grid-cols-2 ${three ? "lg:grid-cols-3" : "xl:grid-cols-4"}`}>
+          <div className={cn("grid gap-fl-24 md:grid-cols-2", three ? "lg:grid-cols-3" : "xl:grid-cols-4")}>
             {s.capabilities.items.map((c) => (
               <div
                 key={c.n}
-                className={`flex flex-col gap-[18px] border border-rule bg-paper-raised pt-fl-28 pb-fl-32 ${
-                  three ? "px-fl-32 lg:min-h-[29.17vw]" : "px-fl-28 xl:min-h-[30.56vw]"
-                }`}
+                className={cn(
+                  "flex flex-col gap-[18px] border border-rule bg-paper-raised pt-fl-28 pb-fl-32",
+                  three ? "px-fl-32 lg:min-h-[29.17vw]" : "px-fl-28 xl:min-h-[30.56vw]",
+                )}
               >
                 <div className="mono-label flex justify-between gap-4 text-muted">
                   <span>{c.k}</span>
                   <span className="shrink-0 whitespace-nowrap">/ {c.n}</span>
                 </div>
                 <h3
-                  className={`display mt-fl-40 leading-[1.05] tracking-[-.015em] ${
-                    three ? "text-fl-36" : "text-fl-30 text-balance"
-                  }`}
+                  className={cn(
+                    "display mt-fl-40 leading-[1.05] tracking-[-.015em]",
+                    three ? "text-fl-36" : "text-fl-30 text-balance",
+                  )}
                 >
                   {c.t}
                 </h3>
@@ -153,7 +156,7 @@ function SectionHead({
   n,
   eyebrow,
   children,
-  className = "",
+  className,
   balance = false,
 }: {
   n: string;
@@ -163,9 +166,9 @@ function SectionHead({
   balance?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-fl-20 ${className}`}>
+    <div className={cn("flex flex-col gap-fl-20", className)}>
       <Eyebrow n={n}>{eyebrow}</Eyebrow>
-      <h2 className={`display text-fl-60 leading-none tracking-heading ${balance ? "text-balance" : ""}`}>{children}</h2>
+      <h2 className={cn("display text-fl-60 leading-none tracking-heading", balance && "text-balance")}>{children}</h2>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CONTACT_HREF, NAV, SITE } from "@/data/site";
+import { cn } from "@/lib/cn";
 import { Logo } from "./Logo";
 
 const SERVICE_PATHS = ["/creative-production", "/cms-integrations", "/tools-for-better-work"];
@@ -60,7 +61,7 @@ export function Nav() {
                   href={l.href}
                   onClick={closeMenu}
                   aria-current={l.active ? "page" : undefined}
-                  className={`block py-2.5 ${l.active ? "text-pink-ink" : ""}`}
+                  className={cn("block py-2.5", l.active && "text-pink-ink")}
                 >
                   {l.label}
                 </Link>

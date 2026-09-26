@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 // Isometric block illustrations, ported from the design handoff's logic class
 // (frame / scene / grid / box). Everything is plain CSS 3D — no JS at runtime.
@@ -18,7 +19,7 @@ export type Style = CSSProperties & Vars;
 export function Stage({
   labels,
   guideEnd = 560,
-  className = "",
+  className,
   children,
 }: {
   labels: readonly [string, string, string];
@@ -27,7 +28,7 @@ export function Stage({
   children: ReactNode;
 }) {
   return (
-    <div aria-hidden="true" className={`ok-illo ${className}`}>
+    <div aria-hidden="true" className={cn("ok-illo", className)}>
       <div className="ok-illo-canvas">
         <Guide x={116} y1={60} y2={guideEnd} color="#C9BFB0" />
         <Guide x={484} y1={60} y2={guideEnd} color="#C9BFB0" />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Placeholder } from "../Placeholder";
+import { cn } from "@/lib/cn";
 import type { NoteMeta, Tag } from "@/lib/notes";
 
 export type NoteSummary = Pick<NoteMeta, "slug" | "plainTitle" | "description" | "tag" | "image" | "imageLabel">;
@@ -57,9 +58,10 @@ export function NotesList({
               type="button"
               aria-pressed={on}
               onClick={onPick && (() => onPick(f.value))}
-              className={`mono-label flex cursor-pointer items-baseline gap-2 border-b-2 pb-1.5 transition-colors hover:text-ink ${
-                on ? "border-pink text-ink" : "border-transparent text-muted"
-              }`}
+              className={cn(
+                "mono-label flex cursor-pointer items-baseline gap-2 border-b-2 pb-1.5 transition-colors hover:text-ink",
+                on ? "border-pink text-ink" : "border-transparent text-muted",
+              )}
             >
               {f.label}
               <span className={on ? "text-pink-ink" : "text-muted-on-dark"}>{String(count(f.value)).padStart(2, "0")}</span>
