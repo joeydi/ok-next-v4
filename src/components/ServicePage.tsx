@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/cn";
 import { Accent } from "./Accent";
+import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
 import { Conveyor, Dashboard, QuickBuild } from "./illustrations";
@@ -24,7 +25,7 @@ export function ServicePage({ service: s }: { service: Service }) {
     <>
       <main id="main">
         {/* Hero */}
-        <header className="relative px-page pt-fl-56 pb-fl-96 lg:min-h-[59.72vw]">
+        <Container as="header" className="relative pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
           <div className="mono-label flex flex-wrap gap-x-fl-24 text-muted">
             <Link href="/#services">/ Services</Link>
             <span>{s.n}</span>
@@ -39,18 +40,18 @@ export function ServicePage({ service: s }: { service: Service }) {
             ))}
           </h1>
           <Illustration
-            className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[2.78vw] lg:mt-0 lg:w-[49.51vw] lg:max-w-none lg:right-0"
+            className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0"
           />
-          <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[47.22vw]">
+          <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-normal text-pretty text-ink-3">{s.intro}</p>
             <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-[1.3] text-pink-ink">
               {s.tagline}
             </p>
           </div>
-        </header>
+        </Container>
 
         {/* Capabilities */}
-        <section className="px-page py-fl-96">
+        <Container as="section" className="py-fl-96">
           <SectionHead n="01" eyebrow={s.capabilities.eyebrow} className="mb-fl-48">
             {s.capabilities.heading}
           </SectionHead>
@@ -60,7 +61,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                 key={c.n}
                 className={cn(
                   "flex flex-col gap-[18px] border border-rule bg-paper-raised pt-fl-28 pb-fl-32",
-                  three ? "px-fl-32 lg:min-h-[29.17vw]" : "px-fl-28 xl:min-h-[30.56vw]",
+                  three ? "px-fl-32 lg:min-h-[calc(29.17*var(--pvw))]" : "px-fl-28 xl:min-h-[calc(30.56*var(--pvw))]",
                 )}
               >
                 <div className="mono-label flex justify-between gap-4 text-muted">
@@ -82,10 +83,10 @@ export function ServicePage({ service: s }: { service: Service }) {
               </div>
             ))}
           </div>
-        </section>
+        </Container>
 
         {/* Situations */}
-        <section className="grid-12 gap-y-fl-40 px-page py-fl-96">
+        <Container as="section" className="grid-12 gap-y-fl-40 py-fl-96">
           <SectionHead n="02" eyebrow="Sound familiar?" className="col-span-12 lg:col-span-4" balance>
             {s.situations.heading}
           </SectionHead>
@@ -100,10 +101,10 @@ export function ServicePage({ service: s }: { service: Service }) {
               </li>
             ))}
           </ul>
-        </section>
+        </Container>
 
         {/* Process */}
-        <section className="px-page py-fl-96">
+        <Container as="section" className="py-fl-96">
           <SectionHead n="03" eyebrow="How a project goes" className="mb-fl-56">
             {s.process.heading}
           </SectionHead>
@@ -116,10 +117,10 @@ export function ServicePage({ service: s }: { service: Service }) {
               </li>
             ))}
           </ol>
-        </section>
+        </Container>
 
         {/* Recent work */}
-        <section className="grid-12 items-end gap-y-fl-40 px-page pt-fl-96 pb-fl-120">
+        <Container as="section" className="grid-12 items-end gap-y-fl-40 pt-fl-96 pb-fl-120">
           <Placeholder label={s.work.image} className="col-span-12 aspect-[755/560] lg:col-span-7" />
           <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
             <Eyebrow n="04">Recent work</Eyebrow>
@@ -134,19 +135,21 @@ export function ServicePage({ service: s }: { service: Service }) {
               </Link>
             )}
           </div>
-        </section>
+        </Container>
       </main>
 
-      <SiteFooter className="px-page pt-fl-120 pb-fl-40">
-        <div className="grid-12">
-          <figure className="col-span-12 flex flex-col gap-fl-32 lg:col-span-9">
-            <blockquote className="display text-fl-48 leading-[1.15] tracking-heading text-pretty">
-              “{s.quote.q}”
-            </blockquote>
-            <Cite t={s.quote} />
-          </figure>
-        </div>
-        <Contact note={s.contactNote} className="mt-fl-160" />
+      <SiteFooter className="pt-fl-120 pb-fl-40">
+        <Container>
+          <div className="grid-12">
+            <figure className="col-span-12 flex flex-col gap-fl-32 lg:col-span-9">
+              <blockquote className="display text-fl-48 leading-[1.15] tracking-heading text-pretty">
+                “{s.quote.q}”
+              </blockquote>
+              <Cite t={s.quote} />
+            </figure>
+          </div>
+          <Contact note={s.contactNote} className="mt-fl-160" />
+        </Container>
       </SiteFooter>
     </>
   );

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Accent } from "@/components/Accent";
+import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { Placeholder } from "@/components/Placeholder";
 import { SITE } from "@/data/site";
@@ -47,13 +48,13 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
     <>
       <main id="main">
         <article>
-          <header className="grid-12 gap-y-fl-24 px-page pt-fl-72 pb-fl-64">
+          <Container as="header" className="grid-12 gap-y-fl-24 pt-fl-72 pb-fl-64">
             <div className="mono-label col-span-12 flex flex-wrap gap-x-fl-24 text-muted">
               <Link href="/notes">/ Notes</Link>
               <time dateTime={meta.date}>{formatDate(meta.date)}</time>
               <span>{meta.topic ?? meta.tag}</span>
             </div>
-            <h1 className="display col-span-12 mt-fl-40 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[73.61vw]">
+            <h1 className="display col-span-12 mt-fl-40 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
               <Accent text={meta.title} />
             </h1>
             <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
@@ -71,9 +72,9 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                 {meta.byline}
               </div>
             </div>
-          </header>
+          </Container>
 
-          <figure className="px-page">
+          <Container as="figure">
             <Placeholder
               label={meta.imageLabel}
               src={meta.image}
@@ -81,9 +82,9 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               priority
               className="aspect-[1312/720]"
             />
-          </figure>
+          </Container>
 
-          <div className="note-body px-page pt-fl-96 pb-fl-64">
+          <Container className="note-body pt-fl-96 pb-fl-64">
             {(toc.length > 0 || meta.tools?.length || project.length > 0) && (
               <aside className="note-aside">
                 {toc.length > 0 && (
@@ -124,11 +125,11 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               </aside>
             )}
             <Body />
-          </div>
+          </Container>
         </article>
 
         {more.length > 0 && (
-          <section aria-labelledby="more-notes" className="px-page pt-fl-64 pb-fl-120">
+          <Container as="section" aria-labelledby="more-notes" className="pt-fl-64 pb-fl-120">
             <div className="mb-fl-32 flex items-baseline justify-between">
               <h2 id="more-notes" className="mono-label text-muted">
                 / More notes
@@ -154,11 +155,13 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                 </li>
               ))}
             </ul>
-          </section>
+          </Container>
         )}
       </main>
-      <SiteFooter className="px-page pt-fl-96 pb-fl-40">
-        <Contact />
+      <SiteFooter className="pt-fl-96 pb-fl-40">
+        <Container>
+          <Contact />
+        </Container>
       </SiteFooter>
     </>
   );

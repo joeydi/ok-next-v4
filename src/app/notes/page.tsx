@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { NotesIndex, NotesList, type NoteSummary } from "@/components/notes/NotesIndex";
 import { Placeholder } from "@/components/Placeholder";
@@ -30,7 +31,7 @@ export default function NotesPage() {
   return (
     <>
       <main id="main">
-        <header className="grid-12 items-end gap-y-fl-24 px-page pt-fl-56 pb-fl-72">
+        <Container as="header" className="grid-12 items-end gap-y-fl-24 pt-fl-56 pb-fl-72">
           <div className="mono-label col-span-12 flex gap-fl-24 text-muted">
             <span>/ Notes</span>
             <span>{all.length} posts</span>
@@ -41,10 +42,10 @@ export default function NotesPage() {
           <p className="col-span-12 mt-fl-32 text-fl-24 leading-[1.55] text-pretty text-ink-3 md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
             Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington, Vermont.
           </p>
-        </header>
+        </Container>
 
         {featured && (
-          <Link href={`/notes/${featured.slug}`} className="grid-12 group items-end gap-y-fl-32 px-page pb-fl-96">
+          <Container as={Link} href={`/notes/${featured.slug}`} className="grid-12 group items-end gap-y-fl-32 pb-fl-96">
             <Placeholder
               label={featured.imageLabel}
               src={featured.image}
@@ -65,17 +66,19 @@ export default function NotesPage() {
                 Read <span className="nudge">→</span>
               </span>
             </div>
-          </Link>
+          </Container>
         )}
 
-        <section aria-label="All notes" className="px-page pb-fl-120">
+        <Container as="section" aria-label="All notes" className="pb-fl-120">
           <Suspense fallback={<NotesList notes={list} />}>
             <NotesIndex notes={list} />
           </Suspense>
-        </section>
+        </Container>
       </main>
-      <SiteFooter className="px-page pt-fl-96 pb-fl-40">
-        <Contact />
+      <SiteFooter className="pt-fl-96 pb-fl-40">
+        <Container>
+          <Contact />
+        </Container>
       </SiteFooter>
     </>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CONTACT_HREF, NAV, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
+import { Container } from "./Container";
 import { Logo } from "./Logo";
 
 const SERVICE_PATHS = ["/creative-production", "/cms-integrations", "/tools-for-better-work"];
@@ -23,7 +24,7 @@ export function Nav() {
   const links = NAV.map((l) => ({ ...l, active: isActive(l.label, pathname) }));
 
   return (
-    <nav aria-label="Primary" className="grid-12 mono-label items-center py-fl-28 px-page lg:py-[30px]">
+    <Container as="nav" aria-label="Primary" className="grid-12 mono-label items-center py-fl-28 lg:py-[30px]">
       <Link href="/" className="col-span-6 flex lg:col-span-3" aria-label="Okayplus home">
         <Logo />
       </Link>
@@ -75,6 +76,6 @@ export function Nav() {
           </ul>
         </div>
       </div>
-    </nav>
+    </Container>
   );
 }

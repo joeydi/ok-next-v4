@@ -37,4 +37,6 @@
   --spacing-fl-120: clamp(4rem, 3rem + 5vw, 9rem);
   --spacing-fl-160: clamp(5rem, 3.5714rem + 7.1429vw, 12.1429rem);
   --spacing-gutter: clamp(1.25rem, 0.4643rem + 3.9286vw, 5.1786rem);
+
+  --container-page: 120rem;
 }

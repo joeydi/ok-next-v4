@@ -9,6 +9,7 @@ export const cn = createCn({
     theme: {
       text: [fluid],
       spacing: [fluid, "gutter"],
+      container: ["page"],
       tracking: ["display", "heading", "label", "label-tight"],
     },
     classGroups: {

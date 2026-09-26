@@ -33,6 +33,12 @@
 /* ---------- Base ---------- */
 
 @layer base {
+  :root {
+    /* 1vw that stops growing at the page max width. Use it for sizes measured
+       off the 1440 comp as a share of the viewport: `lg:w-[calc(43.06*var(--pvw))]`. */
+    --pvw: min(1vw, var(--container-page) / 100);
+  }
+
   html {
     background: var(--color-paper);
     -webkit-font-smoothing: antialiased;
@@ -199,7 +205,7 @@
   .site-menu {
     position: fixed;
     top: 64px;
-    right: var(--spacing-gutter);
+    right: max(var(--spacing-gutter), (100vw - var(--container-page)) / 2 + var(--spacing-gutter));
   }
 }
 

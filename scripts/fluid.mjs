@@ -79,6 +79,9 @@ for (const [d, m] of Object.entries(type)) lines.push(`  --text-fl-${d}: ${fluid
 lines.push("");
 for (const [d, m] of Object.entries(space)) lines.push(`  --spacing-fl-${d}: ${fluid(+d, m)};`);
 for (const [name, [d, m]] of Object.entries(named)) lines.push(`  --spacing-${name}: ${fluid(d, m)};`);
+lines.push("");
+// Page max width (<Container>, `max-w-page`) — stops where the scale stops growing.
+lines.push(`  --container-page: ${rem(VW_MAX)};`);
 lines.push("}", "");
 
 const out = fileURLToPath(new URL("../src/app/fluid.css", import.meta.url));
