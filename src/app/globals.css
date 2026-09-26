@@ -1,0 +1,412 @@
+@import "tailwindcss";
+@import "./fluid.css";
+@import "../components/illustrations/illustrations.css";
+
+@theme {
+  --color-paper: #f3efe8;
+  --color-paper-raised: #f8f5f0;
+  --color-paper-light: #fbf8f3;
+  --color-sand: #ebe5db;
+  --color-rule: #d9d1c4;
+  --color-guide: #c9bfb0;
+  --color-ink: #1c1916;
+  --color-ink-2: #2e2a26;
+  --color-ink-3: #3a3631;
+  --color-rule-dark: #3a3631;
+  --color-body: #4a443d;
+  --color-muted: #6b645b;
+  --color-muted-2: #8a8278;
+  --color-muted-on-dark: #a89f93;
+  --color-pink: #ff4d6a;
+  --color-pink-ink: #d4203f;
+
+  --font-display: gelica, Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --tracking-label: 0.06em;
+  --tracking-label-tight: 0.04em;
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.02em;
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: 24px;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* The design never sets a base line-height; elements inherit "normal". */
+    line-height: normal;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
+
+  a:hover {
+    opacity: 0.7;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pink-ink);
+    outline-offset: 3px;
+  }
+
+  footer :focus-visible {
+    outline-color: var(--color-pink);
+  }
+
+  ::selection {
+    background: var(--color-pink);
+    color: var(--color-ink);
+  }
+}
+
+/* ---------- Utilities ---------- */
+
+/* Page gutter + 12-column grid used throughout the design. */
+@utility px-page {
+  padding-inline: var(--spacing-gutter);
+}
+
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--spacing-fl-24);
+}
+
+/* Mono label: IBM Plex Mono 14 / .06em / uppercase. */
+@utility mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-fl-14);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+/* Striped image placeholder. */
+@utility stripes {
+  background-color: var(--color-sand);
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgb(28 25 22 / 0.06) 0 2px,
+    transparent 2px 12px
+  );
+}
+
+@utility stripes-dark {
+  background-color: var(--color-ink);
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgb(243 239 232 / 0.06) 0 2px,
+    transparent 2px 12px
+  );
+}
+
+/* Cards: link cards lift their border on hover instead of fading. */
+@utility card-link {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    border-color: var(--color-ink);
+  }
+}
+
+/* Arrow that nudges right when its parent link is hovered or focused. */
+@utility nudge {
+  display: inline-block;
+  transition: transform 0.2s ease;
+
+  :where(a:hover, a:focus-visible) & {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nudge {
+    transition: none;
+  }
+}
+
+@layer components {
+/* ---------- Mobile menu (native popover, anchored to its toggle) ---------- */
+
+.menu-toggle {
+  anchor-name: --site-menu;
+}
+
+.site-menu {
+  position-anchor: --site-menu;
+  inset: auto;
+  top: anchor(bottom);
+  right: anchor(right);
+  margin: 12px 0 0;
+  min-width: 13rem;
+  padding: 10px 20px;
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  opacity: 0;
+  translate: 0 -4px;
+  transition:
+    opacity 0.15s ease,
+    translate 0.15s ease,
+    overlay 0.15s allow-discrete,
+    display 0.15s allow-discrete;
+}
+
+.site-menu:popover-open {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@starting-style {
+  .site-menu:popover-open {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+@supports not (anchor-name: --a) {
+  .site-menu {
+    position: fixed;
+    top: 64px;
+    right: var(--spacing-gutter);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-menu {
+    transition: none;
+  }
+}
+
+/* ---------- Note body (MDX) ---------- */
+
+/*
+ * The article is one 12-column grid. Prose sits in columns 4–10; figures and
+ * pull quotes break out wider. The sidebar occupies columns 1–3 beside the
+ * opening paragraphs.
+ */
+.note-body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--spacing-fl-24);
+  align-items: start;
+  counter-reset: note-section;
+  font-size: var(--text-fl-20);
+  line-height: 1.65;
+  color: var(--color-ink-2);
+}
+
+.note-body > * {
+  grid-column: 1 / -1;
+  text-wrap: pretty;
+}
+
+.note-body > * + * {
+  margin-top: var(--spacing-fl-28);
+}
+
+.note-body > :not(.note-aside) :where(a) {
+  text-decoration: underline;
+  text-decoration-color: var(--color-pink);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.2em;
+}
+
+.note-body :where(strong) {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.note-body > :where(ul, ol) {
+  padding-left: 1.25em;
+  list-style: disc;
+}
+.note-body > ol {
+  list-style: decimal;
+}
+.note-body > :where(ul, ol) li + li {
+  margin-top: 0.4em;
+}
+.note-body > :where(ul, ol) li::marker {
+  color: var(--color-pink-ink);
+}
+
+.note-body > h2,
+.note-body > h3 {
+  margin-top: var(--spacing-fl-56);
+  font-family: var(--font-mono);
+  font-size: var(--text-fl-14);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+  scroll-margin-top: 24px;
+}
+
+.note-body > h2::before {
+  counter-increment: note-section;
+  content: "/ " counter(note-section, decimal-leading-zero);
+  margin-right: var(--spacing-fl-24);
+  color: var(--color-pink-ink);
+}
+
+.note-body > h2 + *,
+.note-body > h3 + * {
+  margin-top: var(--spacing-fl-16);
+}
+
+.note-body :where(code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-sand);
+  padding: 0.1em 0.3em;
+}
+
+.note-body > pre {
+  overflow-x: auto;
+  padding: var(--spacing-fl-24);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: var(--text-fl-14);
+  line-height: 1.6;
+}
+.note-body > pre code {
+  background: none;
+  padding: 0;
+}
+
+.note-body > hr {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+.note-lead {
+  font-family: var(--font-display);
+  font-size: var(--text-fl-30);
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.note-aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-fl-28);
+  margin-bottom: var(--spacing-fl-40);
+  font-family: var(--font-mono);
+  font-size: var(--text-fl-14);
+  line-height: 1.7;
+  letter-spacing: var(--tracking-label-tight);
+  color: var(--color-muted);
+}
+
+.note-aside + * {
+  margin-top: 0;
+}
+
+/* Zero-height scroll target; takes no space in the flow. */
+.note-body > .note-anchor {
+  display: block;
+  height: 0;
+  scroll-margin-top: 24px;
+}
+.note-body > .note-anchor + * {
+  margin-top: 0;
+}
+
+/* Figures */
+.note-fig {
+  margin-block: var(--spacing-fl-48) var(--spacing-fl-48);
+  scroll-margin-top: 24px;
+}
+.note-fig + * {
+  margin-top: 0;
+}
+.note-fig-half + .note-fig-half {
+  margin-top: 0;
+}
+.note-fig-media {
+  aspect-ratio: 1201 / 620;
+}
+.note-fig-half .note-fig-media {
+  aspect-ratio: 644 / 520;
+}
+
+/* Pull quote */
+.note-quote {
+  /* Design: 72 / 56 margins plus the article grid's 24px row gap. */
+  margin-block: var(--spacing-fl-96) calc(var(--spacing-fl-56) + var(--spacing-fl-24));
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--text-fl-60);
+  line-height: 1.08;
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+.note-quote em {
+  font-style: normal;
+  color: var(--color-pink);
+}
+.note-quote + * {
+  margin-top: 0;
+}
+
+@media (width >= 64rem) {
+  .note-body > * {
+    grid-column: 4 / span 7;
+  }
+  .note-body > .note-aside {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 3;
+    margin-bottom: 0;
+  }
+  .note-body > .note-fig {
+    grid-column: 2 / -1;
+    margin-block: var(--spacing-fl-64) var(--spacing-fl-72);
+  }
+  .note-body > .note-fig-full {
+    grid-column: 1 / -1;
+  }
+  .note-body > .note-fig-half {
+    grid-column: auto / span 6;
+  }
+  .note-fig-half + .note-fig-half {
+    margin-top: var(--spacing-fl-64);
+  }
+  .note-body > .note-quote {
+    grid-column: 2 / span 10;
+  }
+}
+}
