@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#1C1916"><svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><rect x="120" y="100" width="160" height="50" fill="#F3EFE8"/><rect x="120" y="170" width="160" height="60" fill="#FF4D6A"/><rect x="120" y="250" width="160" height="50" fill="#F3EFE8"/></svg></template>
+<title>Notes — Okayplus</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://use.typekit.net/duf7mcy.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#1C1916;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.7}
+p,h1,h2,h3,figure,blockquote{margin:0}
+@keyframes okFloat{0%,100%{transform:translateZ(var(--z))}50%{transform:translateZ(calc(var(--z) + 16px))}}
+@keyframes okSpinEvery{0%,70%{transform:rotateZ(0deg);animation-timing-function:cubic-bezier(.65,0,.25,1)}86%,100%{transform:rotateZ(360deg)}}
+@keyframes okDrop0{0%,4%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}14%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop1{0%,16%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}26%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop2{0%,28%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}38%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop3{0%,40%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}50%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okHop{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}8%,20%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}30%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}40%,88%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}
+@keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
+@keyframes okConvey{0%,1.67%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}5.8%{transform:translate3d(0,-180px,0) scale3d(.001,.001,.001)}5.84%{transform:translate3d(0,300px,0) scale3d(.001,.001,.001)}10%,26.67%{transform:translate3d(0,240px,0) scale3d(1,1,1)}35%,51.67%{transform:translate3d(0,120px,0) scale3d(1,1,1)}60%,76.67%{transform:translate3d(0,0,0) scale3d(1,1,1)}85%,100%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}}
+@keyframes okFill{0%,5.8%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}5.84%,64.9%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}65%,100%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}}
+@keyframes okHop2{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}6%,45%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}55%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}65%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}65.1%,100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}
+</style>
+</helmet>
+
+<div data-screen-label="Blog index" style="width:1440px;background:#F3EFE8;color:#1C1916;font-family:'Hanken Grotesk',sans-serif;margin:0 auto">
+<nav style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:center;padding:30px 64px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;text-transform:uppercase">
+<a href="index.html" style="grid-column:span 3;display:flex"><img src="assets/okayplus.svg" alt="okayplus" style="height:28px;width:auto;filter:brightness(0)"></a>
+<div style="grid-column:span 4;color:#6B645B">Joe di Stefano / Designer + developer</div>
+<div style="grid-column:span 5;display:flex;gap:32px;justify-content:flex-end"><a href="index.html#approach">Approach</a><a href="index.html#services">Services</a><a href="notes.html" style="color:#D4203F">Notes</a><a href="index.html#about">About</a><a href="index.html#contact" style="color:#D4203F">Say hello →</a></div>
+</nav>
+
+<header style="padding:56px 64px 72px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:end">
+<div style="grid-column:1 / -1;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B;display:flex;gap:24px"><span>/ NOTES</span><span>{{ postCount }} POSTS</span></div>
+<h1 style="grid-column: span 7; font-family: gelica,serif; font-weight: 500; font-size: 192px; line-height: .85; letter-spacing: -.04em; margin-top: 40px">Notes<span style="color:#FF4D6A">.</span></h1>
+<p style="grid-column: 9 / span 4; font-size: 24px; line-height: 1.55; color: #3A3631; padding-bottom: 18px; text-wrap: pretty">Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington, Vermont.</p>
+</header>
+
+<a href="blog-post.html" style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;padding:0 64px 96px;align-items:end">
+<div style="grid-column:span 7;height:560px;background-color:#EBE5DB;background-image:repeating-linear-gradient(135deg,rgba(28,25,22,.06) 0 2px,transparent 2px 12px);display:flex;align-items:flex-end;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#6B645B">featured image — Simple Creature homepage</div>
+<div style="grid-column:9 / span 4;display:flex;flex-direction:column;gap:20px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#D4203F;display:flex;gap:20px"><span>LATEST</span><span style="color:#6B645B">PROCESS · MAY 19, 2026</span></div>
+<h2 style="font-family:gelica,serif;font-weight:500;font-size:48px;line-height:1.02;letter-spacing:-.02em;text-wrap:balance">Designing a Website That Feels Alive While Keeping Content Front and Center</h2>
+<p style="font-size:18px;line-height:1.6;color:#4A443D;text-wrap:pretty">We recently launched the new website for Simple Creature, and throughout the process we challenged ourselves to create an experience that felt playful, tactile, and full of personality.</p>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#D4203F">READ →</span>
+</div>
+</a>
+
+<section style="padding:0 64px 120px">
+<sc-if value="{{ fsIndex }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:40px;flex-wrap:wrap;margin-bottom:24px;align-items:baseline">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B">/ FILTER</span>
+<sc-for list="{{ filters }}" as="fl" hint-placeholder-count="5">
+<button onClick="{{ fl.pick }}" style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;padding:0 0 6px;border:0;border-bottom:2px solid {{ fl.ul }};background:transparent;cursor:pointer;color:{{ fl.tc }};display:flex;gap:8px;align-items:baseline">{{ fl.label }}<span style="color:{{ fl.nc }}">{{ fl.count2 }}</span></button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ fsTabs }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;margin-bottom:24px;border-bottom:1px solid #D9D1C4">
+<sc-for list="{{ filters }}" as="fl" hint-placeholder-count="5">
+<button onClick="{{ fl.pick }}" style="font-family:gelica,serif;font-weight:500;font-size:24px;letter-spacing:-.01em;padding:0 32px 16px 0;margin-bottom:-1px;border:0;border-bottom:2px solid {{ fl.ulInk }};background:transparent;cursor:pointer;color:{{ fl.tcSoft }};display:flex;gap:6px;align-items:flex-start">{{ fl.labelTitle }}<sup style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;color:{{ fl.nc }};line-height:1">{{ fl.count2 }}</sup></button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ fsSoft }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+<sc-for list="{{ filters }}" as="fl" hint-placeholder-count="5">
+<button onClick="{{ fl.pick }}" style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;padding:10px 16px;border-radius:2px;border:0;cursor:pointer;background:{{ fl.sbg }};color:{{ fl.sfg }};display:flex;gap:8px">{{ fl.label }}<span style="opacity:.7">{{ fl.count2 }}</span></button>
+</sc-for>
+</div>
+</sc-if>
+<sc-for list="{{ posts }}" as="p" hint-placeholder-count="6">
+<a href="blog-post.html" style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;padding:32px 0;border-top:1px solid #D9D1C4;align-items:start">
+<span style="grid-column:span 1;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#D4203F;padding-top:10px">{{ p.n }}</span>
+<span style="grid-column:2 / span 2;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B;padding-top:10px">{{ p.tag }}</span>
+<span style="grid-column:4 / span 6;display:flex;flex-direction:column;gap:12px">
+<span style="font-family: gelica,serif; font-weight: 500; font-size: 36px; line-height: 1.05; letter-spacing: -.015em; text-wrap: balance">{{ p.t }}</span>
+<span style="font-size:18px;line-height:1.55;color:#4A443D;text-wrap:pretty">{{ p.d }}</span>
+</span>
+<span style="grid-column:10 / span 3;height:168px;background-color:#EBE5DB;background-image:repeating-linear-gradient(135deg,rgba(28,25,22,.06) 0 2px,transparent 2px 12px);display:flex;align-items:flex-end;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6B645B">{{ p.img }}</span>
+</a>
+</sc-for>
+</section>
+
+<footer style="background:#1C1916;color:#F3EFE8;padding:96px 64px 40px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#A89F93">/ CONTACT</div>
+<h2 style="font-family:gelica,serif;font-weight:500;font-size:168px;line-height:.9;letter-spacing:-.035em;margin-top:32px">Say hello.</h2>
+<div style="display:flex;gap:56px;margin-top:48px;align-items:baseline;font-size:30px">
+<a href="mailto:joe@okaypl.us" style="border-bottom:2px solid #FF4D6A;padding-bottom:4px">joe@okaypl.us</a>
+<a href="#" style="color:#A89F93">Book a 20-min call →</a>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:120px;padding-top:24px;border-top:1px solid #3A3631;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#A89F93"><span>OKAYPLUS</span><span>BURLINGTON, VERMONT</span><span>© 2026</span></div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;filterStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Index&quot;,&quot;Tabs&quot;,&quot;Soft chips&quot;],&quot;default&quot;:&quot;Index&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const W = ['#FBF8F3', '#D8CFC1', '#C4B9A8'];
+const P = ['#FF4D6A', '#D62A4A', '#E63757'];
+const N = ['#E9E2D7', '#CFC5B6', '#BFB3A1'];
+const MONO = "'IBM Plex Mono', monospace";
+
+class Component extends DCLogic {
+  // Original home hero, copied as-is
+  orig(motion, spin) {
+    const h = React.createElement;
+    const S = [W, P, W];
+    const spinDelay = { o: -0.2, b: -3.2, g: -6.2 };
+    const slab = (key, z, top, side, edge, delay) => {
+      if (spin) {
+        const inner = slab0(key + 'i', top, side, edge);
+        const spinner = h('div', { key: key + 's', style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', animation: motion ? `okSpinEvery 9s ${spinDelay[key]}s infinite` : 'none' } }, inner);
+        return h('div', { key, style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', '--z': z + 'px', transform: `translateZ(${z}px)`, animation: motion ? `okFloat 7s ease-in-out ${delay}s infinite` : 'none' } }, spinner);
+      }
+      const layers = [];
+      for (let i = 0; i <= 40; i += 2) {
+        const isTop = i === 40;
+        layers.push(h('div', { key: i, style: { position: 'absolute', inset: 0, background: isTop ? top : side, transform: `translateZ(${i}px)`, boxShadow: isTop ? `inset 0 0 0 1px ${edge}` : 'none' } }));
+      }
+      return h('div', { key, style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', '--z': z + 'px', transform: `translateZ(${z}px)`, animation: motion ? `okFloat 7s ease-in-out ${delay}s infinite` : 'none' } }, layers);
+    };
+    function slab0(k, top, side, edge) {
+      const layers = [];
+      for (let i = 0; i <= 40; i += 2) {
+        const isTop = i === 40;
+        layers.push(h('div', { key: k + i, style: { position: 'absolute', inset: 0, background: isTop ? top : side, transform: `translateZ(${i}px)`, boxShadow: isTop ? `inset 0 0 0 1px ${edge}` : 'none' } }));
+      }
+      return layers;
+    }
+    const scene = h('div', { key: 'sc', style: { position: 'absolute', left: 170, top: 250, width: 260, height: 260, transformStyle: 'preserve-3d', transform: 'rotateX(58deg) rotateZ(-45deg)' } }, [
+      this.grid(), slab('o', 0, ...S[0], 0), slab('b', 110, ...S[1], -2.3), slab('g', 220, ...S[2], -4.6),
+    ]);
+    return this.frame([scene], ['MARKETERS', 'ORGANIZATIONS', 'TEAMS'], 620);
+  }
+
+  grid() {
+    return React.createElement('div', { key: 'grid', style: { position: 'absolute', inset: -90, transform: 'translateZ(-30px)', backgroundImage: 'linear-gradient(#C9BFB0 1px, transparent 1px), linear-gradient(90deg, #C9BFB0 1px, transparent 1px)', backgroundSize: '44px 44px', opacity: 0.7, WebkitMaskImage: 'radial-gradient(closest-side, #000 55%, transparent)', maskImage: 'radial-gradient(closest-side, #000 55%, transparent)' } });
+  }
+
+  frame(kids, labels, guideEnd) {
+    const h = React.createElement;
+    const ge = guideEnd || 560;
+    const guide = (x, y1, y2, c) => h('div', { key: 'l' + x, style: { position: 'absolute', left: x, top: y1, height: y2 - y1, borderLeft: `1px dashed ${c}` } });
+    const label = (y, n, t, c) => h('div', { key: 't' + n, style: { position: 'absolute', left: 500, top: y, display: 'flex', flexDirection: 'column', gap: 4, fontFamily: MONO, fontSize: 14, letterSpacing: '.06em', color: c || '#6B645B' } }, [h('span', { key: 1 }, '/ ' + n), h('span', { key: 2, style: { color: '#1C1916' } }, t)]);
+    return h('div', { style: { position: 'absolute', inset: 0, overflow: 'hidden' } }, [
+      guide(116, 60, ge, '#C9BFB0'), guide(484, 60, ge, '#C9BFB0'), guide(300, 20, ge + 40, '#FF4D6A'),
+      ...kids,
+      label(110, '01', labels[0]), label(205, '02', labels[1], '#D4203F'), label(300, '03', labels[2]),
+    ]);
+  }
+
+  scene(children) {
+    const S = 300;
+    return React.createElement('div', { key: 'scene', style: { position: 'absolute', left: 300 - S / 2, top: 400 - S / 2, width: S, height: S, transformStyle: 'preserve-3d', transform: 'rotateX(58deg) rotateZ(-45deg)' } }, [this.grid(), ...children]);
+  }
+
+  // Solid box: top + four walls. b = {key,x,y,z,w,d,h,c,rot,anim,vars}
+  box(b, motion) {
+    const h = React.createElement;
+    const [top, s1, s2] = b.c;
+    const { w, d } = b, H = b.h;
+    const f = (k, st) => h('div', { key: k, style: { position: 'absolute', ...st } });
+    const faces = [
+      f('fy', { left: 0, top: d, width: w, height: H, background: s1, transformOrigin: 'top', transform: 'rotateX(90deg)' }),
+      f('by', { left: 0, top: 0, width: w, height: H, background: s1, transformOrigin: 'top', transform: 'rotateX(90deg)' }),
+      f('fx', { left: w, top: 0, width: H, height: d, background: s2, transformOrigin: 'left', transform: 'rotateY(-90deg)' }),
+      f('bx', { left: 0, top: 0, width: H, height: d, background: s2, transformOrigin: 'left', transform: 'rotateY(-90deg)' }),
+      f('t', { left: 0, top: 0, width: w, height: d, background: top, transform: `translateZ(${H}px)`, boxShadow: `inset 0 0 0 1px ${s2}` }),
+    ];
+    const style = { position: 'absolute', left: b.x, top: b.y, width: w, height: d, transformStyle: 'preserve-3d', transformOrigin: '50% 50% 0', transform: `translate3d(0,0,${b.z || 0}px) rotateZ(${b.rot || 0}deg)`, '--z': (b.z || 0) + 'px', '--r': (b.rot || 0) + 'deg', ...(b.vars || {}) };
+    if (b.still) style.transform = b.still;
+    if (motion && b.anim) style.animation = b.anim;
+    return h('div', { key: b.key, style }, faces);
+  }
+
+  // 1b — Quick build
+  p1(motion) {
+    const cols = [W, W, W, P];
+    const boxes = cols.map((c, i) => this.box({ key: 'd' + i, x: 60, y: 60, z: i * 40, w: 180, d: 180, h: 36, c, anim: `okDrop${i} 5.5s linear infinite` }, motion));
+    return this.frame([this.scene(boxes)], ['AGENCIES', 'CAMPAIGNS', 'REPORTING']);
+  }
+
+  // 1c — Off the template
+  p2(motion) {
+    const boxes = [
+      this.box({ key: 'a', x: 50, y: 50, z: 0, w: 200, d: 200, h: 44, c: W }, motion),
+      this.box({ key: 'b', x: 60, y: 60, z: 88, w: 180, d: 180, h: 36, c: W, rot: 14, anim: 'okFloat3 7s ease-in-out -2s infinite' }, motion),
+      this.box({ key: 'c', x: 80, y: 80, z: 176, w: 140, d: 140, h: 36, c: P, anim: 'okTwist 16s linear infinite' }, motion),
+    ];
+    return this.frame([this.scene(boxes)], ['AGENCIES', 'CAMPAIGNS', 'REPORTING']);
+  }
+
+  // 1d — Migration
+  c1(motion) {
+    const kids = [
+      this.box({ key: 'L', x: 15, y: 100, z: 0, w: 100, d: 100, h: 40, c: N }, motion),
+      this.box({ key: 'R', x: 185, y: 100, z: 0, w: 100, d: 100, h: 40, c: W }, motion),
+    ];
+    const slots = [[25, 110], [69, 110], [25, 154], [69, 154]];
+    slots.forEach(([x, y], i) => kids.push(this.box({
+      key: 't' + i, x, y, z: 40, w: 36, d: 36, h: 14, c: P,
+      still: `translate3d(${i < 2 ? 0 : 170}px,0,40px)`,
+      vars: { '--dx': '170px' }, anim: `okHop 6s linear ${-i * 1.5}s infinite`,
+    }, motion)));
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1e — Connected
+  c2(motion) {
+    const kids = [];
+    const bar = (k, x, y, w, d) => kids.push(this.box({ key: k, x, y, z: 0, w, d, h: 4, c: ['#D8CFC1', '#C4B9A8', '#B8AC99'] }, motion));
+    bar('bl', 50, 146, 65, 8); bar('br', 185, 146, 65, 8); bar('bt', 146, 50, 8, 65); bar('bb', 146, 185, 8, 65);
+    kids.push(this.box({ key: 'hub', x: 115, y: 115, z: 0, w: 70, d: 70, h: 90, c: P }, motion));
+    [[0, 125], [250, 125], [125, 0], [125, 250]].forEach(([x, y], i) => kids.push(this.box({ key: 's' + i, x, y, z: 0, w: 50, d: 50, h: 40, c: W }, motion)));
+    const packets = [
+      { x: 52, y: 144, dx: 50, dy: 0 }, { x: 234, y: 144, dx: -50, dy: 0 },
+      { x: 144, y: 52, dx: 0, dy: 50 }, { x: 144, y: 234, dx: 0, dy: -50 },
+    ];
+    packets.forEach((p, i) => kids.push(this.box({
+      key: 'p' + i, x: p.x, y: p.y, z: 4, w: 12, d: 12, h: 12, c: ['#1C1916', '#3A3631', '#2E2A26'],
+      still: `translate3d(${p.dx / 2}px,${p.dy / 2}px,4px)`,
+      vars: { '--dx': p.dx + 'px', '--dy': p.dy + 'px' }, anim: `okTravel 2.4s ease-in-out ${-i * 0.6}s infinite`,
+    }, motion)));
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1i — Migration, conveyor
+  c3(motion, flash) {
+    const h = React.createElement;
+    const slots = [[10, 10], [54, 10], [10, 54], [54, 54]];
+    const order = [0, 1, 3, 2];
+    const kids = [this.box({ key: 'L', x: 15, y: 100, z: 0, w: 100, d: 100, h: 40, c: N }, motion)];
+    order.forEach((miss, j) => {
+      const d = -j * 1.5;
+      const fl = flash ? ['okFlashT', 'okFlash1', 'okFlash2'].map(a => `${a} 6s linear ${d}s infinite`) : null;
+      const tiles = slots.map(([x, y], k) => this.box({
+        key: 'f' + k, x, y, z: 40, w: 36, d: 36, h: 14, c: flash ? N : P, faceAnim: fl,
+        anim: k === miss ? `okFill 6s linear ${d}s infinite` : undefined,
+      }, motion));
+      const still = `translate3d(0,${[-120, 240, 120, 0][j]}px,0)`;
+      kids.push(h('div', { key: 'pl' + j, style: { position: 'absolute', left: 185, top: 100, width: 100, height: 100, transformStyle: 'preserve-3d', transform: still, animation: motion ? `okConvey 6s ease-in-out ${d}s infinite` : 'none' } }, [
+        this.box({ key: 'p', x: 0, y: 0, z: 0, w: 100, d: 100, h: 40, c: W }, motion), ...tiles,
+      ]));
+      const [x, y] = slots[miss];
+      kids.push(this.box({
+        key: 't' + j, x: 15 + x, y: 100 + y, z: 40, w: 36, d: 36, h: 14, c: P,
+        still: 'translate3d(0,0,40px) scale3d(.001,.001,.001)',
+        vars: { '--dx': '170px' }, anim: `okHop2 6s linear ${d}s infinite`,
+      }, motion));
+    });
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1k — Puzzle cube
+  rubik(motion, spin) {
+    const K = spin ? 'okRs' : 'okRk';
+    const h = React.createElement;
+    const moves = [['x', 1, 1], ['y', -1, 1], ['z', 1, -1], ['x', -1, -1]];
+    const seq = [...moves, ...moves.slice().reverse().map(([a, l, d]) => [a, l, -d])];
+    const rot = (v, a, d) => { const [x, y, z] = v; if (a === 'x') return d > 0 ? [x, -z, y] : [x, z, -y]; if (a === 'y') return d > 0 ? [z, y, -x] : [-z, y, x]; return d > 0 ? [-y, x, z] : [y, -x, z]; };
+    const ax = { x: 0, y: 1, z: 2 };
+    const N = seq.length, T = spin ? 10.4 : 9, hold = spin ? 3.2 : 1.8, step = (T - hold) / N, rt = 0.6;
+    const pct = t => (t / T * 100).toFixed(3) + '%';
+    const mkTimes = k => {
+      const sp = spin ? 180 : 0, s0 = 0.5 + (1 - k) * 0.3;
+      const t = spin ? [[0, 0, 0], [s0, 0, 0], [s0 + 1.3, 0, 180], [hold, 0, 180]] : [[0, 0, 0], [hold, 0, 0]];
+      seq.forEach((_, m) => { t.push([hold + m * step, m, sp], [hold + m * step + rt, m + 1, sp]); });
+      t.push([T, N, sp]);
+      return t;
+    };
+    const faces = [['t', [0, 0, 1], 'translateZ(32px)'], ['b', [0, 0, -1], 'rotateY(180deg) translateZ(32px)'], ['px', [1, 0, 0], 'rotateY(90deg) translateZ(32px)'], ['nx', [-1, 0, 0], 'rotateY(-90deg) translateZ(32px)'], ['py', [0, 1, 0], 'rotateX(-90deg) translateZ(32px)'], ['ny', [0, -1, 0], 'rotateX(90deg) translateZ(32px)']];
+    const ease = 'cubic-bezier(.65,0,.35,1)';
+    const css = [], cubes = [];
+    for (let k = -1; k <= 1; k++) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
+      const id = `${i + 1}${j + 1}${k + 1}`;
+      const pal = k === 0 ? P : W;
+      const times = mkTimes(k);
+      let p = spin ? [-i, -j, k] : [i, j, k], ns = faces.map(f => spin ? [-f[1][0], -f[1][1], f[1][2]] : f[1]);
+      const ang = [], nh = [ns];
+      seq.forEach(([a, l, d]) => { const inS = p[ax[a]] === l; ang.push(inS ? d * 90 : 0); if (inS) { p = rot(p, a, d); ns = ns.map(n => rot(n, a, d)); } nh.push(ns); });
+      const tf = (n, a0) => seq.map(([a], m) => `rotate${a.toUpperCase()}(${m < n ? ang[m] : 0}deg)`).reverse().join(' ') + (spin ? ` rotateZ(${a0 || 0}deg)` : '') + ` translate3d(${i * 90}px,${j * 90}px,${k * 90}px)`;
+      const col = n => n[2] ? pal[0] : n[1] ? pal[1] : pal[2];
+      css.push(`@keyframes ${K}${id}{${times.map(([t, n, a0]) => `${pct(t)}{transform:${tf(n, a0)}}`).join('')}}`);
+      const fEls = faces.map((f, fi) => {
+        const cs = nh.map(st => col(st[fi]));
+        const anim = cs.some(c => c !== cs[0]);
+        if (anim) css.push(`@keyframes ${K}${id}${f[0]}{${times.map(([t, n]) => `${pct(t)}{background:${cs[n]}}`).join('')}}`);
+        return h('div', { key: f[0], style: { position: 'absolute', inset: 0, background: cs[0], boxShadow: `inset 0 0 0 1px ${pal[2]}`, transform: f[2], animation: motion && anim ? `${K}${id}${f[0]} ${T}s ${ease} infinite` : 'none' } });
+      });
+      cubes.push(h('div', { key: id, style: { position: 'absolute', left: 118, top: 118, width: 64, height: 64, transformStyle: 'preserve-3d', transformOrigin: '32px 32px 0', transform: tf(0), animation: motion ? `${K}${id} ${T}s ${ease} infinite` : 'none' } }, fEls));
+    }
+    const group = h('div', { key: 'rk', style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', transform: 'translateZ(122px)' } }, cubes);
+    return this.frame([h('style', { key: K + 'css', dangerouslySetInnerHTML: { __html: css.join('\n') } }), this.scene([group])], ['MARKETERS', 'ORGANIZATIONS', 'TEAMS'], 620);
+  }
+
+  // 1f — Dashboard
+  t1(motion) {
+    const hs = [[.3, .5], [.5, .7], [.35, .55], [.6, .8], [.85, 1], [.4, .6], [.25, .45], [.55, .75], [.2, .35]];
+    const kids = [];
+    hs.forEach(([a, b], i) => {
+      const r = Math.floor(i / 3), c = i % 3, pink = i === 4;
+      kids.push(this.box({
+        key: 'b' + i, x: 22 + c * 90, y: 22 + r * 90, z: 0, w: 64, d: 64, h: 200, c: pink ? P : W,
+        still: `translateZ(0) scale3d(1,1,${(a + b) / 2})`,
+        vars: { '--a': a, '--b': b }, anim: `okBar ${4 + (i % 3)}s ease-in-out ${-i * 0.7}s infinite`,
+      }, motion));
+    });
+    return this.frame([this.scene(kids)], ['VISIBILITY', 'AUTOMATION', 'MONITORING']);
+  }
+
+  isoStack(motion, labels) {
+    const h = React.createElement;
+    const S = [['#FBF8F3', '#D8CFC1', '#C4B9A8'], ['#FF4D6A', '#D62A4A', '#E63757'], ['#FBF8F3', '#D8CFC1', '#C4B9A8']];
+    const slab = (key, z, top, side, edge, delay) => {
+      const layers = [];
+      for (let i = 0; i <= 40; i += 2) {
+        const isTop = i === 40;
+        layers.push(h('div', { key: i, style: { position: 'absolute', inset: 0, background: isTop ? top : side, transform: `translateZ(${i}px)`, boxShadow: isTop ? `inset 0 0 0 1px ${edge}` : 'none' } }));
+      }
+      return h('div', { key, style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', '--z': z + 'px', transform: `translateZ(${z}px)`, animation: motion ? `okFloat 7s ease-in-out ${delay}s infinite` : 'none' } }, layers);
+    };
+    const grid = h('div', { key: 'g', style: { position: 'absolute', inset: -90, transform: 'translateZ(-30px)', backgroundImage: 'linear-gradient(#C9BFB0 1px, transparent 1px), linear-gradient(90deg, #C9BFB0 1px, transparent 1px)', backgroundSize: '44px 44px', opacity: 0.7, WebkitMaskImage: 'radial-gradient(closest-side, #000 55%, transparent)', maskImage: 'radial-gradient(closest-side, #000 55%, transparent)' } });
+    const scene = h('div', { key: 'sc', style: { position: 'absolute', left: 170, top: 250, width: 260, height: 260, transformStyle: 'preserve-3d', transform: 'rotateX(58deg) rotateZ(-45deg)' } }, [
+      grid, slab('o', 0, ...S[0], 0), slab('b', 110, ...S[1], -2.3), slab('g', 220, ...S[2], -4.6),
+    ]);
+    const guide = (x, y1, y2, c) => h('div', { key: 'l' + x, style: { position: 'absolute', left: x, top: y1, height: y2 - y1, borderLeft: `1px dashed ${c}` } });
+    const label = (y, n, t, c) => h('div', { key: 't' + n, style: { position: 'absolute', left: 500, top: y, display: 'flex', flexDirection: 'column', gap: 4, fontFamily: "'IBM Plex Mono', monospace", fontSize: 14, letterSpacing: '.06em', color: c || '#6B645B' } }, [h('span', { key: 1 }, '/ ' + n), h('span', { key: 2, style: { color: '#1C1916' } }, t)]);
+    return h('div', { style: { position: 'absolute', inset: 0 } }, [
+      guide(116, 60, 560, '#C9BFB0'), guide(484, 60, 560, '#C9BFB0'), guide(300, 20, 600, '#FF4D6A'),
+      scene, label(110, '01', labels[0]), label(205, '02', labels[1], '#D4203F'), label(300, '03', labels[2]),
+    ]);
+  }
+  state = { filter: 'ALL' };
+  renderVals() {
+    const motion = this.props.motion ?? true;
+    const all = [
+      { tag: 'VERMONT', t: 'Here’s to more Vermont-made ideas', d: 'Growing up in Cabot, Vermont, I had a lot of pride in seeing the Cabot name on grocery store shelves around the country.', img: 'image — Vermont client work' },
+      { tag: 'CASE STUDY', t: 'Redesigning ThinkMD’s digital health platform', d: 'A modern, intuitive interface with universal 3D clinical images and animations for frontline health workers.', img: 'image — ThinkMD app' },
+      { tag: 'CASE STUDY', t: 'The Arizona Education Progress Meter', d: 'A headless CMS, React front-end, and Mapbox GL mapping for a statewide education data tool.', img: 'image — progress map' },
+      { tag: 'CASE STUDY', t: 'A new look for Columbia Capital', d: 'Design exploration, branding, and a new homepage for an investment firm that helps entrepreneurs build successful businesses.', img: 'image — colcap.com' },
+      { tag: 'CASE STUDY', t: 'New work for the Frank Lloyd Wright Foundation', d: '', img: 'image — FLW Foundation site' },
+      { tag: 'COMMUNITY', t: 'A digital design salon in Burlington', d: 'A little design get-together with Katie McCurdy and the fine folks at Frank.', img: 'photo — Frank Lab salon' },
+      { tag: 'PROCESS', t: 'CSS and JavaScript, poetry in motion', d: 'A small motion experiment, set to “The River” by Javier Heraud.', img: 'video — motion experiment' },
+    ];
+    const f = this.state.filter;
+    const tags = ['ALL', 'CASE STUDY', 'PROCESS', 'VERMONT', 'COMMUNITY'];
+    const filters = tags.map((t) => ({
+      label: t === 'ALL' ? 'ALL' : t === 'CASE STUDY' ? 'CASE STUDIES' : t,
+      count: t === 'ALL' ? all.length : all.filter((p) => p.tag === t).length,
+      bg: f === t ? '#1C1916' : 'transparent', fg: f === t ? '#F3EFE8' : '#1C1916',
+      count2: String(t === 'ALL' ? all.length : all.filter((p) => p.tag === t).length).padStart(2, '0'),
+      labelTitle: { ALL: 'All', 'CASE STUDY': 'Case studies', PROCESS: 'Process', VERMONT: 'Vermont', COMMUNITY: 'Community' }[t],
+      ul: f === t ? '#FF4D6A' : 'transparent', ulInk: f === t ? '#1C1916' : 'transparent',
+      tc: f === t ? '#1C1916' : '#6B645B', tcSoft: f === t ? '#1C1916' : '#8A8278', nc: f === t ? '#D4203F' : '#A89F93',
+      sbg: f === t ? '#FF4D6A' : '#EBE5DB', sfg: '#1C1916',
+      pick: () => this.setState({ filter: t }),
+    }));
+    const posts = all.filter((p) => f === 'ALL' || p.tag === f).map((p, i) => ({ ...p, n: String(i + 1).padStart(2, '0') }));
+    return {
+      filters, posts,
+      fsIndex: (this.props.filterStyle ?? 'Index') === 'Index',
+      fsTabs: this.props.filterStyle === 'Tabs',
+      fsSoft: this.props.filterStyle === 'Soft chips', postCount: all.length + 1,
+      isoHome: this.rubik(motion, true),
+      principles: [
+        { n: '01', t: 'Listen first', d: 'Most projects start with a problem that isn\u2019t quite the one on the brief. I spend the early time asking questions.' },
+        { n: '02', t: 'Work directly', d: 'No account managers or handoffs. You talk to the person doing the work, every time.' },
+        { n: '03', t: 'Build to last', d: 'Clean code, sensible tools, and documentation your team can use long after launch.' },
+        { n: '04', t: 'Say it plainly', d: 'If something isn\u2019t worth doing, I\u2019ll tell you, and we\u2019ll find what is.' },
+      ],
+      services3: [
+        { n: '01', href: 'creative-production.html', kUpper: 'AGENCIES + MARKETING', t: 'Creative production', d: 'Agencies call me when they need a site done fast or something their in-house developers can\u2019t handle. Marketing teams bring me in to execute campaigns, quickly and on brand.', a: 'For when the campaign is ready and the website isn\u2019t.' },
+        { n: '02', href: 'cms-integrations.html', kUpper: 'NON-PROFITS + LARGE ORGS', t: 'CMS & integrations', d: 'I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations.', a: 'For the migration nobody wants to own.' },
+        { n: '03', href: 'tools-for-better-work.html', kUpper: 'INTERNAL TEAMS', t: 'Tools for better work', d: 'I build tools that help teams work better: visibility into your org\u2019s data and knowledge, automation that clears bottlenecks, and monitoring that flags changes in critical processes.', a: 'For the spreadsheet everyone\u2019s afraid to touch.' },
+      ],
+      quotesFull: [
+        { q: 'Joe is one of the few software developers I\u2019ve met who is also a very capable designer. This blend of skills enabled him to tackle a wide range of issues across a variety of projects. Joe led the development of a consumer facing geolocation app used by Fortune 50 companies and worked on diverse variety of projects such as adding methods to our API, designing custom graphics for the editorial team, and creating prototypes for new mobile applications. Joe\u2019s technical prowess combined with his solid communication skills made him an indispensable member of my team.', nUpper: 'TONY ASH', r: 'Chief Technical Officer', i: 'TA' },
+        { q: 'Joe is an extremely skilled web designer, developer and digital problem solver. For many of our online projects, he\u2019s been an instrumental part of our process including planning, assessing and developing. Joe\u2019s also responsive, diligent, detailed and is a strong communicator. He brings creativity, logic and integrity to each of his efforts and we appreciate and strongly recommend his talents.', nUpper: 'KATHLEEN ORAZIO', r: 'Senior Project Director', i: 'KO' },
+        { q: 'Working with Okay Plus has been a pleasure and the results are fantastic. Joe created our website 10 years ago, and when it came time to update it, he was who we turned to. He listened to what we wanted and worked with us to refine the design. In the end he was able to produce a custom designed website that looks great and is easy to manage.', nUpper: 'TOM BACHMAN, AIA', r: 'Principal Architect', i: 'TB' },
+        { q: 'Joe has a rare combination of being great at both design and development. He designed and developed, in a short amount of time, a geolocation search application that could be customized by third parties in a framework he had little previous experience in. 5/5 \u2014 Would work with again', nUpper: 'JEREMY ALDRICH', r: 'Senior Software Developer', i: 'JA' },
+      ],
+      isoTools: this.t1(motion),
+      isoCms: this.c3(motion),
+      isoProd: this.p1(motion),
+      capabilitiesProd: [
+        { n: '01', k: 'AGENCIES', t: 'A development partner for agencies', d: 'When you need a site done fast, or something your in-house developers can’t take on, I plug into your team and work the way you work.', ex: 'Marketing sites · Microsites · Overflow builds' },
+        { n: '02', k: 'CAMPAIGNS', t: 'Campaign execution', d: 'I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that go out on time and on brand.', ex: 'Landing pages · Microsites · Email' },
+        { n: '03', k: 'SPECIAL BUILDS', t: 'The hard stuff', d: '3D, motion, and interactive pieces that go past what a template can do, like a product tour or a scroll-driven story.', ex: '3D product tours · Motion · Interactive' },
+        { n: '04', k: 'REPORTING', t: 'Analytics and reporting', d: 'Tracking and reporting set up from the start, so you can see what a campaign actually did and what to try next.', ex: 'Tracking · Dashboards · Reporting' },
+      ],
+      signsProd: [
+        { n: '01', t: 'The launch date is set and the site isn’t built yet.' },
+        { n: '02', t: 'Your in-house developers are booked through next quarter.' },
+        { n: '03', t: 'The concept calls for 3D, motion, or something a template can’t do.' },
+        { n: '04', t: 'The campaign went out, but nobody can say how it performed.' },
+        { n: '05', t: 'You need someone who can read a brand guide and a codebase.' },
+        { n: '06', t: 'You vibe-coded a new sales dashboard last weekend, now you want to make it real.' },
+      ],
+      stepsProd: [
+        { n: '01', t: 'Get the brief', d: 'A call with your team to understand the strategy, the brand, and the deadline.' },
+        { n: '02', t: 'Scope it', d: 'A clear plan for what gets built, by when, and what I need from you.' },
+        { n: '03', t: 'Build in the open', d: 'Frequent previews so your team sees progress and gives feedback early.' },
+        { n: '04', t: 'Launch and measure', d: 'Tracking in place at launch, and a clear read on how it’s performing.' },
+      ],
+      capabilitiesCms: [
+        { n: '01', k: 'WORDPRESS', t: 'Custom WordPress, built to be edited', d: 'Custom themes and blocks built around how your team actually publishes, so updating the site doesn’t require a developer.', ex: 'Custom themes · Custom blocks · Multisite' },
+        { n: '02', k: 'INTEGRATIONS', t: 'Connect the systems you already use', d: 'Backend integrations with your mailing list, CRM, Salesforce, and whatever else holds your data, so information moves without copy and paste.', ex: 'Salesforce · CRMs · Mailing lists · APIs' },
+        { n: '03', k: 'MIGRATIONS', t: 'Move years of content safely', d: 'Large content migrations, planned and scripted, with media, metadata, and redirects carried over and nothing quietly lost along the way.', ex: 'Content audits · Scripted imports · Redirects' },
+        { n: '04', k: 'HEADLESS', t: 'Headless CMS and modern stacks', d: 'A headless CMS with a modern front end when you need speed, flexibility, or the same content in more than one place.', ex: 'Headless CMS · React · Custom APIs' },
+      ],
+      signsCms: [
+        { n: '01', t: 'Updating the homepage means emailing a developer.' },
+        { n: '02', t: 'Your CRM and your website don’t know about each other.' },
+        { n: '03', t: 'There are ten years of content on a platform you’re ready to leave.' },
+        { n: '04', t: 'Someone exports a CSV every week to keep two systems in sync.' },
+        { n: '05', t: 'The site is slow, and nobody is quite sure why.' },
+      ],
+      stepsCms: [
+        { n: '01', t: 'Audit what’s there', d: 'We inventory the content, integrations, and editors involved, and decide what moves, what changes, and what retires.' },
+        { n: '02', t: 'Model the content', d: 'I design content types and fields around how your team publishes, not around the old system’s limits.' },
+        { n: '03', t: 'Rehearse the move', d: 'Scripted, repeatable imports we can run, check, and rerun until everything lands where it should.' },
+        { n: '04', t: 'Launch and hand off', d: 'Redirects, training, and documentation so your team owns the new site from day one.' },
+      ],
+      notes: [
+        { tag: 'VERMONT', t: 'Here’s to more Vermont-made ideas' },
+        { tag: 'CASE STUDY', t: 'Redesigning ThinkMD’s digital health platform' },
+        { tag: 'CASE STUDY', t: 'The Arizona Education Progress Meter' },
+      ],
+      capabilities: [
+        { n: '01', k: 'VISIBILITY', t: 'See what your org knows', d: 'Dashboards and internal search that pull your data and knowledge out of scattered spreadsheets, inboxes, and people’s heads into one place everyone can use.', ex: 'Reporting dashboards · Knowledge bases · Data pipelines' },
+        { n: '02', k: 'AUTOMATION', t: 'Clear the bottlenecks', d: 'Automation for the repetitive, error-prone steps that slow a team down, so people spend their time on the work that needs a person.', ex: 'Workflow automation · Integrations · Internal apps' },
+        { n: '03', k: 'MONITORING', t: 'Know when something changes', d: 'Quiet, reliable checks on the processes you depend on, with alerts that reach the right person before a small problem becomes a big one.', ex: 'Alerts · Change tracking · Health checks' },
+      ],
+      signs: [
+        { n: '01', t: 'The monthly report takes someone a full day to put together.' },
+        { n: '02', t: 'The answer to “where is that?” is usually a person’s name.' },
+        { n: '03', t: 'Two systems hold the same data, and they don’t agree.' },
+        { n: '04', t: 'You find out something broke when a customer tells you.' },
+        { n: '05', t: 'There’s a spreadsheet everyone’s afraid to touch.' },
+      ],
+      steps: [
+        { n: '01', t: 'Talk it through', d: 'We start with a conversation about how the work happens today and where it hurts.' },
+        { n: '02', t: 'Map the work', d: 'I sit with the people doing the job and map the data, tools, and handoffs involved.' },
+        { n: '03', t: 'Build something small', d: 'We ship the smallest useful version first, so your team can use it and tell me what’s missing.' },
+        { n: '04', t: 'Make it last', d: 'Documentation, training, and ongoing support so the tool keeps working after launch.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

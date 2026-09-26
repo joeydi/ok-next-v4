@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://use.typekit.net/duf7mcy.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#E6E4DF;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.7}
+p,h1,h2,h3{margin:0}
+@keyframes okFloat{0%,100%{transform:translateZ(var(--z))}50%{transform:translateZ(calc(var(--z) + 16px))}}
+@keyframes okSpinEvery{0%,70%{transform:rotateZ(0deg);animation-timing-function:cubic-bezier(.65,0,.25,1)}86%,100%{transform:rotateZ(360deg)}}
+@keyframes okFloat3{0%,100%{transform:translate3d(0,0,var(--z)) rotateZ(var(--r))}50%{transform:translate3d(0,0,calc(var(--z) + 14px)) rotateZ(var(--r))}}
+@keyframes okTwist{from{transform:translate3d(0,0,var(--z)) rotateZ(0deg)}to{transform:translate3d(0,0,var(--z)) rotateZ(360deg)}}
+@keyframes okDrop0{0%,4%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}14%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop1{0%,16%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}26%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop2{0%,28%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}38%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okDrop3{0%,40%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}50%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
+@keyframes okHop{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}8%,20%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}30%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}40%,88%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}
+@keyframes okTravel{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}10%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}80%{transform:translate3d(var(--dx),var(--dy),var(--z)) scale3d(1,1,1)}100%{transform:translate3d(var(--dx),var(--dy),var(--z)) scale3d(.001,.001,.001)}}
+@keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
+@keyframes okPop{0%,55%{transform:translateZ(0) scale3d(1,1,1)}64%,86%{transform:translateZ(0) scale3d(1,1,4.2)}95%,100%{transform:translateZ(0) scale3d(1,1,1)}}
+@keyframes okPing{0%,55%{transform:translateZ(1px) scale(.6)}64%,86%{transform:translateZ(1px) scale(1)}95%,100%{transform:translateZ(1px) scale(.6)}}
+@keyframes okConvey{0%,1.67%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}5.8%{transform:translate3d(0,-180px,0) scale3d(.001,.001,.001)}5.84%{transform:translate3d(0,300px,0) scale3d(.001,.001,.001)}10%,26.67%{transform:translate3d(0,240px,0) scale3d(1,1,1)}35%,51.67%{transform:translate3d(0,120px,0) scale3d(1,1,1)}60%,76.67%{transform:translate3d(0,0,0) scale3d(1,1,1)}85%,100%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}}
+@keyframes okFill{0%,5.8%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}5.84%,64.9%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}65%,100%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}}
+@keyframes okHop2{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}6%,45%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}55%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}65%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}65.1%,100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}
+@keyframes okFlashT{0%,64.9%{background:#E9E2D7;box-shadow:inset 0 0 0 1px #BFB3A1}65%,68%{background:#FF4D6A;box-shadow:inset 0 0 0 1px #E63757}88%,100%{background:#E9E2D7;box-shadow:inset 0 0 0 1px #BFB3A1}}
+@keyframes okFlash1{0%,64.9%{background:#CFC5B6}65%,68%{background:#D62A4A}88%,100%{background:#CFC5B6}}
+@keyframes okFlash2{0%,64.9%{background:#BFB3A1}65%,68%{background:#E63757}88%,100%{background:#BFB3A1}}
+</style>
+</helmet>
+
+<section style="padding:80px;display:flex;flex-direction:column;gap:56px;width:max-content;max-width:2400px;font-family:'Hanken Grotesk',sans-serif;color:#1C1916">
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#3A3631">Illustrations · Round 1</div>
+<p style="font-size:22px;line-height:1.4;max-width:980px;color:#3A3631;text-wrap:pretty">The home hero stack, then two variations per service page. Same pieces throughout: warm paper, isometric slabs, one pink element doing the work.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B">/ 00 &nbsp; HOME (ORIGINAL)</div>
+<div style="display:flex;gap:48px;flex-wrap:wrap">
+<div id="1a" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1a</span><span>The stack</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ orig }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Three floating slabs, one per audience.</p>
+</div>
+<div id="1h" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1h</span><span>The stack, spinning</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ origSpin }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Same stack. Every few seconds one slab does a full turn, taking turns top to bottom.</p>
+</div>
+<div id="1k" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1k</span><span>Puzzle cube</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ rubik }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">A 3×3×3 cube with a pink middle layer. Slices turn on different axes, scramble it, then turn back until the pink layer lines up again.</p>
+</div>
+<div id="1l" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1l</span><span>Puzzle cube, spin</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ rubikSpin }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Same as 1k. Once the pink layer lines back up, each layer turns 180°, top to bottom, slightly staggered.</p>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B">/ 01 &nbsp; CREATIVE PRODUCTION</div>
+<div style="display:flex;gap:48px;flex-wrap:wrap">
+<div id="1b" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1b</span><span>Quick build</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ p1 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Slabs drop in one after another, land with a small bounce, then the finished stack ships off frame.</p>
+</div>
+<div id="1c" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1c</span><span>Off the template</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ p2 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">The stack, knocked slightly out of square, with the pink slab slowly turning on top. For the builds a template can’t do.</p>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B">/ 02 &nbsp; CMS &amp; INTEGRATIONS</div>
+<div style="display:flex;gap:48px;flex-wrap:wrap">
+<div id="1d" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1d</span><span>Migration</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ c1 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Pink content tiles hop, one at a time, from the old platform to the new one.</p>
+</div>
+<div id="1i" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1i</span><span>Migration, conveyor</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ c3 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Same old platform. New platforms slide past in a line, each missing one tile, and the hopping tile fills the gap.</p>
+</div>
+<div id="1j" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1j</span><span>Migration, conveyor flash</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ c4 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">Tiles on the moving platforms are neutral. When the hopping tile lands, the whole set flashes pink and fades back.</p>
+</div>
+<div id="1e" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1e</span><span>Connected</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ c2 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">A pink CMS hub wired to four systems, with small packets of data moving in and out along the lines.</p>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;color:#6B645B">/ 03 &nbsp; TOOLS FOR BETTER WORK</div>
+<div style="display:flex;gap:48px;flex-wrap:wrap">
+<div id="1f" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1f</span><span>Dashboard</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ t1 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">A 3×3 bar chart built from slabs. Bars rise and settle; the pink one is the number you care about.</p>
+</div>
+<div id="1g" style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;gap:12px;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px"><span style="background:#1C1916;color:#F3EFE8;padding:6px 12px;border-radius:999px">1g</span><span>Heads up</span></div>
+<div style="position:relative;width:620px;height:660px;background:#F3EFE8">{{ t2 }}</div>
+<p style="font-size:18px;line-height:1.5;color:#4A443D;max-width:620px">A quiet field of blocks. Every few seconds one pops up and gets flagged, like a monitor catching a change.</p>
+</div>
+</div>
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const W = ['#FBF8F3', '#D8CFC1', '#C4B9A8'];
+const P = ['#FF4D6A', '#D62A4A', '#E63757'];
+const N = ['#E9E2D7', '#CFC5B6', '#BFB3A1'];
+const MONO = "'IBM Plex Mono', monospace";
+
+class Component extends DCLogic {
+  // Original home hero, copied as-is
+  orig(motion, spin) {
+    const h = React.createElement;
+    const S = [W, P, W];
+    const spinDelay = { o: -0.2, b: -3.2, g: -6.2 };
+    const slab = (key, z, top, side, edge, delay) => {
+      if (spin) {
+        const inner = slab0(key + 'i', top, side, edge);
+        const spinner = h('div', { key: key + 's', style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', animation: motion ? `okSpinEvery 9s ${spinDelay[key]}s infinite` : 'none' } }, inner);
+        return h('div', { key, style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', '--z': z + 'px', transform: `translateZ(${z}px)`, animation: motion ? `okFloat 7s ease-in-out ${delay}s infinite` : 'none' } }, spinner);
+      }
+      const layers = [];
+      for (let i = 0; i <= 40; i += 2) {
+        const isTop = i === 40;
+        layers.push(h('div', { key: i, style: { position: 'absolute', inset: 0, background: isTop ? top : side, transform: `translateZ(${i}px)`, boxShadow: isTop ? `inset 0 0 0 1px ${edge}` : 'none' } }));
+      }
+      return h('div', { key, style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', '--z': z + 'px', transform: `translateZ(${z}px)`, animation: motion ? `okFloat 7s ease-in-out ${delay}s infinite` : 'none' } }, layers);
+    };
+    function slab0(k, top, side, edge) {
+      const layers = [];
+      for (let i = 0; i <= 40; i += 2) {
+        const isTop = i === 40;
+        layers.push(h('div', { key: k + i, style: { position: 'absolute', inset: 0, background: isTop ? top : side, transform: `translateZ(${i}px)`, boxShadow: isTop ? `inset 0 0 0 1px ${edge}` : 'none' } }));
+      }
+      return layers;
+    }
+    const scene = h('div', { key: 'sc', style: { position: 'absolute', left: 170, top: 250, width: 260, height: 260, transformStyle: 'preserve-3d', transform: 'rotateX(58deg) rotateZ(-45deg)' } }, [
+      this.grid(), slab('o', 0, ...S[0], 0), slab('b', 110, ...S[1], -2.3), slab('g', 220, ...S[2], -4.6),
+    ]);
+    return this.frame([scene], ['MARKETERS', 'ORGANIZATIONS', 'TEAMS'], 620);
+  }
+
+  // 1k — Puzzle cube
+  rubik(motion, spin) {
+    const K = spin ? 'okRs' : 'okRk';
+    const h = React.createElement;
+    const moves = [['x', 1, 1], ['y', -1, 1], ['z', 1, -1], ['x', -1, -1]];
+    const seq = [...moves, ...moves.slice().reverse().map(([a, l, d]) => [a, l, -d])];
+    const rot = (v, a, d) => { const [x, y, z] = v; if (a === 'x') return d > 0 ? [x, -z, y] : [x, z, -y]; if (a === 'y') return d > 0 ? [z, y, -x] : [-z, y, x]; return d > 0 ? [-y, x, z] : [y, -x, z]; };
+    const ax = { x: 0, y: 1, z: 2 };
+    const N = seq.length, T = spin ? 10.4 : 9, hold = spin ? 3.2 : 1.8, step = (T - hold) / N, rt = 0.6;
+    const pct = t => (t / T * 100).toFixed(3) + '%';
+    const mkTimes = k => {
+      const sp = spin ? 180 : 0, s0 = 0.5 + (1 - k) * 0.3;
+      const t = spin ? [[0, 0, 0], [s0, 0, 0], [s0 + 1.3, 0, 180], [hold, 0, 180]] : [[0, 0, 0], [hold, 0, 0]];
+      seq.forEach((_, m) => { t.push([hold + m * step, m, sp], [hold + m * step + rt, m + 1, sp]); });
+      t.push([T, N, sp]);
+      return t;
+    };
+    const faces = [['t', [0, 0, 1], 'translateZ(32px)'], ['b', [0, 0, -1], 'rotateY(180deg) translateZ(32px)'], ['px', [1, 0, 0], 'rotateY(90deg) translateZ(32px)'], ['nx', [-1, 0, 0], 'rotateY(-90deg) translateZ(32px)'], ['py', [0, 1, 0], 'rotateX(-90deg) translateZ(32px)'], ['ny', [0, -1, 0], 'rotateX(90deg) translateZ(32px)']];
+    const ease = 'cubic-bezier(.65,0,.35,1)';
+    const css = [], cubes = [];
+    for (let k = -1; k <= 1; k++) for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) {
+      const id = `${i + 1}${j + 1}${k + 1}`;
+      const pal = k === 0 ? P : W;
+      const times = mkTimes(k);
+      let p = spin ? [-i, -j, k] : [i, j, k], ns = faces.map(f => spin ? [-f[1][0], -f[1][1], f[1][2]] : f[1]);
+      const ang = [], nh = [ns];
+      seq.forEach(([a, l, d]) => { const inS = p[ax[a]] === l; ang.push(inS ? d * 90 : 0); if (inS) { p = rot(p, a, d); ns = ns.map(n => rot(n, a, d)); } nh.push(ns); });
+      const tf = (n, a0) => seq.map(([a], m) => `rotate${a.toUpperCase()}(${m < n ? ang[m] : 0}deg)`).reverse().join(' ') + (spin ? ` rotateZ(${a0 || 0}deg)` : '') + ` translate3d(${i * 90}px,${j * 90}px,${k * 90}px)`;
+      const col = n => n[2] ? pal[0] : n[1] ? pal[1] : pal[2];
+      css.push(`@keyframes ${K}${id}{${times.map(([t, n, a0]) => `${pct(t)}{transform:${tf(n, a0)}}`).join('')}}`);
+      const fEls = faces.map((f, fi) => {
+        const cs = nh.map(st => col(st[fi]));
+        const anim = cs.some(c => c !== cs[0]);
+        if (anim) css.push(`@keyframes ${K}${id}${f[0]}{${times.map(([t, n]) => `${pct(t)}{background:${cs[n]}}`).join('')}}`);
+        return h('div', { key: f[0], style: { position: 'absolute', inset: 0, background: cs[0], boxShadow: `inset 0 0 0 1px ${pal[2]}`, transform: f[2], animation: motion && anim ? `${K}${id}${f[0]} ${T}s ${ease} infinite` : 'none' } });
+      });
+      cubes.push(h('div', { key: id, style: { position: 'absolute', left: 118, top: 118, width: 64, height: 64, transformStyle: 'preserve-3d', transformOrigin: '32px 32px 0', transform: tf(0), animation: motion ? `${K}${id} ${T}s ${ease} infinite` : 'none' } }, fEls));
+    }
+    const group = h('div', { key: 'rk', style: { position: 'absolute', inset: 0, transformStyle: 'preserve-3d', transform: 'translateZ(122px)' } }, cubes);
+    return this.frame([h('style', { key: K + 'css', dangerouslySetInnerHTML: { __html: css.join('\n') } }), this.scene([group])], ['MARKETERS', 'ORGANIZATIONS', 'TEAMS'], 620);
+  }
+
+  grid() {
+    return React.createElement('div', { key: 'grid', style: { position: 'absolute', inset: -90, transform: 'translateZ(-30px)', backgroundImage: 'linear-gradient(#C9BFB0 1px, transparent 1px), linear-gradient(90deg, #C9BFB0 1px, transparent 1px)', backgroundSize: '44px 44px', opacity: 0.7, WebkitMaskImage: 'radial-gradient(closest-side, #000 55%, transparent)', maskImage: 'radial-gradient(closest-side, #000 55%, transparent)' } });
+  }
+
+  frame(kids, labels, guideEnd) {
+    const h = React.createElement;
+    const ge = guideEnd || 560;
+    const guide = (x, y1, y2, c) => h('div', { key: 'l' + x, style: { position: 'absolute', left: x, top: y1, height: y2 - y1, borderLeft: `1px dashed ${c}` } });
+    const label = (y, n, t, c) => h('div', { key: 't' + n, style: { position: 'absolute', left: 500, top: y, display: 'flex', flexDirection: 'column', gap: 4, fontFamily: MONO, fontSize: 14, letterSpacing: '.06em', color: c || '#6B645B' } }, [h('span', { key: 1 }, '/ ' + n), h('span', { key: 2, style: { color: '#1C1916' } }, t)]);
+    return h('div', { style: { position: 'absolute', inset: 0, overflow: 'hidden' } }, [
+      guide(116, 60, ge, '#C9BFB0'), guide(484, 60, ge, '#C9BFB0'), guide(300, 20, ge + 40, '#FF4D6A'),
+      ...kids,
+      label(110, '01', labels[0]), label(205, '02', labels[1], '#D4203F'), label(300, '03', labels[2]),
+    ]);
+  }
+
+  scene(children) {
+    const S = 300;
+    return React.createElement('div', { key: 'scene', style: { position: 'absolute', left: 300 - S / 2, top: 400 - S / 2, width: S, height: S, transformStyle: 'preserve-3d', transform: 'rotateX(58deg) rotateZ(-45deg)' } }, [this.grid(), ...children]);
+  }
+
+  // Solid box: top + four walls. b = {key,x,y,z,w,d,h,c,rot,anim,vars}
+  box(b, motion) {
+    const h = React.createElement;
+    const [top, s1, s2] = b.c;
+    const { w, d } = b, H = b.h;
+    const fa = (motion && b.faceAnim) || null;
+    const f = (k, st) => { const i = k === 't' ? 0 : (k[1] === 'y' ? 1 : 2); return h('div', { key: k, style: { position: 'absolute', ...st, ...(fa ? { animation: fa[i] } : {}) } }); };
+    const faces = [
+      f('fy', { left: 0, top: d, width: w, height: H, background: s1, transformOrigin: 'top', transform: 'rotateX(90deg)' }),
+      f('by', { left: 0, top: 0, width: w, height: H, background: s1, transformOrigin: 'top', transform: 'rotateX(90deg)' }),
+      f('fx', { left: w, top: 0, width: H, height: d, background: s2, transformOrigin: 'left', transform: 'rotateY(-90deg)' }),
+      f('bx', { left: 0, top: 0, width: H, height: d, background: s2, transformOrigin: 'left', transform: 'rotateY(-90deg)' }),
+      f('t', { left: 0, top: 0, width: w, height: d, background: top, transform: `translateZ(${H}px)`, boxShadow: `inset 0 0 0 1px ${s2}` }),
+    ];
+    const style = { position: 'absolute', left: b.x, top: b.y, width: w, height: d, transformStyle: 'preserve-3d', transformOrigin: '50% 50% 0', transform: `translate3d(0,0,${b.z || 0}px) rotateZ(${b.rot || 0}deg)`, '--z': (b.z || 0) + 'px', '--r': (b.rot || 0) + 'deg', ...(b.vars || {}) };
+    if (b.still) style.transform = b.still;
+    if (motion && b.anim) style.animation = b.anim;
+    return h('div', { key: b.key, style }, faces);
+  }
+
+  // 1b — Quick build
+  p1(motion) {
+    const cols = [W, W, W, P];
+    const boxes = cols.map((c, i) => this.box({ key: 'd' + i, x: 60, y: 60, z: i * 40, w: 180, d: 180, h: 36, c, anim: `okDrop${i} 5.5s linear infinite` }, motion));
+    return this.frame([this.scene(boxes)], ['AGENCIES', 'CAMPAIGNS', 'REPORTING']);
+  }
+
+  // 1c — Off the template
+  p2(motion) {
+    const boxes = [
+      this.box({ key: 'a', x: 50, y: 50, z: 0, w: 200, d: 200, h: 44, c: W }, motion),
+      this.box({ key: 'b', x: 60, y: 60, z: 88, w: 180, d: 180, h: 36, c: W, rot: 14, anim: 'okFloat3 7s ease-in-out -2s infinite' }, motion),
+      this.box({ key: 'c', x: 80, y: 80, z: 176, w: 140, d: 140, h: 36, c: P, anim: 'okTwist 16s linear infinite' }, motion),
+    ];
+    return this.frame([this.scene(boxes)], ['AGENCIES', 'CAMPAIGNS', 'REPORTING']);
+  }
+
+  // 1d — Migration
+  c1(motion) {
+    const kids = [
+      this.box({ key: 'L', x: 15, y: 100, z: 0, w: 100, d: 100, h: 40, c: N }, motion),
+      this.box({ key: 'R', x: 185, y: 100, z: 0, w: 100, d: 100, h: 40, c: W }, motion),
+    ];
+    const slots = [[25, 110], [69, 110], [25, 154], [69, 154]];
+    slots.forEach(([x, y], i) => kids.push(this.box({
+      key: 't' + i, x, y, z: 40, w: 36, d: 36, h: 14, c: P,
+      still: `translate3d(${i < 2 ? 0 : 170}px,0,40px)`,
+      vars: { '--dx': '170px' }, anim: `okHop 6s linear ${-i * 1.5}s infinite`,
+    }, motion)));
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1i — Migration, conveyor
+  c3(motion, flash) {
+    const h = React.createElement;
+    const slots = [[10, 10], [54, 10], [10, 54], [54, 54]];
+    const order = [0, 1, 3, 2];
+    const kids = [this.box({ key: 'L', x: 15, y: 100, z: 0, w: 100, d: 100, h: 40, c: N }, motion)];
+    order.forEach((miss, j) => {
+      const d = -j * 1.5;
+      const fl = flash ? ['okFlashT', 'okFlash1', 'okFlash2'].map(a => `${a} 6s linear ${d}s infinite`) : null;
+      const tiles = slots.map(([x, y], k) => this.box({
+        key: 'f' + k, x, y, z: 40, w: 36, d: 36, h: 14, c: flash ? N : P, faceAnim: fl,
+        anim: k === miss ? `okFill 6s linear ${d}s infinite` : undefined,
+      }, motion));
+      const still = `translate3d(0,${[-120, 240, 120, 0][j]}px,0)`;
+      kids.push(h('div', { key: 'pl' + j, style: { position: 'absolute', left: 185, top: 100, width: 100, height: 100, transformStyle: 'preserve-3d', transform: still, animation: motion ? `okConvey 6s ease-in-out ${d}s infinite` : 'none' } }, [
+        this.box({ key: 'p', x: 0, y: 0, z: 0, w: 100, d: 100, h: 40, c: W }, motion), ...tiles,
+      ]));
+      const [x, y] = slots[miss];
+      kids.push(this.box({
+        key: 't' + j, x: 15 + x, y: 100 + y, z: 40, w: 36, d: 36, h: 14, c: P,
+        still: 'translate3d(0,0,40px) scale3d(.001,.001,.001)',
+        vars: { '--dx': '170px' }, anim: `okHop2 6s linear ${d}s infinite`,
+      }, motion));
+    });
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1e — Connected
+  c2(motion) {
+    const kids = [];
+    const bar = (k, x, y, w, d) => kids.push(this.box({ key: k, x, y, z: 0, w, d, h: 4, c: ['#D8CFC1', '#C4B9A8', '#B8AC99'] }, motion));
+    bar('bl', 50, 146, 65, 8); bar('br', 185, 146, 65, 8); bar('bt', 146, 50, 8, 65); bar('bb', 146, 185, 8, 65);
+    kids.push(this.box({ key: 'hub', x: 115, y: 115, z: 0, w: 70, d: 70, h: 90, c: P }, motion));
+    [[0, 125], [250, 125], [125, 0], [125, 250]].forEach(([x, y], i) => kids.push(this.box({ key: 's' + i, x, y, z: 0, w: 50, d: 50, h: 40, c: W }, motion)));
+    const packets = [
+      { x: 52, y: 144, dx: 50, dy: 0 }, { x: 234, y: 144, dx: -50, dy: 0 },
+      { x: 144, y: 52, dx: 0, dy: 50 }, { x: 144, y: 234, dx: 0, dy: -50 },
+    ];
+    packets.forEach((p, i) => kids.push(this.box({
+      key: 'p' + i, x: p.x, y: p.y, z: 4, w: 12, d: 12, h: 12, c: ['#1C1916', '#3A3631', '#2E2A26'],
+      still: `translate3d(${p.dx / 2}px,${p.dy / 2}px,4px)`,
+      vars: { '--dx': p.dx + 'px', '--dy': p.dy + 'px' }, anim: `okTravel 2.4s ease-in-out ${-i * 0.6}s infinite`,
+    }, motion)));
+    return this.frame([this.scene(kids)], ['CONTENT', 'INTEGRATIONS', 'PLATFORM']);
+  }
+
+  // 1f — Dashboard
+  t1(motion) {
+    const hs = [[.3, .5], [.5, .7], [.35, .55], [.6, .8], [.85, 1], [.4, .6], [.25, .45], [.55, .75], [.2, .35]];
+    const kids = [];
+    hs.forEach(([a, b], i) => {
+      const r = Math.floor(i / 3), c = i % 3, pink = i === 4;
+      kids.push(this.box({
+        key: 'b' + i, x: 22 + c * 90, y: 22 + r * 90, z: 0, w: 64, d: 64, h: 200, c: pink ? P : W,
+        still: `translateZ(0) scale3d(1,1,${(a + b) / 2})`,
+        vars: { '--a': a, '--b': b }, anim: `okBar ${4 + (i % 3)}s ease-in-out ${-i * 0.7}s infinite`,
+      }, motion));
+    });
+    return this.frame([this.scene(kids)], ['VISIBILITY', 'AUTOMATION', 'MONITORING']);
+  }
+
+  // 1g — Heads up
+  t2(motion) {
+    const h = React.createElement;
+    const kids = [];
+    const pr = 1, pc = 3;
+    for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
+      const pink = r === pr && c === pc;
+      kids.push(this.box({
+        key: `c${r}${c}`, x: 16 + c * 56, y: 16 + r * 56, z: 0, w: 40, d: 40, h: 24, c: pink ? P : W,
+        still: pink ? 'translateZ(0) scale3d(1,1,4.2)' : undefined,
+        anim: pink ? 'okPop 5s cubic-bezier(.5,0,.3,1) infinite' : undefined,
+      }, motion));
+    }
+    kids.push(h('div', { key: 'ring', style: { position: 'absolute', left: 16 + pc * 56 - 14, top: 16 + pr * 56 - 14, width: 68, height: 68, border: '2px dashed #FF4D6A', transform: 'translateZ(1px)', animation: motion ? 'okPing 5s cubic-bezier(.5,0,.3,1) infinite' : 'none' } }));
+    return this.frame([this.scene(kids)], ['VISIBILITY', 'AUTOMATION', 'MONITORING']);
+  }
+
+  renderVals() {
+    const m = this.props.motion ?? true;
+    return { orig: this.orig(m), origSpin: this.orig(m, true), rubik: this.rubik(m), rubikSpin: this.rubik(m, true), p1: this.p1(m), p2: this.p2(m), c1: this.c1(m), c3: this.c3(m), c4: this.c3(m, true), c2: this.c2(m), t1: this.t1(m), t2: this.t2(m) };
+  }
+}
+</script>
+</body>
+</html>
