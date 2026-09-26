@@ -47,9 +47,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // data-scroll-behavior: route changes jump to the top instead of smooth-scrolling,
-    // so the page transition captures the new page at the top.
-    <html lang="en" data-scroll-behavior="smooth" className={`${hanken.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${hanken.variable} ${plexMono.variable}`}>
       <head>
         {/* Gelica (display) — Adobe Fonts kit. Add each live domain to the kit. */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
