@@ -27,7 +27,7 @@
     "altSource": "ai",
     "reviewed": true
   },
-  "shape-outside.mp4": {
+  "notes/poetry-in-motion/shape-outside.mp4": {
     "type": "video",
     "width": 1166,
     "height": 720,
@@ -35,11 +35,11 @@
     "etag": "58c3d65ae3494cec3656b5caeb0732ff",
     "duration": 9.1,
     "hasAudio": false,
-    "poster": "_posters/shape-outside.jpg",
+    "poster": "_posters/notes/poetry-in-motion/shape-outside.jpg",
     "blurDataURL": "data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAACwAQCdASoQAAoAA4BaJZwAAudJ8CJAAP73e7kydGRLH0ZMhVtgAA==",
     "color": "#181818",
     "encode": "1",
-    "original": "_originals/shape-outside.mp4",
+    "original": "_originals/notes/poetry-in-motion/shape-outside.mp4",
     "alt": "Screen recording of a poem beginning \"I am a river, going down over wide stones\" set over dark rippling water, with each successive line fading into the waves.",
     "caption": "",
     "context": "flowing lines of text using css shape-outside-scroll",
