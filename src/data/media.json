@@ -168,7 +168,7 @@
     "caption": "",
     "context": "",
     "altSource": "ai",
-    "reviewed": false,
+    "reviewed": true,
     "audio": null
   },
   "notes/designing-a-website-that-feels-alive/logo-grid.mp4": {
@@ -208,7 +208,7 @@
     "caption": "",
     "context": "",
     "altSource": "ai",
-    "reviewed": false,
+    "reviewed": true,
     "audio": null
   },
   "notes/designing-a-website-that-feels-alive/services-path.mp4": {
@@ -228,7 +228,7 @@
     "caption": "",
     "context": "",
     "altSource": "ai",
-    "reviewed": false,
+    "reviewed": true,
     "audio": null
   },
   "notes/designing-a-website-that-feels-alive/simple-creature-client-logo-grid.mp4": {
@@ -248,7 +248,7 @@
     "caption": "",
     "context": "",
     "altSource": "ai",
-    "reviewed": false,
+    "reviewed": true,
     "audio": null
   },
   "notes/designing-a-website-that-feels-alive/simple-creature-hero.png": {
@@ -332,6 +332,102 @@
     "altSource": "ai",
     "reviewed": true,
     "audio": null
+  },
+  "notes/queen-city-development-group/brand-guidelines-color-print.jpg": {
+    "type": "image",
+    "width": 3840,
+    "height": 2880,
+    "bytes": 381977,
+    "etag": "2b8ad0efe73f76a220c354e2ea607ff5",
+    "blurDataURL": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACwAQCdASoQAAwAA4BaJZAAApyrKMQ8AO9jVoBzUP/bCVjfQujoCsq+FZaBJ+1klutvZzwtbZHHgB9Px96PbLh47czXl8vetxAw6KFcZceNQAAA",
+    "color": "#e8e8d8",
+    "alt": "Two brand guideline spreads: the QCDG clover logo on cream, navy, orange and rust backgrounds, and a navy printed brochure with the orange logo.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
+  },
+  "notes/queen-city-development-group/brand-guidelines.mp4": {
+    "type": "video",
+    "width": 1440,
+    "height": 1080,
+    "bytes": 3460856,
+    "etag": "c21b597ba8c5ba3d1e9d1258a571974f",
+    "duration": 7.1,
+    "hasAudio": false,
+    "poster": "_posters/notes/queen-city-development-group/brand-guidelines.jpg",
+    "blurDataURL": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABwAgCdASoQAAwAA4BaJQBOj+AQV5l3XlBPaaEAAP4ntVfit+PDVTmXjTHk2lwOg8Ole7jmfcngSahC8JA/jpWLFIKg/AZtJKfXS7YR7JnQtt2+//aCDxR7whrbsWPam9vH5+AazD2akwPFwVGb9hXYlqvGVNEhArcJGgAA",
+    "color": "#e8e8d8",
+    "encode": "1",
+    "original": "_originals/notes/queen-city-development-group/brand-guidelines.mp4",
+    "alt": "Pages from the QCDG brand guidelines scroll past: logo, color and typography specs in navy, cream, orange and rust, then the brand applied to signage, a polo shirt, a printed brochure and the website.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true,
+    "audio": null
+  },
+  "notes/queen-city-development-group/homepage.jpg": {
+    "type": "image",
+    "width": 2273,
+    "height": 1568,
+    "bytes": 564850,
+    "etag": "10b8e01b42aa351aee00de33beeeeadd",
+    "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAQAgCdASoQAAsAA4BaJZQCdAYul29PyPPgAP7sVz80HKEfg8v3C302TulER0w/2JnmIzRMK5/DaG9S3A1l+HNNbg9TVxwYrxHGxrdUbVX1kamAgAA=",
+    "color": "#e8e8d8",
+    "alt": "The QCDG homepage: a hero photo of a modern timber-framed interior, then \"Real Estate Know-How, Soup to Nuts\" above cards for Commercial Construction, Design & Development, Real Estate Investment and Property Management.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
+  },
+  "notes/queen-city-development-group/lighthouse-scores.jpg": {
+    "type": "image",
+    "width": 3840,
+    "height": 2880,
+    "bytes": 271477,
+    "etag": "fc451a699235bc34c7918f6488e27acf",
+    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQAAwAA4BaJYgCdAD2O9/fCZ54AP70MYu2J4334xi0SF/BkGf+xkghRfYXaICb/l/aScBaDz6S22RvUZ33TkKGqPgAAA==",
+    "color": "#282828",
+    "alt": "A Lighthouse report for queencitydg.com with scores of 100 for Performance, Accessibility, Best Practices and SEO.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
+  },
+  "notes/queen-city-development-group/page-tour.mp4": {
+    "type": "video",
+    "width": 800,
+    "height": 568,
+    "bytes": 852043,
+    "etag": "eff869690538d12cfb54d4ccfd815203",
+    "duration": 4.5,
+    "hasAudio": false,
+    "poster": "_posters/notes/queen-city-development-group/page-tour.jpg",
+    "blurDataURL": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAsAA4BaJZQCdAEO4qQtASAA/tq9YYAuQjgjwACqadBxE3/nojN0/X8DnaPxq9HhKi5KLL/wjTO6f0+Bg+BsqPUQNIhbvTRrqOD26AA=",
+    "color": "#e8e8d8",
+    "encode": "1",
+    "original": "_originals/notes/queen-city-development-group/page-tour.mp4",
+    "alt": "A tour of the QCDG site, moving from the homepage through the Services, Featured Projects and About Us pages, each opening on a full-width photo.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true,
+    "audio": null
+  },
+  "notes/queen-city-development-group/website-mockup.jpg": {
+    "type": "image",
+    "width": 3840,
+    "height": 2880,
+    "bytes": 556791,
+    "etag": "bf01ce1fc213b16855272ff7ed41324c",
+    "blurDataURL": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAwAA4BaJYgCdAYuHtGIRSzAAP7bq/XqTezdGilDr9DM4nCbVLpOR1D43+k/4jvEfeRYycAVBojcrCUTMmXlLjiOmf0YvuHTGlNlXsEKIGNMBqQ6U91zA+gWAAAA",
+    "color": "#e8e8d8",
+    "alt": "The Queen City Development Group homepage in a browser window: a dim, timber-framed living room with a wood stove behind the name in orange capitals, above a Services section with four photo cards.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
   },
   "notes/thinkmd/146shots_so.png": {
     "type": "image",
