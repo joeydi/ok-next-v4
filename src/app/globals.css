@@ -226,7 +226,7 @@
     background-position: 0 90%;
     background-size: 0% 0.075em;
     padding-bottom: 4px;
-    transition: background-size 0.25s ease;
+    transition: background-size 0.5s var(--ease-in-out-strong);
   }
 
   .hover-card:is(:hover, :focus-visible) .hover-title {
