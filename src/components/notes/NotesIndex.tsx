@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { addTransitionType, startTransition, useState, ViewTransition } from "react";
 import { Placeholder } from "../Placeholder";
 import { cn } from "@/lib/cn";
 import type { NoteMeta, Tag } from "@/lib/notes";
@@ -17,12 +18,23 @@ const FILTERS: { value: Filter; label: string; param?: string }[] = [
   { value: "COMMUNITY", label: "Community", param: "community" },
 ];
 
-/** Filterable post list. The filter is kept in `?tag=` so it can be linked to. */
+/**
+ * Filterable post list. The filter is kept in `?tag=` so it can be linked to.
+ * Picking one sets state in a transition so the rows animate (see the
+ * `.filter-move` rules in globals.css); the URL sync Next does for
+ * `replaceState` doesn't start a view transition on its own.
+ */
 export function NotesIndex({ notes }: { notes: NoteSummary[] }) {
   const params = useSearchParams();
-  const filter = FILTERS.find((f) => f.param && f.param === params.get("tag"))?.value ?? "ALL";
+  const [filter, setFilter] = useState<Filter>(
+    () => FILTERS.find((f) => f.param && f.param === params.get("tag"))?.value ?? "ALL",
+  );
 
   const pick = (value: Filter) => {
+    startTransition(() => {
+      addTransitionType("notes-filter");
+      setFilter(value);
+    });
     const param = FILTERS.find((f) => f.value === value)?.param;
     const url = new URL(window.location.href);
     if (param) url.searchParams.set("tag", param);
@@ -81,32 +93,35 @@ export function NotesList({
       </p>
       <ol>
         {shown.map((n, i) => (
-          <li key={n.slug}>
-            <Link
-              href={`/notes/${n.slug}`}
-              className="hover-card grid-12 items-start gap-y-fl-12 border-t border-rule py-fl-32"
-            >
-              <span className="col-span-2 font-mono text-fl-14 text-pink-ink md:col-span-1 lg:pt-2.5">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="mono-label col-span-10 text-muted md:col-span-2 lg:pt-2.5">{n.tag}</span>
-              <span className="col-span-12 flex flex-col gap-fl-12 md:col-span-9 md:col-start-4 lg:col-span-6">
-                <span className="display text-fl-36 leading-[1.05] tracking-[-.015em] text-balance">
-                  <span className="hover-title">{n.plainTitle}</span>
+          // Rows blur in and out like pages do; rows that stay slide to their new place.
+          <ViewTransition key={n.slug} enter="page" exit="page" update="filter-move" default="none">
+            <li>
+              <Link
+                href={`/notes/${n.slug}`}
+                className="hover-card grid-12 items-start gap-y-fl-12 border-t border-rule py-fl-32"
+              >
+                <span className="col-span-2 font-mono text-fl-14 text-pink-ink md:col-span-1 lg:pt-2.5">
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                {n.description && (
-                  <span className="text-fl-18 leading-[1.55] text-pretty text-body">{n.description}</span>
-                )}
-              </span>
-              <Placeholder
-                label={n.imageLabel}
-                media={n.image}
-                small
-                sizes="22vw"
-                className="hover-lift hidden aspect-video lg:col-span-3 lg:flex"
-              />
-            </Link>
-          </li>
+                <span className="mono-label col-span-10 text-muted md:col-span-2 lg:pt-2.5">{n.tag}</span>
+                <span className="col-span-12 flex flex-col gap-fl-12 md:col-span-9 md:col-start-4 lg:col-span-6">
+                  <span className="display text-fl-36 leading-[1.05] tracking-[-.015em] text-balance">
+                    <span className="hover-title">{n.plainTitle}</span>
+                  </span>
+                  {n.description && (
+                    <span className="text-fl-18 leading-[1.55] text-pretty text-body">{n.description}</span>
+                  )}
+                </span>
+                <Placeholder
+                  label={n.imageLabel}
+                  media={n.image}
+                  small
+                  sizes="22vw"
+                  className="hover-lift hidden aspect-video lg:col-span-3 lg:flex"
+                />
+              </Link>
+            </li>
+          </ViewTransition>
         ))}
       </ol>
     </>

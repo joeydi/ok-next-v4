@@ -172,6 +172,25 @@
   }
 }
 
+/* Filtering the notes list (NotesIndex.tsx) reuses the page animations for rows
+   that come and go; rows that stay slide to their new place. */
+::view-transition-group(.filter-move),
+::view-transition-group(notes-footer) {
+  animation-duration: 500ms;
+  animation-timing-function: var(--ease-in-out-strong);
+}
+
+/* The footer jumps straight to where the resized list leaves it, and snapshots
+   draw above the page, so outgoing rows would show on top of it. Lift it out as
+   well so it slides with the rows and covers the ones leaving. */
+:root:active-view-transition-type(notes-filter) footer {
+  view-transition-name: notes-footer;
+}
+
+::view-transition-group(notes-footer) {
+  z-index: 50;
+}
+
 /* The nav bar holds still above the moving pages. Its snapshot loses the backdrop
    blur (which doesn't work in the transition overlay either), so the outgoing bar
    is backed with paper to hide the old page beneath it, then fades once that page
@@ -197,6 +216,12 @@
   to {
     opacity: 0;
   }
+}
+
+/* When filtering notes the page stays put under the nav, so keep the paper-backed
+   bar up for the whole transition rather than showing the list through it. */
+:root:active-view-transition-type(notes-filter)::view-transition-old(site-nav) {
+  animation: none;
 }
 
 /* Clicks during a transition reach the live page instead of the overlay. */
