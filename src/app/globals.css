@@ -475,9 +475,13 @@
   .note-body > * {
     grid-column: 4 / span 7;
   }
+  /* Spans more rows than any intro has, so prose flows beside it and the
+     first figure or quote (which needs columns 2+) is placed below it. A
+     short span would stretch those rows to the aside's height instead,
+     opening gaps between the paragraphs. */
   .note-body > .note-aside {
     grid-column: 1 / span 3;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 99;
     margin-bottom: 0;
   }
   .note-body > .note-fig {
