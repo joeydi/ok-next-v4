@@ -7,8 +7,7 @@ export const SITE = {
   email: "joe@okaypl.us",
   description:
     "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams, agencies, and non-profits figure out what's worth building, then build it well.",
-  /** Scheduling link for "Book a 20-min call" — replace once it exists. */
-  bookingUrl: "#",
+  bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
 } as const;
 
 export const NAV = [
