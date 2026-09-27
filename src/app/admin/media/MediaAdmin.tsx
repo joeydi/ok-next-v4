@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useRef, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
@@ -69,17 +69,21 @@ export function MediaAdmin({
   items,
   broken,
   folders,
+  initialKey,
   host,
 }: {
   items: AdminItem[];
   broken: BrokenRef[];
   folders: string[];
+  initialKey: string | null;
   host?: string;
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(initialKey);
+  // Shown in the sheet after a move, which remounts the details under the new key.
+  const [notice, setNotice] = useState("");
   const [status, setStatus] = useState("");
   const [busy, startTransition] = useTransition();
 
@@ -223,29 +227,32 @@ export function MediaAdmin({
           />
         </div>
 
-        <div className="grid items-start gap-fl-32 lg:grid-cols-[minmax(0,1fr)_420px]">
-          {current && (
-            <aside className="border border-rule bg-paper-raised p-fl-20 lg:sticky lg:top-24 lg:order-2 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
-              <Detail
-                key={current.key}
-                item={current}
-                host={host}
-                folders={folders}
-                onChange={() => router.refresh()}
-                onMoved={(key, message) => {
-                  setSelected(key);
-                  setStatus(message);
-                }}
-                onClose={() => setSelected(null)}
-              />
-            </aside>
-          )}
-          <ul className={cn("grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3", !current && "lg:col-span-2")}>
+        {current && (
+          <Sheet title="Media details" onClose={() => setSelected(null)}>
+            <Detail
+              key={current.key}
+              item={current}
+              host={host}
+              folders={folders}
+              notice={notice}
+              onChange={() => router.refresh()}
+              onMoved={(key, message) => {
+                setNotice(message);
+                setSelected(key);
+              }}
+            />
+          </Sheet>
+        )}
+
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
             {shown.map((item) => (
               <li key={item.key}>
                 <button
                   type="button"
-                  onClick={() => setSelected(item.key === selected ? null : item.key)}
+                  onClick={() => {
+                    setNotice("");
+                    setSelected(item.key);
+                  }}
                   aria-pressed={item.key === selected}
                   className={cn(
                     "flex w-full flex-col gap-1.5 border border-transparent p-1.5 text-left hover:border-rule",
@@ -271,8 +278,7 @@ export function MediaAdmin({
                 {items.length ? "Nothing matches." : "No media yet. Upload files above, or add them to the bucket and Sync."}
               </li>
             )}
-          </ul>
-        </div>
+        </ul>
       </Container>
     </main>
   );
@@ -282,12 +288,13 @@ function Notice({ children }: { children: ReactNode }) {
   return <div className="border border-pink-ink/40 bg-pink/5 p-fl-16 text-fl-14 text-body">{children}</div>;
 }
 
-function Badge({ children, tone }: { children: ReactNode; tone?: "pink" }) {
+function Badge({ children, tone }: { children: ReactNode; tone?: "pink" | "done" }) {
   return (
     <span
       className={cn(
         "mono-label bg-sand px-1.5 py-0.5 text-[11px] text-body",
         tone === "pink" && "bg-pink/15 text-pink-ink",
+        tone === "done" && "bg-paper-light text-ink ring-1 ring-rule ring-inset",
       )}
     >
       {children}
@@ -381,27 +388,99 @@ function Uploader({
   );
 }
 
+/**
+ * Full-height panel sliding in from the right. A modal <dialog>, so the page
+ * behind is inert, focus stays inside, and Esc or a click on the backdrop closes it.
+ */
+function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const unmounting = useRef(false);
+
+  useEffect(() => {
+    const dialog = ref.current!;
+    dialog.showModal();
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      unmounting.current = true;
+      root.style.overflow = overflow;
+      dialog.close();
+    };
+  }, []);
+
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby={titleId}
+      onClose={() => !unmounting.current && onClose()}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-full max-w-[min(34rem,100vw)] border-0 border-l border-rule bg-paper p-0 text-ink shadow-[-24px_0_48px_rgb(28_25_22/0.12)] transition-transform duration-300 ease-out backdrop:bg-ink/40 starting:translate-x-full motion-reduce:transition-none"
+    >
+      <div className="flex h-full flex-col">
+        <header className="flex items-center justify-between border-b border-rule bg-paper-raised px-fl-24 py-fl-16">
+          <h2 id={titleId} className="text-fl-18 font-medium">
+            {title}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="-m-2 p-2 text-muted transition-colors hover:text-ink"
+          >
+            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            </svg>
+          </button>
+        </header>
+        {children}
+      </div>
+    </dialog>
+  );
+}
+
+const TYPE_LABEL = { image: "IMG", svg: "SVG", video: "VID" };
+
+function Section({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
+  return (
+    <section className={cn("flex flex-col gap-fl-16 border-b border-rule px-fl-24 py-fl-24", className)}>
+      {title && <h3 className="text-fl-18 font-medium">{title}</h3>}
+      {children}
+    </section>
+  );
+}
+
+function Fact({ label, children, wide }: { label: string; children: ReactNode; wide?: boolean }) {
+  return (
+    <div className={cn("flex min-w-0 flex-col gap-1", wide && "col-span-2")}>
+      <dt className="text-fl-14 text-muted">{label}</dt>
+      <dd className="text-fl-14 break-words text-ink">{children}</dd>
+    </div>
+  );
+}
+
 function Detail({
   item,
   host,
   folders,
+  notice,
   onChange,
   onMoved,
-  onClose,
 }: {
   item: AdminItem;
   host?: string;
   folders: string[];
+  notice: string;
   onChange: () => void;
   onMoved: (key: string, message: string) => void;
-  onClose: () => void;
 }) {
   const [dest, setDest] = useState(item.key);
   const moveId = useId();
   const [alt, setAlt] = useState(item.alt);
   const [caption, setCaption] = useState(item.caption);
   const [context, setContext] = useState(item.context);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(notice);
   const [busy, startTransition] = useTransition();
 
   const act = (fn: () => Promise<string>) =>
@@ -429,7 +508,7 @@ function Detail({
       setStatus("Moving…");
       const r = await moveEntry(item.key, dest);
       const message = r.key === item.key ? "" : `Moved ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}`;
-      // The panel remounts under the new key, so the message goes to the page status line.
+      // The details remount under the new key, so the sheet hands the message back in.
       if (r.key !== item.key) onMoved(r.key, message);
       return message;
     });
@@ -453,179 +532,211 @@ function Detail({
   const snippet = `<Figure media="${item.key}" />`;
   const dirty = alt !== item.alt || caption !== item.caption || context !== item.context;
 
+  const name = item.key.split("/").pop();
+  const folder = item.key.includes("/") ? item.key.slice(0, item.key.lastIndexOf("/")) : "(bucket root)";
+
   return (
-    <div className="flex flex-col gap-fl-16">
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="font-mono text-fl-14 break-all">{item.key}</h2>
-        <button type="button" onClick={onClose} className="font-mono text-fl-14 text-muted hover:text-ink" aria-label="Close">
-          ✕
-        </button>
-      </div>
+    <>
+      <div className="flex-1 overflow-y-auto overscroll-contain">
+        <Section>
+          <div className="flex items-start gap-fl-16">
+            <span className="mono-label grid size-11 shrink-0 place-items-center border border-rule bg-paper-light text-fl-12 text-muted">
+              {TYPE_LABEL[item.type]}
+            </span>
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="truncate text-fl-20 font-medium" title={name}>
+                {name}
+              </span>
+              <span className="truncate font-mono text-fl-12 text-muted" title={folder}>
+                {folder}
+              </span>
+            </div>
+            <span className="flex shrink-0 flex-wrap justify-end gap-1">
+              {needsAlt(item) && <Badge tone="pink">No alt</Badge>}
+              {isDraft(item) && <Badge>AI draft</Badge>}
+              {needsSound(item) && <Badge tone="pink">Sound?</Badge>}
+              {isUnused(item) && <Badge>Unused</Badge>}
+              {!needsAlt(item) && !isDraft(item) && !needsSound(item) && <Badge tone="done">Reviewed</Badge>}
+            </span>
+          </div>
 
-      <div className="bg-sand" style={{ backgroundColor: item.color }}>
-        {host &&
-          (item.type === "video" ? (
-            <video
-              src={mediaUrl(item.key)}
-              poster={item.poster ? mediaUrl(item.poster) : undefined}
-              controls
-              playsInline
-              preload="none"
-              className="block h-auto w-full"
-            />
-          ) : (
-            <MediaImage
-              src={item.type === "svg" ? mediaUrl(item.key) : item.key}
-              unoptimized={item.type === "svg"}
-              alt=""
-              width={item.width}
-              height={item.height}
-              sizes="420px"
-              className="block h-auto w-full"
-            />
-          ))}
-      </div>
+          <div className="bg-sand" style={{ backgroundColor: item.color }}>
+            {host &&
+              (item.type === "video" ? (
+                <video
+                  src={mediaUrl(item.key)}
+                  poster={item.poster ? mediaUrl(item.poster) : undefined}
+                  controls
+                  playsInline
+                  preload="none"
+                  className="block max-h-[50vh] w-full object-contain"
+                />
+              ) : (
+                <MediaImage
+                  src={item.type === "svg" ? mediaUrl(item.key) : item.key}
+                  unoptimized={item.type === "svg"}
+                  alt=""
+                  width={item.width}
+                  height={item.height}
+                  sizes="544px"
+                  className="block max-h-[50vh] w-full object-contain"
+                />
+              ))}
+          </div>
+        </Section>
 
-      <p className="font-mono text-fl-12 text-muted">
-        {item.type} · {item.width}×{item.height} · {kb(item.bytes)}
-        {item.type === "video" && ` · ${item.duration}s · ${item.hasAudio ? "has sound" : "silent"}`}
-        {item.encode && ` · preset v${item.encode}`}
-        {item.original && host && (
-          <>
-            {" · "}
-            <a href={mediaUrl(item.original)} className="underline hover:text-ink">
-              original
-            </a>
-          </>
-        )}
-      </p>
-
-      {item.type === "video" && (item.hasAudio || item.audio === "remove") && (
-        <div className={cn("flex flex-col gap-fl-12 p-fl-12 text-fl-14 text-body", needsSound(item) ? "bg-pink/10" : "bg-sand")}>
-          <p>
-            {needsSound(item)
-              ? "This video has sound. With sound it plays with controls; without, it loops silently while on screen."
-              : item.hasAudio
-                ? "Sound kept: plays with controls."
-                : "Sound removed: loops silently."}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {item.hasAudio ? (
+        <Section>
+          <dl className="grid grid-cols-2 gap-x-fl-24 gap-y-fl-20">
+            <Fact label="Dimensions">
+              {item.width} × {item.height}
+            </Fact>
+            <Fact label="File size">{kb(item.bytes)}</Fact>
+            {item.type === "video" && (
               <>
-                <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("remove")}>
-                  Remove sound
-                </button>
-                {needsSound(item) && (
-                  <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
-                    Keep sound
-                  </button>
+                <Fact label="Duration">{item.duration}s</Fact>
+                <Fact label="Sound">{item.hasAudio ? "Yes, plays with controls" : "Silent loop"}</Fact>
+                {item.encode && <Fact label="Encoding">H.264 · preset v{item.encode}</Fact>}
+                {item.original && (
+                  <Fact label="Original">
+                    {host ? (
+                      <a href={mediaUrl(item.original)} className="underline hover:text-pink-ink">
+                        Download
+                      </a>
+                    ) : (
+                      "Kept"
+                    )}
+                  </Fact>
                 )}
               </>
-            ) : (
-              <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
-                Restore sound
-              </button>
             )}
-          </div>
-        </div>
-      )}
+            <Fact label="Used in" wide>
+              {item.usedIn.length ? (
+                <ul className="font-mono text-fl-12">
+                  {item.usedIn.map((u) => (
+                    <li key={u.file}>{u.file}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="text-muted">Not referenced anywhere yet</span>
+              )}
+            </Fact>
+          </dl>
+        </Section>
 
-      <div className="flex items-center gap-2">
-        <code className="min-w-0 flex-1 truncate bg-sand px-2 py-1.5 font-mono text-fl-12">{snippet}</code>
-        <button
-          type="button"
-          className={btn}
-          onClick={() => navigator.clipboard.writeText(snippet).then(() => setStatus("Copied snippet."))}
-        >
-          Copy
-        </button>
-      </div>
-
-      <div className="font-mono text-fl-12 text-muted">
-        {item.usedIn.length ? (
-          <>
-            Used in:
-            <ul>
-              {item.usedIn.map((u) => (
-                <li key={u.file} className="text-body">
-                  {u.file}
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : (
-          "Not referenced anywhere yet."
+        {item.type === "video" && (item.hasAudio || item.audio === "remove") && (
+          <Section title="Sound" className={cn(needsSound(item) && "bg-pink/5")}>
+            <p className="text-fl-14 text-body">
+              {needsSound(item)
+                ? "This video has sound. With sound it plays with controls; without, it loops silently while on screen."
+                : item.hasAudio
+                  ? "Sound kept: plays with controls."
+                  : "Sound removed: loops silently."}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {item.hasAudio ? (
+                <>
+                  <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("remove")}>
+                    Remove sound
+                  </button>
+                  {needsSound(item) && (
+                    <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
+                      Keep sound
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
+                  Restore sound
+                </button>
+              )}
+            </div>
+          </Section>
         )}
-      </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={moveId} className="mono-label text-fl-12 text-muted">
-          Move / rename
-        </label>
-        <div className="flex gap-2">
-          {/* Suggests this file in each known folder; any key can be typed. */}
-          <input
-            id={moveId}
-            value={dest}
-            onChange={(e) => setDest(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && dest.trim() !== item.key && move()}
-            list={`${moveId}-folders`}
-            autoComplete="off"
-            spellCheck={false}
-            className={cn(field, "min-w-0 flex-1 font-mono text-fl-12")}
-          />
-          <button
-            type="button"
-            className={btn}
-            disabled={busy || !dest.trim() || dest.trim() === item.key}
-            onClick={move}
-          >
-            Move
+        <Section title="Alt text">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-fl-14 text-muted">Context for Claude</span>
+            <textarea
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              rows={2}
+              placeholder="Who or what is shown, which project, what the reader should notice…"
+              className={field}
+            />
+          </label>
+          <button type="button" className={cn(btn, "self-start")} disabled={busy} onClick={generate}>
+            {alt ? "Regenerate alt text" : "Generate alt text"}
           </button>
-        </div>
-        <datalist id={`${moveId}-folders`}>
-          {folders.map((f) => (
-            <option key={f} value={`${f}/${item.key.split("/").pop()}`} />
-          ))}
-        </datalist>
+          <label className="flex flex-col gap-1.5">
+            <span className="flex justify-between text-fl-14 text-muted">
+              <span>
+                Alt text {isDraft(item) && item.alt === alt && <span className="text-pink-ink">· AI draft</span>}
+              </span>
+              <span className={cn("font-mono text-fl-12", alt.length > 125 && "text-pink-ink")}>{alt.length}</span>
+            </span>
+            <textarea
+              value={alt}
+              onChange={(e) => setAlt(e.target.value)}
+              rows={3}
+              placeholder="Leave empty and save to mark as decorative"
+              className={field}
+            />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-fl-14 text-muted">Caption</span>
+            <input value={caption} onChange={(e) => setCaption(e.target.value)} className={field} />
+          </label>
+        </Section>
+
+        <Section title="Key" className="border-b-0">
+          <div className="flex items-center gap-2">
+            <code className="min-w-0 flex-1 truncate bg-sand px-2 py-2 font-mono text-fl-12">{snippet}</code>
+            <button
+              type="button"
+              className={btn}
+              onClick={() => navigator.clipboard.writeText(snippet).then(() => setStatus("Copied snippet."))}
+            >
+              Copy
+            </button>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor={moveId} className="text-fl-14 text-muted">
+              Move / rename
+            </label>
+            <div className="flex gap-2">
+              {/* Suggests this file in each known folder; any key can be typed. */}
+              <input
+                id={moveId}
+                value={dest}
+                onChange={(e) => setDest(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && dest.trim() !== item.key && move()}
+                list={`${moveId}-folders`}
+                autoComplete="off"
+                spellCheck={false}
+                className={cn(field, "min-w-0 flex-1 font-mono text-fl-12")}
+              />
+              <button
+                type="button"
+                className={btn}
+                disabled={busy || !dest.trim() || dest.trim() === item.key}
+                onClick={move}
+              >
+                Move
+              </button>
+            </div>
+            <datalist id={`${moveId}-folders`}>
+              {folders.map((f) => (
+                <option key={f} value={`${f}/${name}`} />
+              ))}
+            </datalist>
+          </div>
+        </Section>
       </div>
 
-      <label className="flex flex-col gap-1.5">
-        <span className="mono-label text-fl-12 text-muted">Context for Claude</span>
-        <textarea
-          value={context}
-          onChange={(e) => setContext(e.target.value)}
-          rows={3}
-          placeholder="Who or what is shown, which project, what the reader should notice…"
-          className={field}
-        />
-      </label>
-      <button type="button" className={cn(btn, "self-start")} disabled={busy} onClick={generate}>
-        {alt ? "Regenerate alt text" : "Generate alt text"}
-      </button>
-
-      <label className="flex flex-col gap-1.5">
-        <span className="mono-label flex justify-between text-fl-12 text-muted">
-          <span>
-            Alt text {isDraft(item) && item.alt === alt && <span className="text-pink-ink">· AI draft</span>}
-          </span>
-          <span className={cn(alt.length > 125 && "text-pink-ink")}>{alt.length}</span>
+      <footer className="flex items-center gap-fl-16 border-t border-rule bg-paper-raised px-fl-24 py-fl-16">
+        <span className="min-w-0 flex-1 font-mono text-fl-12 text-muted" role="status">
+          {status}
         </span>
-        <textarea
-          value={alt}
-          onChange={(e) => setAlt(e.target.value)}
-          rows={3}
-          placeholder="Leave empty and save to mark as decorative"
-          className={field}
-        />
-      </label>
-
-      <label className="flex flex-col gap-1.5">
-        <span className="mono-label text-fl-12 text-muted">Caption</span>
-        <input value={caption} onChange={(e) => setCaption(e.target.value)} className={field} />
-      </label>
-
-      <div className="flex items-center gap-3">
         <button
           type="button"
           className={cn(btn, "bg-ink text-paper hover:bg-ink-2")}
@@ -634,12 +745,7 @@ function Detail({
         >
           {item.reviewed || dirty ? "Save" : "Approve"}
         </button>
-        {status && (
-          <span className="font-mono text-fl-12 text-muted" role="status">
-            {status}
-          </span>
-        )}
-      </div>
-    </div>
+      </footer>
+    </>
   );
 }
