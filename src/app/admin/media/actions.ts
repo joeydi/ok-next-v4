@@ -35,8 +35,21 @@ export async function saveEntry(key: string, fields: Fields) {
 
 export async function syncBucket(keys?: string[]) {
   assertDev();
-  const { added, updated, removed, errors } = await syncMedia({ keys, log: () => {} });
-  return { added: added.length, updated: updated.length, removed: removed.length, errors };
+  const { added, updated, removed, renamed, errors } = await syncMedia({ keys, log: () => {} });
+  return { added: added.length, updated: updated.length, removed: removed.length, renamed, errors };
+}
+
+/** Keep or remove a video's sound. Re-encodes from the original when that changes the file. */
+export async function setVideoAudio(key: string, audio: "keep" | "remove") {
+  assertDev();
+  const { hasAudio } = updateManifest((m: Record<string, { audio?: string | null }>) => {
+    if (!m[key]) throw new Error(`Unknown key ${key}`);
+    m[key].audio = audio;
+  })[key];
+  if ((audio === "remove") === Boolean(hasAudio)) {
+    const { errors } = await syncMedia({ keys: [key], reencode: true, log: () => {} });
+    if (errors.length) throw new Error(errors[0].error);
+  }
 }
 
 const slugName = (name: string) =>

@@ -59,11 +59,12 @@ Regular **markdown** paragraphs sit in the centre column.
 Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/media.json` describes every object in it (dimensions, blur placeholder, video poster, alt text, caption) and is committed, so builds never touch the bucket. Components take a **media key** (the object's path in the bucket, e.g. `notes/thinkmd/hero.jpg`); an unknown key fails the build.
 
 - **Images** go through `next/image` with a Cloudflare Image Transformations loader (`/cdn-cgi/image/width=…,format=auto/`), so each breakpoint gets a resized AVIF/WebP.
-- **Videos** without sound loop silently while on screen, like animated images; videos with sound get controls. Under `prefers-reduced-motion` all videos show their poster with controls. Encode them yourself first (H.264 MP4, a few MB).
+- **Videos** without sound loop silently while on screen, like animated images; videos with sound get controls. Under `prefers-reduced-motion` all videos show their poster with controls.
+- **Video encoding:** upload whatever you have (MOV, MP4, WebM, any size). Sync re-encodes it with `VIDEO_PRESET` in `scripts/media.mjs`: H.264 High, max 1920px wide (never upscaled), max 30fps, CRF 23, faststart, metadata stripped. The upload is kept at `_originals/<key>` and replaced by `<key>.mp4`, so reference the `.mp4` key. Silent audio tracks are dropped. Real sound is kept until you choose **Keep sound** or **Remove sound** in the admin (the **Sound?** filter lists these). To change the preset, edit it and bump `version`. The next `npm run media` re-encodes every video from its original, and `-- --reencode` forces a re-encode.
 - **Workflow:** run `npm run dev` and open [localhost:3000/admin/media](http://localhost:3000/admin/media). Upload into a folder, write or generate alt text, save, and commit `media.json`. Or put files in the bucket some other way and run `npm run media` (`-- <key>…` for specific files, `--force` to re-read everything).
 - The admin page only exists under `next dev` (its files are `*.dev.tsx`, see `pageExtensions` in `next.config.ts`). "Generate alt text" sends the image, your context notes, and the titles of the notes that use it to Claude. The draft is saved as unreviewed until you save/approve it. An empty alt that you've saved means decorative.
 - Key names: `home/…`, `notes/<slug>/…`, `services/…`. To replace a file, prefer uploading under a new key. Objects are cached for a year, so the CDN may keep serving the old file at an existing key.
-- Video probing and posters need `ffmpeg` locally (`brew install ffmpeg`).
+- Video encoding, probing and posters need `ffmpeg` locally (`brew install ffmpeg`).
 
 ### One-time setup
 

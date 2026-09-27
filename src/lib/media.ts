@@ -16,6 +16,9 @@ type Entry = {
   duration?: number;
   hasAudio?: boolean;
   poster?: string;
+  /** Video only: VIDEO_PRESET version it was encoded with, and where the upload is kept. */
+  encode?: string;
+  original?: string;
   blurDataURL?: string;
   color?: string;
   alt: string;
@@ -23,6 +26,8 @@ type Entry = {
   context: string;
   altSource: "ai" | "human" | null;
   reviewed: boolean;
+  /** Video only: keep or remove its sound (null until decided in the admin). */
+  audio?: "keep" | "remove" | null;
 };
 
 /** What a component needs to render one asset. */

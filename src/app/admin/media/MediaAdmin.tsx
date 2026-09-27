@@ -6,7 +6,7 @@ import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
 import { mediaUrl } from "@/lib/media-url";
-import { generateAlt, presignUploads, saveEntry, syncBucket } from "./actions";
+import { generateAlt, presignUploads, saveEntry, setVideoAudio, syncBucket } from "./actions";
 import type { BrokenRef, Usage } from "./usage";
 
 export type AdminItem = {
@@ -18,6 +18,9 @@ export type AdminItem = {
   duration?: number;
   hasAudio?: boolean;
   poster?: string;
+  encode?: string;
+  original?: string;
+  audio?: "keep" | "remove" | null;
   color?: string;
   alt: string;
   caption: string;
@@ -31,12 +34,15 @@ export type AdminItem = {
 const needsAlt = (i: AdminItem) => !i.alt && !i.reviewed;
 const isDraft = (i: AdminItem) => i.altSource === "ai" && !i.reviewed;
 const isUnused = (i: AdminItem) => i.usedIn.length === 0;
+// Videos with sound play with controls instead of looping, so someone should decide.
+const needsSound = (i: AdminItem) => i.type === "video" && Boolean(i.hasAudio) && !i.audio;
 
 const FILTERS = {
   all: { label: "All", test: () => true },
   "needs-alt": { label: "Needs alt", test: needsAlt },
   draft: { label: "AI drafts", test: isDraft },
   unused: { label: "Unused", test: isUnused },
+  sound: { label: "Sound?", test: needsSound },
   image: { label: "Images", test: (i: AdminItem) => i.type !== "video" },
   video: { label: "Videos", test: (i: AdminItem) => i.type === "video" },
 } satisfies Record<string, { label: string; test: (i: AdminItem) => boolean }>;
@@ -114,7 +120,9 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
         folder,
         files.map((f) => ({ name: f.name, type: f.type })),
       );
-      const replacing = targets.filter((t) => items.some((i) => i.key === t.key));
+      // Videos end up as .mp4 whatever they were uploaded as.
+      const finalKey = (key: string) => (/\.(mov|webm|m4v)$/i.test(key) ? key.replace(/\.[^.]+$/, ".mp4") : key);
+      const replacing = targets.filter((t) => items.some((i) => i.key === finalKey(t.key)));
       if (
         replacing.length &&
         !confirm(`Replace ${replacing.map((t) => t.key).join(", ")}? The CDN may keep serving the old file for a while.`)
@@ -127,9 +135,13 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
         if (!res.ok) throw new Error(`${t.key}: upload failed (${res.status})`);
         setStatus(`Uploading ${++done}/${targets.length}…`);
       });
-      setStatus("Reading metadata…");
+      setStatus(
+        targets.some((t) => t.key.match(/\.(mp4|mov|webm|m4v)$/i))
+          ? "Encoding video and reading metadata (can take a minute)…"
+          : "Reading metadata…",
+      );
       const r = await syncBucket(targets.map((t) => t.key));
-      setSelected(targets[0].key);
+      setSelected(r.renamed.find((x) => x.from === targets[0].key)?.to ?? targets[0].key);
       setFilter("all");
       return `Uploaded ${targets.length}${r.errors.length ? ` · ${r.errors.length} failed metadata: ${r.errors[0].error}` : ""}`;
     });
@@ -144,6 +156,7 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
             <p className="font-mono text-fl-14 text-muted">
               {items.length} assets · {missing.length} need alt · {items.filter(isDraft).length} AI drafts ·{" "}
               {items.filter(isUnused).length} unused
+              {items.some(needsSound) && ` · ${items.filter(needsSound).length} with sound to review`}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -225,6 +238,7 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
                   <span className="flex flex-wrap gap-1">
                     {needsAlt(item) && <Badge tone="pink">No alt</Badge>}
                     {isDraft(item) && <Badge>AI draft</Badge>}
+                    {needsSound(item) && <Badge tone="pink">Sound?</Badge>}
                     {isUnused(item) && <Badge>Unused</Badge>}
                     {item.type === "video" && <Badge>{item.duration}s</Badge>}
                   </span>
@@ -355,6 +369,14 @@ function Detail({
       }
     });
 
+  const chooseAudio = (audio: "keep" | "remove") =>
+    act(async () => {
+      const reencode = (audio === "remove") === Boolean(item.hasAudio);
+      setStatus(reencode ? "Re-encoding from the original…" : "Saving…");
+      await setVideoAudio(item.key, audio);
+      return audio === "remove" ? "Sound removed. It now loops silently." : "Sound kept. It plays with controls.";
+    });
+
   const generate = () =>
     act(async () => {
       setStatus("Asking Claude…");
@@ -390,7 +412,6 @@ function Detail({
               src={mediaUrl(item.key)}
               poster={item.poster ? mediaUrl(item.poster) : undefined}
               controls
-              muted
               playsInline
               preload="none"
               className="block h-auto w-full"
@@ -410,8 +431,47 @@ function Detail({
 
       <p className="font-mono text-fl-12 text-muted">
         {item.type} · {item.width}×{item.height} · {kb(item.bytes)}
-        {item.type === "video" && ` · ${item.duration}s · ${item.hasAudio ? "has audio" : "silent"}`}
+        {item.type === "video" && ` · ${item.duration}s · ${item.hasAudio ? "has sound" : "silent"}`}
+        {item.encode && ` · preset v${item.encode}`}
+        {item.original && host && (
+          <>
+            {" · "}
+            <a href={mediaUrl(item.original)} className="underline hover:text-ink">
+              original
+            </a>
+          </>
+        )}
       </p>
+
+      {item.type === "video" && (item.hasAudio || item.audio === "remove") && (
+        <div className={cn("flex flex-col gap-fl-12 p-fl-12 text-fl-14 text-body", needsSound(item) ? "bg-pink/10" : "bg-sand")}>
+          <p>
+            {needsSound(item)
+              ? "This video has sound. With sound it plays with controls; without, it loops silently while on screen."
+              : item.hasAudio
+                ? "Sound kept: plays with controls."
+                : "Sound removed: loops silently."}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {item.hasAudio ? (
+              <>
+                <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("remove")}>
+                  Remove sound
+                </button>
+                {needsSound(item) && (
+                  <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
+                    Keep sound
+                  </button>
+                )}
+              </>
+            ) : (
+              <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
+                Restore sound
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-2">
         <code className="min-w-0 flex-1 truncate bg-sand px-2 py-1.5 font-mono text-fl-12">{snippet}</code>
