@@ -17,7 +17,12 @@ export function mediaUrl(key: string) {
   return `${base()}/${encodeKey(key)}`;
 }
 
-/** next/image loader: resized + AVIF/WebP via Cloudflare Image Transformations. */
+/** A resized copy via Cloudflare Image Transformations. `format: "auto"` serves AVIF/WebP to browsers that take them. */
+export function mediaImageUrl(key: string, { width, quality = 75, format = "auto" }: { width: number; quality?: number; format?: "auto" | "jpeg" }) {
+  return `${base()}/cdn-cgi/image/width=${width},quality=${quality},format=${format}/${encodeKey(key)}`;
+}
+
+/** next/image loader. */
 export function mediaLoader({ src, width, quality }: ImageLoaderProps) {
-  return `${base()}/cdn-cgi/image/width=${width},quality=${quality ?? 75},format=auto/${encodeKey(src)}`;
+  return mediaImageUrl(src, { width, quality });
 }

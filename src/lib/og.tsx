@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import { cubeMarkSvg } from "./cube-mark";
+import type { Media } from "./media";
+import { mediaImageUrl } from "./media-url";
 
 // Shared Open Graph card in the Field Notes style. Gelica can't be embedded
 // server-side (Adobe Fonts licence), so titles use Hanken Grotesk.
@@ -19,9 +21,28 @@ const logo = readFile(path.join(process.cwd(), "public/assets/okayplus.svg"), "u
 
 const cube = `data:image/svg+xml;base64,${Buffer.from(cubeMarkSvg({ background: null, size: 160 })).toString("base64")}`;
 
-/** `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces. */
-export async function renderOg({ eyebrow, title }: { eyebrow: string; title: string }) {
-  const [[hanken, mono], logoSrc] = await Promise.all([fonts, logo]);
+// The framed image beside the title, at 16:9.
+const FRAME = { width: 520, height: 293 };
+
+/** The asset (a video's poster) as a JPEG data URI, since satori can't read AVIF/WebP or SVG. */
+async function imageData(media: Media) {
+  const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
+  if (!key) return undefined;
+  // A network hiccup at build time costs the image, not the deploy: the card falls back to the cube.
+  const res = await fetch(mediaImageUrl(key, { width: FRAME.width * 2, quality: 85, format: "jpeg" })).catch(() => null);
+  if (!res?.ok) {
+    console.warn(`og: couldn't fetch ${key} (${res?.status ?? "network error"}); using the cube`);
+    return undefined;
+  }
+  return `data:image/jpeg;base64,${Buffer.from(await res.arrayBuffer()).toString("base64")}`;
+}
+
+/**
+ * `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces.
+ * An `image` (a video's poster) sits framed beside the title; without one, or for an SVG, the cube mark does.
+ */
+export async function renderOg({ eyebrow, title, image }: { eyebrow: string; title: string; image?: Media }) {
+  const [[hanken, mono], logoSrc, imageSrc] = await Promise.all([fonts, logo, image && imageData(image)]);
   const words = title.split(/(\*.+?\*)/).flatMap((chunk) => {
     const pink = chunk.startsWith("*");
     return chunk
@@ -30,7 +51,10 @@ export async function renderOg({ eyebrow, title }: { eyebrow: string; title: str
       .filter(Boolean)
       .map((w) => ({ w, pink }));
   });
-  const size = title.length > 60 ? 64 : title.length > 32 ? 80 : 104;
+  // Beside an image the title gets a narrower column, so it steps down sooner.
+  const size = imageSrc
+    ? title.length > 48 ? 52 : title.length > 28 ? 64 : 80
+    : title.length > 60 ? 64 : title.length > 32 ? 80 : 104;
 
   return new ImageResponse(
     (
@@ -56,7 +80,14 @@ export async function renderOg({ eyebrow, title }: { eyebrow: string; title: str
         </div>
 
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 48 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 860 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: imageSrc ? 24 : 28,
+              ...(imageSrc ? { width: 504 } : { maxWidth: 860 }),
+            }}
+          >
             <div style={{ display: "flex", gap: 24, fontFamily: "Plex Mono", fontSize: 22, letterSpacing: "0.06em", color: "#6B645B" }}>
               {eyebrow
                 .toUpperCase()
@@ -81,8 +112,13 @@ export async function renderOg({ eyebrow, title }: { eyebrow: string; title: str
               ))}
             </div>
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cube} width={160} height={160} alt="" />
+          {imageSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imageSrc} {...FRAME} alt="" style={{ objectFit: "cover", border: "1px solid #D9D1C4", borderRadius: 2 }} />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={cube} width={160} height={160} alt="" />
+          )}
         </div>
       </div>
     ),

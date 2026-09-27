@@ -12,5 +12,9 @@ export function generateStaticParams() {
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const note = getNote((await params).slug)!;
-  return renderOg({ eyebrow: `/ Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`, title: note.meta.title });
+  return renderOg({
+    eyebrow: `/ Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`,
+    title: note.meta.title,
+    image: note.meta.image,
+  });
 }
