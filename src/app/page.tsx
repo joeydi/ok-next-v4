@@ -125,7 +125,7 @@ function Services() {
 
 function About() {
   return (
-    <div id="about" className="relative scroll-mt-0 overflow-hidden">
+    <div id="about" className="relative -scroll-mt-(--nav-h) overflow-hidden">
       <div className="relative h-[max(640px,62.5vw)]">
         <MediaImage
           src={festival.key}
