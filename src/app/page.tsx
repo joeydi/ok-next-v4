@@ -42,26 +42,23 @@ function Hero() {
         <span className="text-pink">together.</span>
       </h1>
       <PuzzleCube className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:right-[calc(1.67*var(--pvw))] lg:mt-0 lg:w-[calc(43.06*var(--pvw))] lg:max-w-none" />
-      <div className="grid-12 mt-fl-72 items-end gap-y-fl-40">
-        <p className="col-span-12 text-fl-24 leading-normal text-pretty text-body lg:col-span-6">
-          I’m Joe, a designer and developer in Burlington, Vermont. For fifteen years I’ve worked alongside small teams,
-          founders, and non-profits to figure out what’s worth building, then build it well.
-        </p>
-        <div className="col-span-12 flex items-center gap-[18px] border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4 lg:col-start-9">
-          <MediaImage
-            src={headshot.key}
-            alt={headshot.alt}
-            width={72}
-            height={72}
-            placeholder="blur"
-            blurDataURL={headshot.blurDataURL}
-            className="frame size-[72px] object-cover saturate-[.85]"
-          />
-          <div className="font-mono text-fl-14 leading-[1.6] text-muted">
-            JOE DI STEFANO
-            <br />
-            Usually mid-question.
+      <div className="grid-12 mt-fl-32 lg:mt-fl-72">
+        <div className="col-span-12 grid gap-fl-24 md:grid-cols-[auto_1fr] md:gap-fl-32 lg:col-span-9 xl:col-span-8 2xl:col-span-7 2xl:mr-8">
+          <div className="relative size-24 md:aspect-square md:size-auto md:h-full md:max-w-full">
+            <MediaImage
+              src={headshot.key}
+              alt={headshot.alt}
+              fill
+              sizes="200px"
+              placeholder="blur"
+              blurDataURL={headshot.blurDataURL}
+              className="frame object-cover saturate-[.85]"
+            />
           </div>
+          <p className="text-fl-24 leading-normal text-pretty text-body">
+            I’m Joe di Stefano, a designer and developer in Burlington, Vermont. For fifteen years I’ve worked alongside
+            small teams, founders, and non-profits to figure out what’s worth building, then build it well.
+          </p>
         </div>
       </div>
     </Container>
@@ -96,7 +93,7 @@ function Services() {
           <Eyebrow n="02">How I help</Eyebrow>
           <h2 className="display text-fl-60 leading-none tracking-heading">Where I fit in.</h2>
         </div>
-        <p className="max-w-[380px] text-fl-18 leading-[1.55] text-body">
+        <p className="max-w-[400px] text-fl-18 leading-[1.55] text-body">
           Most engagements touch more than one of these. We’ll figure out which one matters first.
         </p>
       </div>
