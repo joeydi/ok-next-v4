@@ -1,11 +1,42 @@
 ---
-title: New work for the Frank Lloyd Wright Foundation
-date: 2025-09-30 # placeholder date — confirm
+title: A members-only portal for the Frank Lloyd Wright Foundation
+description: A custom WordPress portal with passwordless, Salesforce-verified sign-in, giving Foundation members access to Quarterly back issues, members-only events and partner benefits.
+date: 2025-03-27 # launch tweet date — confirm
 tag: CASE STUDY
-imageLabel: image — FLW Foundation site
+image: notes/frank-lloyd-wright-foundation/flw-members-login.png
+imageLabel: image — FLW members portal
 client: Frank Lloyd Wright Foundation
+tools:
+  - WordPress
+  - Salesforce
+  - GSAP
 ---
 
-{/* TODO: write this post. */}
+<Lead>The Frank Lloyd Wright Foundation wanted a home for its member-only content: back issues of the Frank Lloyd Wright Quarterly, members-only events, and partner benefits. Members needed to be able to get in with nothing more than their email address.</Lead>
 
-Full write-up coming soon.
+## The challenge
+
+The request started as a question: had we built a portal with restricted access before, and which WordPress plugin should they use? Most membership plugins keep their own list of users. That would have meant members creating yet another account, and staff keeping that list in step with the Foundation’s membership records, which already live in Salesforce.
+
+## Our approach
+
+We skipped the plugin and built a custom member portal that checks Salesforce directly. A member enters their email address, the site confirms they have an active membership in Salesforce, and it emails them a magic link to sign in. There’s nothing to register and no password to forget, and when a membership lapses or renews, Salesforce stays the source of truth.
+
+Behind the login, the portal is a custom WordPress theme with eight templates: the homepage, login, member page, Quarterly back issues index and issue details, members-only events index and event details, and partner benefits.
+
+## The Quarterly archive
+
+The back issues page lays nearly two decades of the Quarterly, from 2024 back to 2006, along a timeline. The covers fan out like a stack of magazines on a coffee table, and you can grab the row and throw it. Built with GSAP’s Draggable and Inertia plugins, the timeline tracks the covers as they glide to a stop.
+
+<Figure media="notes/frank-lloyd-wright-foundation/members-issue-scroll.mp4" caption="01 / The Quarterly back issues archive" />
+
+## Services provided
+
+- Design of the homepage, login, member page, Quarterly back issues, members-only events and partner benefits pages
+- Web hosting setup and WordPress configuration
+- Passwordless email login with magic links, verified against membership status in Salesforce
+- Admin setup with custom fields, menus, user roles and permissions for editorial oversight
+- Content and image migration
+- A responsive custom theme with eight page templates, UI animation and mobile optimization
+- Performance testing for Core Web Vitals and accessibility testing to WCAG 2 AA
+- Browser and device testing, deployment and DNS
