@@ -137,6 +137,20 @@
     "altSource": "human",
     "reviewed": true
   },
+  "notes/design-salon-burlington/salon_1_2_5.png": {
+    "type": "image",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 419213,
+    "etag": "f0a6c5a7106a88ba82d580b6df3a8a03",
+    "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADwAQCdASoQAAkAA4BaJZACdAEPhvWjhwAA/vTzAi2IFrGjZIlH0sNtHbuuFMeX4X/4Nkim44m7AwAA",
+    "color": "#f8e8c8",
+    "alt": "\"Salon\" wordmark with letters filled by a still-life painting, next to a teal double-circle mark on cream.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
+  },
   "notes/frank-lloyd-wright-foundation/flw-members-login.png": {
     "type": "image",
     "width": 1920,
