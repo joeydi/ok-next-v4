@@ -26,7 +26,13 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): 
     title: meta.plainTitle,
     description: meta.description,
     alternates: { canonical: `/notes/${meta.slug}` },
-    openGraph: { type: "article", siteName: SITE.name, publishedTime: meta.date, title: meta.plainTitle, description: meta.description },
+    openGraph: {
+      type: "article",
+      siteName: SITE.name,
+      publishedTime: meta.date,
+      title: meta.plainTitle,
+      description: meta.description,
+    },
   };
 }
 
@@ -78,12 +84,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           </Container>
 
           <Container as="figure">
-            <Placeholder
-              label={meta.imageLabel}
-              media={meta.image}
-              priority
-              className="aspect-[1312/720]"
-            />
+            <Placeholder label={meta.imageLabel} media={meta.image} priority className="aspect-video" />
           </Container>
 
           <Container className="note-body pt-fl-96 pb-fl-64">
@@ -143,7 +144,10 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
             <ul>
               {more.map((n) => (
                 <li key={n.slug}>
-                  <Link href={`/notes/${n.slug}`} className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28">
+                  <Link
+                    href={`/notes/${n.slug}`}
+                    className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28"
+                  >
                     <span className="col-span-12 font-mono text-fl-14 tracking-label-tight text-muted md:col-span-2">
                       {n.tag}
                     </span>

@@ -55,7 +55,7 @@ export default function NotesPage() {
               media={featured.image}
               priority
               sizes="(min-width: 1024px) 55vw, 100vw"
-              className="hover-lift col-span-12 aspect-[755/560] lg:col-span-7"
+              className="hover-lift col-span-12 aspect-video lg:col-span-7"
             />
             <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
               <div className="mono-label flex flex-wrap gap-x-fl-20 text-pink-ink">

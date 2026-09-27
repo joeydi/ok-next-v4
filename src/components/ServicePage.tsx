@@ -40,9 +40,7 @@ export function ServicePage({ service: s }: { service: Service }) {
               </Fragment>
             ))}
           </h1>
-          <Illustration
-            className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0"
-          />
+          <Illustration className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0" />
           <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-normal text-pretty text-ink-3">{s.intro}</p>
             <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-[1.3] text-pink-ink">
@@ -126,7 +124,7 @@ export function ServicePage({ service: s }: { service: Service }) {
             label={s.work.image}
             media={s.work.media && getMedia(s.work.media)}
             sizes="(min-width: 1024px) 55vw, 100vw"
-            className="col-span-12 aspect-[755/560] lg:col-span-7"
+            className="col-span-12 aspect-4/3 lg:col-span-7"
           />
           <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
             <Eyebrow n="04">Recent work</Eyebrow>

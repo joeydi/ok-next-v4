@@ -103,7 +103,7 @@ export function NotesList({
                 media={n.image}
                 small
                 sizes="22vw"
-                className="hover-lift hidden aspect-[310/168] lg:col-span-3 lg:flex"
+                className="hover-lift hidden aspect-video lg:col-span-3 lg:flex"
               />
             </Link>
           </li>
