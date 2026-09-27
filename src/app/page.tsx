@@ -145,7 +145,7 @@ function About() {
             <h2 className="display text-fl-96 leading-[.95] tracking-[-.03em]">
               Hi, I’m Joe.
               <br />
-              The one on the left.
+              (On the left.)
             </h2>
           </div>
           <p className="max-w-[400px] text-fl-20 leading-[1.6] text-pretty lg:w-[calc(27.78*var(--pvw))] lg:max-w-none">
