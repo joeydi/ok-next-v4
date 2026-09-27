@@ -329,6 +329,56 @@ async function probe(o, prev, opts) {
   return { key, reencoded, entry: { type, width, height, bytes, etag, ...rest } };
 }
 
+// ── Move ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Moves an asset to a new key in the bucket and the manifest, taking its poster
+ * and (for videos) its original along. Source references are the caller's job.
+ */
+export async function moveMedia(from, to) {
+  const { s3, Bucket } = r2();
+  const manifest = readManifest();
+  const e = manifest[from];
+  if (!e) throw new Error(`media: unknown key ${from}`);
+  if (manifest[to]) throw new Error(`media: ${to} already exists`);
+  const taken = await s3.send(new HeadObjectCommand({ Bucket, Key: to })).then(
+    () => true,
+    () => false,
+  );
+  if (taken) throw new Error(`media: ${to} already exists in the bucket`);
+
+  const copy = (src, dest, extra = {}) =>
+    s3.send(new CopyObjectCommand({ Bucket, Key: dest, CopySource: copySource(Bucket, src), ...extra }));
+  const del = (key) => s3.send(new DeleteObjectCommand({ Bucket, Key: key }));
+
+  const original = e.original && `${ORIGINALS}${to.replace(/\.[^.]+$/, "")}${path.extname(e.original)}`;
+  const poster = e.poster && posterKey(to);
+  if (original) await copy(e.original, original);
+  if (poster) await copy(e.poster, poster);
+  // Replace the metadata so a video's okay-original points at the moved original.
+  const head = await s3.send(new HeadObjectCommand({ Bucket, Key: from }));
+  const res = await copy(from, to, {
+    MetadataDirective: "REPLACE",
+    ContentType: head.ContentType,
+    CacheControl: head.CacheControl ?? CACHE_CONTROL,
+    Metadata: { ...head.Metadata, ...(original && { "okay-original": original }) },
+  });
+
+  await del(from);
+  if (original) await del(e.original);
+  if (poster) await del(e.poster);
+
+  updateManifest((m) => {
+    m[to] = {
+      ...m[from],
+      etag: res.CopyObjectResult.ETag.replaceAll('"', ""),
+      ...(poster && { poster }),
+      ...(original && { original }),
+    };
+    delete m[from];
+  });
+}
+
 // ── Sync ──────────────────────────────────────────────────────────────────────
 
 const upToDate = (entry, o) =>

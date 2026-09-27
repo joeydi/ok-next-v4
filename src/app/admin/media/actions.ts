@@ -1,5 +1,7 @@
 "use server";
 
+import fs from "node:fs";
+import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -8,6 +10,7 @@ import {
   CACHE_CONTROL,
   getObjectBuffer,
   mediaType,
+  moveMedia,
   r2,
   readManifest,
   syncMedia,
@@ -59,11 +62,50 @@ const slugName = (name: string) =>
     .replace(/-+/g, "-")
     .replace(/^-|-(?=\.)/g, "");
 
+/**
+ * Turns what was typed into a clean key: each segment slugged like uploads, the
+ * extension kept, and a trailing "/" meaning "this folder, same file name".
+ */
+function destinationKey(from: string, input: string) {
+  if (!input.trim()) throw new Error("Enter a key or folder.");
+  const ext = path.extname(from);
+  const segments = input.split("/").map((s) => slugName(s.trim())).filter(Boolean);
+  if (input.trim().endsWith("/") || !segments.length) segments.push(path.basename(from));
+  const name = segments.pop()!;
+  const nameExt = path.extname(name);
+  if (nameExt && nameExt.toLowerCase() !== ext.toLowerCase()) throw new Error(`Keep the ${ext} extension.`);
+  return [...segments, nameExt ? name : name + ext].join("/");
+}
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Moves an asset to a new key and rewrites references to it in the source. */
+export async function moveEntry(from: string, input: string) {
+  assertDev();
+  const to = destinationKey(from, input);
+  if (to === from) return { key: from, files: [] as string[] };
+  await moveMedia(from, to);
+
+  // Whole-key matches only: after a quote, "=", ":" or whitespace; before a quote, whitespace or line end.
+  const re = new RegExp(`(?<=["'\\s=:])${escapeRe(from)}(?=["'\\s]|$)`, "gm");
+  const files: string[] = [];
+  for (const { file } of scanUsage([from]).usage[from]) {
+    const abs = path.join(process.cwd(), file);
+    const text = fs.readFileSync(abs, "utf8");
+    const next = text.replace(re, to);
+    if (next !== text) {
+      fs.writeFileSync(abs, next);
+      files.push(file);
+    }
+  }
+  return { key: to, files };
+}
+
 /** Presigned PUT URLs so the browser uploads straight to R2 (videos are too big for an action body). */
 export async function presignUploads(folder: string, files: { name: string; type: string }[]) {
   assertDev();
   const { s3, Bucket } = r2();
-  const prefix = folder.trim().replace(/^\/+|\/+$/g, "");
+  const prefix = folder.split("/").map((s) => slugName(s.trim())).filter(Boolean).join("/");
   return Promise.all(
     files.map(async (f) => {
       const key = [prefix, slugName(f.name)].filter(Boolean).join("/");

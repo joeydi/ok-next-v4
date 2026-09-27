@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState, useTransition, type ReactNode } from "react";
+import { useId, useRef, useState, useTransition, type ReactNode } from "react";
 import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
 import { mediaUrl } from "@/lib/media-url";
-import { generateAlt, presignUploads, saveEntry, setVideoAudio, syncBucket } from "./actions";
+import { generateAlt, moveEntry, presignUploads, saveEntry, setVideoAudio, syncBucket } from "./actions";
 import type { BrokenRef, Usage } from "./usage";
 
 export type AdminItem = {
@@ -65,7 +65,17 @@ async function pool<T>(items: T[], size: number, fn: (item: T, i: number) => Pro
   }));
 }
 
-export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken: BrokenRef[]; host?: string }) {
+export function MediaAdmin({
+  items,
+  broken,
+  folders,
+  host,
+}: {
+  items: AdminItem[];
+  broken: BrokenRef[];
+  folders: string[];
+  host?: string;
+}) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -187,7 +197,7 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
           </Notice>
         )}
 
-        <Uploader disabled={busy} onUpload={upload} />
+        <Uploader disabled={busy} folders={folders} onUpload={upload} />
 
         {status && <p className="font-mono text-fl-14 text-body" role="status">{status}</p>}
 
@@ -216,7 +226,18 @@ export function MediaAdmin({ items, broken, host }: { items: AdminItem[]; broken
         <div className="grid items-start gap-fl-32 lg:grid-cols-[minmax(0,1fr)_420px]">
           {current && (
             <aside className="border border-rule bg-paper-raised p-fl-20 lg:sticky lg:top-24 lg:order-2 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
-              <Detail key={current.key} item={current} host={host} onChange={() => router.refresh()} onClose={() => setSelected(null)} />
+              <Detail
+                key={current.key}
+                item={current}
+                host={host}
+                folders={folders}
+                onChange={() => router.refresh()}
+                onMoved={(key, message) => {
+                  setSelected(key);
+                  setStatus(message);
+                }}
+                onClose={() => setSelected(null)}
+              />
             </aside>
           )}
           <ul className={cn("grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3", !current && "lg:col-span-2")}>
@@ -292,10 +313,19 @@ function Thumb({ item, host }: { item: AdminItem; host?: string }) {
   );
 }
 
-function Uploader({ disabled, onUpload }: { disabled: boolean; onUpload: (folder: string, files: File[]) => void }) {
+function Uploader({
+  disabled,
+  folders,
+  onUpload,
+}: {
+  disabled: boolean;
+  folders: string[];
+  onUpload: (folder: string, files: File[]) => void;
+}) {
   const [folder, setFolder] = useState("");
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const listId = useId();
 
   return (
     <div
@@ -316,12 +346,21 @@ function Uploader({ disabled, onUpload }: { disabled: boolean; onUpload: (folder
     >
       <label className="flex items-center gap-2 font-mono text-fl-14 text-muted">
         Folder
+        {/* Native combobox: suggests known folders, still accepts a new one. */}
         <input
           value={folder}
           onChange={(e) => setFolder(e.target.value)}
-          placeholder="notes/thinkmd"
-          className={cn(field, "w-56")}
+          list={listId}
+          placeholder="Choose or type a folder"
+          autoComplete="off"
+          spellCheck={false}
+          className={cn(field, "w-72")}
         />
+        <datalist id={listId}>
+          {folders.map((f) => (
+            <option key={f} value={f} />
+          ))}
+        </datalist>
       </label>
       <button type="button" className={btn} disabled={disabled} onClick={() => input.current?.click()}>
         Choose files
@@ -345,14 +384,20 @@ function Uploader({ disabled, onUpload }: { disabled: boolean; onUpload: (folder
 function Detail({
   item,
   host,
+  folders,
   onChange,
+  onMoved,
   onClose,
 }: {
   item: AdminItem;
   host?: string;
+  folders: string[];
   onChange: () => void;
+  onMoved: (key: string, message: string) => void;
   onClose: () => void;
 }) {
+  const [dest, setDest] = useState(item.key);
+  const moveId = useId();
   const [alt, setAlt] = useState(item.alt);
   const [caption, setCaption] = useState(item.caption);
   const [context, setContext] = useState(item.context);
@@ -375,6 +420,18 @@ function Detail({
       setStatus(reencode ? "Re-encoding from the original…" : "Saving…");
       await setVideoAudio(item.key, audio);
       return audio === "remove" ? "Sound removed. It now loops silently." : "Sound kept. It plays with controls.";
+    });
+
+  const move = () =>
+    act(async () => {
+      const n = item.usedIn.length;
+      if (n && !confirm(`Move to ${dest.trim()}? References in ${n} file${n > 1 ? "s" : ""} will be updated.`)) return "";
+      setStatus("Moving…");
+      const r = await moveEntry(item.key, dest);
+      const message = r.key === item.key ? "" : `Moved ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}`;
+      // The panel remounts under the new key, so the message goes to the page status line.
+      if (r.key !== item.key) onMoved(r.key, message);
+      return message;
     });
 
   const generate = () =>
@@ -499,6 +556,38 @@ function Detail({
         ) : (
           "Not referenced anywhere yet."
         )}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor={moveId} className="mono-label text-fl-12 text-muted">
+          Move / rename
+        </label>
+        <div className="flex gap-2">
+          {/* Suggests this file in each known folder; any key can be typed. */}
+          <input
+            id={moveId}
+            value={dest}
+            onChange={(e) => setDest(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && dest.trim() !== item.key && move()}
+            list={`${moveId}-folders`}
+            autoComplete="off"
+            spellCheck={false}
+            className={cn(field, "min-w-0 flex-1 font-mono text-fl-12")}
+          />
+          <button
+            type="button"
+            className={btn}
+            disabled={busy || !dest.trim() || dest.trim() === item.key}
+            onClick={move}
+          >
+            Move
+          </button>
+        </div>
+        <datalist id={`${moveId}-folders`}>
+          {folders.map((f) => (
+            <option key={f} value={`${f}/${item.key.split("/").pop()}`} />
+          ))}
+        </datalist>
       </div>
 
       <label className="flex flex-col gap-1.5">
