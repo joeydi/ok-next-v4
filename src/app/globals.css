@@ -470,6 +470,13 @@
 .note-quote + * {
   margin-top: 0;
 }
+/* Grid items don't collapse margins, so a figure right before a quote gives
+   up its bottom margin to the quote's larger top one. Both halves of a pair
+   count, since either one sets the row height. */
+.note-body > .note-fig:has(+ .note-quote),
+.note-body > .note-fig-half:has(+ .note-fig-half + .note-quote) {
+  margin-bottom: 0;
+}
 
 @media (width >= 64rem) {
   .note-body > * {
