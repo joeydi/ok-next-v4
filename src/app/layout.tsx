@@ -23,8 +23,12 @@ const plexMono = IBM_Plex_Mono({
   fallback: ["ui-monospace", "Menlo", "monospace"],
 });
 
+// Preview builds resolve OG images against their own deployment; production (and local) use the real domain.
+const previewHost =
+  process.env.VERCEL_ENV === "preview" && (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL);
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
+  metadataBase: new URL(previewHost ? `https://${previewHost}` : SITE.url),
   title: {
     default: `${SITE.name} — ${SITE.author}`,
     template: `%s — ${SITE.name}`,
