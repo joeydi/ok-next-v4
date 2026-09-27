@@ -389,7 +389,7 @@
   padding: 0;
 }
 
-.note-body > blockquote {
+.note-body > blockquote:not(.note-quote) {
   padding-left: var(--spacing-fl-24);
   border-left: 2px solid var(--color-pink);
   color: var(--color-ink);
