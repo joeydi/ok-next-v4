@@ -218,10 +218,10 @@
   }
 }
 
-/* When filtering notes the page stays put under the nav, so keep the paper-backed
-   bar up for the whole transition rather than showing the list through it. */
-:root:active-view-transition-type(notes-filter)::view-transition-old(site-nav) {
-  animation: none;
+/* When filtering notes the page itself isn't snapshotted, so the live nav can
+   stay put, backdrop blur and all. */
+:root:active-view-transition-type(notes-filter) nav {
+  view-transition-name: none;
 }
 
 /* Clicks during a transition reach the live page instead of the overlay. */
