@@ -97,9 +97,10 @@
   column-gap: var(--spacing-fl-24);
 }
 
-/* Mono label: IBM Plex Mono 14 / .06em / uppercase. */
+/* Mono label: IBM Plex Mono 500 / 14 / .06em / uppercase. */
 @utility mono-label {
   font-family: var(--font-mono);
+  font-weight: 500;
   font-size: var(--text-fl-14);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
@@ -381,7 +382,7 @@
     margin-top: var(--spacing-fl-56);
     font-family: var(--font-mono);
     font-size: var(--text-fl-14);
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.4;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;

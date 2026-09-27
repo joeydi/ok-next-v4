@@ -16,7 +16,8 @@ const hanken = Hanken_Grotesk({
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  // Only 500 is loaded, so every mono run renders at 500 whatever weight it asks for.
+  weight: "500",
   // Plex Mono has no "→"; let it fall through to the system monospace like the design does.
   adjustFontFallback: false,
   fallback: ["ui-monospace", "Menlo", "monospace"],
