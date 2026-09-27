@@ -45,33 +45,31 @@ export default function NotesPage() {
         </Container>
 
         {featured && (
-          <Container
-            as={Link}
-            href={`/notes/${featured.slug}`}
-            className="hover-card grid-12 items-end gap-y-fl-32 pb-fl-96"
-          >
-            <Placeholder
-              label={featured.imageLabel}
-              media={featured.image}
-              priority
-              sizes="(min-width: 1024px) 55vw, 100vw"
-              className="hover-lift col-span-12 aspect-video lg:col-span-7"
-            />
-            <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
-              <div className="mono-label flex flex-wrap gap-x-fl-20 text-pink-ink">
-                <span>Featured</span>
-                <span className="text-muted">
-                  {featured.tag} · {formatDate(featured.date)}
+          <Container as="section" aria-label="Featured note" className="pb-fl-96">
+            <Link href={`/notes/${featured.slug}`} className="hover-card grid-12 items-end gap-y-fl-32">
+              <Placeholder
+                label={featured.imageLabel}
+                media={featured.image}
+                priority
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="hover-lift col-span-12 aspect-video lg:col-span-7"
+              />
+              <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
+                <div className="mono-label flex flex-wrap gap-x-fl-20 text-pink-ink">
+                  <span>Featured</span>
+                  <span className="text-muted">
+                    {featured.tag} · {formatDate(featured.date)}
+                  </span>
+                </div>
+                <h2 className="display text-fl-48 leading-[1.02] tracking-heading text-balance">
+                  <span className="hover-title">{featured.plainTitle}</span>
+                </h2>
+                <p className="text-fl-18 leading-[1.6] text-pretty text-body">{featured.description}</p>
+                <span className="mono-label text-pink-ink">
+                  Read <span className="nudge">→</span>
                 </span>
               </div>
-              <h2 className="display text-fl-48 leading-[1.02] tracking-heading text-balance">
-                <span className="hover-title">{featured.plainTitle}</span>
-              </h2>
-              <p className="text-fl-18 leading-[1.6] text-pretty text-body">{featured.description}</p>
-              <span className="mono-label text-pink-ink">
-                Read <span className="nudge">→</span>
-              </span>
-            </div>
+            </Link>
           </Container>
         )}
 
