@@ -21,7 +21,7 @@ export type Service = {
   };
   situations: { heading: string; items: { n: string; t: string }[] };
   process: { heading: string; items: { n: string; t: string; d: string }[] };
-  /** `image` labels the placeholder until `media` (an R2 key) is set. */
+  /** `image` labels the placeholder until there's media: `media` (an R2 key), or else the image of the note `href` links to. */
   work: { title: string; d: string; tags: string; image: string; media?: MediaKey; href?: string };
   quote: Testimonial;
   contactNote: string;

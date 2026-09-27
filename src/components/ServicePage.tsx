@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/cn";
 import { getMedia } from "@/lib/media";
+import { getNote } from "@/lib/notes";
 import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
@@ -18,9 +19,46 @@ const ILLUSTRATIONS = {
 };
 
 /** Shared template for the three service pages. */
+/** The note a work link points at; a link to a missing note fails the build. */
+function caseStudy(href?: string) {
+  const slug = href?.match(/^\/notes\/([^/?#]+)$/)?.[1];
+  if (!slug) return undefined;
+  const note = getNote(slug);
+  if (!note) throw new Error(`services: work link ${href} doesn't match a note`);
+  return note.meta;
+}
+
 export function ServicePage({ service: s }: { service: Service }) {
   const Illustration = ILLUSTRATIONS[s.illustration];
   const three = s.capabilities.items.length === 3;
+  const workMedia = s.work.media ? getMedia(s.work.media) : caseStudy(s.work.href)?.image;
+
+  // With a case study the whole block is the link, so it takes the hover-card treatment.
+  const work = (
+    <>
+      <Placeholder
+        label={s.work.image}
+        media={workMedia}
+        sizes="(min-width: 1024px) 55vw, 100vw"
+        className={cn("col-span-12 aspect-4/3 lg:col-span-7", s.work.href && "hover-lift")}
+      />
+      <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
+        <Eyebrow n="04">Recent work</Eyebrow>
+        <h2 className="display text-fl-48 leading-[1.02] tracking-heading">
+          <span className="hover-title">{s.work.title}</span>
+        </h2>
+        <p className="text-fl-18 leading-[1.6] text-pretty text-body">{s.work.d}</p>
+        <div className="border-t border-rule pt-fl-16 font-mono text-fl-14 leading-[1.7] tracking-[.02em] text-body uppercase">
+          {s.work.tags}
+        </div>
+        {s.work.href && (
+          <span className="mono-label text-pink-ink">
+            Read the case study <span className="nudge">→</span>
+          </span>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -119,27 +157,15 @@ export function ServicePage({ service: s }: { service: Service }) {
         </Container>
 
         {/* Recent work */}
-        <Container as="section" className="grid-12 items-end gap-y-fl-40 pt-fl-96 pb-fl-120">
-          <Placeholder
-            label={s.work.image}
-            media={s.work.media && getMedia(s.work.media)}
-            sizes="(min-width: 1024px) 55vw, 100vw"
-            className="col-span-12 aspect-4/3 lg:col-span-7"
-          />
-          <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
-            <Eyebrow n="04">Recent work</Eyebrow>
-            <h2 className="display text-fl-48 leading-[1.02] tracking-heading">{s.work.title}</h2>
-            <p className="text-fl-18 leading-[1.6] text-pretty text-body">{s.work.d}</p>
-            <div className="border-t border-rule pt-fl-16 font-mono text-fl-14 leading-[1.7] tracking-[.02em] text-body uppercase">
-              {s.work.tags}
-            </div>
-            {s.work.href && (
-              <Link href={s.work.href} className="mono-label text-pink-ink">
-                Read the case study <span className="nudge">→</span>
-              </Link>
-            )}
-          </div>
-        </Container>
+        <section className="pt-fl-96 pb-fl-120">
+          {s.work.href ? (
+            <Container as={Link} href={s.work.href} className="hover-card grid-12 items-end gap-y-fl-40">
+              {work}
+            </Container>
+          ) : (
+            <Container className="grid-12 items-end gap-y-fl-40">{work}</Container>
+          )}
+        </section>
       </main>
 
       <SiteFooter className="pt-fl-120 pb-fl-40">
