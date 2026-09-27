@@ -48,7 +48,11 @@ export function NotesList({
 
   return (
     <>
-      <div role="group" aria-label="Filter notes" className="mb-fl-24 flex flex-wrap items-baseline gap-x-fl-40 gap-y-3">
+      <div
+        role="group"
+        aria-label="Filter notes"
+        className="mb-fl-24 flex flex-wrap items-baseline gap-x-fl-40 gap-y-3"
+      >
         <span className="mono-label text-muted">/ Filter</span>
         {FILTERS.map((f) => {
           const on = f.value === filter;
@@ -64,7 +68,9 @@ export function NotesList({
               )}
             >
               {f.label}
-              <span className={on ? "text-pink-ink" : "text-muted-on-dark"}>{String(count(f.value)).padStart(2, "0")}</span>
+              <span className={on ? "text-pink-ink" : "text-muted-on-dark"}>
+                {String(count(f.value)).padStart(2, "0")}
+              </span>
             </button>
           );
         })}
@@ -78,14 +84,16 @@ export function NotesList({
           <li key={n.slug}>
             <Link
               href={`/notes/${n.slug}`}
-              className="grid-12 items-start gap-y-fl-12 border-t border-rule py-fl-32"
+              className="hover-card grid-12 items-start gap-y-fl-12 border-t border-rule py-fl-32"
             >
               <span className="col-span-2 font-mono text-fl-14 text-pink-ink md:col-span-1 lg:pt-2.5">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="mono-label col-span-10 text-muted md:col-span-2 lg:pt-2.5">{n.tag}</span>
               <span className="col-span-12 flex flex-col gap-fl-12 md:col-span-9 md:col-start-4 lg:col-span-6">
-                <span className="display text-fl-36 leading-[1.05] tracking-[-.015em] text-balance">{n.plainTitle}</span>
+                <span className="display text-fl-36 leading-[1.05] tracking-[-.015em] text-balance">
+                  <span className="hover-title">{n.plainTitle}</span>
+                </span>
                 {n.description && (
                   <span className="text-fl-18 leading-[1.55] text-pretty text-body">{n.description}</span>
                 )}
@@ -95,7 +103,7 @@ export function NotesList({
                 media={n.image}
                 small
                 sizes="22vw"
-                className="hidden aspect-[310/168] lg:col-span-3 lg:flex"
+                className="hover-lift hidden aspect-[310/168] lg:col-span-3 lg:flex"
               />
             </Link>
           </li>

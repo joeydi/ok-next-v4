@@ -44,8 +44,8 @@ function Hero() {
       <PuzzleCube className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:right-[calc(1.67*var(--pvw))] lg:mt-0 lg:w-[calc(43.06*var(--pvw))] lg:max-w-none" />
       <div className="grid-12 mt-fl-72 items-end gap-y-fl-40">
         <p className="col-span-12 text-fl-24 leading-normal text-pretty text-body lg:col-span-6">
-          I’m Joe, a designer and developer in Burlington, Vermont. For fifteen years I’ve worked alongside small
-          teams, founders, and non-profits to figure out what’s worth building, then build it well.
+          I’m Joe, a designer and developer in Burlington, Vermont. For fifteen years I’ve worked alongside small teams,
+          founders, and non-profits to figure out what’s worth building, then build it well.
         </p>
         <div className="col-span-12 flex items-center gap-[18px] border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4 lg:col-start-9">
           <MediaImage
@@ -105,17 +105,17 @@ function Services() {
           <Link
             key={s.n}
             href={s.href}
-            className="card-link flex flex-col gap-[18px] border border-rule bg-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
+            className="hover-card hover-lift flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
           >
             <div className="mono-label flex justify-between gap-4 text-muted">
               <span>{s.kicker}</span>
               <span className="shrink-0 whitespace-nowrap">/ {s.n}</span>
             </div>
-            <h3 className="display mt-fl-40 text-fl-36 tracking-[-.015em]">{s.t}</h3>
+            <h3 className="display mt-fl-40 text-fl-36 tracking-[-.015em]">
+              <span className="hover-title">{s.t}</span>
+            </h3>
             <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{s.d}</p>
-            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.45] font-semibold">
-              {s.a}
-            </div>
+            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.45] font-semibold">{s.a}</div>
           </Link>
         ))}
       </div>

@@ -67,11 +67,6 @@
   a {
     color: inherit;
     text-decoration: none;
-    transition: opacity 0.15s ease;
-  }
-
-  a:hover {
-    opacity: 0.7;
   }
 
   :focus-visible {
@@ -118,32 +113,12 @@
 /* Striped image placeholder. */
 @utility stripes {
   background-color: var(--color-sand);
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgb(28 25 22 / 0.06) 0 2px,
-    transparent 2px 12px
-  );
+  background-image: repeating-linear-gradient(135deg, rgb(28 25 22 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 @utility stripes-dark {
   background-color: var(--color-ink);
-  background-image: repeating-linear-gradient(
-    135deg,
-    rgb(243 239 232 / 0.06) 0 2px,
-    transparent 2px 12px
-  );
-}
-
-/* Cards: link cards lift their border on hover instead of fading. */
-@utility card-link {
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
-
-  &:hover {
-    opacity: 1;
-    border-color: var(--color-ink);
-  }
+  background-image: repeating-linear-gradient(135deg, rgb(243 239 232 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 /* Arrow that nudges right when its parent link is hovered or focused. */
@@ -237,277 +212,332 @@
 }
 
 @layer components {
-/* ---------- Mobile menu (native popover, anchored to its toggle) ---------- */
+  /* ---------- Hover cards ---------- */
 
-.menu-toggle {
-  anchor-name: --site-menu;
-}
+  /*
+   * A link that is the whole card or row. Hovering or focusing anywhere on it
+   * draws a pink underline under its .hover-title (an inline span, so the line
+   * follows each wrapped line) and lifts its .hover-lift — the card itself or
+   * its image — with a slight zoom and a soft shadow.
+   */
+  .hover-title {
+    background-image: linear-gradient(var(--color-pink), var(--color-pink));
+    background-repeat: no-repeat;
+    background-position: 0 90%;
+    background-size: 0% 0.075em;
+    padding-bottom: 4px;
+    transition: background-size 0.25s ease;
+  }
 
-.site-menu {
-  position-anchor: --site-menu;
-  inset: auto;
-  top: anchor(bottom);
-  right: anchor(right);
-  margin: 12px 0 0;
-  min-width: 13rem;
-  padding: 10px 20px;
-  border: 1px solid var(--color-rule);
-  background: var(--color-paper-raised);
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  opacity: 0;
-  translate: 0 -4px;
-  transition:
-    opacity 0.15s ease,
-    translate 0.15s ease,
-    overlay 0.15s allow-discrete,
-    display 0.15s allow-discrete;
-}
+  .hover-card:is(:hover, :focus-visible) .hover-title {
+    background-size: 100% 0.075em;
+  }
 
-.site-menu:popover-open {
-  opacity: 1;
-  translate: 0 0;
-}
+  /* Every lift shares these; override the variables on an element to vary one. */
+  .hover-lift {
+    --lift-scale: 1.025;
+    --lift-shadow:
+      0px 1px 1px rgba(56, 28, 0, 0.05), 0px 3px 3px rgba(56, 28, 0, 0.04), 0px 6px 6px rgba(56, 28, 0, 0.03),
+      0px 10px 10px rgba(56, 28, 0, 0.02), 0px 16px 16px rgba(56, 28, 0, 0.01);
 
-@starting-style {
-  .site-menu:popover-open {
+    will-change: transform;
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-card:is(:hover, :focus-visible) .hover-lift,
+  .hover-card.hover-lift:is(:hover, :focus-visible) {
+    box-shadow: var(--lift-shadow);
+
+    @media (hover: hover) {
+      transform: scale(var(--lift-scale));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hover-title,
+    .hover-lift {
+      transition: none;
+    }
+
+    .hover-card:is(:hover, :focus-visible) .hover-lift,
+    .hover-card.hover-lift:is(:hover, :focus-visible) {
+      transform: none;
+    }
+  }
+
+  /* ---------- Mobile menu (native popover, anchored to its toggle) ---------- */
+
+  .menu-toggle {
+    anchor-name: --site-menu;
+  }
+
+  .site-menu {
+    position-anchor: --site-menu;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin: 12px 0 0;
+    min-width: 13rem;
+    padding: 10px 20px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-raised);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
     opacity: 0;
     translate: 0 -4px;
+    transition:
+      opacity 0.15s ease,
+      translate 0.15s ease,
+      overlay 0.15s allow-discrete,
+      display 0.15s allow-discrete;
   }
-}
 
-@supports not (anchor-name: --a) {
-  .site-menu {
-    position: fixed;
-    top: 64px;
-    right: max(var(--spacing-gutter), (100vw - var(--container-page)) / 2 + var(--spacing-gutter));
+  .site-menu:popover-open {
+    opacity: 1;
+    translate: 0 0;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .site-menu {
-    transition: none;
+  @starting-style {
+    .site-menu:popover-open {
+      opacity: 0;
+      translate: 0 -4px;
+    }
   }
-}
 
-/* ---------- Note body (MDX) ---------- */
+  @supports not (anchor-name: --a) {
+    .site-menu {
+      position: fixed;
+      top: 64px;
+      right: max(var(--spacing-gutter), (100vw - var(--container-page)) / 2 + var(--spacing-gutter));
+    }
+  }
 
-/*
- * The article is one 12-column grid. Prose sits in columns 4–10; figures and
- * pull quotes break out wider. The sidebar occupies columns 1–3 beside the
- * opening paragraphs.
- */
-.note-body {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--spacing-fl-24);
-  align-items: start;
-  counter-reset: note-section;
-  font-size: var(--text-fl-20);
-  line-height: 1.65;
-  color: var(--color-ink-2);
-}
+  @media (prefers-reduced-motion: reduce) {
+    .site-menu {
+      transition: none;
+    }
+  }
 
-.note-body > * {
-  grid-column: 1 / -1;
-  text-wrap: pretty;
-}
+  /* ---------- Note body (MDX) ---------- */
 
-.note-body > * + * {
-  margin-top: var(--spacing-fl-28);
-}
+  /*
+   * The article is one 12-column grid. Prose sits in columns 4–10; figures and
+   * pull quotes break out wider. The sidebar occupies columns 1–3 beside the
+   * opening paragraphs.
+   */
+  .note-body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--spacing-fl-24);
+    align-items: start;
+    counter-reset: note-section;
+    font-size: var(--text-fl-20);
+    line-height: 1.65;
+    color: var(--color-ink-2);
+  }
 
-.note-body > :not(.note-aside) :where(a) {
-  text-decoration: underline;
-  text-decoration-color: var(--color-pink);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 0.2em;
-}
-
-.note-body :where(strong) {
-  font-weight: 600;
-  color: var(--color-ink);
-}
-
-.note-body > :where(ul, ol) {
-  padding-left: 1.25em;
-  list-style: disc;
-}
-.note-body > ol {
-  list-style: decimal;
-}
-.note-body > :where(ul, ol) li + li {
-  margin-top: 0.4em;
-}
-.note-body > :where(ul, ol) li::marker {
-  color: var(--color-pink-ink);
-}
-
-.note-body > h2,
-.note-body > h3 {
-  margin-top: var(--spacing-fl-56);
-  font-family: var(--font-mono);
-  font-size: var(--text-fl-14);
-  font-weight: 400;
-  line-height: 1.4;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-ink);
-  scroll-margin-top: 24px;
-}
-
-.note-body > h2::before {
-  counter-increment: note-section;
-  content: "/ " counter(note-section, decimal-leading-zero);
-  margin-right: var(--spacing-fl-24);
-  color: var(--color-pink-ink);
-}
-
-.note-body > h2 + *,
-.note-body > h3 + * {
-  margin-top: var(--spacing-fl-16);
-}
-
-.note-body :where(code) {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
-  background: var(--color-sand);
-  padding: 0.1em 0.3em;
-}
-
-.note-body > pre {
-  overflow-x: auto;
-  padding: var(--spacing-fl-24);
-  background: var(--color-ink);
-  color: var(--color-paper);
-  font-size: var(--text-fl-14);
-  line-height: 1.6;
-}
-.note-body > pre code {
-  background: none;
-  padding: 0;
-}
-
-.note-body > blockquote:not(.note-quote) {
-  padding-left: var(--spacing-fl-24);
-  border-left: 2px solid var(--color-pink);
-  color: var(--color-ink);
-}
-
-.note-body > hr {
-  border: 0;
-  border-top: 1px solid var(--color-rule);
-}
-
-.note-lead {
-  font-family: var(--font-display);
-  font-size: var(--text-fl-30);
-  line-height: 1.4;
-  color: var(--color-ink);
-}
-
-.note-aside {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-fl-28);
-  margin-bottom: var(--spacing-fl-40);
-  font-family: var(--font-mono);
-  font-size: var(--text-fl-14);
-  line-height: 1.7;
-  letter-spacing: var(--tracking-label-tight);
-  color: var(--color-muted);
-}
-
-.note-aside + * {
-  margin-top: 0;
-}
-
-/* Zero-height scroll target; takes no space in the flow. */
-.note-body > .note-anchor {
-  display: block;
-  height: 0;
-  scroll-margin-top: 24px;
-}
-.note-body > .note-anchor + * {
-  margin-top: 0;
-}
-
-/* Figures */
-.note-fig {
-  margin-block: var(--spacing-fl-48) var(--spacing-fl-48);
-  scroll-margin-top: 24px;
-}
-.note-fig + * {
-  margin-top: 0;
-}
-.note-fig-half + .note-fig-half {
-  margin-top: 0;
-}
-.note-fig-media {
-  aspect-ratio: 1201 / 620;
-}
-.note-fig-half .note-fig-media {
-  aspect-ratio: 644 / 520;
-}
-
-/* Pull quote */
-.note-quote {
-  /* Design: 72 / 56 margins plus the article grid's 24px row gap. */
-  margin-block: var(--spacing-fl-96) calc(var(--spacing-fl-56) + var(--spacing-fl-24));
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: var(--text-fl-60);
-  line-height: 1.08;
-  letter-spacing: var(--tracking-heading);
-  text-wrap: balance;
-  color: var(--color-ink);
-}
-.note-quote em {
-  font-style: normal;
-  color: var(--color-pink);
-}
-.note-quote + * {
-  margin-top: 0;
-}
-/* Grid items don't collapse margins, so a figure right before a quote gives
-   up its bottom margin to the quote's larger top one. Both halves of a pair
-   count, since either one sets the row height. */
-.note-body > .note-fig:has(+ .note-quote),
-.note-body > .note-fig-half:has(+ .note-fig-half + .note-quote) {
-  margin-bottom: 0;
-}
-
-@media (width >= 64rem) {
   .note-body > * {
-    grid-column: 4 / span 7;
-  }
-  /* Spans more rows than any intro has, so prose flows beside it and the
-     first figure or quote (which needs columns 2+) is placed below it. A
-     short span would stretch those rows to the aside's height instead,
-     opening gaps between the paragraphs. */
-  .note-body > .note-aside {
-    grid-column: 1 / span 3;
-    grid-row: 1 / span 99;
-    margin-bottom: 0;
-  }
-  .note-body > .note-fig {
-    grid-column: 2 / -1;
-    margin-block: var(--spacing-fl-64) var(--spacing-fl-72);
-  }
-  .note-body > .note-fig-full {
     grid-column: 1 / -1;
+    text-wrap: pretty;
   }
-  .note-body > .note-fig-half {
-    grid-column: auto / span 6;
+
+  .note-body > * + * {
+    margin-top: var(--spacing-fl-28);
+  }
+
+  .note-body > :not(.note-aside) :where(a) {
+    text-decoration: underline;
+    text-decoration-color: var(--color-pink);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.2em;
+  }
+
+  .note-body :where(strong) {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .note-body > :where(ul, ol) {
+    padding-left: 1.25em;
+    list-style: disc;
+  }
+  .note-body > ol {
+    list-style: decimal;
+  }
+  .note-body > :where(ul, ol) li + li {
+    margin-top: 0.4em;
+  }
+  .note-body > :where(ul, ol) li::marker {
+    color: var(--color-pink-ink);
+  }
+
+  .note-body > h2,
+  .note-body > h3 {
+    margin-top: var(--spacing-fl-56);
+    font-family: var(--font-mono);
+    font-size: var(--text-fl-14);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+    scroll-margin-top: 24px;
+  }
+
+  .note-body > h2::before {
+    counter-increment: note-section;
+    content: "/ " counter(note-section, decimal-leading-zero);
+    margin-right: var(--spacing-fl-24);
+    color: var(--color-pink-ink);
+  }
+
+  .note-body > h2 + *,
+  .note-body > h3 + * {
+    margin-top: var(--spacing-fl-16);
+  }
+
+  .note-body :where(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--color-sand);
+    padding: 0.1em 0.3em;
+  }
+
+  .note-body > pre {
+    overflow-x: auto;
+    padding: var(--spacing-fl-24);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: var(--text-fl-14);
+    line-height: 1.6;
+  }
+  .note-body > pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .note-body > blockquote:not(.note-quote) {
+    padding-left: var(--spacing-fl-24);
+    border-left: 2px solid var(--color-pink);
+    color: var(--color-ink);
+  }
+
+  .note-body > hr {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .note-lead {
+    font-family: var(--font-display);
+    font-size: var(--text-fl-30);
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .note-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-fl-28);
+    margin-bottom: var(--spacing-fl-40);
+    font-family: var(--font-mono);
+    font-size: var(--text-fl-14);
+    line-height: 1.7;
+    letter-spacing: var(--tracking-label-tight);
+    color: var(--color-muted);
+  }
+
+  .note-aside + * {
+    margin-top: 0;
+  }
+
+  /* Zero-height scroll target; takes no space in the flow. */
+  .note-body > .note-anchor {
+    display: block;
+    height: 0;
+    scroll-margin-top: 24px;
+  }
+  .note-body > .note-anchor + * {
+    margin-top: 0;
+  }
+
+  /* Figures */
+  .note-fig {
+    margin-block: var(--spacing-fl-48) var(--spacing-fl-48);
+    scroll-margin-top: 24px;
+  }
+  .note-fig + * {
+    margin-top: 0;
   }
   .note-fig-half + .note-fig-half {
-    margin-top: var(--spacing-fl-64);
+    margin-top: 0;
   }
-  .note-body > .note-quote {
-    grid-column: 2 / span 10;
+  .note-fig-media {
+    aspect-ratio: 1201 / 620;
   }
-}
+  .note-fig-half .note-fig-media {
+    aspect-ratio: 644 / 520;
+  }
+
+  /* Pull quote */
+  .note-quote {
+    /* Design: 72 / 56 margins plus the article grid's 24px row gap. */
+    margin-block: var(--spacing-fl-96) calc(var(--spacing-fl-56) + var(--spacing-fl-24));
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-fl-60);
+    line-height: 1.08;
+    letter-spacing: var(--tracking-heading);
+    text-wrap: balance;
+    color: var(--color-ink);
+  }
+  .note-quote em {
+    font-style: normal;
+    color: var(--color-pink);
+  }
+  .note-quote + * {
+    margin-top: 0;
+  }
+  /* Grid items don't collapse margins, so a figure right before a quote gives
+     up its bottom margin to the quote's larger top one. Both halves of a pair
+     count, since either one sets the row height. */
+  .note-body > .note-fig:has(+ .note-quote),
+  .note-body > .note-fig-half:has(+ .note-fig-half + .note-quote) {
+    margin-bottom: 0;
+  }
+
+  @media (width >= 64rem) {
+    .note-body > * {
+      grid-column: 4 / span 7;
+    }
+    /* Spans more rows than any intro has, so prose flows beside it and the
+       first figure or quote (which needs columns 2+) is placed below it. A
+       short span would stretch those rows to the aside's height instead,
+       opening gaps between the paragraphs. */
+    .note-body > .note-aside {
+      grid-column: 1 / span 3;
+      grid-row: 1 / span 99;
+      margin-bottom: 0;
+    }
+    .note-body > .note-fig {
+      grid-column: 2 / -1;
+      margin-block: var(--spacing-fl-64) var(--spacing-fl-72);
+    }
+    .note-body > .note-fig-full {
+      grid-column: 1 / -1;
+    }
+    .note-body > .note-fig-half {
+      grid-column: auto / span 6;
+    }
+    .note-fig-half + .note-fig-half {
+      margin-top: var(--spacing-fl-64);
+    }
+    .note-body > .note-quote {
+      grid-column: 2 / span 10;
+    }
+  }
 }
