@@ -34,7 +34,7 @@ export function Placeholder({
   if (media) {
     return (
       <div
-        className={cn("relative overflow-hidden bg-sand", className)}
+        className={cn("frame relative overflow-hidden bg-sand", className)}
         style={{ backgroundColor: media.color, aspectRatio: natural ? `${media.width} / ${media.height}` : undefined }}
       >
         {media.type === "video" ? (
@@ -59,7 +59,7 @@ export function Placeholder({
     <div
       {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })}
       className={cn(
-        "flex items-end font-mono text-muted",
+        "frame flex items-end font-mono text-muted",
         dark ? "stripes-dark" : "stripes",
         small ? "p-fl-12 text-fl-12" : "p-fl-20 text-fl-14",
         className,

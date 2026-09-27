@@ -97,7 +97,7 @@ export function ServicePage({ service: s }: { service: Service }) {
               <div
                 key={c.n}
                 className={cn(
-                  "flex flex-col gap-[18px] border border-rule bg-paper-raised pt-fl-28 pb-fl-32",
+                  "frame flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-paper-raised pt-fl-28 pb-fl-32",
                   three ? "px-fl-32 lg:min-h-[calc(29.17*var(--pvw))]" : "px-fl-28 xl:min-h-[calc(30.56*var(--pvw))]",
                 )}
               >
