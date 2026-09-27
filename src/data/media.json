@@ -1,1 +1,30 @@
-{}
+{
+  "home/festival.jpg": {
+    "type": "image",
+    "width": 1875,
+    "height": 1250,
+    "bytes": 238760,
+    "etag": "fbd4887414dc8421c4ca400a6c51dcf3",
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoQAAsAA4BaJYwAAv2z3YJEKgAA/u7pvn7hzIVU9GdqtguOqMyW7LU6xS9/CqcewB4vA37LZObAFx1ybXIFYuS5A6UMhHfyfPRIK4ygQ1UWM8AG0IMAAA==",
+    "color": "#080808",
+    "alt": "Joe and his son at a show",
+    "caption": "",
+    "context": "",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "home/headshot.jpg": {
+    "type": "image",
+    "width": 1258,
+    "height": 1258,
+    "bytes": 309561,
+    "etag": "232b863cd4bf8571bed4514cbf8d74fa",
+    "blurDataURL": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACwAgCdASoQABAAA4BaJagCdH8AgmzGVW8BRte5qgAA/u/MyfS3pSHjEbrtHrwCD1EMhJcb6ixVMLefYbFwjZw/4qK3Tt7IxGMrIBFAqSkyH3tAiXd7Pa053Yn9rXCQ8hpIhCNavUM7getH80KqxP67QPa7IAAA",
+    "color": "#d8d8e8",
+    "alt": "Joe di Stefano",
+    "caption": "",
+    "context": "",
+    "altSource": "human",
+    "reviewed": true
+  }
+}

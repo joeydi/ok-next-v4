@@ -1,13 +1,15 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Eyebrow } from "@/components/Eyebrow";
 import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
+import { MediaImage } from "@/components/MediaImage";
 import { PuzzleCube } from "@/components/illustrations";
 import { Cite } from "@/components/Testimonial";
 import { principles, services, testimonials } from "@/data/home";
-import headshot from "../../public/assets/headshot.jpg";
-import festival from "../../public/assets/festival.jpg";
+import { getMedia } from "@/lib/media";
+
+const headshot = getMedia("home/headshot.jpg");
+const festival = getMedia("home/festival.jpg");
 
 export default function Home() {
   return (
@@ -46,12 +48,13 @@ function Hero() {
           teams, founders, and non-profits to figure out what’s worth building, then build it well.
         </p>
         <div className="col-span-12 flex items-center gap-[18px] border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4 lg:col-start-9">
-          <Image
-            src={headshot}
-            alt="Joe di Stefano"
+          <MediaImage
+            src={headshot.key}
+            alt={headshot.alt}
             width={72}
             height={72}
             placeholder="blur"
+            blurDataURL={headshot.blurDataURL}
             className="size-[72px] rounded-[2px] object-cover saturate-[.85]"
           />
           <div className="font-mono text-fl-14 leading-[1.6] text-muted">
@@ -124,12 +127,13 @@ function About() {
   return (
     <div id="about" className="relative scroll-mt-0 overflow-hidden">
       <div className="relative h-[max(640px,62.5vw)]">
-        <Image
-          src={festival}
-          alt="Joe and his son at a show"
+        <MediaImage
+          src={festival.key}
+          alt={festival.alt}
           fill
           sizes="100vw"
           placeholder="blur"
+          blurDataURL={festival.blurDataURL}
           className="object-cover object-[30%_30%]"
         />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#1C191600_35%,#1C1916F2_88%,#1C1916_100%)]" />

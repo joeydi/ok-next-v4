@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
+import { MediaImage } from "@/components/MediaImage";
 import { Placeholder } from "@/components/Placeholder";
 import { SITE } from "@/data/site";
+import { getMedia } from "@/lib/media";
 import { formatDate, getAllNotes, getNote } from "@/lib/notes";
-import headshot from "../../../../public/assets/headshot.jpg";
+
+const headshot = getMedia("home/headshot.jpg");
 
 export const dynamicParams = false;
 
@@ -58,12 +60,13 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               <Accent text={meta.title} />
             </h1>
             <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
-              <Image
-                src={headshot}
+              <MediaImage
+                src={headshot.key}
                 alt=""
                 width={56}
                 height={56}
                 placeholder="blur"
+                blurDataURL={headshot.blurDataURL}
                 className="size-14 rounded-[2px] object-cover"
               />
               <div className="font-mono text-fl-14 leading-[1.6] text-muted">
