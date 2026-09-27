@@ -28,6 +28,8 @@
   --tracking-label-tight: 0.04em;
   --tracking-display: -0.035em;
   --tracking-heading: -0.02em;
+
+  --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* ---------- Base ---------- */

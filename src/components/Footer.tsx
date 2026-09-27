@@ -5,7 +5,11 @@ import { Eyebrow } from "./Eyebrow";
 
 /** Dark footer shell. Pages put their own blocks (about, quotes) before <Contact>. */
 export function SiteFooter({ children, className }: { children: ReactNode; className?: string }) {
-  return <footer className={cn("bg-ink text-paper", className)}>{children}</footer>;
+  return (
+    <footer data-nav-theme="dark" className={cn("bg-ink text-paper", className)}>
+      {children}
+    </footer>
+  );
 }
 
 /** "Say hello." block plus the bottom mono row. Every page ends with it. */
