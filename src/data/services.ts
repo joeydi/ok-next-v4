@@ -1,3 +1,4 @@
+import type { MediaKey } from "@/lib/media";
 import { testimonials, type Testimonial } from "./home";
 
 export type ServiceSlug = "creative-production" | "cms-integrations" | "tools-for-better-work";
@@ -20,7 +21,8 @@ export type Service = {
   };
   situations: { heading: string; items: { n: string; t: string }[] };
   process: { heading: string; items: { n: string; t: string; d: string }[] };
-  work: { title: string; d: string; tags: string; image: string; href?: string };
+  /** `image` labels the placeholder until `media` (an R2 key) is set. */
+  work: { title: string; d: string; tags: string; image: string; media?: MediaKey; href?: string };
   quote: Testimonial;
   contactNote: string;
 };

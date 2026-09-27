@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { figureId } from "@/lib/figure-id";
+import { getMedia, type MediaKey } from "@/lib/media";
 import { Placeholder } from "./Placeholder";
 
 // Components available in every note without importing. Layout (which grid
@@ -14,34 +15,38 @@ export function Lead({ children }: { children: ReactNode }) {
  * Image/video figure.
  * - layout "wide": columns 2–12 (default)  · "full": 1–12  · "half": 6 columns; place two in a row
  * - caption "01 / Client constellation" (numbered) also adds an "In this post" entry
+ * - media "notes/thinkmd/hero.jpg": R2 key from src/data/media.json; striped placeholder until set.
+ *   Without a caption prop, the manifest's caption is shown (but never numbered into "In this post").
  */
 export function Figure({
   label,
-  src,
+  media,
   alt,
   caption,
   layout = "wide",
   dark = false,
 }: {
   label?: string;
-  src?: string;
+  media?: MediaKey;
   alt?: string;
   caption?: string;
   layout?: "wide" | "full" | "half";
   dark?: boolean;
 }) {
   const numbered = caption && /^\d+ \/ /.test(caption);
+  const m = media ? getMedia(media) : undefined;
+  const shown = caption ?? m?.caption;
   return (
     <figure id={numbered ? figureId(caption) : undefined} className={`note-fig note-fig-${layout}`}>
       <Placeholder
         label={label ?? caption ?? ""}
-        src={src}
+        media={m}
         alt={alt}
         dark={dark}
         sizes={layout === "half" ? "(min-width: 1024px) 50vw, 100vw" : "100vw"}
         className="note-fig-media"
       />
-      {caption && <figcaption className="mono-label mt-fl-28 tracking-label-tight text-muted">{caption}</figcaption>}
+      {shown && <figcaption className="mono-label mt-fl-28 tracking-label-tight text-muted">{shown}</figcaption>}
     </figure>
   );
 }

@@ -77,8 +77,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           <Container as="figure">
             <Placeholder
               label={meta.imageLabel}
-              src={meta.image}
-              alt=""
+              media={meta.image}
               priority
               className="aspect-[1312/720]"
             />

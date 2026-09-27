@@ -92,7 +92,7 @@ export function NotesList({
               </span>
               <Placeholder
                 label={n.imageLabel}
-                src={n.image}
+                media={n.image}
                 small
                 sizes="22vw"
                 className="hidden aspect-[310/168] lg:col-span-3 lg:flex"

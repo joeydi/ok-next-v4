@@ -48,7 +48,7 @@ export default function NotesPage() {
           <Container as={Link} href={`/notes/${featured.slug}`} className="grid-12 group items-end gap-y-fl-32 pb-fl-96">
             <Placeholder
               label={featured.imageLabel}
-              src={featured.image}
+              media={featured.image}
               priority
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="col-span-12 aspect-[755/560] lg:col-span-7"

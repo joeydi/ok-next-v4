@@ -3,6 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import GithubSlugger from "github-slugger";
 import { figureId } from "./figure-id";
+import { getMedia, type Media } from "./media";
 
 // Notes (and case studies) live in src/content/notes/*.mdx. Frontmatter is read
 // here with gray-matter; the body is compiled by @next/mdx via dynamic import.
@@ -29,7 +30,8 @@ export type NoteMeta = {
   tag: Tag;
   /** Header label shown next to the date, e.g. "Interaction design". Defaults to the tag. */
   topic?: string;
-  image?: string;
+  /** Resolved from the `image:` frontmatter key (an R2 key in src/data/media.json). */
+  image?: Media;
   /** Placeholder label shown until `image` exists. */
   imageLabel: string;
   featured: boolean;
@@ -58,6 +60,12 @@ function parse(file: string) {
   if (!TAGS.includes(data.tag)) {
     throw new Error(`notes/${file}: tag must be one of ${TAGS.join(", ")} (got "${data.tag}")`);
   }
+  let image: Media | undefined;
+  try {
+    image = data.image ? getMedia(String(data.image)) : undefined;
+  } catch (err) {
+    throw new Error(`notes/${file}: ${(err as Error).message}`);
+  }
 
   const meta: NoteMeta = {
     slug: slugName,
@@ -67,7 +75,7 @@ function parse(file: string) {
     date: new Date(data.date).toISOString(),
     tag: data.tag,
     topic: data.topic,
-    image: data.image,
+    image,
     imageLabel: data.imageLabel ?? `image — ${stripAccent(String(data.title))}`,
     featured: Boolean(data.featured),
     draft: Boolean(data.draft),

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/cn";
+import { getMedia } from "@/lib/media";
 import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
@@ -121,7 +122,12 @@ export function ServicePage({ service: s }: { service: Service }) {
 
         {/* Recent work */}
         <Container as="section" className="grid-12 items-end gap-y-fl-40 pt-fl-96 pb-fl-120">
-          <Placeholder label={s.work.image} className="col-span-12 aspect-[755/560] lg:col-span-7" />
+          <Placeholder
+            label={s.work.image}
+            media={s.work.media && getMedia(s.work.media)}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            className="col-span-12 aspect-[755/560] lg:col-span-7"
+          />
           <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
             <Eyebrow n="04">Recent work</Eyebrow>
             <h2 className="display text-fl-48 leading-[1.02] tracking-heading">{s.work.title}</h2>

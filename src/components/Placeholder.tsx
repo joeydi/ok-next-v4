@@ -1,14 +1,18 @@
-import Image from "next/image";
 import { cn } from "@/lib/cn";
+import type { Media } from "@/lib/media";
+import { mediaUrl } from "@/lib/media-url";
+import { MediaImage } from "./MediaImage";
+import { Video } from "./Video";
 
 /**
- * Image slot. Renders the design's striped, labelled placeholder until a real
- * `src` is supplied. Placeholders are hidden from assistive tech unless given `alt`.
+ * Image/video slot, filled to the size set by `className`. Renders the design's
+ * striped, labelled placeholder until `media` (from `getMedia`) is supplied.
+ * `alt` defaults to the manifest's; placeholders are hidden from assistive tech unless given one.
  */
 export function Placeholder({
   label,
-  src,
-  alt = "",
+  media,
+  alt,
   sizes = "100vw",
   dark = false,
   small = false,
@@ -16,7 +20,7 @@ export function Placeholder({
   className,
 }: {
   label: string;
-  src?: string;
+  media?: Media;
   alt?: string;
   sizes?: string;
   dark?: boolean;
@@ -24,10 +28,24 @@ export function Placeholder({
   priority?: boolean;
   className?: string;
 }) {
-  if (src) {
+  if (media) {
     return (
-      <div className={cn("relative overflow-hidden bg-sand", className)}>
-        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
+      <div className={cn("relative overflow-hidden bg-sand", className)} style={{ backgroundColor: media.color }}>
+        {media.type === "video" ? (
+          <Video media={media} alt={alt} className="absolute inset-0" />
+        ) : (
+          <MediaImage
+            src={media.type === "svg" ? mediaUrl(media.key) : media.key}
+            unoptimized={media.type === "svg"}
+            alt={alt ?? media.alt}
+            fill
+            sizes={sizes}
+            priority={priority}
+            placeholder={media.blurDataURL ? "blur" : "empty"}
+            blurDataURL={media.blurDataURL}
+            className="object-cover"
+          />
+        )}
       </div>
     );
   }
