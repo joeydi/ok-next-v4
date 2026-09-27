@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useRef, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, useTransition, type ReactNode } from "react";
 import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
@@ -48,6 +48,45 @@ const FILTERS = {
 } satisfies Record<string, { label: string; test: (i: AdminItem) => boolean }>;
 type Filter = keyof typeof FILTERS;
 
+const VIEWS = { grid: "Grid", table: "Table", tree: "Tree" };
+type View = keyof typeof VIEWS;
+const VIEW_STORAGE = "media-admin-view";
+
+// Remembered per browser. The server snapshot is the grid; the stored view takes
+// over after hydration. `chosenView` keeps the switcher working if storage is blocked.
+let chosenView: View | null = null;
+const viewListeners = new Set<() => void>();
+const subscribeView = (fn: () => void) => {
+  viewListeners.add(fn);
+  return () => viewListeners.delete(fn);
+};
+function readView(): View {
+  if (chosenView) return chosenView;
+  try {
+    const stored = localStorage.getItem(VIEW_STORAGE);
+    if (stored && stored in VIEWS) return stored as View;
+  } catch {}
+  return "grid";
+}
+function changeView(v: View) {
+  chosenView = v;
+  try {
+    localStorage.setItem(VIEW_STORAGE, v);
+  } catch {}
+  viewListeners.forEach((fn) => fn());
+}
+
+const pixels = (i: AdminItem) => i.width * i.height;
+const COLUMNS = {
+  key: { label: "Key", value: (i: AdminItem) => i.key },
+  type: { label: "Type", value: (i: AdminItem) => i.type },
+  size: { label: "Dimensions", value: pixels },
+  bytes: { label: "File size", value: (i: AdminItem) => i.bytes },
+  used: { label: "Used in", value: (i: AdminItem) => i.usedIn.length },
+} satisfies Record<string, { label: string; value: (i: AdminItem) => string | number }>;
+type Column = keyof typeof COLUMNS;
+type Sort = { col: Column; dir: 1 | -1 };
+
 const btn =
   "mono-label border border-ink px-3 py-2 text-fl-12 transition-colors hover:bg-ink hover:text-paper disabled:pointer-events-none disabled:opacity-40";
 const field = "w-full border border-rule bg-paper-light px-3 py-2 text-fl-14 focus:border-ink focus:outline-none";
@@ -80,6 +119,7 @@ export function MediaAdmin({
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
+  const view = useSyncExternalStore(subscribeView, readView, () => "grid");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string | null>(initialKey);
   // Shown in the sheet after a move, which remounts the details under the new key.
@@ -91,6 +131,11 @@ export function MediaAdmin({
   const shown = items.filter((i) => FILTERS[filter].test(i) && i.key.toLowerCase().includes(q));
   const current = items.find((i) => i.key === selected);
   const missing = items.filter(needsAlt);
+
+  const open = (key: string) => {
+    setNotice("");
+    setSelected(key);
+  };
 
   function run(fn: () => Promise<string | void>) {
     startTransition(async () => {
@@ -225,6 +270,19 @@ export function MediaAdmin({
             aria-label="Filter by key or folder"
             className={cn(field, "ml-auto w-full sm:w-64")}
           />
+          <div role="group" aria-label="View" className="flex">
+            {(Object.keys(VIEWS) as View[]).map((v) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => changeView(v)}
+                className={cn(btn, "-ml-px border-rule first:ml-0", view === v && "relative border-ink bg-ink text-paper")}
+              >
+                {VIEWS[v]}
+              </button>
+            ))}
+          </div>
         </div>
 
         {current && (
@@ -244,15 +302,21 @@ export function MediaAdmin({
           </Sheet>
         )}
 
-        <ul className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
+        {!shown.length ? (
+          <p className="py-fl-40 font-mono text-fl-14 text-muted">
+            {items.length ? "Nothing matches." : "No media yet. Upload files above, or add them to the bucket and Sync."}
+          </p>
+        ) : view === "table" ? (
+          <MediaTable items={shown} host={host} selected={selected} onOpen={open} />
+        ) : view === "tree" ? (
+          <MediaTree items={shown} host={host} selected={selected} onOpen={open} expandAll={Boolean(q)} />
+        ) : (
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
             {shown.map((item) => (
               <li key={item.key}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setNotice("");
-                    setSelected(item.key);
-                  }}
+                  onClick={() => open(item.key)}
                   aria-pressed={item.key === selected}
                   className={cn(
                     "flex w-full flex-col gap-1.5 border border-transparent p-1.5 text-left hover:border-rule",
@@ -264,21 +328,14 @@ export function MediaAdmin({
                     {item.key}
                   </span>
                   <span className="flex flex-wrap gap-1">
-                    {needsAlt(item) && <Badge tone="pink">No alt</Badge>}
-                    {isDraft(item) && <Badge>AI draft</Badge>}
-                    {needsSound(item) && <Badge tone="pink">Sound?</Badge>}
-                    {isUnused(item) && <Badge>Unused</Badge>}
+                    <Flags item={item} />
                     {item.type === "video" && <Badge>{item.duration}s</Badge>}
                   </span>
                 </button>
               </li>
             ))}
-            {!shown.length && (
-              <li className="col-span-full py-fl-40 font-mono text-fl-14 text-muted">
-                {items.length ? "Nothing matches." : "No media yet. Upload files above, or add them to the bucket and Sync."}
-              </li>
-            )}
-        </ul>
+          </ul>
+        )}
       </Container>
     </main>
   );
@@ -302,21 +359,281 @@ function Badge({ children, tone }: { children: ReactNode; tone?: "pink" | "done"
   );
 }
 
-function Thumb({ item, host }: { item: AdminItem; host?: string }) {
+function Flags({ item }: { item: AdminItem }) {
+  return (
+    <>
+      {needsAlt(item) && <Badge tone="pink">No alt</Badge>}
+      {isDraft(item) && <Badge>AI draft</Badge>}
+      {needsSound(item) && <Badge tone="pink">Sound?</Badge>}
+      {isUnused(item) && <Badge>Unused</Badge>}
+    </>
+  );
+}
+
+function Thumb({
+  item,
+  host,
+  sizes = "200px",
+  className,
+}: {
+  item: AdminItem;
+  host?: string;
+  sizes?: string;
+  className?: string;
+}) {
   const src = item.type === "video" ? item.poster : item.key;
   return (
-    <span className="relative block aspect-square overflow-hidden bg-sand" style={{ backgroundColor: item.color }}>
+    <span
+      className={cn("relative block aspect-square shrink-0 overflow-hidden bg-sand", className)}
+      style={{ backgroundColor: item.color }}
+    >
       {host && src && (
         <MediaImage
           src={item.type === "svg" ? mediaUrl(src) : src}
           unoptimized={item.type === "svg"}
           alt=""
           fill
-          sizes="200px"
+          sizes={sizes}
           className="object-contain"
         />
       )}
     </span>
+  );
+}
+
+const splitKey = (key: string) => {
+  const i = key.lastIndexOf("/");
+  return { name: key.slice(i + 1), folder: i < 0 ? "" : key.slice(0, i) };
+};
+
+const compare = (x: string | number, y: string | number) =>
+  typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
+
+type ViewProps = { items: AdminItem[]; host?: string; selected: string | null; onOpen: (key: string) => void };
+
+function MediaTable({ items, host, selected, onOpen }: ViewProps) {
+  const [sort, setSort] = useState<Sort>({ col: "key", dir: 1 });
+  const value = COLUMNS[sort.col].value;
+  const rows = [...items].sort((a, b) => compare(value(a), value(b)) * sort.dir || a.key.localeCompare(b.key));
+
+  // Numbers start biggest-first; text starts A→Z.
+  const sortBy = (col: Column) =>
+    setSort((s) =>
+      s.col === col ? { col, dir: s.dir === 1 ? -1 : 1 } : { col, dir: typeof COLUMNS[col].value(items[0]) === "number" ? -1 : 1 },
+    );
+
+  const th = "border-b border-ink px-2 py-2 text-left font-normal";
+  const td = "border-b border-rule px-2 py-2 align-middle";
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-3xl border-collapse text-fl-14">
+        <thead>
+          <tr>
+            <th className={cn(th, "w-14")}>
+              <span className="sr-only">Preview</span>
+            </th>
+            {(Object.keys(COLUMNS) as Column[]).map((col) => (
+              <th
+                key={col}
+                aria-sort={sort.col === col ? (sort.dir === 1 ? "ascending" : "descending") : undefined}
+                className={cn(th, col !== "key" && "whitespace-nowrap")}
+              >
+                <button
+                  type="button"
+                  onClick={() => sortBy(col)}
+                  className={cn("mono-label text-fl-12 text-muted hover:text-ink", sort.col === col && "text-ink")}
+                >
+                  {COLUMNS[col].label}
+                  <span aria-hidden="true" className={cn("ml-1", sort.col !== col && "invisible")}>
+                    {sort.dir === 1 ? "↑" : "↓"}
+                  </span>
+                </button>
+              </th>
+            ))}
+            <th className={th}>
+              <span className="mono-label text-fl-12 text-muted">Status</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((item) => {
+            const { name, folder } = splitKey(item.key);
+            return (
+              <tr
+                key={item.key}
+                onClick={() => onOpen(item.key)}
+                className={cn("cursor-pointer hover:bg-sand/50", item.key === selected && "bg-sand")}
+              >
+                <td className={td}>
+                  <Thumb item={item} host={host} sizes="48px" className="size-10" />
+                </td>
+                <td className={cn(td, "max-w-0 w-full")}>
+                  <button
+                    type="button"
+                    onClick={() => onOpen(item.key)}
+                    aria-pressed={item.key === selected}
+                    title={item.key}
+                    className="flex w-full min-w-0 flex-col text-left"
+                  >
+                    <span className="truncate font-mono text-fl-12 text-ink">{name}</span>
+                    {folder && <span className="truncate font-mono text-fl-12 text-muted">{folder}</span>}
+                  </button>
+                </td>
+                <td className={cn(td, "whitespace-nowrap font-mono text-fl-12")}>
+                  {TYPE_LABEL[item.type]}
+                  {item.type === "video" && <span className="text-muted"> · {item.duration}s</span>}
+                </td>
+                <td className={cn(td, "whitespace-nowrap font-mono text-fl-12")}>
+                  {item.width} × {item.height}
+                </td>
+                <td className={cn(td, "whitespace-nowrap font-mono text-fl-12")}>{kb(item.bytes)}</td>
+                <td
+                  className={cn(td, "font-mono text-fl-12", isUnused(item) && "text-muted")}
+                  title={item.usedIn.map((u) => u.file).join("\n") || undefined}
+                >
+                  {item.usedIn.length}
+                </td>
+                <td className={td}>
+                  <span className="flex flex-wrap gap-1">
+                    <Flags item={item} />
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+type Folder = { name: string; path: string; folders: Folder[]; files: AdminItem[] };
+
+function buildTree(items: AdminItem[]) {
+  const root: Folder = { name: "", path: "", folders: [], files: [] };
+  for (const item of items) {
+    let node = root;
+    for (const part of item.key.split("/").slice(0, -1)) {
+      let child = node.folders.find((f) => f.name === part);
+      if (!child) {
+        child = { name: part, path: node.path ? `${node.path}/${part}` : part, folders: [], files: [] };
+        node.folders.push(child);
+      }
+      node = child;
+    }
+    node.files.push(item);
+  }
+  const sortNode = (node: Folder) => {
+    node.folders.sort((a, b) => a.name.localeCompare(b.name));
+    node.files.sort((a, b) => a.key.localeCompare(b.key));
+    node.folders.forEach(sortNode);
+  };
+  sortNode(root);
+  return root;
+}
+
+const allFiles = (node: Folder): AdminItem[] => [...node.files, ...node.folders.flatMap(allFiles)];
+
+function MediaTree({ expandAll, ...props }: ViewProps & { expandAll: boolean }) {
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const toggle = (path: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(path)) next.add(path);
+      return next;
+    });
+
+  return (
+    <TreeLevel
+      node={buildTree(props.items)}
+      isOpen={(path) => expandAll || !collapsed.has(path)}
+      onToggle={toggle}
+      {...props}
+    />
+  );
+}
+
+function TreeLevel({
+  node,
+  host,
+  selected,
+  onOpen,
+  isOpen,
+  onToggle,
+  nested,
+}: Omit<ViewProps, "items"> & {
+  node: Folder;
+  isOpen: (path: string) => boolean;
+  onToggle: (path: string) => void;
+  nested?: boolean;
+}) {
+  const row = "flex w-full items-center gap-3 px-2 py-1.5 text-left hover:bg-sand/50";
+
+  return (
+    <ul className={cn("flex flex-col", nested && "ml-4 border-l border-rule pl-2")}>
+      {node.folders.map((folder) => {
+        const files = allFiles(folder);
+        const open = isOpen(folder.path);
+        const noAlt = files.filter(needsAlt).length;
+        const sound = files.filter(needsSound).length;
+        return (
+          <li key={folder.path}>
+            <button type="button" aria-expanded={open} onClick={() => onToggle(folder.path)} className={row}>
+              <svg
+                viewBox="0 0 16 16"
+                className={cn("size-4 shrink-0 text-muted transition-transform motion-reduce:transition-none", open && "rotate-90")}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden="true"
+              >
+                <path d="M6 3.5L10.5 8 6 12.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="min-w-0 flex-1 truncate font-mono text-fl-14 text-ink">{folder.name}/</span>
+              <span className="flex shrink-0 flex-wrap justify-end gap-1">
+                {noAlt > 0 && <Badge tone="pink">{noAlt} no alt</Badge>}
+                {sound > 0 && <Badge tone="pink">{sound} sound?</Badge>}
+              </span>
+              <span className="shrink-0 text-right sm:w-32 font-mono text-fl-12 text-muted">
+                {files.length} · {kb(files.reduce((n, f) => n + f.bytes, 0))}
+              </span>
+            </button>
+            {open && (
+              <TreeLevel
+                node={folder}
+                host={host}
+                selected={selected}
+                onOpen={onOpen}
+                isOpen={isOpen}
+                onToggle={onToggle}
+                nested
+              />
+            )}
+          </li>
+        );
+      })}
+      {node.files.map((item) => (
+        <li key={item.key}>
+          <button
+            type="button"
+            onClick={() => onOpen(item.key)}
+            aria-pressed={item.key === selected}
+            title={item.key}
+            className={cn(row, item.key === selected && "bg-sand hover:bg-sand")}
+          >
+            <Thumb item={item} host={host} sizes="32px" className="size-7" />
+            <span className="min-w-0 flex-1 truncate font-mono text-fl-12 text-ink">{splitKey(item.key).name}</span>
+            <span className="flex shrink-0 flex-wrap justify-end gap-1">
+              <Flags item={item} />
+            </span>
+            <span className="shrink-0 text-right sm:w-32 font-mono text-fl-12 text-muted">
+              {TYPE_LABEL[item.type]} · {kb(item.bytes)}
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -552,10 +869,7 @@ function Detail({
               </span>
             </div>
             <span className="flex shrink-0 flex-wrap justify-end gap-1">
-              {needsAlt(item) && <Badge tone="pink">No alt</Badge>}
-              {isDraft(item) && <Badge>AI draft</Badge>}
-              {needsSound(item) && <Badge tone="pink">Sound?</Badge>}
-              {isUnused(item) && <Badge>Unused</Badge>}
+              <Flags item={item} />
               {!needsAlt(item) && !isDraft(item) && !needsSound(item) && <Badge tone="done">Reviewed</Badge>}
             </span>
           </div>
