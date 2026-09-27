@@ -109,22 +109,24 @@ export function getNote(slugName: string) {
 }
 
 /**
- * "In this post" entries, in document order: every `## Heading`, plus every
- * <Figure> caption or <TocAnchor> label numbered like "01 / Client constellation".
+ * "In this post" entries, in document order: every `## Heading`. A note with no
+ * headings lists every <Figure> caption or <TocAnchor> label numbered like
+ * "01 / Client constellation" instead.
  */
 function getToc(content: string): TocItem[] {
   const slugger = new GithubSlugger();
-  const items: { at: number; item: TocItem }[] = [];
   const body = content.replace(/```[\s\S]*?```/g, (m) => " ".repeat(m.length));
 
-  for (const m of body.matchAll(/^##\s+(.+)$/gm)) {
+  const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => {
     const label = m[1].trim();
-    items.push({ at: m.index, item: { id: slugger.slug(label), label } });
-  }
-  for (const m of body.matchAll(/<(?:Figure|TocAnchor)\b[^>]*?\b(?:caption|label)="(\d+ \/ [^"]+)"/g)) {
-    items.push({ at: m.index, item: { id: figureId(m[1]), label: m[1].replace(" / ", " ") } });
-  }
-  return items.sort((a, b) => a.at - b.at).map((i) => i.item);
+    return { id: slugger.slug(label), label };
+  });
+  if (headings.length) return headings;
+
+  return [...body.matchAll(/<(?:Figure|TocAnchor)\b[^>]*?\b(?:caption|label)="(\d+ \/ [^"]+)"/g)].map((m) => ({
+    id: figureId(m[1]),
+    label: m[1].replace(" / ", " "),
+  }));
 }
 
 export function formatDate(iso: string) {

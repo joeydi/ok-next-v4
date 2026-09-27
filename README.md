@@ -50,7 +50,7 @@ Regular **markdown** paragraphs sit in the centre column.
 <PullQuote>Projects like this are a balancing act between *experimentation and usability.*</PullQuote>
 ```
 
-- Numbered figure captions (`01 / …`), `<TocAnchor>` labels and `## headings` build the "In this post" list.
+- `## headings` build the "In this post" list. A note with no headings lists its numbered figure captions (`01 / …`) and `<TocAnchor>` labels instead.
 - `Figure` layouts: `wide` (default, columns 2–12), `full`, `half` (put two in a row).
 - `Figure media` takes the alt text (and, without a `caption` prop, the caption) from the manifest; `alt="…"` overrides it.
 

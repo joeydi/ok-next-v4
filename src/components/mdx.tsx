@@ -14,7 +14,8 @@ export function Lead({ children }: { children: ReactNode }) {
 /**
  * Image/video figure.
  * - layout "wide": columns 2–12 (default)  · "full": 1–12  · "half": 6 columns; place two in a row
- * - caption "01 / Client constellation" (numbered) also adds an "In this post" entry
+ * - caption "01 / Client constellation" (numbered) also adds an "In this post" entry,
+ *   but only in notes with no `## headings` (a note with headings lists just those)
  * - media "notes/thinkmd/hero.jpg": R2 key from src/data/media.json; striped placeholder until set.
  *   Without a caption prop, the manifest's caption is shown (but never numbered into "In this post").
  *   Real media keeps its own aspect ratio; the layout's ratio only shapes placeholders.
@@ -55,7 +56,7 @@ export function Figure({
 
 /**
  * Invisible anchor that adds an "In this post" entry where there's no numbered
- * figure or heading: <TocAnchor label="04 / Services pathway" />
+ * figure, in a note with no `## headings`: <TocAnchor label="04 / Services pathway" />
  */
 export function TocAnchor({ label }: { label: string }) {
   return <span id={figureId(label)} className="note-anchor" aria-hidden="true" />;
