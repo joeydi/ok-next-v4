@@ -8,6 +8,7 @@ import { Video } from "./Video";
  * Image/video slot, filled to the size set by `className`. Renders the design's
  * striped, labelled placeholder until `media` (from `getMedia`) is supplied.
  * `alt` defaults to the manifest's; placeholders are hidden from assistive tech unless given one.
+ * `natural` sizes the slot to the media's own aspect ratio instead of the one in `className`.
  */
 export function Placeholder({
   label,
@@ -17,6 +18,7 @@ export function Placeholder({
   dark = false,
   small = false,
   priority = false,
+  natural = false,
   className,
 }: {
   label: string;
@@ -26,11 +28,15 @@ export function Placeholder({
   dark?: boolean;
   small?: boolean;
   priority?: boolean;
+  natural?: boolean;
   className?: string;
 }) {
   if (media) {
     return (
-      <div className={cn("relative overflow-hidden bg-sand", className)} style={{ backgroundColor: media.color }}>
+      <div
+        className={cn("relative overflow-hidden bg-sand", className)}
+        style={{ backgroundColor: media.color, aspectRatio: natural ? `${media.width} / ${media.height}` : undefined }}
+      >
         {media.type === "video" ? (
           <Video media={media} alt={alt} className="absolute inset-0" />
         ) : (

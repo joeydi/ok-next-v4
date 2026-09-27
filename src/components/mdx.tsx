@@ -17,6 +17,7 @@ export function Lead({ children }: { children: ReactNode }) {
  * - caption "01 / Client constellation" (numbered) also adds an "In this post" entry
  * - media "notes/thinkmd/hero.jpg": R2 key from src/data/media.json; striped placeholder until set.
  *   Without a caption prop, the manifest's caption is shown (but never numbered into "In this post").
+ *   Real media keeps its own aspect ratio; the layout's ratio only shapes placeholders.
  */
 export function Figure({
   label,
@@ -44,6 +45,7 @@ export function Figure({
         alt={alt}
         dark={dark}
         sizes={layout === "half" ? "(min-width: 1024px) 50vw, 100vw" : "100vw"}
+        natural={Boolean(m)}
         className="note-fig-media"
       />
       {shown && <figcaption className="mono-label mt-fl-28 tracking-label-tight text-muted">{shown}</figcaption>}
