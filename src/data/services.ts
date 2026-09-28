@@ -11,7 +11,7 @@ export type Service = {
   audience: string;
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: string[];
-  illustration: "quick-build" | "conveyor" | "dashboard";
+  illustration: "quick-build" | "conveyor" | "ring";
   intro: string;
   tagline: string;
   capabilities: {
@@ -143,7 +143,7 @@ export const services: Record<ServiceSlug, Service> = {
       "Internal tools that help teams work better: visibility into your data and knowledge, automation that clears bottlenecks, and monitoring for critical processes.",
     audience: "Internal teams",
     h1: ["Tools for", "better *work.*"],
-    illustration: "dashboard",
+    illustration: "ring",
     intro:
       "I build tools that help teams work better: visibility into your org’s data and knowledge, automation that clears bottlenecks, and monitoring that flags changes in critical processes.",
     tagline: "For the spreadsheet everyone’s afraid to touch.",

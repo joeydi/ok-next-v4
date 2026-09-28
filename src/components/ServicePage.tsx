@@ -8,14 +8,14 @@ import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
-import { Conveyor, Dashboard, QuickBuild } from "./illustrations";
+import { Conveyor, QuickBuild, Ring } from "./illustrations";
 import { Placeholder } from "./Placeholder";
 import { Cite } from "./Testimonial";
 
 const ILLUSTRATIONS = {
   "quick-build": QuickBuild,
   conveyor: Conveyor,
-  dashboard: Dashboard,
+  ring: Ring,
 };
 
 /** Shared template for the three service pages. */

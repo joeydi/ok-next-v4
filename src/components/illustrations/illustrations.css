@@ -72,7 +72,7 @@
 @keyframes okDrop2{0%,28%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}38%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
 @keyframes okDrop3{0%,40%{transform:translate3d(0,0,calc(var(--z) + 640px));animation-timing-function:cubic-bezier(.35,1.4,.55,1)}50%,80%{transform:translate3d(0,0,var(--z));animation-timing-function:cubic-bezier(.6,0,.85,.3)}96%,100%{transform:translate3d(620px,0,var(--z))}}
 
-/* Dashboard (Tools) */
+/* Ring pillars (Tools) */
 @keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
 
 /* Migration, continuous conveyor (CMS & integrations) — generated in Conveyor.tsx */
