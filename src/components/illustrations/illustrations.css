@@ -75,7 +75,4 @@
 /* Dashboard (Tools) */
 @keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
 
-/* Migration, conveyor (CMS & integrations) */
-@keyframes okConvey{0%,1.67%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}5.8%{transform:translate3d(0,-180px,0) scale3d(.001,.001,.001)}5.84%{transform:translate3d(0,300px,0) scale3d(.001,.001,.001)}10%,26.67%{transform:translate3d(0,240px,0) scale3d(1,1,1)}35%,51.67%{transform:translate3d(0,120px,0) scale3d(1,1,1)}60%,76.67%{transform:translate3d(0,0,0) scale3d(1,1,1)}85%,100%{transform:translate3d(0,-120px,0) scale3d(1,1,1)}}
-@keyframes okFill{0%,5.8%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}5.84%,64.9%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}65%,100%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1)}}
-@keyframes okHop2{0%{transform:translate3d(0,0,var(--z)) scale3d(.001,.001,.001)}6%,45%{transform:translate3d(0,0,var(--z)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.2,.6,.4,1)}55%{transform:translate3d(calc(var(--dx) / 2),0,calc(var(--z) + 150px)) scale3d(1,1,1);animation-timing-function:cubic-bezier(.6,0,.8,.4)}65%{transform:translate3d(var(--dx),0,var(--z)) scale3d(1,1,1)}65.1%,100%{transform:translate3d(var(--dx),0,var(--z)) scale3d(.001,.001,.001)}}
+/* Migration, continuous conveyor (CMS & integrations) — generated in Conveyor.tsx */
