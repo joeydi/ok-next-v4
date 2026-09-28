@@ -63,7 +63,6 @@ function frame(t: number): Item[] {
       pal2: P,
       mix: flash(s),
       fade: f,
-      groundFade: 0.75,
       edges: [0, 0, 1],
     });
   }
