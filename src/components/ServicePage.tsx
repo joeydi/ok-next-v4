@@ -8,15 +8,9 @@ import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
-import { BounceRow, Conveyor, Ring } from "./illustrations";
+import { GLIllustration } from "./illustrations";
 import { Placeholder } from "./Placeholder";
 import { Cite } from "./Testimonial";
-
-const ILLUSTRATIONS = {
-  "bounce-row": BounceRow,
-  conveyor: Conveyor,
-  ring: Ring,
-};
 
 /** Shared template for the three service pages. */
 /** The note a work link points at; a link to a missing note fails the build. */
@@ -29,7 +23,6 @@ function caseStudy(href?: string) {
 }
 
 export function ServicePage({ service: s }: { service: Service }) {
-  const Illustration = ILLUSTRATIONS[s.illustration];
   const three = s.capabilities.items.length === 3;
   const workMedia = s.work.media ? getMedia(s.work.media) : caseStudy(s.work.href)?.image;
 
@@ -76,7 +69,12 @@ export function ServicePage({ service: s }: { service: Service }) {
               </Fragment>
             ))}
           </h1>
-          <Illustration className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0" />
+          {/* `sizes` follows this width: 49.51% of the page, capped at 1920. */}
+          <GLIllustration
+            scene={s.illustration}
+            sizes="(min-width: 1024px) min(49.51vw, 951px), min(100vw, 540px)"
+            className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0"
+          />
           <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-normal text-pretty text-body">{s.intro}</p>
             <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-[1.3] text-pink-ink">

@@ -1,19 +1,15 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-// Isometric block illustrations, ported from the design handoff's logic class
-// (frame / scene / grid / box). Everything is plain CSS 3D — no JS at runtime.
-// The drawing surface is a fixed 620×660 px canvas that Stage scales to fit
-// its container, so all coordinates below match the handoff exactly.
+// The frame every illustration sits in: a fixed 620×660 px drawing surface that
+// scales to fit its container, with dashed guides and three mono labels, as in
+// the design handoff's frame(). GLIllustration draws the scene inside it.
 
 export type Palette = readonly [top: string, side1: string, side2: string];
 
 export const W: Palette = ["#FBF8F3", "#D8CFC1", "#C4B9A8"];
 export const P: Palette = ["#FF4D6A", "#D62A4A", "#E63757"];
 export const N: Palette = ["#E9E2D7", "#CFC5B6", "#BFB3A1"];
-
-type Vars = Record<`--${string}`, string | number>;
-export type Style = CSSProperties & Vars;
 
 /** 620×660 frame with dashed guides and the three mono labels. */
 export function Stage({
@@ -55,68 +51,6 @@ function Label({ y, n, text, color = "#6B645B" }: { y: number; n: string; text: 
     <div className="ok-illo-label" style={{ top: y, color }}>
       <span>/ {n}</span>
       <span style={{ color: "#1C1916" }}>{text}</span>
-    </div>
-  );
-}
-
-/** Faint grid under the isometric plane. */
-export function Grid() {
-  return <div className="ok-illo-grid" />;
-}
-
-/** The 300×300 isometric plane centred at (300, 400). `pre` is applied before the iso rotation (e.g. to shift or zoom the plane). */
-export function Scene({ pre, children }: { pre?: string; children: ReactNode }) {
-  return (
-    <div className="ok-illo-scene" style={pre ? { transform: `${pre} rotateX(58deg) rotateZ(-45deg)` } : undefined}>
-      <Grid />
-      {children}
-    </div>
-  );
-}
-
-export type BoxProps = {
-  x: number;
-  y: number;
-  z?: number;
-  w: number;
-  d: number;
-  h: number;
-  c: Palette;
-  rot?: number;
-  /** CSS animation shorthand; dropped under prefers-reduced-motion. */
-  anim?: string;
-  /** Transform used when not animating (overrides the default placement). */
-  still?: string;
-  vars?: Vars;
-  /** CSS animation shorthands for the [top, front/back, left/right] faces, e.g. to animate their colours. */
-  faceAnim?: readonly [top: string, side1: string, side2: string];
-};
-
-/** Solid box: a top face plus four walls. */
-export function Box({ x, y, z = 0, w, d, h, c, rot = 0, anim, still, vars, faceAnim }: BoxProps) {
-  const [top, s1, s2] = c;
-  const style: Style = {
-    position: "absolute",
-    left: x,
-    top: y,
-    width: w,
-    height: d,
-    transformStyle: "preserve-3d",
-    transformOrigin: "50% 50% 0",
-    transform: still ?? `translate3d(0,0,${z}px) rotateZ(${rot}deg)`,
-    "--z": `${z}px`,
-    "--r": `${rot}deg`,
-    ...vars,
-    animation: anim,
-  };
-  const face = (i: 0 | 1 | 2, s: CSSProperties) => ({ position: "absolute", ...s, animation: faceAnim?.[i] }) as CSSProperties;
-  return (
-    <div style={style}>
-      <div style={face(1, { left: 0, top: d, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
-      <div style={face(1, { left: 0, top: 0, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
-      <div style={face(2, { left: w, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
-      <div style={face(2, { left: 0, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
-      <div style={face(0, { left: 0, top: 0, width: w, height: d, background: top, transform: `translateZ(${h}px)`, boxShadow: `inset 0 0 0 1px ${s2}` })} />
     </div>
   );
 }

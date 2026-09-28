@@ -1,4 +1,4 @@
-/* Hero illustrations — see primitives.tsx. Keyframes are copied verbatim from the design handoff. */
+/* Hero illustrations — the Stage frame is in primitives.tsx, the scenes in gl/. */
 
 @layer components {
 .ok-illo {
@@ -21,6 +21,37 @@
   scale: tan(atan2(100cqw, 620px));
 }
 
+/* The floor grid, poster and canvas all fill the drawing surface. The poster
+   shows until the first live frame, when GLIllustration sets data-live. */
+.ok-illo-gl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 620px;
+  height: 660px;
+}
+
+/* The floor grid fills the surface, fading out just before its edges. */
+.ok-illo-floor {
+  --fade: transparent 2%, #000 22%, #000 78%, transparent 98%;
+  -webkit-mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+  mask-composite: intersect;
+}
+
+canvas.ok-illo-gl {
+  visibility: hidden;
+}
+
+.ok-illo[data-live] canvas.ok-illo-gl {
+  visibility: visible;
+}
+
+.ok-illo[data-live] .ok-illo-poster {
+  visibility: hidden;
+}
+
 .ok-illo-label {
   position: absolute;
   left: 500px;
@@ -32,41 +63,4 @@
   line-height: normal;
   letter-spacing: 0.06em;
 }
-
-.ok-illo-scene {
-  position: absolute;
-  left: 150px;
-  top: 250px;
-  width: 300px;
-  height: 300px;
-  transform-style: preserve-3d;
-  transform: rotateX(58deg) rotateZ(-45deg);
 }
-
-.ok-illo-grid {
-  position: absolute;
-  inset: -90px;
-  transform: translateZ(-30px);
-  background-image:
-    linear-gradient(#c9bfb0 1px, transparent 1px),
-    linear-gradient(90deg, #c9bfb0 1px, transparent 1px);
-  background-size: 44px 44px;
-  opacity: 0.7;
-  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent);
-  mask-image: radial-gradient(closest-side, #000 55%, transparent);
-}
-}
-
-/* Motion off: every element falls back to its still transform — matches the design's motion=false state. */
-@media (prefers-reduced-motion: reduce) {
-  .ok-illo *,
-  .ok-illo *::before,
-  .ok-illo *::after {
-    animation: none !important;
-  }
-}
-
-/* Ring pillars (Tools) */
-@keyframes okBar{0%,100%{transform:translateZ(0) scale3d(1,1,var(--a))}50%{transform:translateZ(0) scale3d(1,1,var(--b))}}
-
-/* Migration, continuous conveyor (CMS & integrations) — generated in Conveyor.tsx */

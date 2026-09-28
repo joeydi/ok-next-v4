@@ -3,7 +3,7 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { MediaImage } from "@/components/MediaImage";
-import { PuzzleCube } from "@/components/illustrations";
+import { GLIllustration } from "@/components/illustrations";
 import { Cite } from "@/components/Testimonial";
 import { principles, services, testimonials } from "@/data/home";
 import { getMedia } from "@/lib/media";
@@ -41,7 +41,11 @@ function Hero() {
         <br />
         <span className="text-pink">together.</span>
       </h1>
-      <PuzzleCube className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:right-[calc(1.67*var(--pvw))] lg:mt-0 lg:w-[calc(43.06*var(--pvw))] lg:max-w-none" />
+      <GLIllustration
+        scene="puzzle-cube"
+        sizes="(min-width: 1024px) min(43.06vw, 827px), min(100vw, 540px)"
+        className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:right-[calc(1.67*var(--pvw))] lg:mt-0 lg:w-[calc(43.06*var(--pvw))] lg:max-w-none"
+      />
       <div className="grid-12 mt-fl-32 lg:mt-fl-72">
         <div className="col-span-12 grid gap-fl-24 md:grid-cols-[auto_1fr] md:gap-fl-32 lg:col-span-9 xl:col-span-8 2xl:col-span-7 2xl:mr-8">
           <div className="relative size-24 md:aspect-square md:size-auto md:h-full md:max-w-full">
