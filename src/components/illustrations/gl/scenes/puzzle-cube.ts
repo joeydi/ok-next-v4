@@ -23,11 +23,11 @@ const SEQ: Move[] = [...MOVES, ...MOVES.slice().reverse().map(([a, l, d]): Move 
 const AXES: Vec[] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 
 const T = 10.4; // loop length (s)
-const HOLD = 3.2; // layer spins + pause before the scramble starts (s)
-const STEP = (T - HOLD) / SEQ.length; // one slice turn every STEP (s)
+const HOLD = 3; // layer spins + pause before the scramble starts (s)
 const TURN = 0.6; // each slice turn (s)
-const SPIN = 1.3; // each layer's 180° turn (s)
-const EASE = bezier(0.65, 0, 0.35, 1);
+const STEP = (T - HOLD - TURN) / (SEQ.length - 1); // the last turn lands at T
+const SPIN = 1.5; // each layer's 180° turn (s)
+const EASE = bezier(0.76, 0, 0.24, 1);
 const PITCH = 90; // cube spacing (px)
 const HALF = 32; // cube half-size (px)
 const CENTER: Vec = [150, 150, 122]; // the cube's middle; the bottom layer sits on the floor
@@ -97,7 +97,7 @@ function draw(cube: Cubie[], slices: Slice[]): BoxItem[] {
 type Event = { at: number; axis: Axis; layer: number; n: number; dur: number };
 
 const SCRIPT: Event[] = [
-  ...[1, 0, -1].map((k): Event => ({ at: 0.5 + (1 - k) * 0.3, axis: 2, layer: k, n: 2, dur: SPIN })),
+  ...[1, 0, -1].map((k): Event => ({ at: 0.25 + (1 - k) * 0.15, axis: 2, layer: k, n: 2, dur: SPIN })),
   ...SEQ.map(([axis, layer, n], m): Event => ({ at: HOLD + m * STEP, axis, layer, n, dur: TURN })),
 ];
 
