@@ -11,8 +11,6 @@
   --color-guide: #cdc0b2;
   --color-ink: #1d1a17;
   --color-ink-2: #322d28;
-  --color-ink-3: #39342e;
-  --color-rule-dark: #39342e;
   --color-body: #4e463e;
   --color-muted: #746759;
   --color-muted-light: #b0a08f;
@@ -430,7 +428,7 @@
     margin: 4px 0 0;
     min-width: 13rem;
     padding: 10px 20px;
-    border: 1px solid color-mix(in srgb, var(--color-rule-dark) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-ink-2) 10%, transparent);
     border-radius: var(--radius-lg);
     background: color-mix(in srgb, var(--color-paper-light) 50%, transparent);
     backdrop-filter: blur(var(--blur-md));

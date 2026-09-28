@@ -75,7 +75,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close"
-            className="absolute z-10 top-2 right-2 sm:-top-3 sm:-right-3 grid size-10 place-items-center rounded-full bg-ink text-paper shadow-md transition-colors hover:bg-ink-3"
+            className="absolute z-10 top-2 right-2 sm:-top-3 sm:-right-3 grid size-10 place-items-center rounded-full bg-ink text-paper shadow-md transition-colors hover:bg-body"
           >
             <svg
               viewBox="0 0 24 24"

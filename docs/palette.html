@@ -228,7 +228,7 @@
       <figure>
         <figcaption>
           <strong>Hue wheel</strong>
-          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 13 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away.</p>
+          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 11 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away.</p>
         </figcaption>
         <div class="plot" id="wheel"></div>
       </figure>
@@ -264,14 +264,14 @@
 <script>
   const TOKENS = [
     ["paper", "#f2ece6"], ["paper-raised", "#f7f3ef"], ["paper-light", "#faf7f4"], ["sand", "#ede6de"],
-    ["rule", "#d8ccbf"], ["guide", "#cdc0b2"], ["ink", "#1d1a17"], ["ink-2", "#322d28"], ["ink-3", "#39342e"],
-    ["rule-dark", "#39342e"], ["body", "#4e463e"], ["muted", "#746759"],
+    ["rule", "#d8ccbf"], ["guide", "#cdc0b2"], ["ink", "#1d1a17"], ["ink-2", "#322d28"],
+    ["body", "#4e463e"], ["muted", "#746759"],
     ["muted-light", "#b0a08f"], ["pink", "#ff4d6a"], ["pink-ink", "#d01f3e"],
   ];
   const GROUPS = [
     ["Paper", ["paper-light", "paper-raised", "paper", "sand"]],
-    ["Rules", ["rule", "guide", "rule-dark"]],
-    ["Ink & text", ["ink", "ink-2", "ink-3", "body", "muted", "muted-light"]],
+    ["Rules", ["rule", "guide"]],
+    ["Ink & text", ["ink", "ink-2", "body", "muted", "muted-light"]],
     ["Accent", ["pink", "pink-ink"]],
   ];
 
