@@ -305,9 +305,10 @@
     }
   }
 
-  /* ---------- Mobile menu (native popover, anchored to its toggle) ---------- */
+  /* ---------- Mobile menu (native popover, anchored to the nav bar) ---------- */
 
-  .menu-toggle {
+  /* The menu hangs off the nav bar's bottom-right corner in the same glass as the bar. */
+  .site-nav {
     anchor-name: --site-menu;
   }
 
@@ -316,11 +317,13 @@
     inset: auto;
     top: anchor(bottom);
     right: anchor(right);
-    margin: 12px 0 0;
+    margin: 4px 0 0;
     min-width: 13rem;
     padding: 10px 20px;
-    border: 1px solid var(--color-rule);
-    background: var(--color-paper-raised);
+    border: 1px solid color-mix(in srgb, var(--color-rule-dark) 10%, transparent);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-paper-light) 50%, transparent);
+    backdrop-filter: blur(var(--blur-md));
     color: var(--color-ink);
     font-family: var(--font-mono);
     font-size: 0.875rem;
@@ -329,10 +332,19 @@
     opacity: 0;
     translate: 0 -4px;
     transition:
-      opacity 0.15s ease,
-      translate 0.15s ease,
-      overlay 0.15s allow-discrete,
-      display 0.15s allow-discrete;
+      opacity 0.35s var(--ease-in-out-strong),
+      translate 0.35s var(--ease-in-out-strong),
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete,
+      color 0.5s var(--ease-in-out-strong),
+      background-color 0.5s var(--ease-in-out-strong),
+      border-color 0.5s var(--ease-in-out-strong);
+  }
+
+  .site-menu[data-theme="dark"] {
+    border-color: color-mix(in srgb, var(--color-paper) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-ink) 50%, transparent);
+    color: var(--color-paper);
   }
 
   .site-menu:popover-open {
@@ -350,8 +362,8 @@
   @supports not (anchor-name: --a) {
     .site-menu {
       position: fixed;
-      top: 64px;
-      right: max(var(--spacing-gutter), (100vw - var(--container-page)) / 2 + var(--spacing-gutter));
+      top: 56px;
+      right: max(var(--spacing-gutter) / 2, (100vw - var(--container-page)) / 2 + var(--spacing-gutter) / 2);
     }
   }
 

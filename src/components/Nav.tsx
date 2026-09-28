@@ -62,8 +62,11 @@ export function Nav() {
         ref={navRef}
         aria-label="Primary"
         className={cn(
-          "grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-strong motion-reduce:transition-none lg:py-[17px]",
+          "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-strong motion-reduce:transition-none lg:py-[17px]",
           state === "light" && "border-rule-dark/10 bg-paper-light/50 backdrop-blur-md",
+          // At the top the bar is bare; give it the menu's glass while the menu is open.
+          state === "top" &&
+            "has-[#site-menu:popover-open]:border-rule-dark/10 has-[#site-menu:popover-open]:bg-paper-light/50 has-[#site-menu:popover-open]:backdrop-blur-md",
           dark && "border-paper/10 bg-ink/50 text-paper backdrop-blur-md",
         )}
       >
@@ -93,10 +96,10 @@ export function Nav() {
 
         {/* Mobile: toggle + anchored popover */}
         <div className="col-span-6 flex justify-end lg:hidden">
-          <button type="button" popoverTarget="site-menu" className="menu-toggle mono-label -my-2 cursor-pointer py-2">
+          <button type="button" popoverTarget="site-menu" className="mono-label -my-2 cursor-pointer py-2">
             Menu
           </button>
-          <div id="site-menu" popover="auto" className="site-menu">
+          <div id="site-menu" popover="auto" data-theme={dark ? "dark" : undefined} className="site-menu">
             <ul className="flex flex-col">
               {links.map((l) => (
                 <li key={l.href}>
@@ -104,14 +107,14 @@ export function Nav() {
                     href={l.href}
                     onClick={closeMenu}
                     aria-current={l.active ? "page" : undefined}
-                    className={cn("block py-2.5", l.active && "text-pink-ink")}
+                    className={cn("block py-2.5", l.active && accent)}
                   >
                     {l.label}
                   </Link>
                 </li>
               ))}
-              <li className="mt-2 border-t border-rule pt-2">
-                <Link href={CONTACT_HREF} onClick={closeMenu} className="block py-2.5 text-pink-ink">
+              <li className={cn("mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none", dark ? "border-paper/10" : "border-rule-dark/10")}>
+                <Link href={CONTACT_HREF} onClick={closeMenu} className={cn("block py-2.5", accent)}>
                   Say hello →
                 </Link>
               </li>
