@@ -7,7 +7,8 @@
 export const POSTER_WIDTHS = [620, 1240, 1860] as const;
 export type PosterFormat = "avif" | "webp";
 
-export const posterPath = (scene: string, width: number, format: PosterFormat) => `/illustrations/${scene}-${width}.${format}`;
+export const posterPath = (scene: string, width: number, format: PosterFormat) =>
+  `/illustrations/${scene}-${width}.${format}`;
 
 export const posterSrcSet = (scene: string, format: PosterFormat) =>
   POSTER_WIDTHS.map((w) => `${posterPath(scene, w, format)} ${w}w`).join(", ");

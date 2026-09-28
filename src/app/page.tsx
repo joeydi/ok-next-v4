@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Eyebrow } from "@/components/Eyebrow";
 import { Container } from "@/components/Container";
+import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
-import { MediaImage } from "@/components/MediaImage";
 import { GLIllustration } from "@/components/illustrations";
+import { MediaImage } from "@/components/MediaImage";
 import { Cite } from "@/components/Testimonial";
 import { principles, testimonials } from "@/data/home";
 import { services } from "@/data/services";

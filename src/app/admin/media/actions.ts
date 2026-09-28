@@ -70,7 +70,10 @@ const slugName = (name: string) =>
 function destinationKey(from: string, input: string) {
   if (!input.trim()) throw new Error("Enter a key or folder.");
   const ext = path.extname(from);
-  const segments = input.split("/").map((s) => slugName(s.trim())).filter(Boolean);
+  const segments = input
+    .split("/")
+    .map((s) => slugName(s.trim()))
+    .filter(Boolean);
   if (input.trim().endsWith("/") || !segments.length) segments.push(path.basename(from));
   const name = segments.pop()!;
   const nameExt = path.extname(name);
@@ -127,7 +130,11 @@ async function presign(key: string, type: string) {
 /** Presigned PUT URLs so the browser uploads straight to R2 (videos are too big for an action body). */
 export async function presignUploads(folder: string, files: { name: string; type: string }[]) {
   assertDev();
-  const prefix = folder.split("/").map((s) => slugName(s.trim())).filter(Boolean).join("/");
+  const prefix = folder
+    .split("/")
+    .map((s) => slugName(s.trim()))
+    .filter(Boolean)
+    .join("/");
   return Promise.all(
     files.map((f) => {
       const key = [prefix, slugName(f.name)].filter(Boolean).join("/");
@@ -226,9 +233,7 @@ export async function generateAlt(key: string, context: string) {
     .toBuffer();
 
   const usedIn = scanUsage([key]).usage[key];
-  const notes = usedIn
-    .filter((u) => u.title)
-    .map((u) => `- "${u.title}"${u.description ? ` — ${u.description}` : ""}`);
+  const notes = usedIn.filter((u) => u.title).map((u) => `- "${u.title}"${u.description ? ` — ${u.description}` : ""}`);
   const prompt = [
     entry.type === "video" ? "This is the first frame of a short video; describe the video." : null,
     context.trim() ? `Context from the author:\n${context.trim()}` : null,

@@ -3,7 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { services } from "@/data/services";
 import { readManifest } from "../../../../scripts/media.mjs";
-import { MediaAdmin, type AdminItem } from "./MediaAdmin";
+import { type AdminItem, MediaAdmin } from "./MediaAdmin";
 import { scanUsage } from "./usage";
 
 // Dev-only (see pageExtensions in next.config.ts). Reads media.json from disk on

@@ -1,5 +1,5 @@
 import type { MediaKey } from "@/lib/media";
-import { testimonials, type Testimonial } from "./home";
+import { type Testimonial, testimonials } from "./home";
 
 export type ServiceSlug = "digital-production" | "cms-integrations" | "business-tools";
 

@@ -6,7 +6,11 @@ const P = { left: "#D62A4A", right: "#E63757" };
 
 export function cubeMarkSvg({ background = "#1D1A17", size = 32 }: { background?: string | null; size?: number } = {}) {
   // Unit cube in a 32×32 box.
-  const cx = 16, top = 4, dx = 11, dy = 6.35, h = 12.7;
+  const cx = 16,
+    top = 4,
+    dx = 11,
+    dy = 6.35,
+    h = 12.7;
   const band = h / 3;
   const left = (y0: number, y1: number, fill: string) =>
     `<path d="M${cx - dx} ${top + dy + y0} L${cx} ${top + 2 * dy + y0} L${cx} ${top + 2 * dy + y1} L${cx - dx} ${top + dy + y1}Z" fill="${fill}"/>`;

@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useSyncExternalStore, type FocusEvent, type MouseEvent, type PointerEvent, type ToggleEvent } from "react";
+import {
+  type FocusEvent,
+  type MouseEvent,
+  type PointerEvent,
+  type ToggleEvent,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import { CONTACT_HREF, NAV, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { Container } from "./Container";
@@ -65,7 +72,11 @@ function navState(nav: HTMLElement | null): NavState {
 export function Nav() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
-  const state = useSyncExternalStore(onScroll, () => navState(navRef.current), (): NavState => "top");
+  const state = useSyncExternalStore(
+    onScroll,
+    () => navState(navRef.current),
+    (): NavState => "top",
+  );
   const section = useSyncExternalStore(onScroll, currentSection, () => null);
   // A parent is the current page while one of its children is.
   const links = NAV.map((l) => ({
@@ -158,7 +169,12 @@ export function Nav() {
           <Logo />
         </Link>
 
-        <div className={cn("hidden transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none xl:col-span-4 xl:block", dark ? "text-muted-light" : "text-muted")}>
+        <div
+          className={cn(
+            "hidden transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none xl:col-span-4 xl:block",
+            dark ? "text-muted-light" : "text-muted",
+          )}
+        >
           {SITE.author} / {SITE.tagline}
         </div>
 
@@ -247,7 +263,12 @@ export function Nav() {
                 </li>
               ))}
               <li className={divider}>
-                <Link href={CONTACT_HREF} onClick={closeMenu} aria-current={contactCurrent} className={cn(menuItem, accent)}>
+                <Link
+                  href={CONTACT_HREF}
+                  onClick={closeMenu}
+                  aria-current={contactCurrent}
+                  className={cn(menuItem, accent)}
+                >
                   Say hello →
                 </Link>
               </li>

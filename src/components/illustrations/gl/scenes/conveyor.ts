@@ -22,7 +22,12 @@ const TH = 14; // tile height (px)
 const HOP = 110; // hop height (px)
 const GAP = 170; // hop distance, old platform to new (px)
 
-const SLOTS = [[10, 10], [54, 10], [10, 54], [54, 54]] as const;
+const SLOTS = [
+  [10, 10],
+  [54, 10],
+  [10, 54],
+  [54, 54],
+] as const;
 // Which slot is missing on each of the five platforms.
 const MISSING = [0, 1, 3, 2, 1] as const;
 
@@ -31,21 +36,54 @@ const EASE_IN = bezier(0.7, 0, 0.8, 0.2);
 const EASE_IO = bezier(0.45, 0, 0.55, 1);
 
 // Per platform, by time into its loop.
-const rise = track([[RISE, 0, EASE_OUT], [RISE + 0.6, 1], [6.15, 1, EASE_IO], [STOP, 0]]);
-const fade = track([[RISE, 0], [RISE + 0.25, 1], [6.5, 1], [STOP, 0]]);
+const rise = track([
+  [RISE, 0, EASE_OUT],
+  [RISE + 0.6, 1],
+  [6.15, 1, EASE_IO],
+  [STOP, 0],
+]);
+const fade = track([
+  [RISE, 0],
+  [RISE + 0.25, 1],
+  [6.5, 1],
+  [STOP, 0],
+]);
 // Each tile pops on in turn; the missing one appears the instant the hop lands.
 const TILES = MISSING.map((miss) =>
   SLOTS.map((_, k) => {
     const out = 5.7 + k * 0.12;
-    if (k === miss) return track([[LAND - 0.01, 0], [LAND, 1], [out, 1, EASE_IN], [out + 0.3, 0]]);
+    if (k === miss)
+      return track([
+        [LAND - 0.01, 0],
+        [LAND, 1],
+        [out, 1, EASE_IN],
+        [out + 0.3, 0],
+      ]);
     const pop = RISE + 0.25 + (k - (k > miss ? 1 : 0)) * 0.14;
-    return track([[pop, 0, EASE_OUT], [pop + 0.3, 1], [out, 1, EASE_IN], [out + 0.3, 0]]);
+    return track([
+      [pop, 0, EASE_OUT],
+      [pop + 0.3, 1],
+      [out, 1, EASE_IN],
+      [out + 0.3, 0],
+    ]);
   }),
 );
 // The hopping tile: pops on the old platform, arcs across, and hands over to the gap tile on landing.
-const hopScale = track([[0.75, 0, EASE_OUT], [1.05, 1], [LAND, 1], [LAND + 0.01, 0]]);
-const hopZ = track([[2.8, 0, bezier(0.33, 0.66, 0.66, 1)], [3.275, HOP, bezier(0.33, 0, 0.66, 0.33)], [LAND, 0]]);
-const hopX = track([[2.8, 0, bezier(0.4, 0, 0.6, 1)], [LAND, GAP]]);
+const hopScale = track([
+  [0.75, 0, EASE_OUT],
+  [1.05, 1],
+  [LAND, 1],
+  [LAND + 0.01, 0],
+]);
+const hopZ = track([
+  [2.8, 0, bezier(0.33, 0.66, 0.66, 1)],
+  [3.275, HOP, bezier(0.33, 0, 0.66, 0.33)],
+  [LAND, 0],
+]);
+const hopX = track([
+  [2.8, 0, bezier(0.4, 0, 0.6, 1)],
+  [LAND, GAP],
+]);
 
 /** A tile scaled by `s` about its bottom centre. */
 const tile = (x: number, y: number, z: number, s: number, zScale = 1): Item => ({
@@ -64,7 +102,14 @@ function frame(t: number): Item[] {
     const y = 300 - SPEED * Math.min(s, STOP); // belt offset
     const r = rise(s);
     if (r > 0.005) {
-      items.push({ kind: "box", center: [235, 150 + y, (PH * r) / 2], half: [50, 50, (PH * r) / 2], pal: W, fade: fade(s), edges: [0, 0, 1] });
+      items.push({
+        kind: "box",
+        center: [235, 150 + y, (PH * r) / 2],
+        half: [50, 50, (PH * r) / 2],
+        pal: W,
+        fade: fade(s),
+        edges: [0, 0, 1],
+      });
       SLOTS.forEach(([sx, sy], k) => {
         const sc = TILES[j][k](s);
         if (sc > 0.01) items.push(tile(185 + sx + TILE / 2, 100 + y + sy + TILE / 2, PH * r, sc, r));

@@ -1,5 +1,5 @@
 import { dot, sub, type Vec } from "../icosphere";
-import { qrot, type Mat4, type Quat } from "./math";
+import { type Mat4, type Quat, qrot } from "./math";
 
 // Pointer picking against the orthographic camera: canvas px back to lines
 // through the plane's coordinates, and plane vectors forward to canvas px.
@@ -30,14 +30,19 @@ export const projectVec = (m: Mat4, [x, y, z]: Vec): [number, number] => [
 export function rayBox(ray: Ray, center: Vec, half: Vec, q: Quat): { t: number; normal: Vec } | null {
   // Slab test in the box's own frame.
   const inv: Quat = [-q[0], -q[1], -q[2], q[3]];
-  const o = qrot(inv, sub(ray.o, center)), d = qrot(inv, ray.d);
-  let t0 = -Infinity, t1 = Infinity, axis = 0, sign = 0;
+  const o = qrot(inv, sub(ray.o, center)),
+    d = qrot(inv, ray.d);
+  let t0 = -Infinity,
+    t1 = Infinity,
+    axis = 0,
+    sign = 0;
   for (let a = 0; a < 3; a++) {
     if (Math.abs(d[a]) < 1e-9) {
       if (Math.abs(o[a]) > half[a]) return null;
       continue;
     }
-    const near = (-Math.sign(d[a]) * half[a] - o[a]) / d[a], far = (Math.sign(d[a]) * half[a] - o[a]) / d[a];
+    const near = (-Math.sign(d[a]) * half[a] - o[a]) / d[a],
+      far = (Math.sign(d[a]) * half[a] - o[a]) / d[a];
     if (near > t0) [t0, axis, sign] = [near, a, -Math.sign(d[a])];
     t1 = Math.min(t1, far);
   }

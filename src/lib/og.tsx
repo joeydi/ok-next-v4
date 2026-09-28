@@ -29,7 +29,9 @@ async function imageData(media: Media) {
   const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
   if (!key) return undefined;
   // A network hiccup at build time costs the image, not the deploy: the card falls back to the cube.
-  const res = await fetch(mediaImageUrl(key, { width: FRAME.width * 2, quality: 85, format: "jpeg" })).catch(() => null);
+  const res = await fetch(mediaImageUrl(key, { width: FRAME.width * 2, quality: 85, format: "jpeg" })).catch(
+    () => null,
+  );
   if (!res?.ok) {
     console.warn(`og: couldn't fetch ${key} (${res?.status ?? "network error"}); using the cube`);
     return undefined;
@@ -53,75 +55,95 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
   });
   // Beside an image the title gets a narrower column, so it steps down sooner.
   const size = imageSrc
-    ? title.length > 48 ? 52 : title.length > 28 ? 64 : 80
-    : title.length > 60 ? 64 : title.length > 32 ? 80 : 104;
+    ? title.length > 48
+      ? 52
+      : title.length > 28
+        ? 64
+        : 80
+    : title.length > 60
+      ? 64
+      : title.length > 32
+        ? 80
+        : 104;
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: 64,
-          background: "#F2ECE6",
-          color: "#1D1A17",
-          fontFamily: "Hanken",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} width={150} height={35} alt="" />
-          <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
-            JOE DI STEFANO / DESIGNER + DEVELOPER
-          </div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: 64,
+        background: "#F2ECE6",
+        color: "#1D1A17",
+        fontFamily: "Hanken",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} width={150} height={35} alt="" />
+        <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
+          JOE DI STEFANO / DESIGNER + DEVELOPER
         </div>
+      </div>
 
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 48 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 48 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: imageSrc ? 24 : 28,
+            ...(imageSrc ? { width: 504 } : { maxWidth: 860 }),
+          }}
+        >
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              gap: imageSrc ? 24 : 28,
-              ...(imageSrc ? { width: 504 } : { maxWidth: 860 }),
+              gap: 24,
+              fontFamily: "Plex Mono",
+              fontSize: 22,
+              letterSpacing: "0.06em",
+              color: "#746759",
             }}
           >
-            <div style={{ display: "flex", gap: 24, fontFamily: "Plex Mono", fontSize: 22, letterSpacing: "0.06em", color: "#746759" }}>
-              {eyebrow
-                .toUpperCase()
-                .split(/\s{2,}/)
-                .map((part, i) => (
-                  <span key={i}>{part}</span>
-                ))}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                fontSize: size,
-                lineHeight: 1,
-                letterSpacing: "-0.035em",
-              }}
-            >
-              {words.map(({ w, pink }, i) => (
-                <span key={i} style={{ color: pink ? "#FF4D6A" : "#1D1A17", marginRight: size * 0.24 }}>
-                  {w}
-                </span>
+            {eyebrow
+              .toUpperCase()
+              .split(/\s{2,}/)
+              .map((part, i) => (
+                <span key={i}>{part}</span>
               ))}
-            </div>
           </div>
-          {imageSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageSrc} {...FRAME} alt="" style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }} />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={cube} width={160} height={160} alt="" />
-          )}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              fontSize: size,
+              lineHeight: 1,
+              letterSpacing: "-0.035em",
+            }}
+          >
+            {words.map(({ w, pink }, i) => (
+              <span key={i} style={{ color: pink ? "#FF4D6A" : "#1D1A17", marginRight: size * 0.24 }}>
+                {w}
+              </span>
+            ))}
+          </div>
         </div>
+        {imageSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageSrc}
+            {...FRAME}
+            alt=""
+            style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }}
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cube} width={160} height={160} alt="" />
+        )}
       </div>
-    ),
+    </div>,
     {
       ...OG_SIZE,
       fonts: [

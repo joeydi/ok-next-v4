@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useRef, useState, useSyncExternalStore, useTransition, type ReactNode } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
@@ -107,12 +107,14 @@ const message = (err: unknown) => (err instanceof Error ? err.message : String(e
 
 async function pool<T>(items: T[], size: number, fn: (item: T, i: number) => Promise<void>) {
   let next = 0;
-  await Promise.all(Array.from({ length: Math.min(size, items.length) }, async () => {
-    while (next < items.length) {
-      const i = next++;
-      await fn(items[i], i);
-    }
-  }));
+  await Promise.all(
+    Array.from({ length: Math.min(size, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        await fn(items[i], i);
+      }
+    }),
+  );
 }
 
 export function MediaAdmin({
@@ -273,7 +275,11 @@ export function MediaAdmin({
 
         <Uploader disabled={busy} folders={folders} onUpload={upload} />
 
-        {status && <p className="font-mono text-fl-14 text-body" role="status">{status}</p>}
+        {status && (
+          <p className="font-mono text-fl-14 text-body" role="status">
+            {status}
+          </p>
+        )}
 
         <div className="flex flex-wrap items-center gap-2">
           {(Object.keys(FILTERS) as Filter[]).map((f) => (
@@ -302,7 +308,11 @@ export function MediaAdmin({
                 type="button"
                 aria-pressed={view === v}
                 onClick={() => changeView(v)}
-                className={cn(btn, "-ml-px border-rule first:ml-0", view === v && "relative border-ink bg-ink text-paper")}
+                className={cn(
+                  btn,
+                  "-ml-px border-rule first:ml-0",
+                  view === v && "relative border-ink bg-ink text-paper",
+                )}
               >
                 {VIEWS[v]}
               </button>
@@ -333,7 +343,9 @@ export function MediaAdmin({
 
         {!shown.length ? (
           <p className="py-fl-40 font-mono text-fl-14 text-muted">
-            {items.length ? "Nothing matches." : "No media yet. Upload files above, or add them to the bucket and Sync."}
+            {items.length
+              ? "Nothing matches."
+              : "No media yet. Upload files above, or add them to the bucket and Sync."}
           </p>
         ) : view === "table" ? (
           <MediaTable items={shown} host={host} selected={selected} onOpen={open} />
@@ -448,7 +460,9 @@ function MediaTable({ items, host, selected, onOpen }: ViewProps) {
   // Numbers start biggest-first; text starts A→Z.
   const sortBy = (col: Column) =>
     setSort((s) =>
-      s.col === col ? { col, dir: s.dir === 1 ? -1 : 1 } : { col, dir: typeof COLUMNS[col].value(items[0]) === "number" ? -1 : 1 },
+      s.col === col
+        ? { col, dir: s.dir === 1 ? -1 : 1 }
+        : { col, dir: typeof COLUMNS[col].value(items[0]) === "number" ? -1 : 1 },
     );
 
   const th = "border-b border-ink px-2 py-2 text-left font-normal";
@@ -611,7 +625,10 @@ function TreeLevel({
             <button type="button" aria-expanded={open} onClick={() => onToggle(folder.path)} className={row}>
               <svg
                 viewBox="0 0 16 16"
-                className={cn("size-4 shrink-0 text-muted transition-transform motion-reduce:transition-none", open && "rotate-90")}
+                className={cn(
+                  "size-4 shrink-0 text-muted transition-transform motion-reduce:transition-none",
+                  open && "rotate-90",
+                )}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
@@ -776,7 +793,14 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
             aria-label="Close"
             className="-m-2 p-2 text-muted transition-colors hover:text-ink"
           >
-            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              aria-hidden="true"
+            >
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
@@ -811,7 +835,13 @@ function useConfirm() {
 }
 
 /** Modal <dialog> over everything (the sheet included). Esc, Cancel or a click on the backdrop answer no. */
-function ConfirmDialog({ title, body, action, danger, onAnswer }: ConfirmOptions & { onAnswer: (ok: boolean) => void }) {
+function ConfirmDialog({
+  title,
+  body,
+  action,
+  danger,
+  onAnswer,
+}: ConfirmOptions & { onAnswer: (ok: boolean) => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -845,9 +875,7 @@ function ConfirmDialog({ title, body, action, danger, onAnswer }: ConfirmOptions
             autoFocus={!danger}
             className={cn(
               btn,
-              danger
-                ? "border-pink-ink bg-pink-ink text-paper hover:border-ink"
-                : "bg-ink text-paper hover:bg-ink-2",
+              danger ? "border-pink-ink bg-pink-ink text-paper hover:border-ink" : "bg-ink text-paper hover:bg-ink-2",
             )}
           >
             {action}
@@ -965,7 +993,10 @@ function Detail({
     act(async () => {
       setStatus("Moving…");
       const r = await moveEntry(item.key, dest);
-      const message = r.key === item.key ? "" : `Moved ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}`;
+      const message =
+        r.key === item.key
+          ? ""
+          : `Moved ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}`;
       // The details remount under the new key, so the sheet hands the message back in.
       if (r.key !== item.key) onMoved(r.key, message);
       return message;
@@ -998,7 +1029,9 @@ function Detail({
       setStatus("Uploading…");
       const res = await fetch(t.url, { method: "PUT", headers: t.headers, body: file });
       if (!res.ok) throw new Error(`Upload failed (${res.status})`);
-      setStatus(item.type === "video" ? "Encoding video and reading metadata (can take a minute)…" : "Reading metadata…");
+      setStatus(
+        item.type === "video" ? "Encoding video and reading metadata (can take a minute)…" : "Reading metadata…",
+      );
       const r = await replaceEntry(item.key, t.key);
       const message =
         `Replaced ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}` +

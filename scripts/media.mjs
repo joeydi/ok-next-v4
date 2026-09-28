@@ -191,7 +191,9 @@ function serially(fn) {
 }
 
 const ffprobe = async (file) =>
-  JSON.parse((await execFile("ffprobe", ["-v", "error", "-print_format", "json", "-show_streams", "-show_format", file])).stdout);
+  JSON.parse(
+    (await execFile("ffprobe", ["-v", "error", "-print_format", "json", "-show_streams", "-show_format", file])).stdout,
+  );
 
 async function isSilent(file) {
   const { stderr } = await execFile(
@@ -210,16 +212,34 @@ async function encodeVideo(src, out, { removeAudio }) {
   const keepAudio = hasTrack && !removeAudio && !(await isSilent(src));
   await serially(() =>
     execFile("ffmpeg", [
-      "-v", "error", "-y", "-i", src,
-      "-map", "0:v:0",
+      "-v",
+      "error",
+      "-y",
+      "-i",
+      src,
+      "-map",
+      "0:v:0",
       ...(keepAudio ? ["-map", "0:a:0", "-c:a", "aac", "-b:a", P.audioBitrate, "-ac", "2"] : ["-an"]),
       // Width capped and kept even (required by yuv420p); height follows the aspect ratio.
-      "-vf", `scale='min(${P.maxWidth},trunc(iw/2)*2)':-2:flags=lanczos`,
-      "-fpsmax", String(P.maxFps),
-      "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p", "-preset", P.speed, "-crf", String(P.crf),
+      "-vf",
+      `scale='min(${P.maxWidth},trunc(iw/2)*2)':-2:flags=lanczos`,
+      "-fpsmax",
+      String(P.maxFps),
+      "-c:v",
+      "libx264",
+      "-profile:v",
+      "high",
+      "-pix_fmt",
+      "yuv420p",
+      "-preset",
+      P.speed,
+      "-crf",
+      String(P.crf),
       // moov atom first, so playback starts before the whole file has downloaded.
-      "-movflags", "+faststart",
-      "-map_metadata", "-1",
+      "-movflags",
+      "+faststart",
+      "-map_metadata",
+      "-1",
       out,
     ]),
   );
@@ -231,7 +251,9 @@ async function readVideo(file, key) {
   const probe = await ffprobe(file);
   const video = probe.streams.find((s) => s.codec_type === "video");
   if (!video) throw new Error("no video stream");
-  const rotation = Math.abs(Number(video.side_data_list?.find((d) => d.rotation != null)?.rotation ?? video.tags?.rotate ?? 0));
+  const rotation = Math.abs(
+    Number(video.side_data_list?.find((d) => d.rotation != null)?.rotation ?? video.tags?.rotate ?? 0),
+  );
   const sideways = rotation === 90 || rotation === 270;
   const duration = Math.round(Number(probe.format.duration) * 10) / 10;
 
@@ -241,7 +263,13 @@ async function readVideo(file, key) {
   const posterBuf = readFileSync(poster);
   const { s3, Bucket } = r2();
   await s3.send(
-    new PutObjectCommand({ Bucket, Key: posterKey(key), Body: posterBuf, ContentType: "image/jpeg", CacheControl: CACHE_CONTROL }),
+    new PutObjectCommand({
+      Bucket,
+      Key: posterKey(key),
+      Body: posterBuf,
+      ContentType: "image/jpeg",
+      CacheControl: CACHE_CONTROL,
+    }),
   );
   const { blurDataURL, color } = await imageFacts(posterBuf);
 
@@ -296,7 +324,11 @@ async function processVideo(o, prev, { reencode, log }) {
         Body: body,
         ContentType: "video/mp4",
         CacheControl: CACHE_CONTROL,
-        Metadata: { "okay-encode": VIDEO_PRESET.version, "okay-original": original, "okay-audio": audio ? "aac" : "none" },
+        Metadata: {
+          "okay-encode": VIDEO_PRESET.version,
+          "okay-original": original,
+          "okay-audio": audio ? "aac" : "none",
+        },
       }),
     );
     if (key !== o.key) await s3.send(new DeleteObjectCommand({ Bucket, Key: o.key }));
@@ -305,7 +337,13 @@ async function processVideo(o, prev, { reencode, log }) {
     const facts = await readVideo(out, key);
     return {
       key,
-      facts: { ...facts, bytes: body.length, etag: put.ETag.replaceAll('"', ""), encode: VIDEO_PRESET.version, original },
+      facts: {
+        ...facts,
+        bytes: body.length,
+        etag: put.ETag.replaceAll('"', ""),
+        encode: VIDEO_PRESET.version,
+        original,
+      },
       // Same source as before (audio change or preset bump), so reviewed alt text still holds.
       reencoded: Boolean(meta["okay-original"]),
     };

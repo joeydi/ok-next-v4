@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { POSTER_WIDTHS, posterPath, type PosterFormat } from "@/components/illustrations/gl/poster";
+import { POSTER_WIDTHS, type PosterFormat, posterPath } from "@/components/illustrations/gl/poster";
 import { SCENES } from "@/components/illustrations/gl/scenes";
 
 // Dev-only (route.dev.ts): takes a scene's poster frame as a PNG from the lab

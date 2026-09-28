@@ -1,7 +1,19 @@
 export const principles = [
-  { n: "01", t: "Listen first", d: "Most projects start with a problem that isn’t quite the one on the brief. I spend the early time asking questions." },
-  { n: "02", t: "Work directly", d: "No account managers or handoffs. You talk to the person doing the work, every time." },
-  { n: "03", t: "Build to last", d: "Clean code, sensible tools, and documentation your team can use long after launch." },
+  {
+    n: "01",
+    t: "Listen first",
+    d: "Most projects start with a problem that isn’t quite the one on the brief. I spend the early time asking questions.",
+  },
+  {
+    n: "02",
+    t: "Work directly",
+    d: "No account managers or handoffs. You talk to the person doing the work, every time.",
+  },
+  {
+    n: "03",
+    t: "Build to last",
+    d: "Clean code, sensible tools, and documentation your team can use long after launch.",
+  },
   { n: "04", t: "Say it plainly", d: "If something isn’t worth doing, I’ll tell you, and we’ll find what is." },
 ];
 

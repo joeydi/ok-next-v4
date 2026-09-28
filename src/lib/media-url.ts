@@ -18,7 +18,10 @@ export function mediaUrl(key: string) {
 }
 
 /** A resized copy via Cloudflare Image Transformations. `format: "auto"` serves AVIF/WebP to browsers that take them. */
-export function mediaImageUrl(key: string, { width, quality = 75, format = "auto" }: { width: number; quality?: number; format?: "auto" | "jpeg" }) {
+export function mediaImageUrl(
+  key: string,
+  { width, quality = 75, format = "auto" }: { width: number; quality?: number; format?: "auto" | "jpeg" },
+) {
   return `${base()}/cdn-cgi/image/width=${width},quality=${quality},format=${format}/${encodeKey(key)}`;
 }
 

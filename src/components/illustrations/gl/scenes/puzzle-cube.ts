@@ -1,8 +1,8 @@
 import { cross, sub, type Vec } from "../../icosphere";
 import { P, W } from "../../primitives";
-import { Q0, qmul, qrot, quat, type Quat } from "../math";
+import { Q0, type Quat, qmul, qrot, quat } from "../math";
 import { projectVec, rayAt, rayBox } from "../pick";
-import { hull, planeToCanvas, type BoxItem, type Player, type SceneDef } from "../renderer";
+import { type BoxItem, hull, type Player, planeToCanvas, type SceneDef } from "../renderer";
 import { bezier } from "../timeline";
 
 // Home — a 3×3×3 puzzle cube. Each horizontal layer turns 180° about Z, then the
@@ -18,9 +18,23 @@ import { bezier } from "../timeline";
 type Axis = 0 | 1 | 2;
 type Move = [axis: Axis, layer: number, dir: number];
 
-const MOVES: Move[] = [[0, 1, 1], [1, -1, 1], [2, 1, -1], [0, -1, -1]]; // x+1, y−1, z+1, x−1
-const SEQ: Move[] = [...MOVES, ...MOVES.slice().reverse().map(([a, l, d]): Move => [a, l, -d])];
-const AXES: Vec[] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+const MOVES: Move[] = [
+  [0, 1, 1],
+  [1, -1, 1],
+  [2, 1, -1],
+  [0, -1, -1],
+]; // x+1, y−1, z+1, x−1
+const SEQ: Move[] = [
+  ...MOVES,
+  ...MOVES.slice()
+    .reverse()
+    .map(([a, l, d]): Move => [a, l, -d]),
+];
+const AXES: Vec[] = [
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, 1],
+];
 
 const T = 10.4; // loop length (s)
 const HOLD = 3; // layer spins + pause before the scramble starts (s)
@@ -56,7 +70,9 @@ const mod4 = (n: number) => ((n % 4) + 4) % 4;
 type Cubie = { pos: Vec; q: Quat; pink: boolean };
 
 const solved = (): Cubie[] =>
-  [-1, 0, 1].flatMap((k) => [-1, 0, 1].flatMap((j) => [-1, 0, 1].map((i) => ({ pos: [i, j, k] as Vec, q: Q0, pink: k === 0 }))));
+  [-1, 0, 1].flatMap((k) =>
+    [-1, 0, 1].flatMap((j) => [-1, 0, 1].map((i) => ({ pos: [i, j, k] as Vec, q: Q0, pink: k === 0 }))),
+  );
 
 /** Every pink cube back in the middle layer. White cubes look alike, as do turned ones. */
 const isSolved = (cube: Cubie[]) => cube.every((c) => !c.pink || c.pos[2] === 0);
@@ -69,7 +85,8 @@ function commit(cube: Cubie[], axis: Axis, layer: number, n: number) {
   for (const c of cube) {
     if (c.pos[axis] !== layer) continue;
     for (let i = 0; i < k; i++) c.pos = turn(c.pos, axis, 1);
-    const q = qmul(r, c.q), len = Math.hypot(...q);
+    const q = qmul(r, c.q),
+      len = Math.hypot(...q);
     c.q = [q[0] / len, q[1] / len, q[2] / len, q[3] / len];
   }
 }
@@ -102,7 +119,8 @@ const SCRIPT: Event[] = [
 ];
 
 function frame(t: number) {
-  const cube = solved(), slices: Slice[] = [];
+  const cube = solved(),
+    slices: Slice[] = [];
   for (const e of SCRIPT) {
     const u = (t - e.at) / e.dur;
     if (u >= 1) commit(cube, e.axis, e.layer, e.n);
@@ -162,8 +180,12 @@ function play(): Player {
   /** Quarter turns since the cube was last solved, merged where they can be (n = 1–3). */
   let history: { axis: Axis; layer: number; n: number }[] = [];
   let mode: "auto" | "user" | "restore" = "auto";
-  let clock = puzzleCube.posterTime, next = 0;
-  let time = 0, last = -1, idleSince = 0, undoDur = 0.5;
+  let clock = puzzleCube.posterTime,
+    next = 0;
+  let time = 0,
+    last = -1,
+    idleSince = 0,
+    undoDur = 0.5;
   let drag: Drag | null = null;
   let items = draw(cube, turns);
 
@@ -273,9 +295,12 @@ function play(): Player {
 
   function pick(x: number, y: number) {
     const ray = rayAt(VIEW, x, y);
-    let i = -1, t = Infinity, normal: Vec = [0, 0, 1];
+    let i = -1,
+      t = Infinity,
+      normal: Vec = [0, 0, 1];
     for (let j = 0; j < items.length; j++) {
-      const it = items[j], h = rayBox(ray, it.center, it.half, it.q ?? Q0);
+      const it = items[j],
+        h = rayBox(ray, it.center, it.half, it.q ?? Q0);
       if (h && h.t < t) [i, t, normal] = [j, h.t, h.normal];
     }
     if (i < 0) return null;
@@ -315,7 +340,8 @@ function play(): Player {
         mode = "user";
         for (const t of turns) {
           if (t.mode !== "script") continue;
-          const u = t.el / t.dur, e = 1e-3;
+          const u = t.el / t.dur,
+            e = 1e-3;
           release(t, (t.to * (EASE(Math.min(1, u + e)) - EASE(u))) / (e * t.dur));
         }
       }
@@ -328,7 +354,8 @@ function play(): Player {
       if (!d) return;
       [d.x, d.y] = [x, y];
       if (d.axis === undefined) {
-        const dx = x - d.x0, dy = y - d.y0;
+        const dx = x - d.x0,
+          dy = y - d.y0;
         if (Math.hypot(dx, dy) < LOCK) return;
         // Sideways turns the horizontal layer. Up or down turns the vertical slice
         // the grabbed face belongs to; on the top face, the one moving most along the drag.
@@ -357,7 +384,8 @@ function play(): Player {
 
 /** The solved cube's outline on the canvas, a little larger for slices turned out of line. */
 function outline(): [number, number][] {
-  const R = PITCH + HALF, PAD = 12;
+  const R = PITCH + HALF,
+    PAD = 12;
   const corners = [-1, 1].flatMap((x) =>
     [-1, 1].flatMap((y) =>
       [-1, 1].map((z): [number, number] => {
@@ -367,7 +395,8 @@ function outline(): [number, number][] {
     ),
   );
   const h = hull(corners);
-  const mx = h.reduce((s, p) => s + p[0], 0) / h.length, my = h.reduce((s, p) => s + p[1], 0) / h.length;
+  const mx = h.reduce((s, p) => s + p[0], 0) / h.length,
+    my = h.reduce((s, p) => s + p[1], 0) / h.length;
   return h.map(([x, y]) => {
     const l = Math.hypot(x - mx, y - my);
     return [+(x + ((x - mx) / l) * PAD).toFixed(1), +(y + ((y - my) / l) * PAD).toFixed(1)];

@@ -5,8 +5,12 @@ export type Ease = (u: number) => number;
 
 /** CSS cubic-bezier(x1, y1, x2, y2). */
 export function bezier(x1: number, y1: number, x2: number, y2: number): Ease {
-  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
-  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const cx = 3 * x1,
+    bx = 3 * (x2 - x1) - cx,
+    ax = 1 - cx - bx;
+  const cy = 3 * y1,
+    by = 3 * (y2 - y1) - cy,
+    ay = 1 - cy - by;
   const X = (s: number) => ((ax * s + bx) * s + cx) * s;
   const Y = (s: number) => ((ay * s + by) * s + cy) * s;
   const dX = (s: number) => (3 * ax * s + 2 * bx) * s + cx;
@@ -15,13 +19,15 @@ export function bezier(x1: number, y1: number, x2: number, y2: number): Ease {
     if (x >= 1) return 1;
     let s = x;
     for (let i = 0; i < 8; i++) {
-      const e = X(s) - x, d = dX(s);
+      const e = X(s) - x,
+        d = dX(s);
       if (Math.abs(e) < 1e-6) return Y(s);
       if (Math.abs(d) < 1e-6) break;
       s -= e / d;
     }
     // Newton stalled: bisect.
-    let lo = 0, hi = 1;
+    let lo = 0,
+      hi = 1;
     s = x;
     for (let i = 0; i < 30 && Math.abs(X(s) - x) > 1e-6; i++) {
       if (X(s) > x) hi = s;
@@ -43,7 +49,8 @@ export function track(stops: Stop[]) {
   return (t: number) => {
     if (t <= stops[0][0]) return stops[0][1];
     for (let i = 0; i < stops.length - 1; i++) {
-      const [t0, v0, ease = linear] = stops[i], [t1, v1] = stops[i + 1];
+      const [t0, v0, ease = linear] = stops[i],
+        [t1, v1] = stops[i + 1];
       if (t < t1) return v0 + (v1 - v0) * ease((t - t0) / (t1 - t0));
     }
     return stops[stops.length - 1][1];

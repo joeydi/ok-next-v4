@@ -4,14 +4,13 @@ import { Suspense } from "react";
 import { Container } from "@/components/Container";
 import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
-import { NotesIndex, NotesList, type NoteSummary } from "@/components/notes/NotesIndex";
+import { type NoteSummary, NotesIndex, NotesList } from "@/components/notes/NotesIndex";
 import { Placeholder } from "@/components/Placeholder";
 import { formatDate, getAllNotes } from "@/lib/notes";
 
 export const metadata: Metadata = {
   title: "Notes",
-  description:
-    "Project write-ups, process notes, and the occasional thing I made for fun.",
+  description: "Project write-ups, process notes, and the occasional thing I made for fun.",
   alternates: { canonical: "/notes" },
 };
 

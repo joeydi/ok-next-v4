@@ -1,6 +1,6 @@
 import { cross, dot, icosphere, LIGHT, norm, sub, type Vec } from "../icosphere";
 import type { Palette } from "../primitives";
-import { deg, identity, mul, Q0, qrot, rotateX, rotateZ, scale, translate, trs, type Mat4, type Quat } from "./math";
+import { deg, identity, type Mat4, mul, Q0, type Quat, qrot, rotateX, rotateZ, scale, translate, trs } from "./math";
 import { LIT_FS, LIT_VS, MAX_OCC } from "./shaders";
 
 // A tiny WebGL2 renderer for the hero illustrations. Scenes use the CSS
@@ -95,11 +95,13 @@ export const DEFAULT_SETTINGS: Settings = {
   edges: false,
 };
 
-const W = 620, H = 660;
+const W = 620,
+  H = 660;
 const PAPER = "#F2ECE6";
 const TINT = "#A49381";
 /** The floor beyond the tiles, out past every canvas edge (integers, so seams are exact). */
-const FLOOR_MIN = -1500, FLOOR_MAX = 1800;
+const FLOOR_MIN = -1500,
+  FLOOR_MAX = 1800;
 const DEFAULT_FLOOR: Rect = [-150, -150, 450, 450];
 /** Floor tile size (px): each tile loops over only the objects in reach. */
 const TILE = 60;
@@ -115,14 +117,17 @@ type Mesh = { vao: WebGLVertexArrayObject; bufs: WebGLBuffer[]; count: number; t
 
 /** Unit cube, each face an n×n grid. */
 function boxMesh(n = 1): MeshData {
-  const v: number[] = [], idx: number[] = [];
+  const v: number[] = [],
+    idx: number[] = [];
   for (let a = 0; a < 3; a++)
     for (const s of [1, -1]) {
-      const u = (a + 1) % 3, w = (a + 2) % 3;
+      const u = (a + 1) % 3,
+        w = (a + 2) % 3;
       const base = v.length / 9;
       for (let i = 0; i <= n; i++)
         for (let j = 0; j <= n; j++) {
-          const p: Vec = [0, 0, 0], nor: Vec = [0, 0, 0];
+          const p: Vec = [0, 0, 0],
+            nor: Vec = [0, 0, 0];
           p[a] = s > 0 ? 1 : 0;
           p[u] = i / n;
           p[w] = j / n;
@@ -156,7 +161,12 @@ function ballMesh(): MeshData {
 
 /** Unit quad, placed per floor tile and per strip of the floor outside them. */
 function quadMesh(): MeshData {
-  const corners: Vec[] = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]];
+  const corners: Vec[] = [
+    [0, 0, 0],
+    [1, 0, 0],
+    [1, 1, 0],
+    [0, 1, 0],
+  ];
   return { v: corners.flatMap((c) => [...c, 0, 0, 1, 1, 1, 1]), idx: [0, 1, 2, 0, 2, 3] };
 }
 
@@ -180,11 +190,20 @@ const CANVAS_TO_CLIP = mul(translate(-1, 1, 0), scale(2 / W, -2 / H, -1 / 1000))
 
 /** Plane px → canvas px: the handoff's rotateX(58deg) rotateZ(-45deg) (after the scene's `pre`) about the plane's centre, (300, 400) on the canvas. */
 export const planeToCanvas = (scene: Pick<SceneDef, "pre">) =>
-  mul(translate(300, 400, 0), ...(scene.pre ? [scene.pre] : []), rotateX(deg(58)), rotateZ(deg(-45)), translate(-150, -150, 0));
+  mul(
+    translate(300, 400, 0),
+    ...(scene.pre ? [scene.pre] : []),
+    rotateX(deg(58)),
+    rotateZ(deg(-45)),
+    translate(-150, -150, 0),
+  );
 
 function startProgram(gl: WebGL2RenderingContext, vs: string, fs: string) {
   const p = gl.createProgram()!;
-  for (const [type, src] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]] as const) {
+  for (const [type, src] of [
+    [gl.VERTEX_SHADER, vs],
+    [gl.FRAGMENT_SHADER, fs],
+  ] as const) {
     const s = gl.createShader(type)!;
     gl.shaderSource(s, src);
     gl.compileShader(s);
@@ -232,11 +251,18 @@ export class Renderer {
    * noise is what image codecs compress worst.
    */
   static async create(canvas: HTMLCanvasElement, { preserveDrawingBuffer = false, dither = true } = {}) {
-    const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: true, stencil: true, preserveDrawingBuffer });
+    const gl = canvas.getContext("webgl2", {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: true,
+      stencil: true,
+      preserveDrawingBuffer,
+    });
     if (!gl) throw new Error("WebGL2 unavailable");
     const ext = gl.getExtension("KHR_parallel_shader_compile");
     const lit = startProgram(gl, LIT_VS, LIT_FS);
-    if (ext) while (!gl.getProgramParameter(lit, ext.COMPLETION_STATUS_KHR)) await new Promise((r) => setTimeout(r, 16));
+    if (ext)
+      while (!gl.getProgramParameter(lit, ext.COMPLETION_STATUS_KHR)) await new Promise((r) => setTimeout(r, 16));
     checkProgram(gl, lit);
     return new Renderer(canvas, gl, lit, dither);
   }
@@ -316,7 +342,9 @@ export class Renderer {
   private shadowRows(list: Item[], soft: number) {
     const d = this.shadowData.fill(0);
     const bounds: { u: number; v: number; r: number; r3: number }[] = [];
-    const L = this.light, U = this.lightU, V = this.lightV;
+    const L = this.light,
+      U = this.lightU,
+      V = this.lightV;
     const onPlane = (p: Vec): [number, number] => [dot(p, U), dot(p, V)];
     list.forEach((it, i) => {
       const row = i * SHADOW_ROW * 4;
@@ -329,7 +357,8 @@ export class Renderer {
         bounds.push({ u: cu, v: cv, r: it.r, r3: it.r });
         return;
       }
-      const q = it.q ?? Q0, inv: Quat = [-q[0], -q[1], -q[2], q[3]];
+      const q = it.q ?? Q0,
+        inv: Quat = [-q[0], -q[1], -q[2], q[3]];
       const ld = qrot(inv, L).map((x) => 1 / (Math.abs(x) < 1e-6 ? 1e-6 : x));
       set(0, [...it.center, 0]);
       set(1, [it.half[0] + soft, it.half[1] + soft, it.half[2] + soft, it.fade ?? 1]);
@@ -344,17 +373,21 @@ export class Renderer {
         ),
       );
       const h = hull(corners);
-      const r = Math.max(0, ...h.map(([u, v]) => Math.hypot(u - cu, v - cv))), r3 = Math.hypot(...it.half);
+      const r = Math.max(0, ...h.map(([u, v]) => Math.hypot(u - cu, v - cv))),
+        r3 = Math.hypot(...it.half);
       set(4, [cu, cv, r, r3]);
       bounds.push({ u: cu, v: cv, r, r3 });
       // Outward edge lines of the counter-clockwise outline; a degenerate one casts nothing.
       const lines = h.flatMap((a, k) => {
-        const b = h[(k + 1) % h.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const b = h[(k + 1) % h.length],
+          len = Math.hypot(b[0] - a[0], b[1] - a[1]);
         if (len < 1e-6) return [];
-        const nx = (b[1] - a[1]) / len, ny = -(b[0] - a[0]) / len;
+        const nx = (b[1] - a[1]) / len,
+          ny = -(b[0] - a[0]) / len;
         return [[nx, ny, nx * a[0] + ny * a[1], 0]];
       });
-      for (let k = 0; k < 8; k++) set(5 + k, lines.length >= 3 ? lines[Math.min(k, lines.length - 1)] : [0, 0, -1e9, 0]);
+      for (let k = 0; k < 8; k++)
+        set(5 + k, lines.length >= 3 ? lines[Math.min(k, lines.length - 1)] : [0, 0, -1e9, 0]);
     });
     const gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, this.shadowTex);
@@ -384,7 +417,8 @@ export class Renderer {
     const lightKey = `${s.azimuth},${s.elevation}`;
     if (lightKey !== this.lightKey) {
       this.lightKey = lightKey;
-      const az = deg(s.azimuth), el = deg(s.elevation);
+      const az = deg(s.azimuth),
+        el = deg(s.elevation);
       const L: Vec = [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)];
       this.light = L;
       this.lightU = norm(cross(L, Math.abs(L[2]) > 0.999 ? [1, 0, 0] : [0, 0, 1]));
@@ -397,7 +431,8 @@ export class Renderer {
     const list = items.slice(0, MAX_OCC).sort((a, b) => depthOf(a) - depthOf(b));
     list.forEach((it, i) => {
       const m = (this.models[i] ??= identity());
-      if (it.kind === "box") trs(m, it.center, it.q ?? Q0, it.half[0] * 2, it.half[1] * 2, it.half[2] * 2, [-0.5, -0.5, -0.5]);
+      if (it.kind === "box")
+        trs(m, it.center, it.q ?? Q0, it.half[0] * 2, it.half[1] * 2, it.half[2] * 2, [-0.5, -0.5, -0.5]);
       else trs(m, it.center, it.q ?? Q0, it.r, it.r, it.r);
     });
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
@@ -421,7 +456,8 @@ export class Renderer {
     /** For an object: the others whose outlines come near its own and sit toward the light. */
     const rowsForObject = (i: number) =>
       list.flatMap((other, j) => {
-        const a = bounds[i], b = bounds[j];
+        const a = bounds[i],
+          b = bounds[j];
         const toward = dot(sub(other.center, list[i].center), this.light) > -(a.r3 + b.r3);
         return j !== i && toward && Math.hypot(a.u - b.u, a.v - b.v) <= a.r + b.r + 2 * s.shadowSoft ? [j] : [];
       });
@@ -434,7 +470,9 @@ export class Renderer {
     });
     /** For a patch of floor: the objects whose shadow can land on it. */
     const rowsForRect = ([x0, y0, x1, y1]: Rect) =>
-      onFloor.flatMap((f, j) => (Math.hypot(Math.max(x0 - f.x, 0, f.x - x1), Math.max(y0 - f.y, 0, f.y - y1)) < f.r ? [j] : []));
+      onFloor.flatMap((f, j) =>
+        Math.hypot(Math.max(x0 - f.x, 0, f.x - x1), Math.max(y0 - f.y, 0, f.y - y1)) < f.r ? [j] : [],
+      );
 
     // Which objects can occlude a draw: those whose bounding sphere comes within the AO radius.
     const aoIdx = new Int32Array(MAX_OCC);
@@ -565,7 +603,10 @@ export class Renderer {
     gl.disable(gl.STENCIL_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
-    indices.filter((i) => !solid(i)).reverse().forEach(drawItem);
+    indices
+      .filter((i) => !solid(i))
+      .reverse()
+      .forEach(drawItem);
     gl.disable(gl.CULL_FACE);
     gl.depthMask(true);
     gl.disable(gl.BLEND);

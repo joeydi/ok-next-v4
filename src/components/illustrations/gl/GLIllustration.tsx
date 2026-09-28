@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import { Stage } from "../primitives";
 import { posterPath, posterSrcSet } from "./poster";
-import { DEFAULT_SETTINGS, planeToCanvas, Renderer, type Player, type SceneDef, type Settings } from "./renderer";
+import { DEFAULT_SETTINGS, type Player, planeToCanvas, Renderer, type SceneDef, type Settings } from "./renderer";
 import { SCENES, type SceneName } from "./scenes";
 
 /** Drawing-buffer budget: up to 2× density, less for very large illustrations. */
@@ -17,7 +17,8 @@ const DEFAULT_SIZES = "(min-width: 1024px) 50vw, 100vw";
  * the scene's `pre`, so every scene sits on the same grid.
  */
 function floorMatrix(scene: SceneDef) {
-  const m = planeToCanvas({ ...scene, pre: undefined }), z = scene.floorZ ?? 0;
+  const m = planeToCanvas({ ...scene, pre: undefined }),
+    z = scene.floorZ ?? 0;
   return [m[0], m[1], m[4], m[5], m[12] + m[8] * z, m[13] + m[9] * z].map((x) => +x.toFixed(4)).join(" ");
 }
 
@@ -60,8 +61,12 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     const hit = hitRef.current;
     let r: Renderer | null = null;
     let player: Player | null = null;
-    let loading = false, disposed = false, near = false;
-    let raf = 0, origin = 0, last: number | null = null;
+    let loading = false,
+      disposed = false,
+      near = false;
+    let raf = 0,
+      origin = 0,
+      last: number | null = null;
     let held: number | null = null;
     let cancelStart = () => {};
 
@@ -158,7 +163,8 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       return [((e.clientX - b.left) / b.width) * 620, ((e.clientY - b.top) / b.height) * 660];
     };
     const cursor = (e: PointerEvent) => {
-      if (hit && e.pointerType === "mouse") hit.style.cursor = held !== null ? "grabbing" : player?.hover(...at(e)) ? "grab" : "";
+      if (hit && e.pointerType === "mouse")
+        hit.style.cursor = held !== null ? "grabbing" : player?.hover(...at(e)) ? "grab" : "";
     };
     const down = (e: PointerEvent) => {
       if (!player || held !== null || !player.down(...at(e), e.timeStamp / 1000)) return;
@@ -213,7 +219,15 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
             <path d="M0 .5H44M.5 0V44" stroke="#CDC0B2" />
           </pattern>
         </defs>
-        <rect x="-1500" y="-1500" width="3300" height="3300" fill={`url(#${gridId})`} opacity="0.7" transform={`matrix(${floorMatrix(scene)})`} />
+        <rect
+          x="-1500"
+          y="-1500"
+          width="3300"
+          height="3300"
+          fill={`url(#${gridId})`}
+          opacity="0.7"
+          transform={`matrix(${floorMatrix(scene)})`}
+        />
       </svg>
       <picture>
         <source type="image/avif" srcSet={posterSrcSet(name, "avif")} sizes={sizes} />

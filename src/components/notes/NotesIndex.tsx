@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { addTransitionType, startTransition, useState, ViewTransition } from "react";
-import { Placeholder } from "../Placeholder";
 import { cn } from "@/lib/cn";
 import type { NoteMeta, Tag } from "@/lib/notes";
+import { Placeholder } from "../Placeholder";
 
 export type NoteSummary = Pick<NoteMeta, "slug" | "plainTitle" | "description" | "tag" | "image" | "imageLabel">;
 type Filter = "ALL" | Tag;

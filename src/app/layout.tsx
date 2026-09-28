@@ -1,7 +1,7 @@
-import type { Metadata, Viewport } from "next";
-import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata, Viewport } from "next";
+import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
@@ -24,8 +24,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 // Preview builds resolve OG images against their own deployment; production (and local) use the real domain.
-const previewHost =
-  process.env.VERCEL_ENV === "preview" && (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL);
+const previewHost = process.env.VERCEL_ENV === "preview" && (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL);
 
 export const metadata: Metadata = {
   metadataBase: new URL(previewHost ? `https://${previewHost}` : SITE.url),

@@ -43,17 +43,32 @@ const height = track([
 ]);
 // Fades in over its first quarter second of rising and out over its last quarter second of sinking
 // (the handoff's 0.25s fades happen while it's nearly flat).
-const fade = track([[HIT - 3.5, 0], [HIT - 3.25, 1], [HIT + 2.75, 1], [HIT + 3, 0]]);
-const flash = track([[HIT - 0.01, 0], [HIT, 1], [HIT + 0.1, 1, bezier(0.3, 0, 0.6, 1)], [HIT + 0.6, 0]]);
+const fade = track([
+  [HIT - 3.5, 0],
+  [HIT - 3.25, 1],
+  [HIT + 2.75, 1],
+  [HIT + 3, 0],
+]);
+const flash = track([
+  [HIT - 0.01, 0],
+  [HIT, 1],
+  [HIT + 0.1, 1, bezier(0.3, 0, 0.6, 1)],
+  [HIT + 0.6, 0],
+]);
 
 // The ball: up and back down once per column.
-const bounce = track([[0, Z0, bezier(0.33, 0.66, 0.66, 1)], [TS / 2, Z0 + JUMP, bezier(0.33, 0, 0.66, 0.33)], [TS, Z0]]);
+const bounce = track([
+  [0, Z0, bezier(0.33, 0.66, 0.66, 1)],
+  [TS / 2, Z0 + JUMP, bezier(0.33, 0, 0.66, 0.33)],
+  [TS, Z0],
+]);
 
 function frame(t: number): Item[] {
   const items: Item[] = [];
   for (let j = 0; j < N; j++) {
     const s = wrap(t + j * TS, TC);
-    const h = height(s) * WALL, f = fade(s);
+    const h = height(s) * WALL,
+      f = fade(s);
     if (h < 0.5 || f <= 0) continue;
     items.push({
       kind: "box",
@@ -66,7 +81,12 @@ function frame(t: number): Item[] {
       edges: [0, 0, 1],
     });
   }
-  items.push({ kind: "ball", center: [150, 150, bounce(wrap(t, TS))], r: BR, q: quat([0, 1, 0], (2 * Math.PI * t) / SPIN) });
+  items.push({
+    kind: "ball",
+    center: [150, 150, bounce(wrap(t, TS))],
+    r: BR,
+    q: quat([0, 1, 0], (2 * Math.PI * t) / SPIN),
+  });
   return items;
 }
 

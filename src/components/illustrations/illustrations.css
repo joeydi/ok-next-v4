@@ -1,85 +1,85 @@
 /* Hero illustrations — the Stage frame is in primitives.tsx, the scenes in gl/. */
 
 @layer components {
-.ok-illo {
-  position: relative;
-  aspect-ratio: 620 / 660;
-  container-type: inline-size;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Fixed 620×660 drawing surface, scaled to the container's width. */
-.ok-illo-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 620px;
-  height: 660px;
-  overflow: hidden;
-  transform-origin: 0 0;
-  scale: tan(atan2(100cqw, 620px));
-}
-
-/* The floor grid, poster and canvas all fill the drawing surface. The poster
-   shows until the first live frame, when GLIllustration sets data-live. */
-.ok-illo-gl {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 620px;
-  height: 660px;
-}
-
-/* The floor grid fills the surface, fading out just before its edges. */
-.ok-illo-floor {
-  --fade: transparent 2%, #000 22%, #000 78%, transparent 98%;
-  -webkit-mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
-  mask-composite: intersect;
-}
-
-/* Dashed guides fade out at both ends below desktop, where the hero scales the illustration up. */
-.ok-illo-guide {
-  --fade: transparent, #000 15%, #000 85%, transparent;
-  -webkit-mask-image: linear-gradient(var(--fade));
-  mask-image: linear-gradient(var(--fade));
-
-  @media (width >= 64rem) {
-    -webkit-mask-image: none;
-    mask-image: none;
+  .ok-illo {
+    position: relative;
+    aspect-ratio: 620 / 660;
+    container-type: inline-size;
+    pointer-events: none;
+    user-select: none;
   }
-}
 
-canvas.ok-illo-gl {
-  visibility: hidden;
-}
+  /* Fixed 620×660 drawing surface, scaled to the container's width. */
+  .ok-illo-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 620px;
+    height: 660px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    scale: tan(atan2(100cqw, 620px));
+  }
 
-.ok-illo[data-live] canvas.ok-illo-gl {
-  visibility: visible;
-}
+  /* The floor grid, poster and canvas all fill the drawing surface. The poster
+   shows until the first live frame, when GLIllustration sets data-live. */
+  .ok-illo-gl {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 620px;
+    height: 660px;
+  }
 
-.ok-illo[data-live] .ok-illo-poster {
-  visibility: hidden;
-}
+  /* The floor grid fills the surface, fading out just before its edges. */
+  .ok-illo-floor {
+    --fade: transparent 2%, #000 22%, #000 78%, transparent 98%;
+    -webkit-mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+    mask-composite: intersect;
+  }
 
-/* A player's drag area, clipped to the scene's hitArea: live only once the
+  /* Dashed guides fade out at both ends below desktop, where the hero scales the illustration up. */
+  .ok-illo-guide {
+    --fade: transparent, #000 15%, #000 85%, transparent;
+    -webkit-mask-image: linear-gradient(var(--fade));
+    mask-image: linear-gradient(var(--fade));
+
+    @media (width >= 64rem) {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+
+  canvas.ok-illo-gl {
+    visibility: hidden;
+  }
+
+  .ok-illo[data-live] canvas.ok-illo-gl {
+    visibility: visible;
+  }
+
+  .ok-illo[data-live] .ok-illo-poster {
+    visibility: hidden;
+  }
+
+  /* A player's drag area, clipped to the scene's hitArea: live only once the
    canvas is, and it keeps touches that start on it from scrolling the page. */
-.ok-illo[data-live] .ok-illo-hit {
-  pointer-events: auto;
-  touch-action: none;
-}
+  .ok-illo[data-live] .ok-illo-hit {
+    pointer-events: auto;
+    touch-action: none;
+  }
 
-.ok-illo-label {
-  position: absolute;
-  left: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: normal;
-  letter-spacing: 0.06em;
-}
+  .ok-illo-label {
+    position: absolute;
+    left: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: normal;
+    letter-spacing: 0.06em;
+  }
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useSyncExternalStore } from "react";
+import { cn } from "@/lib/cn";
 import type { Media } from "@/lib/media";
 import { mediaLoader, mediaUrl } from "@/lib/media-url";
-import { cn } from "@/lib/cn";
 
 const REDUCED = "(prefers-reduced-motion: reduce)";
 const subscribe = (cb: () => void) => {
@@ -19,7 +19,11 @@ const subscribe = (cb: () => void) => {
  */
 export function Video({ media, alt, className }: { media: Media; alt?: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const reduced = useSyncExternalStore(subscribe, () => matchMedia(REDUCED).matches, () => false);
+  const reduced = useSyncExternalStore(
+    subscribe,
+    () => matchMedia(REDUCED).matches,
+    () => false,
+  );
   const loop = !media.hasAudio && !reduced;
   const label = alt ?? media.alt;
 

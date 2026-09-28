@@ -1,6 +1,6 @@
+import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
-import createMDX from "@next/mdx";
 
 const nextConfig = (phase: string): NextConfig => ({
   // page.dev.tsx / route.dev.ts (the /admin tools) only exist under `next dev`,

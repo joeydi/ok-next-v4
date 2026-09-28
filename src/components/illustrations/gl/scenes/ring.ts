@@ -17,13 +17,19 @@ const ZB = HO - A + BR; // ball centre height (px)
 
 // Each outer pillar's wave phase follows its angle around the ring.
 const PILLARS = Array.from({ length: 9 }, (_, i) => {
-  const c = i % 3, r = Math.floor(i / 3);
-  const x = c - 1, y = r - 1;
+  const c = i % 3,
+    r = Math.floor(i / 3);
+  const x = c - 1,
+    y = r - 1;
   return { cx: 60 + c * 90, cy: 60 + r * 90, hub: !x && !y, phase: ((Math.atan2(y, x) / (2 * Math.PI) + 1) % 1) * T };
 });
 
 // okBar: resting-low → high → low, ease-in-out each way.
-const wave = track([[0, HO - A, easeInOut], [T / 2, HO + A, easeInOut], [T, HO - A]]);
+const wave = track([
+  [0, HO - A, easeInOut],
+  [T / 2, HO + A, easeInOut],
+  [T, HO - A],
+]);
 
 function pillars(height: (p: (typeof PILLARS)[number]) => number): Item[] {
   return PILLARS.map((p) => {

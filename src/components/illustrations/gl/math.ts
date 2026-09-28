@@ -41,7 +41,9 @@ export function scale(x: number, y = x, z = x): Mat4 {
 
 /** Same matrix as CSS rotateX() (y down, z toward the viewer). */
 export function rotateX(rad: number): Mat4 {
-  const m = identity(), c = Math.cos(rad), s = Math.sin(rad);
+  const m = identity(),
+    c = Math.cos(rad),
+    s = Math.sin(rad);
   m[5] = c;
   m[6] = s;
   m[9] = -s;
@@ -51,7 +53,9 @@ export function rotateX(rad: number): Mat4 {
 
 /** Same matrix as CSS rotateZ(). */
 export function rotateZ(rad: number): Mat4 {
-  const m = identity(), c = Math.cos(rad), s = Math.sin(rad);
+  const m = identity(),
+    c = Math.cos(rad),
+    s = Math.sin(rad);
   m[0] = c;
   m[1] = s;
   m[4] = -s;
@@ -64,7 +68,8 @@ export const deg = (d: number) => (d * Math.PI) / 180;
 export const Q0: Quat = [0, 0, 0, 1];
 
 export function quat(axis: Vec, rad: number): Quat {
-  const [x, y, z] = norm(axis), s = Math.sin(rad / 2);
+  const [x, y, z] = norm(axis),
+    s = Math.sin(rad / 2);
   return [x * s, y * s, z * s, Math.cos(rad / 2)];
 }
 
@@ -81,7 +86,9 @@ export function qmul(a: Quat, b: Quat): Quat {
 /** v rotated by q. */
 export function qrot([x, y, z, w]: Quat, v: Vec): Vec {
   // v + 2w(u × v) + 2u × (u × v), with u = (x, y, z)
-  const cx = y * v[2] - z * v[1], cy = z * v[0] - x * v[2], cz = x * v[1] - y * v[0];
+  const cx = y * v[2] - z * v[1],
+    cy = z * v[0] - x * v[2],
+    cz = x * v[1] - y * v[0];
   return [
     v[0] + 2 * (w * cx + y * cz - z * cy),
     v[1] + 2 * (w * cy + z * cx - x * cz),
@@ -94,11 +101,25 @@ export function qrot([x, y, z, w]: Quat, v: Vec): Vec {
  * place, without four intermediate matrices per object per frame. `o` offsets
  * the mesh's origin (e.g. -0.5 centres a unit cube).
  */
-export function trs(out: Mat4, c: Vec, [x, y, z, w]: Quat, sx: number, sy: number, sz: number, o: Vec = [0, 0, 0]): Mat4 {
+export function trs(
+  out: Mat4,
+  c: Vec,
+  [x, y, z, w]: Quat,
+  sx: number,
+  sy: number,
+  sz: number,
+  o: Vec = [0, 0, 0],
+): Mat4 {
   const r = [
-    1 - 2 * (y * y + z * z), 2 * (x * y + z * w), 2 * (x * z - y * w),
-    2 * (x * y - z * w), 1 - 2 * (x * x + z * z), 2 * (y * z + x * w),
-    2 * (x * z + y * w), 2 * (y * z - x * w), 1 - 2 * (x * x + y * y),
+    1 - 2 * (y * y + z * z),
+    2 * (x * y + z * w),
+    2 * (x * z - y * w),
+    2 * (x * y - z * w),
+    1 - 2 * (x * x + z * z),
+    2 * (y * z + x * w),
+    2 * (x * z + y * w),
+    2 * (y * z - x * w),
+    1 - 2 * (x * x + y * y),
   ];
   const s = [sx, sy, sz];
   for (let j = 0; j < 3; j++) {

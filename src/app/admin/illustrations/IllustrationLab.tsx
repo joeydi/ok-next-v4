@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Container } from "@/components/Container";
 import { GLIllustration } from "@/components/illustrations/gl/GLIllustration";
 import { POSTER_WIDTHS } from "@/components/illustrations/gl/poster";
@@ -39,7 +39,8 @@ export function IllustrationLab() {
   // The lab owns the clock so the scrubber follows playback.
   useEffect(() => {
     if (!playing) return;
-    let raf = 0, last = performance.now();
+    let raf = 0,
+      last = performance.now();
     const tick = (now: number) => {
       // Read the step now: the updater may run after `last` moves on.
       const dt = (now - last) / 1000;
@@ -65,9 +66,13 @@ export function IllustrationLab() {
     r.dispose();
     const res = await fetch(`/admin/illustrations/poster?scene=${name}`, { method: "POST", body: png });
     const { written, error } = await res.json();
-    setPoster(error ?? written.map((w: { file: string; bytes: number }) => `${w.file.split("/").pop()} ${(w.bytes / 1024).toFixed(1)}KB`).join(" · "));
+    setPoster(
+      error ??
+        written
+          .map((w: { file: string; bytes: number }) => `${w.file.split("/").pop()} ${(w.bytes / 1024).toFixed(1)}KB`)
+          .join(" · "),
+    );
   }
-
 
   return (
     <Container className="py-fl-40 font-mono text-[12px]">
@@ -176,7 +181,10 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
     <button
       type="button"
       onClick={onClick}
-      className={cn("rounded-full border px-3 py-1", on ? "border-ink bg-ink text-paper" : "border-rule hover:border-ink")}
+      className={cn(
+        "rounded-full border px-3 py-1",
+        on ? "border-ink bg-ink text-paper" : "border-rule hover:border-ink",
+      )}
     >
       {children}
     </button>

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
 import GithubSlugger from "github-slugger";
+import matter from "gray-matter";
 import { figureId } from "./figure-id";
 import { getMedia, type Media } from "./media";
 
