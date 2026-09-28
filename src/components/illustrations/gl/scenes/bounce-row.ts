@@ -26,20 +26,24 @@ const SPIN = 6; // ball spin period (s)
 const EASE_IN = bezier(0.5, 0, 1, 1);
 const EASE_OUT = bezier(0.2, 0.8, 0.3, 1);
 const EASE_IO = bezier(0.45, 0, 0.55, 1);
+// Columns rise off the ground and settle (ease-out), then sink slowly and speed into it (ease-in).
+const RISE = bezier(0, 0, 0.58, 1);
+const SINK = bezier(0.42, 0, 1, 1);
 
 // Per column, by time into its loop: height (× WALL), fade from paper, and the pink flash at the hit.
 const height = track([
-  [HIT - 3.5, 0, EASE_IO],
+  [HIT - 3.5, 0, RISE],
   [HIT - 0.15, 1.1, EASE_IN],
   [HIT, 1.7, EASE_OUT],
   [HIT + 0.12, 2, EASE_IO],
   [HIT + 0.3, 1.8, EASE_IO],
   [HIT + 0.45, 1.88, EASE_IO],
-  [HIT + 0.6, 1.85, EASE_IO],
+  [HIT + 0.6, 1.85, SINK],
   [HIT + 3, 0],
 ]);
-// Fades in over its first second of rising (the handoff's 0.25s ends while it's still flat).
-const fade = track([[HIT - 3.5, 0], [HIT - 2.5, 1], [HIT + 2.75, 1], [HIT + 3, 0]]);
+// Fades in over its first second of rising and out over its last second of sinking
+// (the handoff's 0.25s fades happen while it's nearly flat).
+const fade = track([[HIT - 3.5, 0], [HIT - 2.5, 1], [HIT + 2, 1], [HIT + 3, 0]]);
 const flash = track([[HIT - 0.01, 0], [HIT, 1], [HIT + 0.1, 1, bezier(0.3, 0, 0.6, 1)], [HIT + 0.6, 0]]);
 
 // The ball: up and back down once per column.
