@@ -69,12 +69,12 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  azimuth: 215,
+  azimuth: 250,
   elevation: 65,
-  shadowSoft: 10,
+  shadowSoft: 25,
   shadowStrength: 0.35,
-  aoStrength: 0.6,
-  aoRadius: 125,
+  aoStrength: 1.25,
+  aoRadius: 50,
   floorAo: 0.35,
   edges: false,
 };
