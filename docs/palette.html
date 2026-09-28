@@ -13,7 +13,7 @@
 <style>
   :root {
     --bg: #f2ece6;
-    --surface: #fbf9f7;
+    --surface: #faf7f4;
     --ink: #1d1a17;
     --body: #4e463e;
     --muted: #746759;
@@ -221,7 +221,7 @@
       <figure>
         <figcaption>
           <strong>Saturation × lightness</strong>
-          <p>The line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)). It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. Lightness sits on 2.5% steps, and hex rounding leaves each dot within about a point of both.</p>
+          <p>The line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)). It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. Lightness sits on 2.5% steps, except paper-light at 97% to stay clear of white, and hex rounding leaves each dot within about a point of both.</p>
         </figcaption>
         <div class="plot" id="sl"></div>
       </figure>
@@ -263,7 +263,7 @@
 
 <script>
   const TOKENS = [
-    ["paper", "#f2ece6"], ["paper-raised", "#f7f3ef"], ["paper-light", "#fbf9f7"], ["sand", "#ede6de"],
+    ["paper", "#f2ece6"], ["paper-raised", "#f7f3ef"], ["paper-light", "#faf7f4"], ["sand", "#ede6de"],
     ["rule", "#d8ccbf"], ["guide", "#cdc0b2"], ["ink", "#1d1a17"], ["ink-2", "#322d28"], ["ink-3", "#39342e"],
     ["rule-dark", "#39342e"], ["body", "#4e463e"], ["muted", "#746759"],
     ["muted-light", "#b0a08f"], ["pink", "#ff4d6a"], ["pink-ink", "#d01f3e"],

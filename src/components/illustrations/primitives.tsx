@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 
 export type Palette = readonly [top: string, side1: string, side2: string];
 
-export const W: Palette = ["#FBF9F7", "#D8CCBF", "#C8BAAB"];
+export const W: Palette = ["#FAF7F4", "#D8CCBF", "#C8BAAB"];
 export const P: Palette = ["#FF4D6A", "#D62A4A", "#E63757"];
 export const N: Palette = ["#E8DFD6", "#D3C6B8", "#C2B3A3"];
 
