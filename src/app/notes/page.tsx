@@ -11,7 +11,7 @@ import { formatDate, getAllNotes } from "@/lib/notes";
 export const metadata: Metadata = {
   title: "Notes",
   description:
-    "Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington, Vermont.",
+    "Project write-ups, process notes, and the occasional thing I made for fun.",
   alternates: { canonical: "/notes" },
 };
 
