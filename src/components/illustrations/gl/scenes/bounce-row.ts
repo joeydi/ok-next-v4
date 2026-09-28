@@ -41,9 +41,9 @@ const height = track([
   [HIT + 0.6, 1.85, SINK],
   [HIT + 3, 0],
 ]);
-// Fades in over its first second of rising and out over its last second of sinking
+// Fades in over its first quarter second of rising and out over its last quarter second of sinking
 // (the handoff's 0.25s fades happen while it's nearly flat).
-const fade = track([[HIT - 3.5, 0], [HIT - 2.5, 1], [HIT + 2, 1], [HIT + 3, 0]]);
+const fade = track([[HIT - 3.5, 0], [HIT - 3.25, 1], [HIT + 2.75, 1], [HIT + 3, 0]]);
 const flash = track([[HIT - 0.01, 0], [HIT, 1], [HIT + 0.1, 1, bezier(0.3, 0, 0.6, 1)], [HIT + 0.6, 0]]);
 
 // The ball: up and back down once per column.
