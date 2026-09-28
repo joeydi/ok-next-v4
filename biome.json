@@ -9,7 +9,8 @@
     "rules": {
       "preset": "recommended",
       "style": { "noNonNullAssertion": "off", "noDescendingSpecificity": "off" },
-      "suspicious": { "noArrayIndexKey": "off", "noAssignInExpressions": "off", "noConfusingVoidType": "off" }
+      "suspicious": { "noArrayIndexKey": "off", "noAssignInExpressions": "off", "noConfusingVoidType": "off" },
+      "nursery": { "useReactCompiler": "error" }
     }
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
