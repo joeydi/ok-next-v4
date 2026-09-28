@@ -35,19 +35,19 @@ export const services: Record<ServiceSlug, Service> = {
     metaDescription:
       "A development partner for agencies and marketing teams: fast, on-brand sites, campaigns, and the 3D and motion work a template can’t do.",
     audience: "Agencies + marketing teams",
-    h1: ["Ready when", "you *are.*"],
+    h1: ["Build the", "*big idea.*"],
     illustration: "bounce-row",
     intro:
-      "Agencies call me when they need a site done fast, or something their in-house developers can’t handle. Marketing teams bring me in to turn campaign strategy into work that ships quickly and stays on brand.",
-    tagline: "For when the campaign is ready and the website isn’t.",
+      "Agencies call me when they need extra development firepower or something their in-house team can’t handle. Marketing teams bring me in to turn campaign ideas into digital work that ships quickly and stays on brand.",
+    tagline: "For getting your ambitious projects over the line.",
     capabilities: {
       eyebrow: "What I do",
       heading: "An extra pair of hands.",
       items: [
-        { n: "01", k: "Agencies", t: "A development partner for agencies", d: "When you need a site done fast, or something your in-house developers can’t take on, I plug into your team and work the way you work.", ex: "Marketing sites · Microsites · Overflow builds" },
-        { n: "02", k: "Campaigns", t: "Campaign execution", d: "I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that go out on time and on brand.", ex: "Landing pages · Microsites · Email" },
-        { n: "03", k: "Special builds", t: "The hard stuff", d: "3D, motion, and interactive pieces that go past what a template can do, like a product tour or a scroll-driven story.", ex: "3D product tours · Motion · Interactive" },
-        { n: "04", k: "Reporting", t: "Analytics and reporting", d: "Tracking and reporting set up from the start, so you can see what a campaign actually did and what to try next.", ex: "Tracking · Dashboards · Reporting" },
+        { n: "01", k: "Partnership", t: "A development partner for agencies", d: "I plug into your team when you need extra development capacity, specialized expertise, or simply another experienced developer to get the work out the door.", ex: "Marketing sites · Microsites · Overflow builds" },
+        { n: "02", k: "Campaigns", t: "From campaign to launch", d: "I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that ship on time and stay on brand.", ex: "Landing pages · Microsites · Email" },
+        { n: "03", k: "Special builds", t: "The hard stuff", d: "I build the 3D, motion, and interactive pieces that go beyond what a template can do, from product tours to scroll-driven stories.", ex: "3D product tours · Motion · Interactive" },
+        { n: "04", k: "Reporting", t: "Analytics and reporting", d: "I set up tracking and reporting from the start, so you can see what worked, what didn’t, and what to try next.", ex: "Tracking · Dashboards · Reporting" },
       ],
     },
     situations: {
@@ -80,7 +80,7 @@ export const services: Record<ServiceSlug, Service> = {
       ...testimonials.kathleen,
       q: "Joe is an extremely skilled web designer, developer and digital problem solver. For many of our online projects, he’s been an instrumental part of our process including planning, assessing and developing.",
     },
-    contactNote: "Tell me about the deadline. I’m happy to talk it through.",
+    contactNote: "Tell me what you’re trying to pull off. I love a good challenge.",
   },
 
   "cms-integrations": {
@@ -93,16 +93,16 @@ export const services: Record<ServiceSlug, Service> = {
     h1: ["Content,", "*connected.*"],
     illustration: "conveyor",
     intro:
-      "I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations.",
-    tagline: "For the migration nobody wants to own.",
+      "I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations, connecting content and systems without disrupting the people who depend on them.",
+    tagline: "For when nobody remembers why it works that way.",
     capabilities: {
       eyebrow: "What I do",
       heading: "Four ways in.",
       items: [
         { n: "01", k: "WordPress", t: "Custom WordPress, built to be edited", d: "Custom themes and blocks built around how your team actually publishes, so updating the site doesn’t require a developer.", ex: "Custom themes · Custom blocks · Multisite" },
-        { n: "02", k: "Integrations", t: "Connect the systems you already use", d: "Backend integrations with your mailing list, CRM, Salesforce, and whatever else holds your data, so information moves without copy and paste.", ex: "Salesforce · CRMs · Mailing lists · APIs" },
-        { n: "03", k: "Migrations", t: "Move years of content safely", d: "Large content migrations, planned and scripted, with media, metadata, and redirects carried over and nothing quietly lost along the way.", ex: "Content audits · Scripted imports · Redirects" },
-        { n: "04", k: "Headless", t: "Headless CMS and modern stacks", d: "A headless CMS with a modern front end when you need speed, flexibility, or the same content in more than one place.", ex: "Headless CMS · React · Custom APIs" },
+        { n: "02", k: "Integrations", t: "Connect the systems you already use", d: "I connect your website to your CRM, mailing list, Salesforce, and other systems, so information moves where it needs to without copy and paste.", ex: "Salesforce · CRMs · Mailing lists · APIs" },
+        { n: "03", k: "Migrations", t: "Move years of content safely", d: "Large content migrations, planned and scripted so content, media, metadata, and redirects make the move without anything quietly getting lost along the way.", ex: "Content audits · Scripted imports · Redirects" },
+        { n: "04", k: "Headless", t: "Content without the constraints", d: "Headless CMS architecture with a modern front end when you need more flexibility, better performance, or the same content delivered in more than one place.", ex: "Headless CMS · React · Custom APIs" },
       ],
     },
     situations: {
@@ -132,7 +132,7 @@ export const services: Record<ServiceSlug, Service> = {
       href: "/notes/columbia-capital",
     },
     quote: testimonials.tom,
-    contactNote: "Tell me about the migration. I’m happy to talk it through.",
+    contactNote: "Tell me about the system. Let’s Marie Kondo that Rube Goldberg machine.",
   },
 
   "tools-for-better-work": {
@@ -145,14 +145,14 @@ export const services: Record<ServiceSlug, Service> = {
     h1: ["Tools for", "better *work.*"],
     illustration: "ring",
     intro:
-      "I build tools that help teams work better: visibility into your org’s data and knowledge, automation that clears bottlenecks, and monitoring that flags changes in critical processes.",
+      "I build internal tools that give teams better access to their data and knowledge, automate repetitive work, and monitor the processes they depend on.",
     tagline: "For the spreadsheet everyone’s afraid to touch.",
     capabilities: {
       eyebrow: "What I build",
       heading: "Three kinds of tools.",
       items: [
-        { n: "01", k: "Visibility", t: "See what your org knows", d: "Dashboards and internal search that pull your data and knowledge out of scattered spreadsheets, inboxes, and people’s heads into one place everyone can use.", ex: "Reporting dashboards · Knowledge bases · Data pipelines" },
-        { n: "02", k: "Automation", t: "Clear the bottlenecks", d: "Automation for the repetitive, error-prone steps that slow a team down, so people spend their time on the work that needs a person.", ex: "Workflow automation · Integrations · Internal apps" },
+        { n: "01", k: "Visibility", t: "See what your org knows", d: "Dashboards and internal search that pull data and knowledge out of scattered spreadsheets, inboxes, and people’s heads, and put it somewhere everyone can use.", ex: "Reporting dashboards · Knowledge bases · Data pipelines" },
+        { n: "02", k: "Automation", t: "Clear the bottlenecks", d: "Automation for the repetitive, error-prone steps that slow your team down, so people can spend their time on work that actually needs a person.", ex: "Workflow automation · Integrations · Internal apps" },
         { n: "03", k: "Monitoring", t: "Know when something changes", d: "Quiet, reliable checks on the processes you depend on, with alerts that reach the right person before a small problem becomes a big one.", ex: "Alerts · Change tracking · Health checks" },
       ],
     },
