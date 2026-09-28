@@ -88,7 +88,7 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
 
 ## Before launch
 
-- Add `okaypl.us` (and the Vercel preview domain) to the Adobe Fonts kit `duf7mcy`, or Gelica won't load.
+- Add `okaypl.us` (and the Vercel preview domain) to the Adobe Fonts kit `llb6krb`, or Gelica won't load.
 - Set the scheduling link in `src/data/site.ts` (`bookingUrl`).
 - Replace placeholder dates and bodies in `src/content/notes/`, and swap striped placeholders for real images.
 - Set `NEXT_PUBLIC_MEDIA_HOST` in the Vercel project (see Media).

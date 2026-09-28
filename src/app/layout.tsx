@@ -56,7 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Gelica (display) — Adobe Fonts kit. Add each live domain to the kit. */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://use.typekit.net/duf7mcy.css" />
+        <link rel="stylesheet" href="https://use.typekit.net/llb6krb.css" />
       </head>
       <body>
         <a

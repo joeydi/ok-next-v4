@@ -107,7 +107,7 @@
 
 @utility display {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* Striped image placeholder. */
@@ -523,7 +523,7 @@
     /* Design: 72 / 56 margins plus the article grid's 24px row gap. */
     margin-block: var(--spacing-fl-96) calc(var(--spacing-fl-56) + var(--spacing-fl-24));
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 400;
     font-size: var(--text-fl-60);
     line-height: 1.08;
     letter-spacing: var(--tracking-heading);
