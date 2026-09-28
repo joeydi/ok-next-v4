@@ -4,7 +4,7 @@ export const SITE = {
   author: "Joe di Stefano",
   tagline: "Designer + developer",
   location: "Burlington, Vermont",
-  email: "joe@okaypl.us",
+  email: "joeydi@okaypl.us",
   description:
     "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams, agencies, and non-profits figure out what's worth building, then build it well.",
   bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
