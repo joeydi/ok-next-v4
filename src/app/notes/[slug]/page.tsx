@@ -56,29 +56,31 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
     <>
       <main id="main">
         <article>
-          <Container as="header" className="grid-12 gap-y-fl-24 pt-fl-56 pb-fl-64">
-            <div className="mono-label col-span-12 flex flex-wrap gap-x-fl-24 text-muted">
+          <Container as="header" className="pt-fl-56 pb-fl-64">
+            <div className="mono-label flex flex-wrap gap-x-fl-24 text-muted">
               <Link href="/notes">/ Notes</Link>
               <time dateTime={meta.date}>{formatDate(meta.date)}</time>
               <span>{meta.topic ?? meta.tag}</span>
             </div>
-            <h1 className="display col-span-12 mt-fl-40 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
-              <Accent text={meta.title} />
-            </h1>
-            <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
-              <MediaImage
-                src={headshot.key}
-                alt=""
-                width={56}
-                height={56}
-                placeholder="blur"
-                blurDataURL={headshot.blurDataURL}
-                className="size-14 frame object-cover"
-              />
-              <div className="font-mono text-fl-14 leading-[1.6] text-muted">
-                JOE DI STEFANO
-                <br />
-                {meta.byline}
+            <div className="grid-12 mt-fl-48 gap-y-fl-24">
+              <h1 className="display col-span-12 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
+                <Accent text={meta.title} />
+              </h1>
+              <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
+                <MediaImage
+                  src={headshot.key}
+                  alt=""
+                  width={56}
+                  height={56}
+                  placeholder="blur"
+                  blurDataURL={headshot.blurDataURL}
+                  className="size-14 frame object-cover"
+                />
+                <div className="font-mono text-fl-14 leading-[1.6] text-muted">
+                  JOE DI STEFANO
+                  <br />
+                  {meta.byline}
+                </div>
               </div>
             </div>
           </Container>
