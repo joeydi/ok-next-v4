@@ -102,7 +102,7 @@ function Services() {
           <Link
             key={s.n}
             href={s.href}
-            className="frame hover-card hover-lift flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
+            className="frame hover-card hover-lift flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
           >
             <div className="mono-label flex justify-between gap-4 text-muted">
               <span>{s.kicker}</span>
