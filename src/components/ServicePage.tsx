@@ -157,15 +157,15 @@ export function ServicePage({ service: s }: { service: Service }) {
         </Container>
 
         {/* Recent work */}
-        <section className="pt-fl-96 pb-fl-120">
+        <Container as="section" className="pt-fl-96 pb-fl-120">
           {s.work.href ? (
-            <Container as={Link} href={s.work.href} className="hover-card grid-12 items-end gap-y-fl-40">
+            <Link href={s.work.href} className="hover-card grid-12 items-end gap-y-fl-40">
               {work}
-            </Container>
+            </Link>
           ) : (
-            <Container className="grid-12 items-end gap-y-fl-40">{work}</Container>
+            <div className="grid-12 items-end gap-y-fl-40">{work}</div>
           )}
-        </section>
+        </Container>
       </main>
 
       <SiteFooter className="pt-fl-120 pb-fl-40">
