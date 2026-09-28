@@ -230,7 +230,7 @@ export class Renderer {
    * noise is what image codecs compress worst.
    */
   static async create(canvas: HTMLCanvasElement, { preserveDrawingBuffer = false, dither = true } = {}) {
-    const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: true, preserveDrawingBuffer });
+    const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: true, stencil: true, preserveDrawingBuffer });
     if (!gl) throw new Error("WebGL2 unavailable");
     const ext = gl.getExtension("KHR_parallel_shader_compile");
     const lit = startProgram(gl, LIT_VS, LIT_FS);
@@ -403,7 +403,7 @@ export class Renderer {
     gl.depthMask(true);
     gl.disable(gl.BLEND);
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
     const p = this.lit;
     gl.useProgram(p);
     gl.activeTexture(gl.TEXTURE0);
@@ -487,12 +487,20 @@ export class Renderer {
     };
     const indices = list.map((_, i) => i);
     const solid = (i: number) => (list[i].fade ?? 1) >= 1;
+    // Solid objects mark their pixels, so the floor can leave them alone.
+    gl.enable(gl.STENCIL_TEST);
+    gl.stencilFunc(gl.ALWAYS, 1, 0xff);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
     indices.filter(solid).forEach(drawItem);
 
     // Floor last: it only darkens what's already behind the canvas (the paper
     // and GLIllustration's SVG grid). Near the objects it's drawn in TILE
     // tiles, each with its own shadow rows and a mesh for per-vertex AO; plain
     // strips cover the rest of the canvas. Integer bounds keep the seams exact.
+    // Only where no solid object was drawn: an object dipping below the floor
+    // (a puzzle-cube slice turn) would otherwise take the floor's contact shadow.
+    gl.stencilFunc(gl.EQUAL, 0, 0xff);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.depthMask(false);
@@ -532,6 +540,7 @@ export class Renderer {
 
     // Fading objects last, far to near, over everything behind them. Only
     // their near faces: the view flips y, so those wind clockwise (GL's back).
+    gl.disable(gl.STENCIL_TEST);
     gl.uniform1i(this.u(p, "uOccN"), list.length);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
