@@ -8,15 +8,16 @@ import { SCENES, type SceneName } from "./scenes";
 
 /** Drawing-buffer budget: up to 2× density, less for very large illustrations. */
 const MAX_PIXELS = 2.5e6;
-/** Matches the hero layouts: about half the viewport on desktop, up to 540px below. */
-const DEFAULT_SIZES = "(min-width: 1024px) 50vw, min(100vw, 540px)";
+/** Matches the hero layouts: about half the viewport on desktop, full width below. */
+const DEFAULT_SIZES = "(min-width: 1024px) 50vw, 100vw";
 
 /**
  * The floor plane as an SVG matrix(): the camera is orthographic, so the iso
- * plane is a flat 2D affine map. Same matrix the renderer projects with.
+ * plane is a flat 2D affine map. Same matrix the renderer projects with, minus
+ * the scene's `pre`, so every scene sits on the same grid.
  */
 function floorMatrix(scene: SceneDef) {
-  const m = planeToCanvas(scene), z = scene.floorZ ?? 0;
+  const m = planeToCanvas({ ...scene, pre: undefined }), z = scene.floorZ ?? 0;
   return [m[0], m[1], m[4], m[5], m[12] + m[8] * z, m[13] + m[9] * z].map((x) => +x.toFixed(4)).join(" ");
 }
 

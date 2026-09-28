@@ -10,9 +10,9 @@ import { cn } from "@/lib/cn";
 
 // Illustration widths the pages actually use (see page.tsx / ServicePage.tsx).
 const WIDTHS: [label: string, px: number][] = [
-  ["320 vp", 288],
-  ["390 vp", 358],
-  ["768 vp", 540],
+  ["320 vp", 280],
+  ["390 vp", 344],
+  ["768 vp", 693],
   ["1440 vp", 713],
   ["1920 vp", 951],
 ];

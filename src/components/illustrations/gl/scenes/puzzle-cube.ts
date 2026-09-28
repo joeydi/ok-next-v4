@@ -71,7 +71,6 @@ function frame(t: number): Item[] {
 
 export const puzzleCube: SceneDef = {
   labels: ["MARKETERS", "ORGANIZATIONS", "TEAMS"],
-  guideEnd: 620,
   duration: T,
   posterTime: 0,
   frame,

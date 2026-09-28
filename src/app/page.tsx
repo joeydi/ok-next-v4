@@ -35,16 +35,16 @@ function Hero() {
     <Container as="header" className="relative pt-fl-56 pb-fl-88 lg:min-h-[calc(61.11*var(--pvw))]">
       <Eyebrow n="00">Introduction</Eyebrow>
       <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-168 leading-[.9] tracking-display">
-        Let’s think
-        <br />
-        it through,
-        <br />
+        Let’s think&#32;
+        <br className="hidden lg:block" />
+        it through,&#32;
+        <br className="hidden lg:block" />
         <span className="text-pink">together.</span>
       </h1>
       <GLIllustration
         scene="puzzle-cube"
-        sizes="(min-width: 1024px) min(43.06vw, 827px), min(100vw, 540px)"
-        className="mx-auto mt-fl-40 w-full lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:right-[calc(1.67*var(--pvw))] lg:mt-0 lg:w-[calc(43.06*var(--pvw))]"
+        sizes="(min-width: 1024px) min(49.51vw, 951px), 100vw"
+        className="mx-auto mt-fl-40 w-full lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:right-0"
       />
       <div className="mt-fl-32 lg:mt-fl-72">
         <div className="grid gap-fl-24 md:grid-cols-[auto_1fr] md:gap-fl-32 max-w-[clamp(43.75rem,16.25vw+40.5rem,60rem)]">
