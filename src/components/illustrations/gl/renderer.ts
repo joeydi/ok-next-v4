@@ -362,12 +362,12 @@ export class Renderer {
     return bounds;
   }
 
-  /** Sets the drawing buffer size in device pixels. */
+  /** Sets the drawing buffer size in device pixels. True if it changed, which clears the canvas. */
   resize(width: number, height: number) {
-    if (this.canvas.width !== width || this.canvas.height !== height) {
-      this.canvas.width = width;
-      this.canvas.height = height;
-    }
+    if (this.canvas.width === width && this.canvas.height === height) return false;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    return true;
   }
 
   render(scene: SceneDef, items: Item[], s: Settings) {

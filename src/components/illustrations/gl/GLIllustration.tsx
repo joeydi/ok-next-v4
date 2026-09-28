@@ -61,12 +61,13 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     let r: Renderer | null = null;
     let player: Player | null = null;
     let loading = false, disposed = false, near = false;
-    let raf = 0, origin = 0;
+    let raf = 0, origin = 0, last: number | null = null;
     let held: number | null = null;
     let cancelStart = () => {};
 
     const draw = (now: number) => {
       if (!r) return;
+      last = now;
       const { time, settings = DEFAULT_SETTINGS } = props.current;
       // The clock starts on the poster's frame, so the hand-over doesn't jump.
       origin ||= now;
@@ -85,7 +86,8 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       if (!r) return;
       const w = box.clientWidth;
       const dpr = Math.min(devicePixelRatio, 2, Math.sqrt(MAX_PIXELS / (w * w * (660 / 620))));
-      r.resize(Math.round(w * dpr), Math.round(((w * 660) / 620) * dpr));
+      // Resizing clears the canvas: redraw the last frame now, before the browser paints, or it flickers.
+      if (r.resize(Math.round(w * dpr), Math.round(((w * 660) / 620) * dpr)) && last !== null) draw(last);
     };
     const start = () => {
       if (loading || r) return;
