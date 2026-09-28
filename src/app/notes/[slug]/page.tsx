@@ -56,7 +56,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
     <>
       <main id="main">
         <article>
-          <Container as="header" className="grid-12 gap-y-fl-24 pt-fl-72 pb-fl-64">
+          <Container as="header" className="grid-12 gap-y-fl-24 pt-fl-56 pb-fl-64">
             <div className="mono-label col-span-12 flex flex-wrap gap-x-fl-24 text-muted">
               <Link href="/notes">/ Notes</Link>
               <time dateTime={meta.date}>{formatDate(meta.date)}</time>
