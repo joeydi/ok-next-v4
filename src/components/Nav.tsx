@@ -10,10 +10,27 @@ import { Logo } from "./Logo";
 
 const SERVICE_PATHS = ["/creative-production", "/cms-integrations", "/tools-for-better-work"];
 
-function isActive(label: string, pathname: string) {
-  if (label === "Notes") return pathname.startsWith("/notes");
-  if (label === "Services") return SERVICE_PATHS.includes(pathname);
-  return false;
+/** Home sections the nav links to, in page order. */
+const SECTIONS = ["approach", "services", "about", "contact"];
+
+/** The home section being read: the last one whose top has passed 40% down the viewport (or the last one once the page bottoms out). */
+function currentSection(): string | null {
+  const line = window.innerHeight * 0.4;
+  const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1;
+  let current: string | null = null;
+  for (const id of SECTIONS) {
+    const el = document.getElementById(id);
+    if (el && (atBottom || el.getBoundingClientRect().top <= line)) current = id;
+  }
+  return current;
+}
+
+/** "page" for the route a link leads to, "location" for the home section scrolled into view. */
+function current(href: string, pathname: string, section: string | null): "page" | "location" | undefined {
+  if (href === "/notes") return pathname.startsWith("/notes") ? "page" : undefined;
+  if (href === "/#services" && SERVICE_PATHS.includes(pathname)) return "page";
+  if (pathname === "/" && href === `/#${section}`) return "location";
+  return undefined;
 }
 
 function closeMenu() {
@@ -46,9 +63,11 @@ function navState(nav: HTMLElement | null): NavState {
 
 export function Nav() {
   const pathname = usePathname();
-  const links = NAV.map((l) => ({ ...l, active: isActive(l.label, pathname) }));
   const navRef = useRef<HTMLElement>(null);
   const state = useSyncExternalStore(onScroll, () => navState(navRef.current), (): NavState => "top");
+  const section = useSyncExternalStore(onScroll, currentSection, () => null);
+  const links = NAV.map((l) => ({ ...l, current: current(l.href, pathname, section) }));
+  const contactCurrent = current(CONTACT_HREF, pathname, section);
   const dark = state === "dark";
   const accent = dark ? "text-pink" : "text-pink-ink";
   // Menu items bleed into the menu's padding so the hover fill sits around the text, which stays put.
@@ -87,13 +106,13 @@ export function Nav() {
         <ul className="hidden justify-end gap-fl-32 lg:col-span-9 lg:flex xl:col-span-5">
           {links.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} aria-current={l.active ? "page" : undefined} className={l.active ? accent : undefined}>
+              <Link href={l.href} aria-current={l.current} className={l.current ? accent : undefined}>
                 {l.label}
               </Link>
             </li>
           ))}
           <li>
-            <Link href={CONTACT_HREF} className={accent}>
+            <Link href={CONTACT_HREF} aria-current={contactCurrent} className={accent}>
               Say hello <span className="nudge">→</span>
             </Link>
           </li>
@@ -111,15 +130,15 @@ export function Nav() {
                   <Link
                     href={l.href}
                     onClick={closeMenu}
-                    aria-current={l.active ? "page" : undefined}
-                    className={cn(menuItem, l.active && accent)}
+                    aria-current={l.current}
+                    className={cn(menuItem, l.current && accent)}
                   >
                     {l.label}
                   </Link>
                 </li>
               ))}
               <li className={cn("mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none", dark ? "border-paper/10" : "border-rule-dark/10")}>
-                <Link href={CONTACT_HREF} onClick={closeMenu} className={cn(menuItem, accent)}>
+                <Link href={CONTACT_HREF} onClick={closeMenu} aria-current={contactCurrent} className={cn(menuItem, accent)}>
                   Say hello →
                 </Link>
               </li>
