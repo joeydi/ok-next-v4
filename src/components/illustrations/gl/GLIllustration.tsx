@@ -162,7 +162,7 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       <svg className="ok-illo-gl ok-illo-floor" viewBox="0 0 620 660">
         <defs>
           <pattern id={gridId} width="44" height="44" x="-90" y="-90" patternUnits="userSpaceOnUse">
-            <path d="M0 .5H44M.5 0V44" stroke="#CDC3B1" />
+            <path d="M0 .5H44M.5 0V44" stroke="#CDC0B2" />
           </pattern>
         </defs>
         <rect x="-1500" y="-1500" width="3300" height="3300" fill={`url(#${gridId})`} opacity="0.7" transform={`matrix(${floorMatrix(scene)})`} />

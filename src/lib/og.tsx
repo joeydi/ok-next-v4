@@ -16,7 +16,7 @@ const fonts = Promise.all([
 ]);
 
 const logo = readFile(path.join(process.cwd(), "public/assets/okayplus.svg"), "utf8").then(
-  (svg) => `data:image/svg+xml;base64,${Buffer.from(svg.replace(/#374151/g, "#1C1A17")).toString("base64")}`,
+  (svg) => `data:image/svg+xml;base64,${Buffer.from(svg.replace(/#374151/g, "#1D1A17")).toString("base64")}`,
 );
 
 const cube = `data:image/svg+xml;base64,${Buffer.from(cubeMarkSvg({ background: null, size: 160 })).toString("base64")}`;
@@ -66,15 +66,15 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 64,
-          background: "#F2EDE6",
-          color: "#1C1A17",
+          background: "#F2ECE6",
+          color: "#1D1A17",
           fontFamily: "Hanken",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={logoSrc} width={150} height={35} alt="" />
-          <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#736959" }}>
+          <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
             JOE DI STEFANO / DESIGNER + DEVELOPER
           </div>
         </div>
@@ -88,7 +88,7 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
               ...(imageSrc ? { width: 504 } : { maxWidth: 860 }),
             }}
           >
-            <div style={{ display: "flex", gap: 24, fontFamily: "Plex Mono", fontSize: 22, letterSpacing: "0.06em", color: "#736959" }}>
+            <div style={{ display: "flex", gap: 24, fontFamily: "Plex Mono", fontSize: 22, letterSpacing: "0.06em", color: "#746759" }}>
               {eyebrow
                 .toUpperCase()
                 .split(/\s{2,}/)
@@ -106,7 +106,7 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
               }}
             >
               {words.map(({ w, pink }, i) => (
-                <span key={i} style={{ color: pink ? "#FF4D6A" : "#1C1A17", marginRight: size * 0.24 }}>
+                <span key={i} style={{ color: pink ? "#FF4D6A" : "#1D1A17", marginRight: size * 0.24 }}>
                   {w}
                 </span>
               ))}
@@ -114,7 +114,7 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
           </div>
           {imageSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageSrc} {...FRAME} alt="" style={{ objectFit: "cover", border: "1px solid #D8CFC0", borderRadius: 2 }} />
+            <img src={imageSrc} {...FRAME} alt="" style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }} />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={cube} width={160} height={160} alt="" />

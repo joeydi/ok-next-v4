@@ -12,18 +12,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
   :root {
-    --bg: #f2ede6;
-    --surface: #fbf9f6;
-    --ink: #1c1a17;
-    --body: #4e483e;
-    --muted: #736959;
-    --line: #d8cfc0;
-    --grid: #e3dbcf;
+    --bg: #f2ece6;
+    --surface: #fbf9f7;
+    --ink: #1d1a17;
+    --body: #4e463e;
+    --muted: #746759;
+    --line: #d8ccbf;
+    --grid: #e3d9ce;
     --accent: #d4203f;
     --wedge: rgba(212, 32, 63, 0.08);
-    --dot-ring: #92846d;
-    --tip-bg: #1c1a17;
-    --tip-ink: #f2ede6;
+    --dot-ring: #92806d;
+    --tip-bg: #1d1a17;
+    --tip-ink: #f2ece6;
     --display: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
     --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -31,34 +31,34 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg: #1c1a17;
-      --surface: #23211d;
-      --ink: #f2ede6;
-      --body: #cdc3b1;
-      --muted: #b0a38e;
-      --line: #39352e;
-      --grid: #312e28;
+      --bg: #1d1a17;
+      --surface: #23201d;
+      --ink: #f2ece6;
+      --body: #cdc0b2;
+      --muted: #b0a08f;
+      --line: #39342e;
+      --grid: #322d28;
       --accent: #ff4d6a;
       --wedge: rgba(255, 77, 106, 0.1);
-      --dot-ring: #92846d;
-      --tip-bg: #f2ede6;
-      --tip-ink: #1c1a17;
+      --dot-ring: #92806d;
+      --tip-bg: #f2ece6;
+      --tip-ink: #1d1a17;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #1c1a17;
-    --surface: #23211d;
-    --ink: #f2ede6;
-    --body: #cdc3b1;
-    --muted: #b0a38e;
-    --line: #39352e;
-    --grid: #312e28;
+    --bg: #1d1a17;
+    --surface: #23201d;
+    --ink: #f2ece6;
+    --body: #cdc0b2;
+    --muted: #b0a08f;
+    --line: #39342e;
+    --grid: #322d28;
     --accent: #ff4d6a;
     --wedge: rgba(255, 77, 106, 0.1);
-    --dot-ring: #92846d;
-    --tip-bg: #f2ede6;
-    --tip-ink: #1c1a17;
+    --dot-ring: #92806d;
+    --tip-bg: #f2ece6;
+    --tip-ink: #1d1a17;
   }
 
   * { box-sizing: border-box; }
@@ -186,7 +186,7 @@
     align-items: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   }
-  .tip .sq { width: 28px; height: 28px; border-radius: 2px; grid-row: span 2; border: 1px solid rgba(146, 132, 109, 0.6); }
+  .tip .sq { width: 28px; height: 28px; border-radius: 2px; grid-row: span 2; border: 1px solid rgba(146, 128, 109, 0.6); }
   .tip b { font-weight: 500; }
   .tip span { opacity: 0.75; }
 
@@ -201,7 +201,7 @@
   <header>
     <div class="label crumbs"><span>/ Tokens</span><span id="count"></span><span>src/app/globals.css</span></div>
     <h1>Palette<span>.</span></h1>
-    <p class="lede">Every <code>--color-*</code> token in the okaypl.us theme, with its HSL position. The neutrals share one warm hue, 37.5°, and take their saturation from their lightness, so they get more saturated as they get lighter. Click a swatch to copy its hex.</p>
+    <p class="lede">Every <code>--color-*</code> token in the okaypl.us theme, with its HSL position. The neutrals share one warm hue, 31°, and take their saturation from their lightness, so they get more saturated as they get lighter. Click a swatch to copy its hex.</p>
   </header>
 
   <section aria-labelledby="swatches-h">
@@ -228,7 +228,7 @@
       <figure>
         <figcaption>
           <strong>Hue wheel</strong>
-          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 13 neutral tokens, set at 37.5° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 48° away.</p>
+          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 13 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away.</p>
         </figcaption>
         <div class="plot" id="wheel"></div>
       </figure>
@@ -263,10 +263,10 @@
 
 <script>
   const TOKENS = [
-    ["paper", "#f2ede6"], ["paper-raised", "#f7f4ef"], ["paper-light", "#fbf9f6"], ["sand", "#ede7de"],
-    ["rule", "#d8cfc0"], ["guide", "#cdc3b1"], ["ink", "#1c1a17"], ["ink-2", "#312e28"], ["ink-3", "#39352e"],
-    ["rule-dark", "#39352e"], ["body", "#4e483e"], ["muted", "#736959"],
-    ["muted-light", "#b0a38e"], ["pink", "#ff4d6a"], ["pink-ink", "#d4203f"],
+    ["paper", "#f2ece6"], ["paper-raised", "#f7f3ef"], ["paper-light", "#fbf9f7"], ["sand", "#ede6de"],
+    ["rule", "#d8ccbf"], ["guide", "#cdc0b2"], ["ink", "#1d1a17"], ["ink-2", "#322d28"], ["ink-3", "#39342e"],
+    ["rule-dark", "#39342e"], ["body", "#4e463e"], ["muted", "#746759"],
+    ["muted-light", "#b0a08f"], ["pink", "#ff4d6a"], ["pink-ink", "#d4203f"],
   ];
   const GROUPS = [
     ["Paper", ["paper-light", "paper-raised", "paper", "sand"]],
@@ -297,7 +297,7 @@
     return (x + 0.05) / (y + 0.05);
   };
 
-  const PAPER = "#f2ede6", INK = "#1c1a17";
+  const PAPER = "#f2ece6", INK = "#1d1a17";
   const byName = new Map(TOKENS.map(([name, hex]) => {
     const hsl = hslOf(hex);
     return [name, { name, hex, ...hsl, onPaper: contrast(hex, PAPER), onInk: contrast(hex, INK) }];

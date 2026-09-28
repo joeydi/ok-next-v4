@@ -133,7 +133,7 @@ function About() {
           blurDataURL={festival.blurDataURL}
           className="object-cover object-[30%_30%]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,#1C1A1700_35%,#1C1A17F2_88%,#1C1A17_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,#1D1A1700_35%,#1D1A17F2_88%,#1D1A17_100%)]" />
         <Container className="absolute inset-x-0 bottom-fl-64 flex flex-col items-start justify-between gap-fl-24 lg:flex-row lg:items-end">
           <div className="flex flex-col gap-fl-24">
             <Eyebrow n="03" className="text-muted-light">

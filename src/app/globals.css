@@ -3,19 +3,19 @@
 @import "../components/illustrations/illustrations.css";
 
 @theme {
-  --color-paper: #f2ede6;
-  --color-paper-raised: #f7f4ef;
-  --color-paper-light: #fbf9f6;
-  --color-sand: #ede7de;
-  --color-rule: #d8cfc0;
-  --color-guide: #cdc3b1;
-  --color-ink: #1c1a17;
-  --color-ink-2: #312e28;
-  --color-ink-3: #39352e;
-  --color-rule-dark: #39352e;
-  --color-body: #4e483e;
-  --color-muted: #736959;
-  --color-muted-light: #b0a38e;
+  --color-paper: #f2ece6;
+  --color-paper-raised: #f7f3ef;
+  --color-paper-light: #fbf9f7;
+  --color-sand: #ede6de;
+  --color-rule: #d8ccbf;
+  --color-guide: #cdc0b2;
+  --color-ink: #1d1a17;
+  --color-ink-2: #322d28;
+  --color-ink-3: #39342e;
+  --color-rule-dark: #39342e;
+  --color-body: #4e463e;
+  --color-muted: #746759;
+  --color-muted-light: #b0a08f;
   --color-pink: #ff4d6a;
   --color-pink-ink: #d4203f;
 
@@ -116,12 +116,12 @@
 /* Striped image placeholder. */
 @utility stripes {
   background-color: var(--color-sand);
-  background-image: repeating-linear-gradient(135deg, rgb(28 26 23 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(135deg, rgb(29 26 23 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 @utility stripes-dark {
   background-color: var(--color-ink);
-  background-image: repeating-linear-gradient(135deg, rgb(242 237 230 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(135deg, rgb(242 236 230 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 /* Arrow that nudges right when its parent link is hovered or focused. */
