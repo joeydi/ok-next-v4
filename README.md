@@ -9,6 +9,7 @@ npm install
 npm run dev      # http://localhost:3000
 npm run build    # static build; every route is prerendered
 npm run lint
+npm run format   # Biome; format:check to check without writing
 node scripts/fluid.mjs   # regenerate src/app/fluid.css after changing the scale
 npm run media            # sync src/data/media.json with the R2 bucket (see Media)
 ```
@@ -19,22 +20,22 @@ Notes (blog posts and case studies) are MDX files in `src/content/notes/`. The f
 
 ```mdx
 ---
-title: Designing a Website That Feels Alive While Keeping Content Front and *Center*   # *words* render pink on the post page
+title: Designing a Website That Feels Alive While Keeping Content Front and *Center* # *words* render pink on the post page
 description: One or two sentences for the index, RSS and social cards.
 date: 2026-05-19
-tag: PROCESS                  # CASE STUDY | PROCESS | VERMONT | COMMUNITY
-topic: Interaction design     # optional label beside the date (defaults to tag)
-featured: true                # optional — the one post shown large on /notes
-image: notes/foo/hero.jpg     # optional — media key (see Media); striped placeholder until set
+tag: PROCESS # CASE STUDY | PROCESS | VERMONT | COMMUNITY
+topic: Interaction design # optional label beside the date (defaults to tag)
+featured: true # optional — the one post shown large on /notes
+image: notes/foo/hero.jpg # optional — media key (see Media); striped placeholder until set
 imageLabel: image — Simple Creature homepage
-byline: Co-Founder, Simple Creature   # optional (default "Designer + developer")
+byline: Co-Founder, Simple Creature # optional (default "Designer + developer")
 tools: [CSS 3D transforms, GSAP ScrollTrigger]
 # Case studies can also set:
 client: Columbia Capital
 role: Design + development
 year: 2025
 link: https://colcap.com
-draft: true                   # optional — hidden from production builds
+draft: true # optional — hidden from production builds
 ---
 
 <Lead>Opening paragraph in Gelica.</Lead>
@@ -74,7 +75,13 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
 3. Create an R2 API token (**Object Read & Write**, limited to the bucket).
 4. Add a CORS policy to the bucket so the admin can upload from the browser:
    ```json
-   [{ "AllowedOrigins": ["http://localhost:3000"], "AllowedMethods": ["PUT", "GET"], "AllowedHeaders": ["content-type", "cache-control"] }]
+   [
+     {
+       "AllowedOrigins": ["http://localhost:3000"],
+       "AllowedMethods": ["PUT", "GET"],
+       "AllowedHeaders": ["content-type", "cache-control"]
+     }
+   ]
    ```
 5. `.env.local`:
    ```bash
