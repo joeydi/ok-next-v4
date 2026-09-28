@@ -31,17 +31,20 @@ export default function NotesPage() {
   return (
     <>
       <main id="main">
-        <Container as="header" className="grid-12 items-end gap-y-fl-24 pt-fl-56 pb-fl-72">
-          <div className="mono-label col-span-12 flex gap-fl-24 text-muted">
+        <Container as="header" className="pt-fl-56 pb-fl-72">
+          <div className="mono-label flex gap-fl-24 text-muted">
             <span>/ Notes</span>
             <span>{all.length} posts</span>
           </div>
-          <h1 className="display col-span-12 mt-fl-40 text-fl-192 leading-[.85] tracking-[-.04em] lg:col-span-7">
-            Notes<span className="text-pink">.</span>
-          </h1>
-          <p className="col-span-12 mt-fl-32 text-fl-24 leading-[1.55] text-pretty text-ink-3 md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
-            Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington, Vermont.
-          </p>
+          <div className="grid-12 mt-fl-48 items-end gap-y-fl-24">
+            <h1 className="display col-span-12 text-fl-144 leading-[.9] tracking-display lg:col-span-7">
+              Notes<span className="text-pink">.</span>
+            </h1>
+            <p className="col-span-12 mt-fl-32 text-fl-24 leading-[1.55] text-pretty text-ink-3 md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
+              Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington,
+              Vermont.
+            </p>
+          </div>
         </Container>
 
         {featured && (
