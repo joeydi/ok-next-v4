@@ -11,7 +11,7 @@ export type Service = {
   audience: string;
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: string[];
-  illustration: "quick-build" | "conveyor" | "ring";
+  illustration: "bounce-row" | "conveyor" | "ring";
   intro: string;
   tagline: string;
   capabilities: {
@@ -36,7 +36,7 @@ export const services: Record<ServiceSlug, Service> = {
       "A development partner for agencies and marketing teams: fast, on-brand sites, campaigns, and the 3D and motion work a template can’t do.",
     audience: "Agencies + marketing teams",
     h1: ["Ready when", "you *are.*"],
-    illustration: "quick-build",
+    illustration: "bounce-row",
     intro:
       "Agencies call me when they need a site done fast, or something their in-house developers can’t handle. Marketing teams bring me in to turn campaign strategy into work that ships quickly and stays on brand.",
     tagline: "For when the campaign is ready and the website isn’t.",

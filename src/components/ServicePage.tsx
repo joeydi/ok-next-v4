@@ -8,12 +8,12 @@ import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
-import { Conveyor, QuickBuild, Ring } from "./illustrations";
+import { BounceRow, Conveyor, Ring } from "./illustrations";
 import { Placeholder } from "./Placeholder";
 import { Cite } from "./Testimonial";
 
 const ILLUSTRATIONS = {
-  "quick-build": QuickBuild,
+  "bounce-row": BounceRow,
   conveyor: Conveyor,
   ring: Ring,
 };
