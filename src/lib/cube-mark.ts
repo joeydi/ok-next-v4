@@ -1,10 +1,10 @@
 // Brand mark: an isometric cube with a pink middle band, echoing the Home puzzle cube.
 // Used for the favicon, Apple touch icon, and OG images.
 
-const W = { top: "#FBF8F3", left: "#D8CFC1", right: "#C4B9A8" };
+const W = { top: "#FBF9F6", left: "#D8CFC0", right: "#C8BDAB" };
 const P = { left: "#D62A4A", right: "#E63757" };
 
-export function cubeMarkSvg({ background = "#1C1916", size = 32 }: { background?: string | null; size?: number } = {}) {
+export function cubeMarkSvg({ background = "#1C1A17", size = 32 }: { background?: string | null; size?: number } = {}) {
   // Unit cube in a 32×32 box.
   const cx = 16, top = 4, dx = 11, dy = 6.35, h = 12.7;
   const band = h / 3;
