@@ -352,8 +352,8 @@
   .frame {
     border-radius: 4px;
     box-shadow:
-      0px 1px 1px rgba(78, 70, 62, 0.04),
-      0px 2px 4px rgba(78, 70, 62, 0.08);
+      0px 1px 1px color-mix(in srgb, var(--color-body) 4%, transparent),
+      0px 2px 4px color-mix(in srgb, var(--color-body) 8%, transparent);
   }
 
   /* ---------- Hover cards ---------- */
@@ -381,8 +381,11 @@
   .hover-lift {
     --lift-scale: 1.025;
     --lift-shadow:
-      0px 1px 1px rgba(78, 70, 62, 0.05), 0px 3px 3px rgba(78, 70, 62, 0.04), 0px 6px 6px rgba(78, 70, 62, 0.03),
-      0px 10px 10px rgba(78, 70, 62, 0.02), 0px 16px 16px rgba(78, 70, 62, 0.01);
+      0px 1px 1px color-mix(in srgb, var(--color-body) 5%, transparent),
+      0px 3px 3px color-mix(in srgb, var(--color-body) 4%, transparent),
+      0px 6px 6px color-mix(in srgb, var(--color-body) 3%, transparent),
+      0px 10px 10px color-mix(in srgb, var(--color-body) 2%, transparent),
+      0px 16px 16px color-mix(in srgb, var(--color-body) 1%, transparent);
 
     will-change: transform;
     transition:
