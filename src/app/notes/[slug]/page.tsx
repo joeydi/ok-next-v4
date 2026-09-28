@@ -73,7 +73,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                 height={56}
                 placeholder="blur"
                 blurDataURL={headshot.blurDataURL}
-                className="size-14 rounded-[2px] object-cover"
+                className="size-14 frame object-cover"
               />
               <div className="font-mono text-fl-14 leading-[1.6] text-muted">
                 JOE DI STEFANO
