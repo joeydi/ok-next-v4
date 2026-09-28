@@ -40,6 +40,18 @@
   mask-composite: intersect;
 }
 
+/* Dashed guides fade out at both ends below desktop, where the hero scales the illustration up. */
+.ok-illo-guide {
+  --fade: transparent, #000 15%, #000 85%, transparent;
+  -webkit-mask-image: linear-gradient(var(--fade));
+  mask-image: linear-gradient(var(--fade));
+
+  @media (width >= 64rem) {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
 canvas.ok-illo-gl {
   visibility: hidden;
 }

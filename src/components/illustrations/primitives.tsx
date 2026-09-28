@@ -41,6 +41,7 @@ export function Stage({
 function Guide({ x, y1, y2, color }: { x: number; y1: number; y2: number; color: string }) {
   return (
     <div
+      className="ok-illo-guide"
       style={{ position: "absolute", left: x, top: y1, height: y2 - y1, borderLeft: `1px dashed ${color}` }}
     />
   );

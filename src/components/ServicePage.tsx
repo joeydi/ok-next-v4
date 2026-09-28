@@ -57,7 +57,7 @@ export function ServicePage({ service: s }: { service: Service }) {
     <>
       <main id="main">
         {/* Hero */}
-        <Container as="header" className="relative pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
+        <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
           <Eyebrow href="/#services" details={[s.n, s.audience]}>
             Services
           </Eyebrow>
@@ -73,7 +73,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <GLIllustration
             scene={s.illustration}
             sizes="(min-width: 1024px) min(49.51vw, 951px), 100vw"
-            className="mx-auto w-full lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:w-[calc(49.51*var(--pvw))] lg:right-0"
+            className="mx-auto w-full scale-120 lg:scale-100 lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:w-[calc(49.51*var(--pvw))] lg:right-0"
           />
           <div className="lg:mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-normal text-pretty text-body">{s.intro}</p>
