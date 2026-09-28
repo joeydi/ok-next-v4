@@ -84,7 +84,7 @@ export function Nav() {
     dark ? "hover:bg-paper/10" : "hover:bg-ink/5",
   );
   const divider = cn(
-    "mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none",
+    "mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none",
     dark ? "border-paper/10" : "border-rule/50",
   );
 
@@ -146,7 +146,7 @@ export function Nav() {
         ref={navRef}
         aria-label="Primary"
         className={cn(
-          "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-strong motion-reduce:transition-none lg:py-[17px]",
+          "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-quart motion-reduce:transition-none lg:py-[17px]",
           state === "light" && "border-ink-2/10 bg-paper-light/50 backdrop-blur-md",
           // At the top the bar is bare; give it the menus' glass while one is open.
           state === "top" &&
@@ -158,7 +158,7 @@ export function Nav() {
           <Logo />
         </Link>
 
-        <div className={cn("hidden transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none xl:col-span-4 xl:block", dark ? "text-muted-light" : "text-muted")}>
+        <div className={cn("hidden transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none xl:col-span-4 xl:block", dark ? "text-muted-light" : "text-muted")}>
           {SITE.author} / {SITE.tagline}
         </div>
 
@@ -183,7 +183,7 @@ export function Nav() {
                   {l.label}{" "}
                   <span
                     aria-hidden
-                    className="inline-block [view-transition-name:nav-caret] transition-transform duration-350 ease-in-out-strong group-has-[:popover-open]:rotate-180 motion-reduce:transition-none"
+                    className="inline-block [view-transition-name:nav-caret] transition-transform duration-350 ease-in-out-quart group-has-[:popover-open]:rotate-180 motion-reduce:transition-none"
                   >
                     ↓
                   </span>

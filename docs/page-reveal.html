@@ -1,826 +1,1321 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Okayplus Page Reveal</title>
-<!-- Gelica comes from the site's Adobe Fonts kit, which only serves domains added to it. Elsewhere headings fall back to Hanken Grotesk. -->
-<link rel="preconnect" href="https://use.typekit.net" crossorigin>
-<link rel="stylesheet" href="https://use.typekit.net/llb6krb.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
-<style>
-  :root {
-    --bg: #f2ece6;
-    --raised: #faf7f4;
-    --ink: #1d1a17;
-    --body: #4e463e;
-    --muted: #746759;
-    --rule: #d8ccbf;
-    --grid: #e8dfd6;
-    --pink: #ff4d6a;
-    --pink-ink: #d01f3e;
-    --old: #92806d;
-    --nav: #a49381;
-    --root: #bcad9d;
-    --code-bg: #ede6de;
-
-    /* The mock site always keeps the site's own light palette. */
-    --site-paper: #f2ece6;
-    --site-raised: #f7f3ef;
-    --site-ink: #1d1a17;
-    --site-body: #4e463e;
-    --site-muted: #746759;
-    --site-rule: #d8ccbf;
-    --site-pink: #ff4d6a;
-    --site-pink-ink: #d01f3e;
-
-    --serif: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --bg: #1d1a17;
-      --raised: #23201d;
-      --ink: #f2ece6;
-      --body: #d8ccbf;
-      --muted: #b0a08f;
-      --rule: #39342e;
-      --grid: #322d28;
-      --pink: #ff5c77;
-      --pink-ink: #ff7088;
-      --old: #b6a695;
-      --nav: #92806d;
-      --root: #746759;
-      --code-bg: #2a2622;
-    }
-  }
-
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg: #1d1a17;
-    --raised: #23201d;
-    --ink: #f2ece6;
-    --body: #d8ccbf;
-    --muted: #b0a08f;
-    --rule: #39342e;
-    --grid: #322d28;
-    --pink: #ff5c77;
-    --pink-ink: #ff7088;
-    --old: #b6a695;
-    --nav: #92806d;
-    --root: #746759;
-    --code-bg: #2a2622;
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .wrap {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding-inline: 24px;
-    padding-block: 56px 96px;
-    display: grid;
-    gap: 72px;
-  }
-
-  @media (max-width: 640px) {
-    .wrap { padding-inline: 16px; padding-block: 32px 64px; gap: 56px; }
-  }
-
-  .label {
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  h1, h2, h3 {
-    font-family: var(--serif);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
-    margin: 0;
-    line-height: 1.1;
-  }
-
-  h1 { font-size: clamp(40px, 7vw, 72px); letter-spacing: -0.035em; }
-  h2 { font-size: clamp(26px, 3.4vw, 34px); }
-  h3 { font-size: 20px; }
-
-  p { margin: 0; max-width: 65ch; color: var(--body); }
-  p strong { color: var(--ink); font-weight: 600; }
-
-  code {
-    font-family: var(--mono);
-    font-size: 0.86em;
-    background: var(--code-bg);
-    padding: 0.1em 0.35em;
-    border-radius: 4px;
-    color: var(--ink);
-  }
-
-  section { display: grid; gap: 24px; }
-  .section-head { display: grid; gap: 10px; }
-
-  header { display: grid; gap: 20px; }
-  header .lede { font-size: 19px; }
-
-  /* ---------- Demo ---------- */
-
-  .demo-block { display: grid; gap: 16px; }
-
-  .frame {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    background: var(--site-paper);
-    container-type: inline-size;
-    cursor: crosshair;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  .layer {
-    position: absolute;
-    inset: 0;
-    padding: 9cqw 4.4cqw 0;
-    will-change: transform, filter, mask-image;
-  }
-
-  .layer.new { pointer-events: none; }
-
-  .site-eyebrow {
-    font-family: var(--mono);
-    font-size: 0.95cqw;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--site-muted);
-    display: flex;
-    gap: 1.6cqw;
-  }
-
-  .site-h {
-    font-family: var(--serif);
-    color: var(--site-ink);
-    letter-spacing: -0.035em;
-    line-height: 1;
-    margin-top: 1.2cqw;
-  }
-
-  .old .site-h { font-size: 4.6cqw; }
-
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.6cqw;
-    margin-top: 2.8cqw;
-  }
-
-  .card {
-    all: unset;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 1.3cqw;
-    min-height: 21cqw;
-    padding: 1.9cqw 2.1cqw;
-    background: var(--site-raised);
-    border: 1px solid color-mix(in srgb, var(--site-rule) 60%, transparent);
-    border-radius: 0.3cqw;
-    box-shadow: 0 0.1cqw 0.3cqw rgb(29 26 23 / 0.06);
-    cursor: pointer;
-  }
-
-  .card:focus-visible { outline: 3px solid color-mix(in srgb, var(--site-pink-ink) 69%, transparent); outline-offset: 3px; }
-
-  .card .k { font-family: var(--mono); font-size: 0.8cqw; letter-spacing: 0.06em; text-transform: uppercase; color: var(--site-muted); display: flex; justify-content: space-between; }
-  .card .t { font-family: var(--serif); font-size: 2.2cqw; color: var(--site-ink); letter-spacing: -0.02em; margin-top: 2.2cqw; }
-  .card .d { font-size: 1.05cqw; line-height: 1.55; color: var(--site-body); }
-
-  .photo {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 14cqw;
-    background:
-      radial-gradient(ellipse 12cqw 9cqw at 32% 70%, #2d2a2a 0 55%, transparent 60%),
-      radial-gradient(ellipse 5cqw 4cqw at 34% 52%, #5fb3b0 0 40%, transparent 45%),
-      radial-gradient(ellipse 9cqw 10cqw at 86% 60%, #7a5a45 0 50%, transparent 58%),
-      linear-gradient(100deg, #34432a 0%, #6d7b48 22%, #2c3622 40%, #86725a 62%, #4c5a3e 80%, #2f3b2c 100%);
-  }
-
-  .new .site-h { font-size: 6.4cqw; margin-top: 2cqw; }
-  .new .site-h em { font-style: normal; color: var(--site-pink); }
-  .new .intro { width: 46%; }
-  .new .para { font-size: 1.25cqw; line-height: 1.55; color: var(--site-body); margin-top: 3.4cqw; }
-  .new .rule { border-top: 1px solid var(--site-rule); margin-top: 2.6cqw; }
-  .new .pink-line { font-family: var(--serif); font-size: 1.3cqw; color: var(--site-pink-ink); margin-top: 2cqw; }
-
-  .iso {
-    position: absolute;
-    right: 5cqw;
-    top: 11cqw;
-    width: 40cqw;
-    height: auto;
-  }
-
-  .site-nav {
-    position: absolute;
-    top: 1.1cqw;
-    left: 2.2cqw;
-    right: 2.2cqw;
-    height: 4.3cqw;
-    padding-inline: 2.2cqw;
-    display: flex;
-    align-items: center;
-    gap: 2.4cqw;
-    font-family: var(--mono);
-    font-size: 0.85cqw;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--site-ink);
-    border-radius: 0.6cqw;
-    pointer-events: none;
-  }
-
-  .site-nav .logo { font-family: var(--serif); font-size: 1.7cqw; letter-spacing: -0.02em; text-transform: none; font-style: italic; margin-right: auto; }
-  .site-nav .who { color: var(--site-muted); margin-right: auto; }
-  .site-nav .on, .site-nav .hello { color: var(--site-pink-ink); }
-  .site-nav.old-nav { background: var(--site-raised); border: 1px solid rgb(29 26 23 / 0.08); }
-
-  .origin-mark {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    margin: -9px 0 0 -9px;
-    border: 2px solid var(--site-pink);
-    border-radius: 50%;
-    pointer-events: none;
-    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.6);
-  }
-
-  .origin-mark::after {
-    content: "";
-    position: absolute;
-    inset: 5px;
-    border-radius: 50%;
-    background: var(--site-pink);
-  }
-
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 20px;
-  }
-
-  .btn {
-    font: 500 13px/1 var(--mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--bg);
-    background: var(--ink);
-    border: 0;
-    border-radius: 6px;
-    padding: 11px 16px;
-    min-width: 92px;
-    cursor: pointer;
-  }
-
-  .btn:hover { background: color-mix(in srgb, var(--ink) 85%, var(--pink)); }
-
-  :focus-visible { outline: 3px solid color-mix(in srgb, var(--pink-ink) 69%, transparent); outline-offset: 3px; }
-
-  .scrub {
-    flex: 1 1 260px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .scrub input { flex: 1; accent-color: var(--pink-ink); min-width: 0; }
-
-  .time {
-    font: 500 14px/1 var(--mono);
-    font-variant-numeric: tabular-nums;
-    min-width: 7ch;
-    text-align: right;
-  }
-
-  .speed {
-    display: inline-flex;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-  .speed button {
-    font: 500 12px/1 var(--mono);
-    color: var(--muted);
-    background: transparent;
-    border: 0;
-    padding: 10px 11px;
-    cursor: pointer;
-  }
-
-  .speed button + button { border-left: 1px solid var(--rule); }
-  .speed button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-
-  .hint { font-size: 14px; color: var(--muted); }
-
-  /* ---------- Timeline ---------- */
-
-  .tl { --ph: 0; display: grid; border-bottom: 1px solid var(--rule); }
-
-  .tl-row {
-    display: grid;
-    grid-template-columns: 15.5rem 1fr 9rem;
-    grid-template-areas: "label track read";
-    column-gap: 18px;
-    align-items: stretch;
-    border-top: 1px solid var(--rule);
-  }
-
-  .tl-row.axis { border-top: 0; }
-  .tl-row.axis .tl-track { min-height: 1.9rem; background: none; border-right-color: transparent; }
-
-  .tl-label { grid-area: label; padding-block: 12px; display: grid; gap: 2px; align-content: center; }
-  .tl-label .n { font: 500 13px/1.3 var(--mono); color: var(--ink); }
-  .tl-label .s { font-size: 13px; line-height: 1.4; color: var(--muted); }
-
-  .tl-read {
-    grid-area: read;
-    display: grid;
-    align-content: center;
-    justify-items: end;
-    gap: 2px;
-    font: 500 12px/1.3 var(--mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink);
-    text-align: right;
-  }
-
-  .tl-read .meta { color: var(--muted); }
-
-  .tl-track {
-    grid-area: track;
-    position: relative;
-    min-height: 3.6rem;
-    background-image: repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px var(--tick));
-    border-right: 1px solid var(--grid);
-  }
-
-  .tl-group {
-    border-top: 1px solid var(--rule);
-    padding-block: 18px 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .tl-group .sw { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
-  .tl-group code { background: none; padding: 0; color: var(--muted); font-size: 12px; text-transform: none; letter-spacing: 0; }
-
-  .tl-group + .tl-row { border-top: 0; }
-
-  .bar {
-    position: absolute;
-    top: 10px;
-    bottom: 10px;
-    background: color-mix(in srgb, var(--c) 14%, transparent);
-    border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .bar svg { position: absolute; inset: 3px 0; width: 100%; height: calc(100% - 6px); overflow: visible; }
-  .bar .area { fill: color-mix(in srgb, var(--c) 22%, transparent); }
-  .bar .curve { fill: none; stroke: var(--c); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
-
-  .ph {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--ph) * 100%);
-    border-left: 2px solid var(--pink-ink);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .tick {
-    position: absolute;
-    bottom: 6px;
-    transform: translateX(-50%);
-    font: 500 11px/1 var(--mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .tick:first-child { transform: none; }
-  .tick.last { transform: translateX(-100%); }
-
-  @media (max-width: 760px) {
-    .tl-row {
-      grid-template-columns: 1fr auto;
-      grid-template-areas: "label read" "track track";
-    }
-    .tl-row.axis { grid-template-areas: "track track"; }
-    .tl-row.axis .tl-label, .tl-row.axis .tl-read { display: none; }
-    .tl-label { padding-block: 12px 6px; }
-    .tl-track { min-height: 2.8rem; }
-    .tick.minor { display: none; }
-  }
-
-  .footnote { font-size: 14px; color: var(--muted); max-width: 70ch; }
-
-  /* ---------- Curves ---------- */
-
-  .curves { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .curves.two { grid-template-columns: repeat(2, 1fr); }
-
-  @media (max-width: 1000px) {
-    .curves { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 760px) {
-    .curves, .curves.two { grid-template-columns: 1fr; }
-  }
-
-  .curve-card {
-    background: var(--raised);
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    padding: 20px;
-    display: grid;
-    gap: 12px;
-    align-content: start;
-  }
-
-  .curve-card svg { width: 100%; max-width: 240px; justify-self: center; overflow: visible; }
-  .curve-card .box { fill: none; stroke: var(--grid); }
-  .curve-card .lin { stroke: var(--rule); stroke-dasharray: 3 4; fill: none; }
-  .curve-card .handle { stroke: var(--muted); stroke-width: 1; fill: none; }
-  .curve-card .hdot { fill: var(--raised); stroke: var(--muted); stroke-width: 1.25; }
-  .curve-card .c { fill: none; stroke: var(--c); stroke-width: 3; stroke-linecap: round; }
-  .curve-card .dot { fill: var(--pink-ink); }
-  .curve-card .ax { font: 500 9px var(--mono); fill: var(--muted); }
-  .curve-card .val { font: 500 12px/1.4 var(--mono); color: var(--ink); overflow-wrap: anywhere; }
-  .curve-card p { font-size: 14px; }
-  .curve-card .used { font-size: 13px; color: var(--muted); }
-
-  /* ---------- Mask ---------- */
-
-  .mask-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 32px; align-items: start; }
-
-  @media (max-width: 860px) { .mask-grid { grid-template-columns: 1fr; } }
-
-  .chart { width: 100%; height: auto; overflow: visible; }
-  .chart .gl { stroke: var(--grid); stroke-width: 1; }
-  .chart .gl.d { stroke-dasharray: 3 4; stroke: var(--rule); }
-  .chart .band { fill: color-mix(in srgb, var(--pink) 8%, transparent); }
-  .chart .axis { stroke: var(--rule); }
-  .chart text { font: 500 11px var(--mono); fill: var(--muted); }
-  .chart .lab-new { fill: var(--pink-ink); }
-  .chart .lab-old { fill: var(--old); }
-  .chart .l-new { fill: none; stroke: var(--pink); stroke-width: 2.5; stroke-linejoin: round; }
-  .chart .l-old { fill: none; stroke: var(--old); stroke-width: 2.5; stroke-linejoin: round; }
-  .chart .pt { stroke: var(--bg); stroke-width: 2; }
-
-  .facts { display: grid; gap: 16px; }
-  .facts p { font-size: 15px; }
-
-  .formula {
-    font: 500 14px/1.5 var(--mono);
-    background: var(--code-bg);
-    border-radius: 6px;
-    padding: 12px 14px;
-    color: var(--ink);
-  }
-
-  /* ---------- Start point ---------- */
-
-  .starts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--rule); }
-  .starts > div { padding: 18px 20px 4px 0; display: grid; gap: 6px; align-content: start; }
-  .starts > div + div { padding-left: 20px; border-left: 1px solid var(--rule); }
-  .starts p { font-size: 15px; }
-
-  @media (max-width: 760px) {
-    .starts { grid-template-columns: 1fr; }
-    .starts > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
-  }
-
-  pre {
-    margin: 0;
-    overflow-x: auto;
-    background: var(--code-bg);
-    border-radius: 8px;
-    padding: 16px 18px;
-    font: 500 13px/1.7 var(--mono);
-    color: var(--ink);
-  }
-
-  pre .cm { color: var(--muted); }
-  pre .v { color: var(--pink-ink); }
-
-  /* ---------- Table ---------- */
-
-  .table-wrap { overflow-x: auto; border-top: 1px solid var(--rule); }
-  table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
-  th, td { text-align: left; vertical-align: top; padding: 11px 16px 11px 0; border-bottom: 1px solid var(--rule); }
-  th { font: 500 11px/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
-  td { color: var(--body); }
-  td.m { font: 500 12.5px/1.45 var(--mono); color: var(--ink); white-space: nowrap; }
-  td.num { font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .btn { transition: none; }
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header>
-    <div class="label">okaypl.us · view transitions · PageTransition.tsx + globals.css</div>
-    <h1>Page reveal</h1>
-    <p class="lede">Every navigation reveals the next page through a soft-edged circle that grows from where you clicked. The old page zooms past and blurs underneath and is wiped out just inside the circle’s edge, while the new page zooms up into focus. The whole transition runs 800&nbsp;ms.</p>
-  </header>
-
-  <div class="demo-block">
-    <div class="frame" id="frame" aria-label="Transition preview. Click anywhere to play it from that point.">
-      <div class="layer old" id="oldLayer">
-        <div class="site-eyebrow"><span>/ 02</span><span>How I help</span></div>
-        <div class="site-h">Where I fit in.</div>
-        <div class="cards">
-          <button class="card" type="button"><span class="k"><span>Agencies + marketing</span><span>/ 01</span></span><span class="t">Digital production</span><span class="d">Agencies call me when they need a site done fast or something their in-house developers can’t handle.</span></button>
-          <button class="card" type="button"><span class="k"><span>Non-profits + large orgs</span><span>/ 02</span></span><span class="t">CMS &amp; integrations</span><span class="d">I manage large CMS projects, content migrations, and backend integrations.</span></button>
-          <button class="card" type="button"><span class="k"><span>Internal teams</span><span>/ 03</span></span><span class="t">Business tools</span><span class="d">I build tools that help teams work better: visibility, automation and monitoring.</span></button>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Okayplus Page Reveal</title>
+    <!-- Gelica comes from the site's Adobe Fonts kit, which only serves domains added to it. Elsewhere headings fall back to Hanken Grotesk. -->
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+    <link rel="stylesheet" href="https://use.typekit.net/llb6krb.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+    <style>
+      :root {
+        --bg: #f2ece6;
+        --raised: #faf7f4;
+        --ink: #1d1a17;
+        --body: #4e463e;
+        --muted: #746759;
+        --rule: #d8ccbf;
+        --grid: #e8dfd6;
+        --pink: #ff4d6a;
+        --pink-ink: #d01f3e;
+        --old: #92806d;
+        --nav: #a49381;
+        --root: #bcad9d;
+        --code-bg: #ede6de;
+
+        /* The mock site always keeps the site's own light palette. */
+        --site-paper: #f2ece6;
+        --site-raised: #f7f3ef;
+        --site-ink: #1d1a17;
+        --site-body: #4e463e;
+        --site-muted: #746759;
+        --site-rule: #d8ccbf;
+        --site-pink: #ff4d6a;
+        --site-pink-ink: #d01f3e;
+
+        --serif: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+        --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --bg: #1d1a17;
+          --raised: #23201d;
+          --ink: #f2ece6;
+          --body: #d8ccbf;
+          --muted: #b0a08f;
+          --rule: #39342e;
+          --grid: #322d28;
+          --pink: #ff5c77;
+          --pink-ink: #ff7088;
+          --old: #b6a695;
+          --nav: #92806d;
+          --root: #746759;
+          --code-bg: #2a2622;
+        }
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #1d1a17;
+        --raised: #23201d;
+        --ink: #f2ece6;
+        --body: #d8ccbf;
+        --muted: #b0a08f;
+        --rule: #39342e;
+        --grid: #322d28;
+        --pink: #ff5c77;
+        --pink-ink: #ff7088;
+        --old: #b6a695;
+        --nav: #92806d;
+        --root: #746759;
+        --code-bg: #2a2622;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding-inline: 24px;
+        padding-block: 56px 96px;
+        display: grid;
+        gap: 72px;
+      }
+
+      @media (max-width: 640px) {
+        .wrap {
+          padding-inline: 16px;
+          padding-block: 32px 64px;
+          gap: 56px;
+        }
+      }
+
+      .label {
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: var(--serif);
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+        margin: 0;
+        line-height: 1.1;
+      }
+
+      h1 {
+        font-size: clamp(40px, 7vw, 72px);
+        letter-spacing: -0.035em;
+      }
+
+      h2 {
+        font-size: clamp(26px, 3.4vw, 34px);
+      }
+
+      h3 {
+        font-size: 20px;
+      }
+
+      p {
+        margin: 0;
+        max-width: 65ch;
+        color: var(--body);
+      }
+
+      p strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.86em;
+        background: var(--code-bg);
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+        color: var(--ink);
+      }
+
+      section {
+        display: grid;
+        gap: 24px;
+      }
+
+      .section-head {
+        display: grid;
+        gap: 10px;
+      }
+
+      header {
+        display: grid;
+        gap: 20px;
+      }
+
+      header .lede {
+        font-size: 19px;
+      }
+
+      /* ---------- Demo ---------- */
+
+      .demo-block {
+        display: grid;
+        gap: 16px;
+      }
+
+      .frame {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        background: var(--site-paper);
+        container-type: inline-size;
+        cursor: crosshair;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .layer {
+        position: absolute;
+        inset: 0;
+        padding: 9cqw 4.4cqw 0;
+        will-change: transform, filter, mask-image;
+      }
+
+      .layer.new {
+        pointer-events: none;
+      }
+
+      .site-eyebrow {
+        font-family: var(--mono);
+        font-size: 0.95cqw;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--site-muted);
+        display: flex;
+        gap: 1.6cqw;
+      }
+
+      .site-h {
+        font-family: var(--serif);
+        color: var(--site-ink);
+        letter-spacing: -0.035em;
+        line-height: 1;
+        margin-top: 1.2cqw;
+      }
+
+      .old .site-h {
+        font-size: 4.6cqw;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.6cqw;
+        margin-top: 2.8cqw;
+      }
+
+      .card {
+        all: unset;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 1.3cqw;
+        min-height: 21cqw;
+        padding: 1.9cqw 2.1cqw;
+        background: var(--site-raised);
+        border: 1px solid color-mix(in srgb, var(--site-rule) 60%, transparent);
+        border-radius: 0.3cqw;
+        box-shadow: 0 0.1cqw 0.3cqw rgb(29 26 23 / 0.06);
+        cursor: pointer;
+      }
+
+      .card:focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--site-pink-ink) 69%, transparent);
+        outline-offset: 3px;
+      }
+
+      .card .k {
+        font-family: var(--mono);
+        font-size: 0.8cqw;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--site-muted);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .card .t {
+        font-family: var(--serif);
+        font-size: 2.2cqw;
+        color: var(--site-ink);
+        letter-spacing: -0.02em;
+        margin-top: 2.2cqw;
+      }
+
+      .card .d {
+        font-size: 1.05cqw;
+        line-height: 1.55;
+        color: var(--site-body);
+      }
+
+      .photo {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 14cqw;
+        background:
+          radial-gradient(ellipse 12cqw 9cqw at 32% 70%, #2d2a2a 0 55%, transparent 60%),
+          radial-gradient(ellipse 5cqw 4cqw at 34% 52%, #5fb3b0 0 40%, transparent 45%),
+          radial-gradient(ellipse 9cqw 10cqw at 86% 60%, #7a5a45 0 50%, transparent 58%),
+          linear-gradient(100deg, #34432a 0%, #6d7b48 22%, #2c3622 40%, #86725a 62%, #4c5a3e 80%, #2f3b2c 100%);
+      }
+
+      .new .site-h {
+        font-size: 6.4cqw;
+        margin-top: 2cqw;
+      }
+
+      .new .site-h em {
+        font-style: normal;
+        color: var(--site-pink);
+      }
+
+      .new .intro {
+        width: 46%;
+      }
+
+      .new .para {
+        font-size: 1.25cqw;
+        line-height: 1.55;
+        color: var(--site-body);
+        margin-top: 3.4cqw;
+      }
+
+      .new .rule {
+        border-top: 1px solid var(--site-rule);
+        margin-top: 2.6cqw;
+      }
+
+      .new .pink-line {
+        font-family: var(--serif);
+        font-size: 1.3cqw;
+        color: var(--site-pink-ink);
+        margin-top: 2cqw;
+      }
+
+      .iso {
+        position: absolute;
+        right: 5cqw;
+        top: 11cqw;
+        width: 40cqw;
+        height: auto;
+      }
+
+      .site-nav {
+        position: absolute;
+        top: 1.1cqw;
+        left: 2.2cqw;
+        right: 2.2cqw;
+        height: 4.3cqw;
+        padding-inline: 2.2cqw;
+        display: flex;
+        align-items: center;
+        gap: 2.4cqw;
+        font-family: var(--mono);
+        font-size: 0.85cqw;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--site-ink);
+        border-radius: 0.6cqw;
+        pointer-events: none;
+      }
+
+      .site-nav .logo {
+        font-family: var(--serif);
+        font-size: 1.7cqw;
+        letter-spacing: -0.02em;
+        text-transform: none;
+        font-style: italic;
+        margin-right: auto;
+      }
+
+      .site-nav .who {
+        color: var(--site-muted);
+        margin-right: auto;
+      }
+
+      .site-nav .on,
+      .site-nav .hello {
+        color: var(--site-pink-ink);
+      }
+
+      .site-nav.old-nav {
+        background: var(--site-raised);
+        border: 1px solid rgb(29 26 23 / 0.08);
+      }
+
+      .origin-mark {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        margin: -9px 0 0 -9px;
+        border: 2px solid var(--site-pink);
+        border-radius: 50%;
+        pointer-events: none;
+        box-shadow: 0 0 0 3px rgb(255 255 255 / 0.6);
+      }
+
+      .origin-mark::after {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border-radius: 50%;
+        background: var(--site-pink);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 20px;
+      }
+
+      .btn {
+        font: 500 13px/1 var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--bg);
+        background: var(--ink);
+        border: 0;
+        border-radius: 6px;
+        padding: 11px 16px;
+        min-width: 92px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: color-mix(in srgb, var(--ink) 85%, var(--pink));
+      }
+
+      :focus-visible {
+        outline: 3px solid color-mix(in srgb, var(--pink-ink) 69%, transparent);
+        outline-offset: 3px;
+      }
+
+      .scrub {
+        flex: 1 1 260px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .scrub input {
+        flex: 1;
+        accent-color: var(--pink-ink);
+        min-width: 0;
+      }
+
+      .time {
+        font: 500 14px/1 var(--mono);
+        font-variant-numeric: tabular-nums;
+        min-width: 7ch;
+        text-align: right;
+      }
+
+      .speed {
+        display: inline-flex;
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .speed button {
+        font: 500 12px/1 var(--mono);
+        color: var(--muted);
+        background: transparent;
+        border: 0;
+        padding: 10px 11px;
+        cursor: pointer;
+      }
+
+      .speed button+button {
+        border-left: 1px solid var(--rule);
+      }
+
+      .speed button[aria-pressed="true"] {
+        background: var(--ink);
+        color: var(--bg);
+      }
+
+      .hint {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* ---------- Timeline ---------- */
+
+      .tl {
+        --ph: 0;
+        display: grid;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .tl-row {
+        display: grid;
+        grid-template-columns: 15.5rem 1fr 9rem;
+        grid-template-areas: "label track read";
+        column-gap: 18px;
+        align-items: stretch;
+        border-top: 1px solid var(--rule);
+      }
+
+      .tl-row.axis {
+        border-top: 0;
+      }
+
+      .tl-row.axis .tl-track {
+        min-height: 1.9rem;
+        background: none;
+        border-right-color: transparent;
+      }
+
+      .tl-label {
+        grid-area: label;
+        padding-block: 12px;
+        display: grid;
+        gap: 2px;
+        align-content: center;
+      }
+
+      .tl-label .n {
+        font: 500 13px/1.3 var(--mono);
+        color: var(--ink);
+      }
+
+      .tl-label .s {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+
+      .tl-read {
+        grid-area: read;
+        display: grid;
+        align-content: center;
+        justify-items: end;
+        gap: 2px;
+        font: 500 12px/1.3 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--ink);
+        text-align: right;
+      }
+
+      .tl-read .meta {
+        color: var(--muted);
+      }
+
+      .tl-track {
+        grid-area: track;
+        position: relative;
+        min-height: 3.6rem;
+        background-image: repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px var(--tick));
+        border-right: 1px solid var(--grid);
+      }
+
+      .tl-group {
+        border-top: 1px solid var(--rule);
+        padding-block: 18px 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .tl-group .sw {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        background: var(--c);
+      }
+
+      .tl-group code {
+        background: none;
+        padding: 0;
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+
+      .tl-group+.tl-row {
+        border-top: 0;
+      }
+
+      .bar {
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        background: color-mix(in srgb, var(--c) 14%, transparent);
+        border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .bar svg {
+        position: absolute;
+        inset: 3px 0;
+        width: 100%;
+        height: calc(100% - 6px);
+        overflow: visible;
+      }
+
+      .bar .area {
+        fill: color-mix(in srgb, var(--c) 22%, transparent);
+      }
+
+      .bar .curve {
+        fill: none;
+        stroke: var(--c);
+        stroke-width: 1.75;
+        vector-effect: non-scaling-stroke;
+      }
+
+      .ph {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(var(--ph) * 100%);
+        border-left: 2px solid var(--pink-ink);
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .tick {
+        position: absolute;
+        bottom: 6px;
+        transform: translateX(-50%);
+        font: 500 11px/1 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tick:first-child {
+        transform: none;
+      }
+
+      .tick.last {
+        transform: translateX(-100%);
+      }
+
+      @media (max-width: 760px) {
+        .tl-row {
+          grid-template-columns: 1fr auto;
+          grid-template-areas: "label read" "track track";
+        }
+
+        .tl-row.axis {
+          grid-template-areas: "track track";
+        }
+
+        .tl-row.axis .tl-label,
+        .tl-row.axis .tl-read {
+          display: none;
+        }
+
+        .tl-label {
+          padding-block: 12px 6px;
+        }
+
+        .tl-track {
+          min-height: 2.8rem;
+        }
+
+        .tick.minor {
+          display: none;
+        }
+      }
+
+      .footnote {
+        font-size: 14px;
+        color: var(--muted);
+        max-width: 70ch;
+      }
+
+      /* ---------- Curves ---------- */
+
+      .curves {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+
+      .curves.two {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 1000px) {
+        .curves {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 760px) {
+
+        .curves,
+        .curves.two {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .curve-card {
+        background: var(--raised);
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        padding: 20px;
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+
+      .curve-card svg {
+        width: 100%;
+        max-width: 240px;
+        justify-self: center;
+        overflow: visible;
+      }
+
+      .curve-card .box {
+        fill: none;
+        stroke: var(--grid);
+      }
+
+      .curve-card .lin {
+        stroke: var(--rule);
+        stroke-dasharray: 3 4;
+        fill: none;
+      }
+
+      .curve-card .handle {
+        stroke: var(--muted);
+        stroke-width: 1;
+        fill: none;
+      }
+
+      .curve-card .hdot {
+        fill: var(--raised);
+        stroke: var(--muted);
+        stroke-width: 1.25;
+      }
+
+      .curve-card .c {
+        fill: none;
+        stroke: var(--c);
+        stroke-width: 3;
+        stroke-linecap: round;
+      }
+
+      .curve-card .dot {
+        fill: var(--pink-ink);
+      }
+
+      .curve-card .ax {
+        font: 500 9px var(--mono);
+        fill: var(--muted);
+      }
+
+      .curve-card .val {
+        font: 500 12px/1.4 var(--mono);
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
+
+      .curve-card p {
+        font-size: 14px;
+      }
+
+      .curve-card .used {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* ---------- Mask ---------- */
+
+      .mask-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 32px;
+        align-items: start;
+      }
+
+      @media (max-width: 860px) {
+        .mask-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .chart {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      .chart .gl {
+        stroke: var(--grid);
+        stroke-width: 1;
+      }
+
+      .chart .gl.d {
+        stroke-dasharray: 3 4;
+        stroke: var(--rule);
+      }
+
+      .chart .band {
+        fill: color-mix(in srgb, var(--pink) 8%, transparent);
+      }
+
+      .chart .axis {
+        stroke: var(--rule);
+      }
+
+      .chart text {
+        font: 500 11px var(--mono);
+        fill: var(--muted);
+      }
+
+      .chart .lab-new {
+        fill: var(--pink-ink);
+      }
+
+      .chart .lab-old {
+        fill: var(--old);
+      }
+
+      .chart .l-new {
+        fill: none;
+        stroke: var(--pink);
+        stroke-width: 2.5;
+        stroke-linejoin: round;
+      }
+
+      .chart .l-old {
+        fill: none;
+        stroke: var(--old);
+        stroke-width: 2.5;
+        stroke-linejoin: round;
+      }
+
+      .chart .pt {
+        stroke: var(--bg);
+        stroke-width: 2;
+      }
+
+      .facts {
+        display: grid;
+        gap: 16px;
+      }
+
+      .facts p {
+        font-size: 15px;
+      }
+
+      .formula {
+        font: 500 14px/1.5 var(--mono);
+        background: var(--code-bg);
+        border-radius: 6px;
+        padding: 12px 14px;
+        color: var(--ink);
+      }
+
+      /* ---------- Start point ---------- */
+
+      .starts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        border-top: 1px solid var(--rule);
+      }
+
+      .starts>div {
+        padding: 18px 20px 4px 0;
+        display: grid;
+        gap: 6px;
+        align-content: start;
+      }
+
+      .starts>div+div {
+        padding-left: 20px;
+        border-left: 1px solid var(--rule);
+      }
+
+      .starts p {
+        font-size: 15px;
+      }
+
+      @media (max-width: 760px) {
+        .starts {
+          grid-template-columns: 1fr;
+        }
+
+        .starts>div+div {
+          padding-left: 0;
+          border-left: 0;
+          border-top: 1px solid var(--rule);
+        }
+      }
+
+      pre {
+        margin: 0;
+        overflow-x: auto;
+        background: var(--code-bg);
+        border-radius: 8px;
+        padding: 16px 18px;
+        font: 500 13px/1.7 var(--mono);
+        color: var(--ink);
+      }
+
+      pre .cm {
+        color: var(--muted);
+      }
+
+      pre .v {
+        color: var(--pink-ink);
+      }
+
+      /* ---------- Table ---------- */
+
+      .table-wrap {
+        overflow-x: auto;
+        border-top: 1px solid var(--rule);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 760px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 11px 16px 11px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      th {
+        font: 500 11px/1.3 var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      td {
+        color: var(--body);
+      }
+
+      td.m {
+        font: 500 12.5px/1.45 var(--mono);
+        color: var(--ink);
+        white-space: nowrap;
+      }
+
+      td.num {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        color: var(--ink);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .btn {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="label">okaypl.us · view transitions · PageTransition.tsx + globals.css</div>
+        <h1>Page reveal</h1>
+        <p class="lede">Every navigation reveals the next page through a soft-edged circle that grows from where you clicked. The old page zooms past and blurs underneath and is wiped out just inside the circle’s edge, while the new page zooms up into focus. The whole transition runs 800&nbsp;ms.</p>
+      </header>
+
+      <div class="demo-block">
+        <div class="frame" id="frame" aria-label="Transition preview. Click anywhere to play it from that point.">
+          <div class="layer old" id="oldLayer">
+            <div class="site-eyebrow"><span>/ 02</span><span>How I help</span></div>
+            <div class="site-h">Where I fit in.</div>
+            <div class="cards">
+              <button class="card" type="button"><span class="k"><span>Agencies + marketing</span><span>/ 01</span></span><span class="t">Digital production</span><span class="d">Agencies call me when they need a site done fast or something their in-house developers can’t handle.</span></button>
+              <button class="card" type="button"><span class="k"><span>Non-profits + large orgs</span><span>/ 02</span></span><span class="t">CMS &amp; integrations</span><span class="d">I manage large CMS projects, content migrations, and backend integrations.</span></button>
+              <button class="card" type="button"><span class="k"><span>Internal teams</span><span>/ 03</span></span><span class="t">Business tools</span><span class="d">I build tools that help teams work better: visibility, automation and monitoring.</span></button>
+            </div>
+            <div class="photo"></div>
+          </div>
+          <div class="layer new" id="newLayer" aria-hidden="true">
+            <div class="intro">
+              <div class="site-eyebrow"><span>/ Services</span><span>01</span><span>Agencies + marketing teams</span></div>
+              <div class="site-h">Ready when<br><em>you are.</em></div>
+              <div class="para">Agencies call me when they need a site done fast, or something their in-house developers can’t handle. Marketing teams bring me in to turn campaign strategy into work that ships quickly.</div>
+              <div class="rule"></div>
+              <div class="pink-line">For when the campaign is ready and the website isn’t.</div>
+            </div>
+            <svg class="iso" id="iso" viewBox="0 0 400 330" aria-hidden="true"></svg>
+          </div>
+          <div class="site-nav old-nav" id="oldNav" aria-hidden="true"><span class="logo">okayplus</span><span class="who">Joe di Stefano / Designer + Developer</span><span>Approach</span><span class="on">Services ↓</span><span>About</span><span>Notes</span><span class="hello">Say hello →</span></div>
+          <div class="site-nav" aria-hidden="true"><span class="logo">okayplus</span><span class="who">Joe di Stefano / Designer + Developer</span><span>Approach</span><span class="on">Services ↓</span><span>About</span><span>Notes</span><span class="hello">Say hello →</span></div>
+          <div class="origin-mark" id="originMark"></div>
         </div>
-        <div class="photo"></div>
-      </div>
-      <div class="layer new" id="newLayer" aria-hidden="true">
-        <div class="intro">
-          <div class="site-eyebrow"><span>/ Services</span><span>01</span><span>Agencies + marketing teams</span></div>
-          <div class="site-h">Ready when<br><em>you are.</em></div>
-          <div class="para">Agencies call me when they need a site done fast, or something their in-house developers can’t handle. Marketing teams bring me in to turn campaign strategy into work that ships quickly.</div>
-          <div class="rule"></div>
-          <div class="pink-line">For when the campaign is ready and the website isn’t.</div>
+
+        <div class="controls">
+          <button class="btn" id="play" type="button">Play</button>
+          <div class="scrub">
+            <input id="scrub" type="range" min="0" max="800" step="1" value="240" aria-label="Transition time in milliseconds">
+            <span class="time" id="time">240 ms</span>
+          </div>
+          <div class="speed" role="group" aria-label="Playback speed">
+            <button type="button" data-speed="1" aria-pressed="false">1×</button>
+            <button type="button" data-speed="0.5" aria-pressed="true">½×</button>
+            <button type="button" data-speed="0.25" aria-pressed="false">¼×</button>
+            <button type="button" data-speed="0.1" aria-pressed="false">⅒×</button>
+          </div>
         </div>
-        <svg class="iso" id="iso" viewBox="0 0 400 330" aria-hidden="true"></svg>
+        <p class="hint">Click anywhere in the frame to navigate from that point, or tab to a card and press Enter to start from its centre. The timeline below follows the same playhead.</p>
       </div>
-      <div class="site-nav old-nav" id="oldNav" aria-hidden="true"><span class="logo">okayplus</span><span class="who">Joe di Stefano / Designer + Developer</span><span>Approach</span><span class="on">Services ↓</span><span>About</span><span>Notes</span><span class="hello">Say hello →</span></div>
-      <div class="site-nav" aria-hidden="true"><span class="logo">okayplus</span><span class="who">Joe di Stefano / Designer + Developer</span><span>Approach</span><span class="on">Services ↓</span><span>About</span><span>Notes</span><span class="hello">Say hello →</span></div>
-      <div class="origin-mark" id="originMark"></div>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Timeline</div>
+          <h2>Every animation, to scale</h2>
+          <p>Times count from when the browser starts the view transition, once the new page has rendered. Each bar draws its easing curve: height is how far the animation has progressed.</p>
+        </div>
+        <div class="tl" id="tlMain"></div>
+        <p class="footnote">Held still, with no animation: the nav’s group and its new snapshot, and the services caret, which is named so the live, still-turning caret shows instead of the frozen one.</p>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Easing</div>
+          <h2>Five curves</h2>
+          <p>Each dot sits where the playhead puts the animation named under its curve.</p>
+        </div>
+        <div class="curves" id="curvesMain"></div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Mask</div>
+          <h2>Two gradients from one radius</h2>
+        </div>
+        <div class="mask-grid">
+          <svg class="chart" viewBox="0 0 640 262" role="img" aria-label="Mask alpha against distance from the start point. The new page is fully visible up to 0.4 r and fades to nothing at r. The old page is hidden up to 0.4 r and fully visible from 0.7 r.">
+            <rect class="band" x="276.8" y="20" width="171.6" height="190" />
+            <line class="gl" x1="48" y1="20" x2="620" y2="20" />
+            <line class="gl" x1="48" y1="115" x2="620" y2="115" />
+            <line class="gl d" x1="276.8" y1="20" x2="276.8" y2="210" />
+            <line class="gl d" x1="448.4" y1="20" x2="448.4" y2="210" />
+            <line class="axis" x1="48" y1="210" x2="620" y2="210" />
+            <polyline class="l-old" points="48,210 276.8,210 448.4,20 620,20" />
+            <polyline class="l-new" points="48,20 276.8,20 362.6,50.4 448.4,115 534.2,179.6 620,210" />
+            <g fill="var(--pink)">
+              <circle class="pt" cx="276.8" cy="20" r="4.5" />
+              <circle class="pt" cx="362.6" cy="50.4" r="4.5" />
+              <circle class="pt" cx="448.4" cy="115" r="4.5" />
+              <circle class="pt" cx="534.2" cy="179.6" r="4.5" />
+              <circle class="pt" cx="620" cy="210" r="4.5" />
+            </g>
+            <g fill="var(--old)">
+              <circle class="pt" cx="276.8" cy="210" r="4.5" />
+              <circle class="pt" cx="448.4" cy="20" r="4.5" />
+            </g>
+            <text class="lab-new" x="56" y="13">New page</text>
+            <text class="lab-old" x="612" y="13" text-anchor="end">Old page</text>
+            <text x="40" y="24" text-anchor="end">1</text>
+            <text x="40" y="119" text-anchor="end">0.5</text>
+            <text x="40" y="214" text-anchor="end">0</text>
+            <text x="48" y="230" text-anchor="middle">0</text>
+            <text x="276.8" y="230" text-anchor="middle">0.4r</text>
+            <text x="362.6" y="230" text-anchor="middle">0.55r</text>
+            <text x="448.4" y="230" text-anchor="middle">0.7r</text>
+            <text x="534.2" y="230" text-anchor="middle">0.85r</text>
+            <text x="620" y="230" text-anchor="middle">r</text>
+            <text x="334" y="254" text-anchor="middle">Distance from the start point → (y: mask alpha)</text>
+          </svg>
+          <div class="facts">
+            <div class="formula">r = --reveal × 2.5 × reach ÷ --zoom</div>
+            <p><strong>reach</strong> is the distance from the start point to the farthest corner of the screen. <code>--reveal</code> is a registered <code>&lt;number&gt;</code>, so it can animate from 0 to 1 and the gradient follows it.</p>
+            <p><strong>New page</strong>: solid inside 0.4r, then an S-shaped fade to nothing at r. At <code>--reveal: 1</code> the solid centre is exactly <em>reach</em> across, so the page covers the screen as the animation ends.</p>
+            <p><strong>Old page</strong>: hidden inside 0.4r, fully visible from 0.7r. It is gone wherever the new page is solid, so it never shows through gaps in the new page. In the shaded band, both pages are partly visible.</p>
+            <p><strong>The zoom is cancelled out.</strong> Each mask is drawn in its own snapshot’s coordinates, so it zooms with its page. The zoom runs through a registered <code>--zoom</code> that sets <code>scale</code>, and the radius is divided by it. At 400&nbsp;ms the old page is at 1.106× and the new at 0.976×, and both circles measure 740.8&nbsp;px on screen.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Start point</div>
+          <h2>Where the circle opens</h2>
+        </div>
+        <div class="starts">
+          <div>
+            <div class="label">Click</div>
+            <h3>Pointer position</h3>
+            <p>A capturing <code>click</code> listener records <code>clientX</code>/<code>clientY</code> when the target is inside a link.</p>
+          </div>
+          <div>
+            <div class="label">Keyboard</div>
+            <h3>Centre of the link</h3>
+            <p>Enter on a link fires a click with <code>detail === 0</code> and no coordinates, so the centre of the link’s box is used.</p>
+          </div>
+          <div>
+            <div class="label">Back / forward</div>
+            <h3>Centre of the screen</h3>
+            <p>There is no click. <code>popstate</code> clears any stored point, so the reveal starts from the middle.</p>
+          </div>
+        </div>
+        <p>Each snapshot is as large as its element (often far taller than the screen) and placed by its group’s transform. Once the transition is ready, <code>onExit</code> and <code>onEnter</code> subtract each group’s offset and write the point into that snapshot’s own coordinates. Both pages render <code>main</code> and a footer, so there are four rules. These came from a click on the Digital production card:</p>
+        <pre><span class="cm">/* injected into &lt;head&gt;, removed when the transition ends */</span>
+          ::view-transition-old(_t_0_) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">1753px</span>; --reveal-reach: <span class="v">1481.6px</span>; }
+          ::view-transition-old(_t_0__1) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">-499px</span>; --reveal-reach: <span class="v">1481.6px</span>; }
+          ::view-transition-new(_t_1_) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">215px</span>; --reveal-reach: <span class="v">1481.6px</span>; }
+          ::view-transition-new(_t_1__1) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">-3642px</span>; --reveal-reach: <span class="v">1481.6px</span>; }</pre>
+        <p>The same point is the <code>transform-origin</code> for both pages, so the zoom also starts from it.</p>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Reference</div>
+          <h2>Keyframes</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pseudo-element</th>
+                <th>Animation</th>
+                <th>Delay</th>
+                <th>Duration</th>
+                <th>Easing</th>
+                <th>Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="m">::view-transition-old(.page)</td>
+                <td class="m">page-reveal</td>
+                <td class="num">0</td>
+                <td class="num">800 ms</td>
+                <td class="m">--ease-in-out-cubic</td>
+                <td>--reveal 0 → 1 (hidden from the centre out)</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-old(.page)</td>
+                <td class="m">page-out</td>
+                <td class="num">0</td>
+                <td class="num">600 ms</td>
+                <td class="m">--ease-in-out-cubic</td>
+                <td>--zoom 1 → 1.125 (scale, and divides the mask radius)</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-old(.page)</td>
+                <td class="m">page-blur-out</td>
+                <td class="num">0</td>
+                <td class="num">400 ms</td>
+                <td class="m">--ease-in</td>
+                <td>blur 0 → 16px</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-new(.page)</td>
+                <td class="m">page-reveal</td>
+                <td class="num">0</td>
+                <td class="num">800 ms</td>
+                <td class="m">--ease-in-out-cubic</td>
+                <td>--reveal 0 → 1 (shown from the centre out)</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-new(.page)</td>
+                <td class="m">page-in</td>
+                <td class="num">200 ms</td>
+                <td class="num">600 ms</td>
+                <td class="m">--ease-out-expo</td>
+                <td>--zoom 0.75 → 1 (scale, and divides the mask radius)</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-new(.page)</td>
+                <td class="m">page-blur-in</td>
+                <td class="num">200 ms</td>
+                <td class="num">400 ms</td>
+                <td class="m">--ease-out</td>
+                <td>blur 16px → 0</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-old(site-nav)</td>
+                <td class="m">nav-out</td>
+                <td class="num">600 ms</td>
+                <td class="num">200 ms</td>
+                <td class="m">ease</td>
+                <td>opacity 1 → 0 (paper-backed bar)</td>
+              </tr>
+              <tr>
+                <td class="m">::view-transition-old/new(root)</td>
+                <td class="m">browser fade</td>
+                <td class="num">0</td>
+                <td class="num">250 ms</td>
+                <td class="m">ease</td>
+                <td>opacity cross-fade of the page background</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="footnote">Under <code>prefers-reduced-motion: reduce</code> every view transition animation is removed and both masks are turned off, so pages swap instantly.</p>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="label">Notes filter</div>
+          <h2>Rows keep the old fade</h2>
+          <p>Filtering the notes list animates rows, not pages. Rows that leave or arrive use their own <code>.filter</code> class with the fade the pages used before, and rows that stay slide to their new place. The footer is lifted out as <code>notes-footer</code> so it slides with them.</p>
+        </div>
+        <div class="tl" id="tlFilter"></div>
+        <div class="curves two" id="curvesFilter"></div>
+      </section>
     </div>
 
-    <div class="controls">
-      <button class="btn" id="play" type="button">Play</button>
-      <div class="scrub">
-        <input id="scrub" type="range" min="0" max="800" step="1" value="240" aria-label="Transition time in milliseconds">
-        <span class="time" id="time">240 ms</span>
-      </div>
-      <div class="speed" role="group" aria-label="Playback speed">
-        <button type="button" data-speed="1" aria-pressed="false">1×</button>
-        <button type="button" data-speed="0.5" aria-pressed="true">½×</button>
-        <button type="button" data-speed="0.25" aria-pressed="false">¼×</button>
-        <button type="button" data-speed="0.1" aria-pressed="false">⅒×</button>
-      </div>
-    </div>
-    <p class="hint">Click anywhere in the frame to navigate from that point, or tab to a card and press Enter to start from its centre. The timeline below follows the same playhead.</p>
-  </div>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Timeline</div>
-      <h2>Every animation, to scale</h2>
-      <p>Times count from when the browser starts the view transition, once the new page has rendered. Each bar draws its easing curve: height is how far the animation has progressed.</p>
-    </div>
-    <div class="tl" id="tlMain"></div>
-    <p class="footnote">Held still, with no animation: the nav’s group and its new snapshot, and the services caret, which is named so the live, still-turning caret shows instead of the frozen one.</p>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Easing</div>
-      <h2>Five curves</h2>
-      <p>Each dot sits where the playhead puts the animation named under its curve.</p>
-    </div>
-    <div class="curves" id="curvesMain"></div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Mask</div>
-      <h2>Two gradients from one radius</h2>
-    </div>
-    <div class="mask-grid">
-      <svg class="chart" viewBox="0 0 640 262" role="img" aria-label="Mask alpha against distance from the start point. The new page is fully visible up to 0.4 r and fades to nothing at r. The old page is hidden up to 0.4 r and fully visible from 0.7 r.">
-        <rect class="band" x="276.8" y="20" width="171.6" height="190"/>
-        <line class="gl" x1="48" y1="20" x2="620" y2="20"/>
-        <line class="gl" x1="48" y1="115" x2="620" y2="115"/>
-        <line class="gl d" x1="276.8" y1="20" x2="276.8" y2="210"/>
-        <line class="gl d" x1="448.4" y1="20" x2="448.4" y2="210"/>
-        <line class="axis" x1="48" y1="210" x2="620" y2="210"/>
-        <polyline class="l-old" points="48,210 276.8,210 448.4,20 620,20"/>
-        <polyline class="l-new" points="48,20 276.8,20 362.6,50.4 448.4,115 534.2,179.6 620,210"/>
-        <g fill="var(--pink)"><circle class="pt" cx="276.8" cy="20" r="4.5"/><circle class="pt" cx="362.6" cy="50.4" r="4.5"/><circle class="pt" cx="448.4" cy="115" r="4.5"/><circle class="pt" cx="534.2" cy="179.6" r="4.5"/><circle class="pt" cx="620" cy="210" r="4.5"/></g>
-        <g fill="var(--old)"><circle class="pt" cx="276.8" cy="210" r="4.5"/><circle class="pt" cx="448.4" cy="20" r="4.5"/></g>
-        <text class="lab-new" x="56" y="13">New page</text>
-        <text class="lab-old" x="612" y="13" text-anchor="end">Old page</text>
-        <text x="40" y="24" text-anchor="end">1</text>
-        <text x="40" y="119" text-anchor="end">0.5</text>
-        <text x="40" y="214" text-anchor="end">0</text>
-        <text x="48" y="230" text-anchor="middle">0</text>
-        <text x="276.8" y="230" text-anchor="middle">0.4r</text>
-        <text x="362.6" y="230" text-anchor="middle">0.55r</text>
-        <text x="448.4" y="230" text-anchor="middle">0.7r</text>
-        <text x="534.2" y="230" text-anchor="middle">0.85r</text>
-        <text x="620" y="230" text-anchor="middle">r</text>
-        <text x="334" y="254" text-anchor="middle">Distance from the start point → (y: mask alpha)</text>
-      </svg>
-      <div class="facts">
-        <div class="formula">r = --reveal × 2.5 × reach ÷ --zoom</div>
-        <p><strong>reach</strong> is the distance from the start point to the farthest corner of the screen. <code>--reveal</code> is a registered <code>&lt;number&gt;</code>, so it can animate from 0 to 1 and the gradient follows it.</p>
-        <p><strong>New page</strong>: solid inside 0.4r, then an S-shaped fade to nothing at r. At <code>--reveal: 1</code> the solid centre is exactly <em>reach</em> across, so the page covers the screen as the animation ends.</p>
-        <p><strong>Old page</strong>: hidden inside 0.4r, fully visible from 0.7r. It is gone wherever the new page is solid, so it never shows through gaps in the new page. In the shaded band, both pages are partly visible.</p>
-        <p><strong>The zoom is cancelled out.</strong> Each mask is drawn in its own snapshot’s coordinates, so it zooms with its page. The zoom runs through a registered <code>--zoom</code> that sets <code>scale</code>, and the radius is divided by it. At 400&nbsp;ms the old page is at 1.106× and the new at 0.976×, and both circles measure 740.8&nbsp;px on screen.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Start point</div>
-      <h2>Where the circle opens</h2>
-    </div>
-    <div class="starts">
-      <div><div class="label">Click</div><h3>Pointer position</h3><p>A capturing <code>click</code> listener records <code>clientX</code>/<code>clientY</code> when the target is inside a link.</p></div>
-      <div><div class="label">Keyboard</div><h3>Centre of the link</h3><p>Enter on a link fires a click with <code>detail === 0</code> and no coordinates, so the centre of the link’s box is used.</p></div>
-      <div><div class="label">Back / forward</div><h3>Centre of the screen</h3><p>There is no click. <code>popstate</code> clears any stored point, so the reveal starts from the middle.</p></div>
-    </div>
-    <p>Each snapshot is as large as its element (often far taller than the screen) and placed by its group’s transform. Once the transition is ready, <code>onExit</code> and <code>onEnter</code> subtract each group’s offset and write the point into that snapshot’s own coordinates. Both pages render <code>main</code> and a footer, so there are four rules. These came from a click on the Digital production card:</p>
-    <pre><span class="cm">/* injected into &lt;head&gt;, removed when the transition ends */</span>
-::view-transition-old(_t_0_)   { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">1753px</span>;  --reveal-reach: <span class="v">1481.6px</span>; }
-::view-transition-old(_t_0__1) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">-499px</span>;  --reveal-reach: <span class="v">1481.6px</span>; }
-::view-transition-new(_t_1_)   { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">215px</span>;   --reveal-reach: <span class="v">1481.6px</span>; }
-::view-transition-new(_t_1__1) { --reveal-x: <span class="v">84px</span>; --reveal-y: <span class="v">-3642px</span>; --reveal-reach: <span class="v">1481.6px</span>; }</pre>
-    <p>The same point is the <code>transform-origin</code> for both pages, so the zoom also starts from it.</p>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Reference</div>
-      <h2>Keyframes</h2>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Pseudo-element</th><th>Animation</th><th>Delay</th><th>Duration</th><th>Easing</th><th>Change</th></tr></thead>
-        <tbody>
-          <tr><td class="m">::view-transition-old(.page)</td><td class="m">page-reveal</td><td class="num">0</td><td class="num">800 ms</td><td class="m">0.65, 0, 0.35, 1</td><td>--reveal 0 → 1 (hidden from the centre out)</td></tr>
-          <tr><td class="m">::view-transition-old(.page)</td><td class="m">page-out</td><td class="num">0</td><td class="num">600 ms</td><td class="m">0.65, 0, 0.35, 1</td><td>--zoom 1 → 1.125 (scale, and divides the mask radius)</td></tr>
-          <tr><td class="m">::view-transition-old(.page)</td><td class="m">page-blur-out</td><td class="num">0</td><td class="num">400 ms</td><td class="m">0.4, 0, 1, 1</td><td>blur 0 → 16px</td></tr>
-          <tr><td class="m">::view-transition-new(.page)</td><td class="m">page-reveal</td><td class="num">0</td><td class="num">800 ms</td><td class="m">0.65, 0, 0.35, 1</td><td>--reveal 0 → 1 (shown from the centre out)</td></tr>
-          <tr><td class="m">::view-transition-new(.page)</td><td class="m">page-in</td><td class="num">200 ms</td><td class="num">600 ms</td><td class="m">0.16, 1, 0.3, 1</td><td>--zoom 0.75 → 1 (scale, and divides the mask radius)</td></tr>
-          <tr><td class="m">::view-transition-new(.page)</td><td class="m">page-blur-in</td><td class="num">200 ms</td><td class="num">400 ms</td><td class="m">0, 0, 0.6, 1</td><td>blur 16px → 0</td></tr>
-          <tr><td class="m">::view-transition-old(site-nav)</td><td class="m">nav-out</td><td class="num">600 ms</td><td class="num">200 ms</td><td class="m">ease</td><td>opacity 1 → 0 (paper-backed bar)</td></tr>
-          <tr><td class="m">::view-transition-old/new(root)</td><td class="m">browser fade</td><td class="num">0</td><td class="num">250 ms</td><td class="m">ease</td><td>opacity cross-fade of the page background</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="footnote">Under <code>prefers-reduced-motion: reduce</code> every view transition animation is removed and both masks are turned off, so pages swap instantly.</p>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <div class="label">Notes filter</div>
-      <h2>Rows keep the old fade</h2>
-      <p>Filtering the notes list animates rows, not pages. Rows that leave or arrive use their own <code>.filter</code> class with the fade the pages used before, and rows that stay slide to their new place. The footer is lifted out as <code>notes-footer</code> so it slides with them.</p>
-    </div>
-    <div class="tl" id="tlFilter"></div>
-    <div class="curves two" id="curvesFilter"></div>
-  </section>
-</div>
-
-<script>
-  function bezier(x1, y1, x2, y2) {
-    const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
-    const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
-    const sx = (t) => ((ax * t + bx) * t + cx) * t;
-    const sy = (t) => ((ay * t + by) * t + cy) * t;
-    const dx = (t) => (3 * ax * t + 2 * bx) * t + cx;
-    return (x) => {
-      if (x <= 0) return 0;
-      if (x >= 1) return 1;
-      let t = x;
-      for (let i = 0; i < 8; i++) {
-        const e = sx(t) - x;
-        if (Math.abs(e) < 1e-6) return sy(t);
-        const d = dx(t);
-        if (Math.abs(d) < 1e-6) break;
-        t -= e / d;
+    <script>
+      function bezier(x1, y1, x2, y2) {
+        const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+        const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+        const sx = (t) => ((ax * t + bx) * t + cx) * t;
+        const sy = (t) => ((ay * t + by) * t + cy) * t;
+        const dx = (t) => (3 * ax * t + 2 * bx) * t + cx;
+        return (x) => {
+          if (x <= 0) return 0;
+          if (x >= 1) return 1;
+          let t = x;
+          for (let i = 0; i < 8; i++) {
+            const e = sx(t) - x;
+            if (Math.abs(e) < 1e-6) return sy(t);
+            const d = dx(t);
+            if (Math.abs(d) < 1e-6) break;
+            t -= e / d;
+          }
+          let lo = 0, hi = 1;
+          t = x;
+          for (let i = 0; i < 40; i++) {
+            if (sx(t) < x) lo = t; else hi = t;
+            t = (lo + hi) / 2;
+          }
+          return sy(t);
+        };
       }
-      let lo = 0, hi = 1;
-      t = x;
-      for (let i = 0; i < 40; i++) {
-        if (sx(t) < x) lo = t; else hi = t;
-        t = (lo + hi) / 2;
+
+      const EASE = {
+        cubic: { name: "--ease-in-out-cubic", pts: [0.65, 0, 0.35, 1] },
+        expo: { name: "--ease-out-expo", pts: [0.16, 1, 0.3, 1] },
+        ease: { name: "ease", pts: [0.25, 0.1, 0.25, 1] },
+        in: { name: "--ease-in", pts: [0.4, 0, 1, 1] },
+        out: { name: "--ease-out", pts: [0, 0, 0.6, 1] },
+        quart: { name: "--ease-in-out-quart", pts: [0.76, 0, 0.24, 1] },
+      };
+      for (const e of Object.values(EASE)) e.fn = bezier(...e.pts);
+
+      const TOTAL = 800;
+
+      const MAIN = [
+        { group: "Old page", pseudo: "::view-transition-old(.page)", c: "var(--old)" },
+        { id: "oldReveal", n: "page-reveal", s: "Mask hides it from the centre out", delay: 0, dur: 800, ease: "cubic", read: (p) => `--reveal ${p.toFixed(2)}` },
+        { id: "oldOut", n: "page-out", s: "Zooms to 112.5% from the start point", delay: 0, dur: 600, ease: "cubic", read: (p) => `--zoom ${(1 + 0.125 * p).toFixed(3)}` },
+        { id: "oldBlur", n: "page-blur-out", s: "Blurs to 16px, fastest just before halfway", delay: 0, dur: 400, ease: "in", read: (p) => `blur ${(16 * p).toFixed(1)}px` },
+        { group: "New page", pseudo: "::view-transition-new(.page)", c: "var(--pink)" },
+        { id: "newReveal", n: "page-reveal", s: "Mask shows it from the centre out", delay: 0, dur: 800, ease: "cubic", read: (p) => `--reveal ${p.toFixed(2)}` },
+        { id: "newIn", n: "page-in", s: "Zooms up from 75%, landing with the reveal", delay: 200, dur: 600, ease: "expo", read: (p) => `--zoom ${(0.75 + 0.25 * p).toFixed(3)}` },
+        { id: "newBlur", n: "page-blur-in", s: "Comes into focus from 16px, starting as the zoom does", delay: 200, dur: 400, ease: "out", read: (p) => `blur ${(16 * (1 - p)).toFixed(1)}px` },
+        { group: "Nav", pseudo: "::view-transition-old(site-nav)", c: "var(--nav)" },
+        { id: "navOut", n: "nav-out", s: "Paper-backed old bar fades once the page is covered", delay: 600, dur: 200, ease: "ease", read: (p) => `opacity ${(1 - p).toFixed(2)}` },
+        { group: "Root", pseudo: "::view-transition-old/new(root) · browser default", c: "var(--root)" },
+        { id: "root", n: "fade-out / fade-in", s: "Cross-fades the paper behind everything", delay: 0, dur: 250, ease: "ease", read: (p) => `${(1 - p).toFixed(2)} / ${p.toFixed(2)}` },
+      ];
+
+      const FILTER = [
+        { group: "Leaving rows", pseudo: "::view-transition-old(.filter)", c: "var(--old)" },
+        { n: "filter-out", s: "Fades, lifts 16px and blurs from the bottom", delay: 0, dur: 300, ease: "in" },
+        { group: "Arriving rows", pseudo: "::view-transition-new(.filter)", c: "var(--pink)" },
+        { n: "filter-in", s: "Fades in, rising 24px into focus from the top", delay: 150, dur: 500, ease: "expo" },
+        { group: "Staying rows and footer", pseudo: "::view-transition-group(.filter-move), group(notes-footer)", c: "var(--nav)" },
+        { n: "group move", s: "Slides to its new position and size", delay: 0, dur: 500, ease: "quart" },
+      ];
+
+      const SVGNS = "http://www.w3.org/2000/svg";
+
+      function curvePath(fn, w, h, samples = 48) {
+        let d = "";
+        for (let i = 0; i <= samples; i++) {
+          const x = i / samples;
+          d += `${i ? "L" : "M"}${(x * w).toFixed(2)} ${(h - fn(x) * h).toFixed(2)}`;
+        }
+        return d;
       }
-      return sy(t);
-    };
-  }
 
-  const EASE = {
-    inout: { name: "In-out", pts: [0.65, 0, 0.35, 1] },
-    expo: { name: "Expo out", pts: [0.16, 1, 0.3, 1] },
-    ease: { name: "ease", pts: [0.25, 0.1, 0.25, 1] },
-    in: { name: "Ease in", pts: [0.4, 0, 1, 1] },
-    out: { name: "Ease out", pts: [0, 0, 0.6, 1] },
-    strong: { name: "Strong in-out", pts: [0.76, 0, 0.24, 1] },
-  };
-  for (const e of Object.values(EASE)) e.fn = bezier(...e.pts);
+      function buildTimeline(el, rows, total, tickStep, live) {
+        el.style.setProperty("--tick", `${(tickStep / total) * 100}%`);
+        const pct = (ms) => `${(ms / total) * 100}%`;
+        let html = "";
+        let color = "var(--ink)";
 
-  const TOTAL = 800;
+        html += `<div class="tl-row axis"><div class="tl-label"></div><div class="tl-track">`;
+        for (let ms = 0; ms <= total; ms += tickStep) {
+          const cls = ["tick"];
+          if (ms === total) cls.push("last");
+          if ((ms / tickStep) % 2 === 1 && ms !== total) cls.push("minor");
+          html += `<span class="${cls.join(" ")}" style="left:${pct(ms)}">${ms}${ms === total ? " ms" : ""}</span>`;
+        }
+        html += `${live ? '<div class="ph"></div>' : ""}</div><div class="tl-read"></div></div>`;
 
-  const MAIN = [
-    { group: "Old page", pseudo: "::view-transition-old(.page)", c: "var(--old)" },
-    { id: "oldReveal", n: "page-reveal", s: "Mask hides it from the centre out", delay: 0, dur: 800, ease: "inout", read: (p) => `--reveal ${p.toFixed(2)}` },
-    { id: "oldOut", n: "page-out", s: "Zooms to 112.5% from the start point", delay: 0, dur: 600, ease: "inout", read: (p) => `--zoom ${(1 + 0.125 * p).toFixed(3)}` },
-    { id: "oldBlur", n: "page-blur-out", s: "Blurs to 16px, fastest just before halfway", delay: 0, dur: 400, ease: "in", read: (p) => `blur ${(16 * p).toFixed(1)}px` },
-    { group: "New page", pseudo: "::view-transition-new(.page)", c: "var(--pink)" },
-    { id: "newReveal", n: "page-reveal", s: "Mask shows it from the centre out", delay: 0, dur: 800, ease: "inout", read: (p) => `--reveal ${p.toFixed(2)}` },
-    { id: "newIn", n: "page-in", s: "Zooms up from 75%, landing with the reveal", delay: 200, dur: 600, ease: "expo", read: (p) => `--zoom ${(0.75 + 0.25 * p).toFixed(3)}` },
-    { id: "newBlur", n: "page-blur-in", s: "Comes into focus from 16px, starting as the zoom does", delay: 200, dur: 400, ease: "out", read: (p) => `blur ${(16 * (1 - p)).toFixed(1)}px` },
-    { group: "Nav", pseudo: "::view-transition-old(site-nav)", c: "var(--nav)" },
-    { id: "navOut", n: "nav-out", s: "Paper-backed old bar fades once the page is covered", delay: 600, dur: 200, ease: "ease", read: (p) => `opacity ${(1 - p).toFixed(2)}` },
-    { group: "Root", pseudo: "::view-transition-old/new(root) · browser default", c: "var(--root)" },
-    { id: "root", n: "fade-out / fade-in", s: "Cross-fades the paper behind everything", delay: 0, dur: 250, ease: "ease", read: (p) => `${(1 - p).toFixed(2)} / ${p.toFixed(2)}` },
-  ];
-
-  const FILTER = [
-    { group: "Leaving rows", pseudo: "::view-transition-old(.filter)", c: "var(--old)" },
-    { n: "filter-out", s: "Fades, lifts 16px and blurs from the bottom", delay: 0, dur: 300, ease: "in" },
-    { group: "Arriving rows", pseudo: "::view-transition-new(.filter)", c: "var(--pink)" },
-    { n: "filter-in", s: "Fades in, rising 24px into focus from the top", delay: 150, dur: 500, ease: "expo" },
-    { group: "Staying rows and footer", pseudo: "::view-transition-group(.filter-move), group(notes-footer)", c: "var(--nav)" },
-    { n: "group move", s: "Slides to its new position and size", delay: 0, dur: 500, ease: "strong" },
-  ];
-
-  const SVGNS = "http://www.w3.org/2000/svg";
-
-  function curvePath(fn, w, h, samples = 48) {
-    let d = "";
-    for (let i = 0; i <= samples; i++) {
-      const x = i / samples;
-      d += `${i ? "L" : "M"}${(x * w).toFixed(2)} ${(h - fn(x) * h).toFixed(2)}`;
-    }
-    return d;
-  }
-
-  function buildTimeline(el, rows, total, tickStep, live) {
-    el.style.setProperty("--tick", `${(tickStep / total) * 100}%`);
-    const pct = (ms) => `${(ms / total) * 100}%`;
-    let html = "";
-    let color = "var(--ink)";
-
-    html += `<div class="tl-row axis"><div class="tl-label"></div><div class="tl-track">`;
-    for (let ms = 0; ms <= total; ms += tickStep) {
-      const cls = ["tick"];
-      if (ms === total) cls.push("last");
-      if ((ms / tickStep) % 2 === 1 && ms !== total) cls.push("minor");
-      html += `<span class="${cls.join(" ")}" style="left:${pct(ms)}">${ms}${ms === total ? " ms" : ""}</span>`;
-    }
-    html += `${live ? '<div class="ph"></div>' : ""}</div><div class="tl-read"></div></div>`;
-
-    for (const r of rows) {
-      if (r.group) {
-        color = r.c;
-        html += `<div class="tl-group" style="--c:${r.c}"><span class="sw"></span><span class="label">${r.group}</span><code>${r.pseudo}</code></div>`;
-        continue;
-      }
-      const e = EASE[r.ease];
-      const range = r.delay ? `${r.delay}–${r.delay + r.dur} ms` : `0–${r.dur} ms`;
-      const line = curvePath(e.fn, 100, 30);
-      html += `<div class="tl-row" style="--c:${color}">
+        for (const r of rows) {
+          if (r.group) {
+            color = r.c;
+            html += `<div class="tl-group" style="--c:${r.c}"><span class="sw"></span><span class="label">${r.group}</span><code>${r.pseudo}</code></div>`;
+            continue;
+          }
+          const e = EASE[r.ease];
+          const range = r.delay ? `${r.delay}–${r.delay + r.dur} ms` : `0–${r.dur} ms`;
+          const line = curvePath(e.fn, 100, 30);
+          html += `<div class="tl-row" style="--c:${color}">
         <div class="tl-label"><span class="n">${r.n}</span><span class="s">${r.s}</span></div>
         <div class="tl-track">
           <div class="bar" style="left:${pct(r.delay)};width:${pct(r.dur)}">
@@ -828,35 +1323,35 @@
           </div>
           ${live ? '<div class="ph"></div>' : ""}
         </div>
-        <div class="tl-read">${live ? `<span data-read="${r.id}"></span>` : ""}<span class="meta">${range} · ${e.name}</span></div>
+        <div class="tl-read">${live ? `<span data-read="${r.id}"></span>` : ""}<span class="meta">${range}</span><span class="meta">${e.name}</span></div>
       </div>`;
-    }
-    el.innerHTML = html;
-  }
+        }
+        el.innerHTML = html;
+      }
 
-  function buildCurves(el, cards) {
-    el.innerHTML = cards
-      .map(({ label, curves, used, note }) => {
-        const P = (x, y) => `${x * 100} ${100 - y * 100}`;
-        const drawn = curves
-          .map(({ key, c }) => {
-            const [x1, y1, x2, y2] = EASE[key].pts;
-            return `<g style="--c:${c}">
+      function buildCurves(el, cards) {
+        el.innerHTML = cards
+          .map(({ label, curves, used, note }) => {
+            const P = (x, y) => `${x * 100} ${100 - y * 100}`;
+            const drawn = curves
+              .map(({ key, c }) => {
+                const [x1, y1, x2, y2] = EASE[key].pts;
+                return `<g style="--c:${c}">
               <path class="handle" d="M${P(0, 0)}L${P(x1, y1)}M${P(1, 1)}L${P(x2, y2)}"/>
               <path class="c" d="M${P(0, 0)}C${P(x1, y1)} ${P(x2, y2)} ${P(1, 1)}"/>
               <circle class="hdot" cx="${x1 * 100}" cy="${100 - y1 * 100}" r="3"/>
               <circle class="hdot" cx="${x2 * 100}" cy="${100 - y2 * 100}" r="3"/>
             </g>`;
-          })
-          .join("");
-        const dotted = curves
-          .filter((cv) => cv.dot)
-          .map((cv) => `<circle class="dot" data-dot="${cv.dot}" r="4.5" cx="0" cy="100"/>`)
-          .join("");
-        const vals = curves
-          .map(({ key, tag }) => `<div class="val">${tag ? `${tag} ` : ""}cubic-bezier(${EASE[key].pts.join(", ")})</div>`)
-          .join("");
-        return `<div class="curve-card">
+              })
+              .join("");
+            const dotted = curves
+              .filter((cv) => cv.dot)
+              .map((cv) => `<circle class="dot" data-dot="${cv.dot}" r="4.5" cx="0" cy="100"/>`)
+              .join("");
+            const vals = curves
+              .map(({ key, tag }) => `<div class="val">${tag ? `${tag} ${EASE[key].name} · ` : ""}cubic-bezier(${EASE[key].pts.join(", ")})</div>`)
+              .join("");
+            return `<div class="curve-card">
           <div class="label">${label ?? EASE[curves[0].key].name}</div>
           <svg viewBox="-14 -8 128 124" aria-hidden="true">
             <rect class="box" x="0" y="0" width="100" height="100"/>
@@ -869,51 +1364,51 @@
           <p>${note}</p>
           <div class="used">${used}</div>
         </div>`;
-      })
-      .join("");
-  }
+          })
+          .join("");
+      }
 
-  buildTimeline(document.getElementById("tlMain"), MAIN, TOTAL, 100, true);
-  buildTimeline(document.getElementById("tlFilter"), FILTER, 650, 50, false);
+      buildTimeline(document.getElementById("tlMain"), MAIN, TOTAL, 100, true);
+      buildTimeline(document.getElementById("tlFilter"), FILTER, 650, 50, false);
 
-  buildCurves(document.getElementById("curvesMain"), [
-    { curves: [{ key: "inout", c: "var(--pink)", dot: "newReveal" }], used: "page-reveal (both pages), page-out · dot: page-reveal", note: "A slow start keeps the circle tight around the click, the middle does the travelling, and the landing is gentle." },
-    { curves: [{ key: "expo", c: "var(--pink)", dot: "newIn" }], used: "page-in, filter-in · dot: page-in", note: "Starts 200 ms in so it lands with the reveal. Most of the zoom happens in its first 200 ms." },
-    {
-      label: "Blur pair",
-      curves: [
-        { key: "in", c: "var(--old)", dot: "oldBlur", tag: "Old:" },
-        { key: "out", c: "var(--pink)", dot: "newBlur", tag: "New:" },
-      ],
-      used: "page-blur-out (taupe), page-blur-in (pink) · dots: both",
-      note: "Mirror images that overlap from 200 to 400 ms: the old page is still blurring while the new one is already coming into focus.",
-    },
-    { curves: [{ key: "ease", c: "var(--nav)", dot: "navOut" }], used: "nav-out, root cross-fade (browser default) · dot: nav-out", note: "The CSS default. Short enough here that its shape barely matters." },
-  ]);
+      buildCurves(document.getElementById("curvesMain"), [
+        { curves: [{ key: "cubic", c: "var(--pink)", dot: "newReveal" }], used: "page-reveal (both pages), page-out · dot: page-reveal", note: "A slow start keeps the circle tight around the click, the middle does the travelling, and the landing is gentle." },
+        { curves: [{ key: "expo", c: "var(--pink)", dot: "newIn" }], used: "page-in, filter-in · dot: page-in", note: "Starts 200 ms in so it lands with the reveal. Most of the zoom happens in its first 200 ms." },
+        {
+          label: "Blur pair",
+          curves: [
+            { key: "in", c: "var(--old)", dot: "oldBlur", tag: "Old:" },
+            { key: "out", c: "var(--pink)", dot: "newBlur", tag: "New:" },
+          ],
+          used: "page-blur-out (taupe), page-blur-in (pink) · dots: both",
+          note: "Mirror images that overlap from 200 to 400 ms: the old page is still blurring while the new one is already coming into focus.",
+        },
+        { curves: [{ key: "ease", c: "var(--nav)", dot: "navOut" }], used: "nav-out, root cross-fade (browser default) · dot: nav-out", note: "The CSS default. Short enough here that its shape barely matters." },
+      ]);
 
-  buildCurves(document.getElementById("curvesFilter"), [
-    { curves: [{ key: "in", c: "var(--old)" }], used: "filter-out", note: "Accelerates away, so leaving rows get out of the way quickly." },
-    { curves: [{ key: "strong", c: "var(--nav)" }], used: "filter-move, notes-footer (--ease-in-out-strong)", note: "The site’s shared in-out, also used for nav and menu transitions." },
-  ]);
+      buildCurves(document.getElementById("curvesFilter"), [
+        { curves: [{ key: "in", c: "var(--old)" }], used: "filter-out", note: "Accelerates away, so leaving rows get out of the way quickly." },
+        { curves: [{ key: "quart", c: "var(--nav)" }], used: "filter-move, notes-footer", note: "The site’s shared in-out, also used for nav and menu transitions." },
+      ]);
 
-  /* ---------- Iso illustration for the mock new page ---------- */
+      /* ---------- Iso illustration for the mock new page ---------- */
 
-  (function drawIso() {
-    const svg = document.getElementById("iso");
-    const cube = (cx, cy, s, h, top, left, right) => {
-      const w = s * 0.866;
-      return `<polygon points="${cx - w},${cy} ${cx},${cy + s / 2} ${cx},${cy + s / 2 + h} ${cx - w},${cy + h}" fill="${left}"/>
+      (function drawIso() {
+        const svg = document.getElementById("iso");
+        const cube = (cx, cy, s, h, top, left, right) => {
+          const w = s * 0.866;
+          return `<polygon points="${cx - w},${cy} ${cx},${cy + s / 2} ${cx},${cy + s / 2 + h} ${cx - w},${cy + h}" fill="${left}"/>
         <polygon points="${cx},${cy + s / 2} ${cx + w},${cy} ${cx + w},${cy + h} ${cx},${cy + s / 2 + h}" fill="${right}"/>
         <polygon points="${cx},${cy - s / 2} ${cx + w},${cy} ${cx},${cy + s / 2} ${cx - w},${cy}" fill="${top}"/>`;
-    };
-    const paper = ["#faf7f4", "#ded3c7", "#c8baab"];
-    const pink = ["#ff7189", "#e8405d", "#c92c48"];
-    let grid = "";
-    for (let i = -6; i <= 6; i++) {
-      grid += `<line x1="${200 + i * 34.6 - 260}" y1="${220 + i * 20 - 150}" x2="${200 + i * 34.6 + 260}" y2="${220 + i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
-      grid += `<line x1="${200 + i * 34.6 + 260}" y1="${220 - i * 20 - 150}" x2="${200 + i * 34.6 - 260}" y2="${220 - i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
-    }
-    svg.innerHTML = `
+        };
+        const paper = ["#faf7f4", "#ded3c7", "#c8baab"];
+        const pink = ["#ff7189", "#e8405d", "#c92c48"];
+        let grid = "";
+        for (let i = -6; i <= 6; i++) {
+          grid += `<line x1="${200 + i * 34.6 - 260}" y1="${220 + i * 20 - 150}" x2="${200 + i * 34.6 + 260}" y2="${220 + i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
+          grid += `<line x1="${200 + i * 34.6 + 260}" y1="${220 - i * 20 - 150}" x2="${200 + i * 34.6 - 260}" y2="${220 - i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
+        }
+        svg.innerHTML = `
       <defs>
         <radialGradient id="ball" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#ff8aa0"/><stop offset="0.55" stop-color="#ff4d6a"/><stop offset="1" stop-color="#c92c48"/></radialGradient>
         <clipPath id="floor"><rect x="0" y="120" width="400" height="210"/></clipPath>
@@ -924,163 +1419,164 @@
       ${cube(200, 150, 70, 110, ...pink)}
       ${cube(138, 220, 70, 55, ...paper)}
       <circle cx="200" cy="70" r="42" fill="url(#ball)"/>`;
-  })();
+      })();
 
-  /* ---------- Playback ---------- */
+      /* ---------- Playback ---------- */
 
-  const frame = document.getElementById("frame");
-  const oldLayer = document.getElementById("oldLayer");
-  const newLayer = document.getElementById("newLayer");
-  const oldNav = document.getElementById("oldNav");
-  const mark = document.getElementById("originMark");
-  const scrub = document.getElementById("scrub");
-  const timeEl = document.getElementById("time");
-  const playBtn = document.getElementById("play");
-  const tlMain = document.getElementById("tlMain");
-  const reads = Object.fromEntries([...document.querySelectorAll("[data-read]")].map((el) => [el.dataset.read, el]));
-  const dots = [...document.querySelectorAll("[data-dot]")];
-  const byId = Object.fromEntries(MAIN.filter((r) => r.id).map((r) => [r.id, r]));
+      const frame = document.getElementById("frame");
+      const oldLayer = document.getElementById("oldLayer");
+      const newLayer = document.getElementById("newLayer");
+      const oldNav = document.getElementById("oldNav");
+      const mark = document.getElementById("originMark");
+      const scrub = document.getElementById("scrub");
+      const timeEl = document.getElementById("time");
+      const playBtn = document.getElementById("play");
+      const tlMain = document.getElementById("tlMain");
+      const reads = Object.fromEntries([...document.querySelectorAll("[data-read]")].map((el) => [el.dataset.read, el]));
+      const dots = [...document.querySelectorAll("[data-dot]")];
+      const byId = Object.fromEntries(MAIN.filter((r) => r.id).map((r) => [r.id, r]));
 
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let origin = null;
-  let t = 240;
-  let speed = 0.5;
-  let playing = false;
-  let last = 0;
+      let origin = null;
+      let t = 240;
+      let speed = 0.5;
+      let playing = false;
+      let last = 0;
 
-  const progress = (id, ms) => {
-    const a = byId[id];
-    return EASE[a.ease].fn(Math.min(1, Math.max(0, (ms - a.delay) / a.dur)));
-  };
+      const progress = (id, ms) => {
+        const a = byId[id];
+        return EASE[a.ease].fn(Math.min(1, Math.max(0, (ms - a.delay) / a.dur)));
+      };
 
-  function defaultOrigin() {
-    const card = oldLayer.querySelector(".card");
-    const f = frame.getBoundingClientRect();
-    const c = card.getBoundingClientRect();
-    return { fx: (c.left + c.width * 0.82 - f.left) / f.width, fy: (c.top + c.height * 0.28 - f.top) / f.height };
-  }
+      function defaultOrigin() {
+        const card = oldLayer.querySelector(".card");
+        const f = frame.getBoundingClientRect();
+        const c = card.getBoundingClientRect();
+        return { fx: (c.left + c.width * 0.82 - f.left) / f.width, fy: (c.top + c.height * 0.28 - f.top) / f.height };
+      }
 
-  function setMask(el, value) {
-    el.style.maskImage = value;
-    el.style.webkitMaskImage = value;
-  }
+      function setMask(el, value) {
+        el.style.maskImage = value;
+        el.style.webkitMaskImage = value;
+      }
 
-  function render() {
-    const W = frame.clientWidth;
-    const H = frame.clientHeight;
-    const k = W / 1440;
-    const o = origin || defaultOrigin();
-    const x = o.fx * W;
-    const y = o.fy * H;
-    const reach = Math.hypot(Math.max(x, W - x), Math.max(y, H - y));
-    const at = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+      function render() {
+        const W = frame.clientWidth;
+        const H = frame.clientHeight;
+        const k = W / 1440;
+        const o = origin || defaultOrigin();
+        const x = o.fx * W;
+        const y = o.fy * H;
+        const reach = Math.hypot(Math.max(x, W - x), Math.max(y, H - y));
+        const at = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
 
-    const out = progress("oldOut", t);
-    const inn = progress("newIn", t);
-    const oldZoom = 1 + 0.125 * out;
-    const newZoom = 0.75 + 0.25 * inn;
-    // Each mask zooms with its page, so divide by the zoom to keep the circles equal on screen.
-    const oldR = (progress("oldReveal", t) * 2.5 * reach) / oldZoom;
-    const newR = (progress("newReveal", t) * 2.5 * reach) / newZoom;
-    const oldBlur = progress("oldBlur", t);
-    const newBlur = 1 - progress("newBlur", t);
-    const nav = progress("navOut", t);
+        const out = progress("oldOut", t);
+        const inn = progress("newIn", t);
+        const oldZoom = 1 + 0.125 * out;
+        const newZoom = 0.75 + 0.25 * inn;
+        // Each mask zooms with its page, so divide by the zoom to keep the circles equal on screen.
+        const oldR = (progress("oldReveal", t) * 2.5 * reach) / oldZoom;
+        const newR = (progress("newReveal", t) * 2.5 * reach) / newZoom;
+        const oldBlur = progress("oldBlur", t);
+        const newBlur = 1 - progress("newBlur", t);
+        const nav = progress("navOut", t);
 
-    setMask(oldLayer, `radial-gradient(circle at ${at}, transparent ${oldR * 0.4}px, #000 ${oldR * 0.7}px)`);
-    setMask(
-      newLayer,
-      `radial-gradient(circle at ${at}, #000 ${newR * 0.4}px, rgb(0 0 0 / 0.84) ${newR * 0.55}px, rgb(0 0 0 / 0.5) ${newR * 0.7}px, rgb(0 0 0 / 0.16) ${newR * 0.85}px, transparent ${newR}px)`,
-    );
+        setMask(oldLayer, `radial-gradient(circle at ${at}, transparent ${oldR * 0.4}px, #000 ${oldR * 0.7}px)`);
+        setMask(
+          newLayer,
+          `radial-gradient(circle at ${at}, #000 ${newR * 0.4}px, rgb(0 0 0 / 0.84) ${newR * 0.55}px, rgb(0 0 0 / 0.5) ${newR * 0.7}px, rgb(0 0 0 / 0.16) ${newR * 0.85}px, transparent ${newR}px)`,
+        );
 
-    oldLayer.style.transformOrigin = at;
-    newLayer.style.transformOrigin = at;
-    oldLayer.style.transform = `scale(${oldZoom})`;
-    oldLayer.style.filter = oldBlur > 0.001 ? `blur(${16 * k * oldBlur}px)` : "none";
-    newLayer.style.transform = `scale(${newZoom})`;
-    newLayer.style.filter = newBlur > 0.001 ? `blur(${16 * k * newBlur}px)` : "none";
-    oldNav.style.opacity = String(1 - nav);
+        oldLayer.style.transformOrigin = at;
+        newLayer.style.transformOrigin = at;
+        oldLayer.style.transform = `scale(${oldZoom})`;
+        oldLayer.style.filter = oldBlur > 0.001 ? `blur(${16 * k * oldBlur}px)` : "none";
+        newLayer.style.transform = `scale(${newZoom})`;
+        newLayer.style.filter = newBlur > 0.001 ? `blur(${16 * k * newBlur}px)` : "none";
+        oldNav.style.opacity = String(1 - nav);
 
-    mark.style.left = `${x}px`;
-    mark.style.top = `${y}px`;
-    mark.style.opacity = t >= TOTAL ? "0" : "1";
+        mark.style.left = `${x}px`;
+        mark.style.top = `${y}px`;
+        mark.style.opacity = t >= TOTAL ? "0" : "1";
 
-    tlMain.style.setProperty("--ph", String(t / TOTAL));
-    for (const [id, el] of Object.entries(reads)) el.textContent = byId[id].read(progress(id, t));
+        tlMain.style.setProperty("--ph", String(t / TOTAL));
+        for (const [id, el] of Object.entries(reads)) el.textContent = byId[id].read(progress(id, t));
 
-    for (const d of dots) {
-      const a = byId[d.dataset.dot];
-      const px = Math.min(1, Math.max(0, (t - a.delay) / a.dur));
-      d.setAttribute("cx", (px * 100).toFixed(2));
-      d.setAttribute("cy", (100 - EASE[a.ease].fn(px) * 100).toFixed(2));
-    }
+        for (const d of dots) {
+          const a = byId[d.dataset.dot];
+          const px = Math.min(1, Math.max(0, (t - a.delay) / a.dur));
+          d.setAttribute("cx", (px * 100).toFixed(2));
+          d.setAttribute("cy", (100 - EASE[a.ease].fn(px) * 100).toFixed(2));
+        }
 
-    scrub.value = String(Math.round(t));
-    timeEl.textContent = `${Math.round(t)} ms`;
-  }
+        scrub.value = String(Math.round(t));
+        timeEl.textContent = `${Math.round(t)} ms`;
+      }
 
-  function tick(now) {
-    if (!playing) return;
-    t += (now - last) * speed;
-    last = now;
-    if (t >= TOTAL) {
-      t = TOTAL;
-      stop();
-    }
-    render();
-    if (playing) requestAnimationFrame(tick);
-  }
+      function tick(now) {
+        if (!playing) return;
+        t += (now - last) * speed;
+        last = now;
+        if (t >= TOTAL) {
+          t = TOTAL;
+          stop();
+        }
+        render();
+        if (playing) requestAnimationFrame(tick);
+      }
 
-  function play(from) {
-    if (from !== undefined) t = from;
-    if (t >= TOTAL) t = 0;
-    if (reduceMotion) {
-      t = TOTAL;
+      function play(from) {
+        if (from !== undefined) t = from;
+        if (t >= TOTAL) t = 0;
+        if (reduceMotion) {
+          t = TOTAL;
+          render();
+          return;
+        }
+        playing = true;
+        playBtn.textContent = "Pause";
+        last = performance.now();
+        requestAnimationFrame(tick);
+      }
+
+      function stop() {
+        playing = false;
+        playBtn.textContent = t >= TOTAL ? "Replay" : "Play";
+      }
+
+      playBtn.addEventListener("click", () => (playing ? stop() : play()));
+
+      scrub.addEventListener("input", () => {
+        stop();
+        t = Number(scrub.value);
+        playBtn.textContent = "Play";
+        render();
+      });
+
+      document.querySelectorAll(".speed button").forEach((b) =>
+        b.addEventListener("click", () => {
+          speed = Number(b.dataset.speed);
+          document.querySelectorAll(".speed button").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+        }),
+      );
+
+      frame.addEventListener("click", (e) => {
+        const f = frame.getBoundingClientRect();
+        const card = e.target.closest(".card");
+        if (e.detail === 0 && card) {
+          const c = card.getBoundingClientRect();
+          origin = { fx: (c.left + c.width / 2 - f.left) / f.width, fy: (c.top + c.height / 2 - f.top) / f.height };
+        } else {
+          origin = { fx: (e.clientX - f.left) / f.width, fy: (e.clientY - f.top) / f.height };
+        }
+        play(0);
+      });
+
+      new ResizeObserver(render).observe(frame);
+      document.fonts?.ready.then(render);
       render();
-      return;
-    }
-    playing = true;
-    playBtn.textContent = "Pause";
-    last = performance.now();
-    requestAnimationFrame(tick);
-  }
+    </script>
+  </body>
 
-  function stop() {
-    playing = false;
-    playBtn.textContent = t >= TOTAL ? "Replay" : "Play";
-  }
-
-  playBtn.addEventListener("click", () => (playing ? stop() : play()));
-
-  scrub.addEventListener("input", () => {
-    stop();
-    t = Number(scrub.value);
-    playBtn.textContent = "Play";
-    render();
-  });
-
-  document.querySelectorAll(".speed button").forEach((b) =>
-    b.addEventListener("click", () => {
-      speed = Number(b.dataset.speed);
-      document.querySelectorAll(".speed button").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
-    }),
-  );
-
-  frame.addEventListener("click", (e) => {
-    const f = frame.getBoundingClientRect();
-    const card = e.target.closest(".card");
-    if (e.detail === 0 && card) {
-      const c = card.getBoundingClientRect();
-      origin = { fx: (c.left + c.width / 2 - f.left) / f.width, fy: (c.top + c.height / 2 - f.top) / f.height };
-    } else {
-      origin = { fx: (e.clientX - f.left) / f.width, fy: (e.clientY - f.top) / f.height };
-    }
-    play(0);
-  });
-
-  new ResizeObserver(render).observe(frame);
-  document.fonts?.ready.then(render);
-  render();
-</script>
-</body>
 </html>

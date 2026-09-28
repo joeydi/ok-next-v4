@@ -92,7 +92,7 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
 Standalone pages in `docs/` that explain parts of the design system. Open them in a browser; they don't need the dev server.
 
 - [Palette](docs/palette.html): every `--color-*` token with its HSL position and contrast against paper and ink.
-- [Easing curves](docs/easing-curves.html): the three `cubic-bezier()` curves used across the interface, with where each one is used.
+- [Easing curves](docs/easing-curves.html): the five easing tokens (`--ease-*`), with where each one is used.
 - [Page reveal](docs/page-reveal.html): how the page transition reveals the next page from the click point, with a playable preview and every animation's timing and easing on one timeline.
 
 They copy their values from `src/app/globals.css` by hand, so update them when the tokens, curves or transition timings change.

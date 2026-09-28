@@ -26,7 +26,11 @@
   --tracking-display: -0.035em;
   --tracking-heading: -0.02em;
 
-  --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0, 0, 0.6, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* ---------- Base ---------- */
@@ -178,9 +182,9 @@
     #000 calc(var(--reveal-r) * 0.7)
   );
   animation:
-    800ms cubic-bezier(0.65, 0, 0.35, 1) both page-reveal,
-    600ms cubic-bezier(0.65, 0, 0.35, 1) both page-out,
-    400ms cubic-bezier(0.4, 0, 1, 1) both page-blur-out;
+    800ms var(--ease-in-out-cubic) both page-reveal,
+    600ms var(--ease-in-out-cubic) both page-out,
+    400ms var(--ease-in) both page-blur-out;
 }
 
 ::view-transition-new(.page) {
@@ -193,9 +197,9 @@
     transparent var(--reveal-r)
   );
   animation:
-    800ms cubic-bezier(0.65, 0, 0.35, 1) both page-reveal,
-    600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both page-in,
-    400ms cubic-bezier(0, 0, 0.6, 1) 200ms both page-blur-in;
+    800ms var(--ease-in-out-cubic) both page-reveal,
+    600ms var(--ease-out-expo) 200ms both page-in,
+    400ms var(--ease-out) 200ms both page-blur-in;
 }
 
 @keyframes page-reveal {
@@ -234,12 +238,12 @@
    and rise in like pages used to, fading instead of being masked. */
 ::view-transition-old(.filter) {
   transform-origin: bottom;
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both filter-out;
+  animation: 300ms var(--ease-in) both filter-out;
 }
 
 ::view-transition-new(.filter) {
   transform-origin: top;
-  animation: 500ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both filter-in;
+  animation: 500ms var(--ease-out-expo) 150ms both filter-in;
 }
 
 @keyframes filter-out {
@@ -264,7 +268,7 @@
 ::view-transition-group(.filter-move),
 ::view-transition-group(notes-footer) {
   animation-duration: 500ms;
-  animation-timing-function: var(--ease-in-out-strong);
+  animation-timing-function: var(--ease-in-out-quart);
 }
 
 /* The footer jumps straight to where the resized list leaves it, and snapshots
@@ -370,7 +374,7 @@
     background-position: 0 90%;
     background-size: 0% 0.075em;
     padding-bottom: 4px;
-    transition: background-size 0.5s var(--ease-in-out-strong);
+    transition: background-size 0.5s var(--ease-in-out-quart);
   }
 
   .hover-card:is(:hover, :focus-visible) .hover-title {
@@ -389,8 +393,8 @@
 
     will-change: transform;
     transition:
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform 0.5s var(--ease-out-expo),
+      box-shadow 0.5s var(--ease-out-expo);
   }
 
   .hover-card:is(:hover, :focus-visible) .hover-lift,
@@ -443,13 +447,13 @@
     opacity: 0;
     translate: 0 -4px;
     transition:
-      opacity 0.35s var(--ease-in-out-strong),
-      translate 0.35s var(--ease-in-out-strong),
+      opacity 0.35s var(--ease-in-out-quart),
+      translate 0.35s var(--ease-in-out-quart),
       overlay 0.35s allow-discrete,
       display 0.35s allow-discrete,
-      color 0.5s var(--ease-in-out-strong),
-      background-color 0.5s var(--ease-in-out-strong),
-      border-color 0.5s var(--ease-in-out-strong);
+      color 0.5s var(--ease-in-out-quart),
+      background-color 0.5s var(--ease-in-out-quart),
+      border-color 0.5s var(--ease-in-out-quart);
   }
 
   .site-menu {

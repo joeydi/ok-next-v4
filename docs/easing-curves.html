@@ -1,346 +1,485 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Okayplus Easing Curves</title>
-<!-- Gelica comes from the site's Adobe Fonts kit, which only serves domains added to it. Elsewhere headings fall back to Hanken Grotesk. -->
-<link rel="preconnect" href="https://use.typekit.net" crossorigin>
-<link rel="stylesheet" href="https://use.typekit.net/llb6krb.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<style>
-  :root {
-    --paper: #f2ece6;
-    --raised: #f7f3ef;
-    --rule: #d8ccbf;
-    --guide: #cdc0b2;
-    --ink: #1d1a17;
-    --body: #4e463e;
-    --muted: #746759;
-    --pink: #ff4d6a;
-    --pink-ink: #d01f3e;
-    --ghost: #b0a08f;
-    --display: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --paper: #1d1a17;
-      --raised: #23201d;
-      --rule: #39342e;
-      --guide: #4e463e;
-      --ink: #f2ece6;
-      --body: #d3c6b8;
-      --muted: #b0a08f;
-      --pink: #ff4d6a;
-      --pink-ink: #ff6f86;
-      --ghost: #746759;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --paper: #1d1a17;
-    --raised: #23201d;
-    --rule: #39342e;
-    --guide: #4e463e;
-    --ink: #f2ece6;
-    --body: #d3c6b8;
-    --muted: #b0a08f;
-    --pink: #ff4d6a;
-    --pink-ink: #ff6f86;
-    --ghost: #746759;
-  }
 
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-inline: clamp(16px, 4vw, 48px);
-    padding-block: clamp(32px, 6vw, 72px);
-    display: flex;
-    flex-direction: column;
-    gap: clamp(40px, 6vw, 72px);
-  }
-  .label {
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  header { display: flex; flex-direction: column; gap: 16px; max-width: 62ch; }
-  h1 {
-    margin: 0;
-    font-family: var(--display);
-    font-size: clamp(36px, 6vw, 64px);
-    line-height: 1;
-    font-weight: 400;
-    letter-spacing: -0.035em;
-    text-wrap: balance;
-  }
-  h1 span { color: var(--pink); }
-  header p { margin: 0; color: var(--body); font-size: 18px; text-wrap: pretty; }
-  header p a { color: var(--ink); text-decoration-color: var(--pink); text-underline-offset: 3px; }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Okayplus Easing Curves</title>
+    <!-- Gelica comes from the site's Adobe Fonts kit, which only serves domains added to it. Elsewhere headings fall back to Hanken Grotesk. -->
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+    <link rel="stylesheet" href="https://use.typekit.net/llb6krb.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <style>
+      :root {
+        --paper: #f2ece6;
+        --raised: #f7f3ef;
+        --rule: #d8ccbf;
+        --guide: #cdc0b2;
+        --ink: #1d1a17;
+        --body: #4e463e;
+        --muted: #746759;
+        --pink: #ff4d6a;
+        --pink-ink: #d01f3e;
+        --ghost: #b0a08f;
+        --display: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+        --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
 
-  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-  button {
-    font: 500 13px/1 var(--mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: none;
-    border: 1px solid var(--ink);
-    padding: 12px 16px;
-    cursor: pointer;
-  }
-  button:hover { background: var(--ink); color: var(--paper); }
-  button:focus-visible { outline: 2px solid var(--pink-ink); outline-offset: 3px; }
-  .legend { display: flex; gap: 20px; flex-wrap: wrap; }
-  .legend span { display: inline-flex; align-items: center; gap: 8px; }
-  .legend i { width: 18px; height: 2px; background: var(--pink); display: inline-block; }
-  .legend i.lin { background: none; border-top: 2px dashed var(--ghost); height: 0; }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          color-scheme: dark;
+          --paper: #1d1a17;
+          --raised: #23201d;
+          --rule: #39342e;
+          --guide: #4e463e;
+          --ink: #f2ece6;
+          --body: #d3c6b8;
+          --muted: #b0a08f;
+          --pink: #ff4d6a;
+          --pink-ink: #ff6f86;
+          --ghost: #746759;
+        }
+      }
 
-  .curves {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-  }
-  .card {
-    background: var(--raised);
-    border: 1px solid var(--rule);
-    padding: 24px 24px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  .card-head { display: flex; justify-content: space-between; gap: 12px; }
-  .card h2 { margin: 0; font-size: 26px; line-height: 1.1; font-weight: 500; letter-spacing: -0.015em; }
-  code {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--pink-ink);
-    word-break: break-word;
-  }
-  .card p { margin: 0; color: var(--body); text-wrap: pretty; }
-  .plot { width: 100%; max-width: 100%; height: auto; display: block; }
-  .plot text { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; fill: var(--muted); }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --paper: #1d1a17;
+        --raised: #23201d;
+        --rule: #39342e;
+        --guide: #4e463e;
+        --ink: #f2ece6;
+        --body: #d3c6b8;
+        --muted: #b0a08f;
+        --pink: #ff4d6a;
+        --pink-ink: #ff6f86;
+        --ghost: #746759;
+      }
 
-  .track {
-    position: relative;
-    height: 44px;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  .track::before {
-    content: "";
-    position: absolute;
-    left: 7px; right: 7px; top: 50%;
-    border-top: 1px dashed var(--guide);
-  }
-  .dot {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 14px; height: 14px;
-    margin-top: -7px;
-    border-radius: 50%;
-    transform: translateX(var(--x, 0px));
-  }
-  .dot.eased { background: var(--pink); margin-top: -13px; }
-  .dot.linear { background: var(--ghost); margin-top: -1px; }
+      * {
+        box-sizing: border-box;
+      }
 
-  dl {
-    margin: 0;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 6px 16px;
-    font-size: 14px;
-    border-top: 1px solid var(--rule);
-    padding-top: 16px;
-  }
-  dt { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
-  dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
 
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header>
-    <div class="label">/ globals.css · easing</div>
-    <h1>Three curves<span>.</span></h1>
-    <p>The three <code>cubic-bezier()</code> timing functions used across the site’s interface. The page transition adds two of its own, covered in <a href="page-reveal.html">Page reveal</a>. Each plot shows progress against time. The pink dot on the track moves with the curve and the grey dot moves at a constant speed, so you can compare them.</p>
-    <div class="toolbar">
-      <button type="button" id="play">Play all</button>
-      <div class="legend label">
-        <span><i></i>Curve</span>
-        <span><i class="lin"></i>Linear</span>
-      </div>
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-inline: clamp(16px, 4vw, 48px);
+        padding-block: clamp(32px, 6vw, 72px);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(40px, 6vw, 72px);
+      }
+
+      .label {
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 62ch;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: var(--display);
+        font-size: clamp(36px, 6vw, 64px);
+        line-height: 1;
+        font-weight: 400;
+        letter-spacing: -0.035em;
+        text-wrap: balance;
+      }
+
+      h1 span {
+        color: var(--pink);
+      }
+
+      header p {
+        margin: 0;
+        color: var(--body);
+        font-size: 18px;
+        text-wrap: pretty;
+      }
+
+      header p a {
+        color: var(--ink);
+        text-decoration-color: var(--pink);
+        text-underline-offset: 3px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+      }
+
+      button {
+        font: 500 13px/1 var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: none;
+        border: 1px solid var(--ink);
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--pink-ink);
+        outline-offset: 3px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend i {
+        width: 18px;
+        height: 2px;
+        background: var(--pink);
+        display: inline-block;
+      }
+
+      .legend i.lin {
+        background: none;
+        border-top: 2px dashed var(--ghost);
+        height: 0;
+      }
+
+      .curves {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+
+      .card {
+        background: var(--raised);
+        border: 1px solid var(--rule);
+        padding: 24px 24px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 26px;
+        line-height: 1.1;
+        font-weight: 500;
+        letter-spacing: -0.015em;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--pink-ink);
+        word-break: break-word;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--body);
+        text-wrap: pretty;
+      }
+
+      .plot {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .plot text {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        fill: var(--muted);
+      }
+
+      .track {
+        position: relative;
+        height: 44px;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .track::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        right: 7px;
+        top: 50%;
+        border-top: 1px dashed var(--guide);
+      }
+
+      .dot {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 14px;
+        height: 14px;
+        margin-top: -7px;
+        border-radius: 50%;
+        transform: translateX(var(--x, 0px));
+      }
+
+      .dot.eased {
+        background: var(--pink);
+        margin-top: -13px;
+      }
+
+      .dot.linear {
+        background: var(--ghost);
+        margin-top: -1px;
+      }
+
+      dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 6px 16px;
+        font-size: 14px;
+        border-top: 1px solid var(--rule);
+        padding-top: 16px;
+      }
+
+      dt {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-top: 2px;
+      }
+
+      dd {
+        margin: 0;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="label">/ globals.css · easing</div>
+        <h1>Five curves<span>.</span></h1>
+        <p>The five easing tokens in the <code>@theme</code> block. Use them as <code>var(--ease-…)</code> in CSS or as Tailwind <code>ease-…</code> classes rather than writing a <code>cubic-bezier()</code> inline. <a href="page-reveal.html">Page reveal</a> shows how the page transition combines them. Each plot shows progress against time. The pink dot on the track moves with the curve and the grey dot moves at a constant speed, so you can compare them.</p>
+        <div class="toolbar">
+          <button type="button" id="play">Play all</button>
+          <div class="legend label">
+            <span><i></i>Curve</span>
+            <span><i class="lin"></i>Linear</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="curves" id="curves"></div>
     </div>
-  </header>
 
-  <div class="curves" id="curves"></div>
-</div>
+    <script>
+      const CURVES = [
+        {
+          name: "In-out quart",
+          bez: [0.76, 0, 0.24, 1],
+          token: "--ease-in-out-quart",
+          duration: 500,
+          delay: 0,
+          desc: "Holds back at both ends and does almost all of its movement in the middle. It is much steeper than the browser's own ease-in-out.",
+          where: "Nav colours and background over dark sections, the nav menus and services caret (350ms), card title underlines, and notes rows sliding into place after a filter",
+        },
+        {
+          name: "In-out cubic",
+          bez: [0.65, 0, 0.35, 1],
+          token: "--ease-in-out-cubic",
+          duration: 800,
+          delay: 0,
+          desc: "A softer in-out than quart. It still starts and lands gently, but spreads more of the movement away from the middle.",
+          where: "The page transition's circular reveal on both pages, and the old page's zoom out (600ms)",
+        },
+        {
+          name: "Expo out",
+          bez: [0.16, 1, 0.3, 1],
+          token: "--ease-out-expo",
+          duration: 500,
+          delay: 0,
+          desc: "A strong ease-out. Covers most of the distance right away, then spends the rest of its time settling.",
+          where: "Card lift and shadow on hover, notes rows arriving after a filter (after a 150ms delay), and the new page's zoom (600ms, after a 200ms delay)",
+        },
+        {
+          name: "Ease out",
+          bez: [0, 0, 0.6, 1],
+          token: "--ease-out",
+          duration: 400,
+          delay: 0,
+          desc: "The mirror image of ease in. Starts at full speed and slows evenly to a stop, without expo out's long tail. It replaces Tailwind's default ease-out.",
+          where: "The new page coming into focus (after a 200ms delay), the booking dialog (300ms), and the media admin's drawer and confirm dialog",
+        },
+        {
+          name: "Ease in",
+          bez: [0.4, 0, 1, 1],
+          token: "--ease-in",
+          duration: 300,
+          delay: 0,
+          desc: "Starts slowly and is at full speed when it ends, so whatever uses it accelerates away and never settles.",
+          where: "Notes rows leaving after a filter: they lift 16px, blur and fade. The old page's blur (400ms) uses it too.",
+        },
+      ];
 
-<script>
-  const CURVES = [
-    {
-      name: "Strong ease-in-out",
-      bez: [0.76, 0, 0.24, 1],
-      kind: "token",
-      source: "--ease-in-out-strong",
-      duration: 500,
-      delay: 0,
-      desc: "Holds back at both ends and does almost all of its movement in the middle. It is much steeper than the browser's own ease-in-out.",
-      where: "Nav colours and background over dark sections, the nav menus and services caret (350ms), card title underlines, and notes rows sliding into place after a filter",
-    },
-    {
-      name: "Expo out",
-      bez: [0.16, 1, 0.3, 1],
-      kind: "transition",
-      source: ".hover-lift, ::view-transition-new(.filter)",
-      duration: 500,
-      delay: 0,
-      desc: "A strong ease-out. Covers most of the distance right away, then spends the rest of its time settling.",
-      where: "Card lift and shadow on hover, and notes rows arriving after a filter (after a 150ms delay). The new page's zoom uses it too.",
-    },
-    {
-      name: "Ease in",
-      bez: [0.4, 0, 1, 1],
-      kind: "keyframes",
-      source: "::view-transition-old(.filter)",
-      duration: 300,
-      delay: 0,
-      desc: "Starts slowly and is at full speed when it ends, so whatever uses it accelerates away and never settles.",
-      where: "Notes rows leaving after a filter: they lift 16px, blur and fade. The old page's blur uses it too.",
-    },
-  ];
+      // Cubic bezier through (0,0), (x1,y1), (x2,y2), (1,1).
+      const axis = (a, b, t) => 3 * a * (1 - t) ** 2 * t + 3 * b * (1 - t) * t ** 2 + t ** 3;
+      function ease([x1, y1, x2, y2], x) {
+        if (x <= 0) return 0;
+        if (x >= 1) return 1;
+        let lo = 0, hi = 1, t = x;
+        for (let i = 0; i < 40; i++) {
+          t = (lo + hi) / 2;
+          if (axis(x1, x2, t) < x) lo = t; else hi = t;
+        }
+        return axis(y1, y2, t);
+      }
 
-  // Cubic bezier through (0,0), (x1,y1), (x2,y2), (1,1).
-  const axis = (a, b, t) => 3 * a * (1 - t) ** 2 * t + 3 * b * (1 - t) * t ** 2 + t ** 3;
-  function ease([x1, y1, x2, y2], x) {
-    if (x <= 0) return 0;
-    if (x >= 1) return 1;
-    let lo = 0, hi = 1, t = x;
-    for (let i = 0; i < 40; i++) {
-      t = (lo + hi) / 2;
-      if (axis(x1, x2, t) < x) lo = t; else hi = t;
-    }
-    return axis(y1, y2, t);
-  }
+      const NS = "http://www.w3.org/2000/svg";
+      const el = (name, attrs, parent) => {
+        const n = document.createElementNS(NS, name);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        if (parent) parent.appendChild(n);
+        return n;
+      };
+      const pct = (v) => Math.round(v * 100) + "%";
 
-  const NS = "http://www.w3.org/2000/svg";
-  const el = (name, attrs, parent) => {
-    const n = document.createElementNS(NS, name);
-    for (const k in attrs) n.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(n);
-    return n;
-  };
-  const pct = (v) => Math.round(v * 100) + "%";
+      // ---- Curve cards ----
+      const S = 220, PAD_L = 34, PAD_T = 14, PAD_B = 30, PAD_R = 14;
+      const W = PAD_L + S + PAD_R, H = PAD_T + S + PAD_B;
+      const X = (v) => PAD_L + v * S;
+      const Y = (v) => PAD_T + (1 - v) * S;
 
-  // ---- Curve cards ----
-  const S = 220, PAD_L = 34, PAD_T = 14, PAD_B = 30, PAD_R = 14;
-  const W = PAD_L + S + PAD_R, H = PAD_T + S + PAD_B;
-  const X = (v) => PAD_L + v * S;
-  const Y = (v) => PAD_T + (1 - v) * S;
+      const host = document.getElementById("curves");
+      const tracks = [];
 
-  const host = document.getElementById("curves");
-  const tracks = [];
-
-  CURVES.forEach((c) => {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="card-head label"><span>${c.duration}ms${c.delay ? ` · ${c.delay}ms delay` : ""}</span><span>${c.kind}</span></div>
+      CURVES.forEach((c) => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+      <div class="card-head label"><span>${c.duration}ms${c.delay ? ` · ${c.delay}ms delay` : ""}</span><span>${c.token}</span></div>
       <h2>${c.name}</h2>
       <code>cubic-bezier(${c.bez.join(", ")})</code>`;
 
-    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, class: "plot", role: "img",
-      "aria-label": `${c.name} curve: cubic-bezier(${c.bez.join(", ")})` });
-    const [x1, y1, x2, y2] = c.bez;
+        const svg = el("svg", {
+          viewBox: `0 0 ${W} ${H}`, class: "plot", role: "img",
+          "aria-label": `${c.name} curve: cubic-bezier(${c.bez.join(", ")})`
+        });
+        const [x1, y1, x2, y2] = c.bez;
 
-    for (let i = 0; i <= 4; i++) {
-      const v = i / 4;
-      el("line", { x1: X(0), x2: X(1), y1: Y(v), y2: Y(v), stroke: "var(--rule)", "stroke-width": 1 }, svg);
-      el("line", { y1: Y(0), y2: Y(1), x1: X(v), x2: X(v), stroke: "var(--rule)", "stroke-width": 1 }, svg);
-    }
-    el("rect", { x: X(0), y: Y(1), width: S, height: S, fill: "none", stroke: "var(--guide)", "stroke-width": 1 }, svg);
-    el("text", { x: X(0) - 8, y: Y(1) + 4, "text-anchor": "end" }, svg).textContent = "1";
-    el("text", { x: X(0) - 8, y: Y(0) + 4, "text-anchor": "end" }, svg).textContent = "0";
-    el("text", { x: X(0), y: Y(0) + 20 }, svg).textContent = "0";
-    el("text", { x: X(1), y: Y(0) + 20, "text-anchor": "end" }, svg).textContent = c.duration + "ms";
-    el("text", { x: X(0.5), y: Y(0) + 20, "text-anchor": "middle" }, svg).textContent = "time";
+        for (let i = 0; i <= 4; i++) {
+          const v = i / 4;
+          el("line", { x1: X(0), x2: X(1), y1: Y(v), y2: Y(v), stroke: "var(--rule)", "stroke-width": 1 }, svg);
+          el("line", { y1: Y(0), y2: Y(1), x1: X(v), x2: X(v), stroke: "var(--rule)", "stroke-width": 1 }, svg);
+        }
+        el("rect", { x: X(0), y: Y(1), width: S, height: S, fill: "none", stroke: "var(--guide)", "stroke-width": 1 }, svg);
+        el("text", { x: X(0) - 8, y: Y(1) + 4, "text-anchor": "end" }, svg).textContent = "1";
+        el("text", { x: X(0) - 8, y: Y(0) + 4, "text-anchor": "end" }, svg).textContent = "0";
+        el("text", { x: X(0), y: Y(0) + 20 }, svg).textContent = "0";
+        el("text", { x: X(1), y: Y(0) + 20, "text-anchor": "end" }, svg).textContent = c.duration + "ms";
+        el("text", { x: X(0.5), y: Y(0) + 20, "text-anchor": "middle" }, svg).textContent = "time";
 
-    el("line", { x1: X(0), y1: Y(0), x2: X(1), y2: Y(1), stroke: "var(--ghost)", "stroke-width": 1.5, "stroke-dasharray": "4 4" }, svg);
+        el("line", { x1: X(0), y1: Y(0), x2: X(1), y2: Y(1), stroke: "var(--ghost)", "stroke-width": 1.5, "stroke-dasharray": "4 4" }, svg);
 
-    el("line", { x1: X(0), y1: Y(0), x2: X(x1), y2: Y(y1), stroke: "var(--muted)", "stroke-width": 1 }, svg);
-    el("line", { x1: X(1), y1: Y(1), x2: X(x2), y2: Y(y2), stroke: "var(--muted)", "stroke-width": 1 }, svg);
+        el("line", { x1: X(0), y1: Y(0), x2: X(x1), y2: Y(y1), stroke: "var(--muted)", "stroke-width": 1 }, svg);
+        el("line", { x1: X(1), y1: Y(1), x2: X(x2), y2: Y(y2), stroke: "var(--muted)", "stroke-width": 1 }, svg);
 
-    el("path", {
-      d: `M${X(0)},${Y(0)} C${X(x1)},${Y(y1)} ${X(x2)},${Y(y2)} ${X(1)},${Y(1)}`,
-      fill: "none", stroke: "var(--pink)", "stroke-width": 3, "stroke-linecap": "round",
-    }, svg);
+        el("path", {
+          d: `M${X(0)},${Y(0)} C${X(x1)},${Y(y1)} ${X(x2)},${Y(y2)} ${X(1)},${Y(1)}`,
+          fill: "none", stroke: "var(--pink)", "stroke-width": 3, "stroke-linecap": "round",
+        }, svg);
 
-    for (const [px, py] of [[x1, y1], [x2, y2]]) {
-      el("circle", { cx: X(px), cy: Y(py), r: 5, fill: "var(--raised)", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
-    }
-    el("circle", { cx: X(0), cy: Y(0), r: 3, fill: "var(--ink)" }, svg);
-    el("circle", { cx: X(1), cy: Y(1), r: 3, fill: "var(--ink)" }, svg);
-    card.appendChild(svg);
+        for (const [px, py] of [[x1, y1], [x2, y2]]) {
+          el("circle", { cx: X(px), cy: Y(py), r: 5, fill: "var(--raised)", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+        }
+        el("circle", { cx: X(0), cy: Y(0), r: 3, fill: "var(--ink)" }, svg);
+        el("circle", { cx: X(1), cy: Y(1), r: 3, fill: "var(--ink)" }, svg);
+        card.appendChild(svg);
 
-    const track = document.createElement("div");
-    track.className = "track";
-    track.innerHTML = `<span class="dot eased"></span><span class="dot linear"></span>`;
-    card.appendChild(track);
-    tracks.push({ track, c });
+        const track = document.createElement("div");
+        track.className = "track";
+        track.innerHTML = `<span class="dot eased"></span><span class="dot linear"></span>`;
+        card.appendChild(track);
+        tracks.push({ track, c });
 
-    const p = document.createElement("p");
-    p.textContent = c.desc;
-    card.appendChild(p);
+        const p = document.createElement("p");
+        p.textContent = c.desc;
+        card.appendChild(p);
 
-    const dl = document.createElement("dl");
-    dl.innerHTML = `
+        const dl = document.createElement("dl");
+        dl.innerHTML = `
       <dt>Halfway</dt><dd>${pct(ease(c.bez, 0.5))} done at ${c.duration / 2}ms</dd>
       <dt>Quarter</dt><dd>${pct(ease(c.bez, 0.25))} at 25% · ${pct(ease(c.bez, 0.75))} at 75%</dd>
       <dt>Used on</dt><dd>${c.where}</dd>
-      <dt>Source</dt><dd><code>${c.source}</code></dd>`;
-    card.appendChild(dl);
+      <dt>Class</dt><dd><code>${c.token.slice(2)}</code></dd>`;
+        card.appendChild(dl);
 
-    host.appendChild(card);
-  });
-
-  // Dots rest at the end; Play runs them from the start with the real timing.
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function place(atEnd, animate) {
-    tracks.forEach(({ track, c }) => {
-      const dist = track.clientWidth - 14;
-      track.querySelectorAll(".dot").forEach((d) => {
-        const fn = d.classList.contains("eased") ? `cubic-bezier(${c.bez.join(",")})` : "linear";
-        d.style.transition = animate ? `transform ${c.duration}ms ${fn} ${c.delay}ms` : "none";
-        d.style.setProperty("--x", atEnd ? dist + "px" : "0px");
+        host.appendChild(card);
       });
-    });
-  }
-  place(true, false);
-  addEventListener("resize", () => place(true, false));
 
-  document.getElementById("play").addEventListener("click", () => {
-    place(false, false);
-    if (reduced) { requestAnimationFrame(() => place(true, false)); return; }
-    requestAnimationFrame(() => requestAnimationFrame(() => place(true, true)));
-  });
-</script>
-</body>
+      // Dots rest at the end; Play runs them from the start with the real timing.
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function place(atEnd, animate) {
+        tracks.forEach(({ track, c }) => {
+          const dist = track.clientWidth - 14;
+          track.querySelectorAll(".dot").forEach((d) => {
+            const fn = d.classList.contains("eased") ? `cubic-bezier(${c.bez.join(",")})` : "linear";
+            d.style.transition = animate ? `transform ${c.duration}ms ${fn} ${c.delay}ms` : "none";
+            d.style.setProperty("--x", atEnd ? dist + "px" : "0px");
+          });
+        });
+      }
+      place(true, false);
+      addEventListener("resize", () => place(true, false));
+
+      document.getElementById("play").addEventListener("click", () => {
+        place(false, false);
+        if (reduced) { requestAnimationFrame(() => place(true, false)); return; }
+        requestAnimationFrame(() => requestAnimationFrame(() => place(true, true)));
+      });
+    </script>
+  </body>
+
 </html>
