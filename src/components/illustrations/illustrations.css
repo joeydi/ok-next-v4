@@ -21,6 +21,37 @@
   scale: tan(atan2(100cqw, 620px));
 }
 
+/* WebGL renderer (gl/): the poster and canvas both fill the drawing surface.
+   The poster shows until the first live frame, when GLIllustration sets data-live. */
+.ok-illo-gl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 620px;
+  height: 660px;
+}
+
+/* The floor grid fills the surface, fading out just before its edges. */
+.ok-illo-floor {
+  --fade: transparent 2%, #000 22%, #000 78%, transparent 98%;
+  -webkit-mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, var(--fade)), linear-gradient(var(--fade));
+  mask-composite: intersect;
+}
+
+canvas.ok-illo-gl {
+  visibility: hidden;
+}
+
+.ok-illo[data-live] canvas.ok-illo-gl {
+  visibility: visible;
+}
+
+.ok-illo[data-live] .ok-illo-poster {
+  visibility: hidden;
+}
+
 .ok-illo-label {
   position: absolute;
   left: 500px;

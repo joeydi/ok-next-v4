@@ -14,7 +14,7 @@ export const norm = (v: Vec): Vec => {
 };
 
 /** Icosahedron subdivided once and projected onto a sphere of radius r: 80 triangles. */
-function icosphere(r: number): Vec[][] {
+export function icosphere(r: number): Vec[][] {
   const g = (1 + Math.sqrt(5)) / 2;
   const V: Vec[] = ([
     [-1, g, 0], [1, g, 0], [-1, -g, 0], [1, -g, 0], [0, -1, g], [0, 1, g],
@@ -60,7 +60,7 @@ export function facets(r: number): { n: Vec; matrix: string }[] {
 }
 
 // Light direction and the pink ramp facets are shaded along.
-const LIGHT = norm([-0.35, -0.55, 1]);
+export const LIGHT = norm([-0.35, -0.55, 1]);
 const STOPS: [number, Vec][] = [[0, [168, 23, 58]], [0.6, [255, 77, 106]], [1, [255, 170, 184]]];
 
 export function shade(n: Vec) {
