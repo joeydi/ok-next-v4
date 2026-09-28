@@ -67,7 +67,7 @@ export function Nav() {
           dark && "border-paper/10 bg-ink/50 text-paper backdrop-blur-md",
         )}
       >
-        <Link href="/" className="col-span-6 flex lg:col-span-3" aria-label="Okayplus home">
+        <Link href="/" className="col-span-6 flex justify-self-start lg:col-span-3" aria-label="Okayplus home">
           <Logo />
         </Link>
 
