@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Container } from "@/components/Container";
+import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { NotesIndex, NotesList, type NoteSummary } from "@/components/notes/NotesIndex";
 import { Placeholder } from "@/components/Placeholder";
@@ -32,15 +33,12 @@ export default function NotesPage() {
     <>
       <main id="main">
         <Container as="header" className="pt-fl-56 pb-fl-72">
-          <div className="mono-label flex gap-fl-24 text-muted">
-            <span>/ Notes</span>
-            <span>{all.length} posts</span>
-          </div>
+          <Eyebrow details={[`${all.length} posts`]}>Notes</Eyebrow>
           <div className="grid-12 mt-fl-48 items-end gap-y-fl-24">
             <h1 className="display col-span-12 text-fl-144 leading-[.9] tracking-display lg:col-span-7">
               Notes<span className="text-pink">.</span>
             </h1>
-            <p className="col-span-12 mt-fl-32 text-fl-24 leading-[1.55] text-pretty text-ink-3 md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
+            <p className="col-span-12 mt-fl-32 text-fl-24 leading-normal text-pretty text-body md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
               Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington,
               Vermont.
             </p>

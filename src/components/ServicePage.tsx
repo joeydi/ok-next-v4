@@ -65,11 +65,9 @@ export function ServicePage({ service: s }: { service: Service }) {
       <main id="main">
         {/* Hero */}
         <Container as="header" className="relative pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
-          <div className="mono-label flex flex-wrap gap-x-fl-24 text-muted">
-            <Link href="/#services">/ Services</Link>
-            <span>{s.n}</span>
-            <span>{s.audience}</span>
-          </div>
+          <Eyebrow href="/#services" details={[s.n, s.audience]}>
+            Services
+          </Eyebrow>
           <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-[.9] tracking-display">
             {s.h1.map((line, i) => (
               <Fragment key={i}>
@@ -80,7 +78,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           </h1>
           <Illustration className="mx-auto mt-fl-40 w-full max-w-[540px] lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0" />
           <div className="mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
-            <p className="text-fl-24 leading-normal text-pretty text-ink-3">{s.intro}</p>
+            <p className="text-fl-24 leading-normal text-pretty text-body">{s.intro}</p>
             <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-[1.3] text-pink-ink">
               {s.tagline}
             </p>

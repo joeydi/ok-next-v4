@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
+import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { MediaImage } from "@/components/MediaImage";
 import { Placeholder } from "@/components/Placeholder";
@@ -57,11 +58,12 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
       <main id="main">
         <article>
           <Container as="header" className="pt-fl-56 pb-fl-64">
-            <div className="mono-label flex flex-wrap gap-x-fl-24 text-muted">
-              <Link href="/notes">/ Notes</Link>
-              <time dateTime={meta.date}>{formatDate(meta.date)}</time>
-              <span>{meta.topic ?? meta.tag}</span>
-            </div>
+            <Eyebrow
+              href="/notes"
+              details={[<time key="date" dateTime={meta.date}>{formatDate(meta.date)}</time>, meta.topic ?? meta.tag]}
+            >
+              Notes
+            </Eyebrow>
             <div className="grid-12 mt-fl-48 gap-y-fl-24">
               <h1 className="display col-span-12 text-fl-96 leading-[.95] tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
                 <Accent text={meta.title} />
@@ -153,7 +155,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                     <span className="col-span-12 font-mono text-fl-14 tracking-label-tight text-muted md:col-span-2">
                       {n.tag}
                     </span>
-                    <span className="display col-span-11 text-fl-36 leading-[1.1] tracking-[-.015em] md:col-span-7 md:col-start-3">
+                    <span className="display col-span-11 text-fl-36 leading-[1.05] tracking-[-.015em] md:col-span-7 md:col-start-3">
                       <span className="hover-title">{n.plainTitle}</span>
                     </span>
                     <span aria-hidden="true" className="col-span-1 text-right text-fl-24 md:col-start-12">
