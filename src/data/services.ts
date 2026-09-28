@@ -205,7 +205,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: "Frank Lloyd Wright Foundation",
       d: "A custom WordPress portal with passwordless, Salesforce-verified sign-in, giving Foundation members access to Quarterly back issues, members-only events and partner benefits.",
       tags: "WordPress · Salesforce · GSAP",
-      image: "notes/frank-lloyd-wright-foundation/flw-members-quarterly-archive.png",
+      image: "notes/frank-lloyd-wright-foundation/flw-members-quarterly-archive-v2.png",
       imageLabel: "image — FLW members portal",
       href: "/notes/frank-lloyd-wright-foundation",
     },
