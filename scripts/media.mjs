@@ -10,6 +10,10 @@
 // kept until someone chooses to remove it in the admin; silent tracks are dropped.
 // Video posters are extracted from the encode and uploaded to _posters/<key>.jpg.
 //
+// A replacement is uploaded under a new key and synced with `inherit`, so it takes
+// over the old entry's hand-written fields (flagged for review); the admin then
+// rewrites references and deletes the old asset with deleteMedia().
+//
 // Run: npm run media               (whole bucket; drops entries for deleted objects)
 //      npm run media -- <key>…      (just these keys)
 //      npm run media -- --reencode  (re-encode videos from their originals)
@@ -379,6 +383,21 @@ export async function moveMedia(from, to) {
   });
 }
 
+// ── Delete ────────────────────────────────────────────────────────────────────
+
+/** Deletes an asset (plus its poster and original) from the bucket and the manifest. Source references are the caller's job. */
+export async function deleteMedia(key) {
+  const { s3, Bucket } = r2();
+  const e = readManifest()[key];
+  if (!e) throw new Error(`media: unknown key ${key}`);
+  for (const k of [key, e.poster, e.original].filter(Boolean)) {
+    await s3.send(new DeleteObjectCommand({ Bucket, Key: k }));
+  }
+  updateManifest((m) => {
+    delete m[key];
+  });
+}
+
 // ── Sync ──────────────────────────────────────────────────────────────────────
 
 const upToDate = (entry, o) =>
@@ -387,10 +406,11 @@ const upToDate = (entry, o) =>
 /**
  * Brings the manifest up to date with the bucket. With `keys`, only those objects
  * are (re)checked and nothing is removed. `force` re-reads unchanged objects;
- * `reencode` also re-encodes videos from their originals.
- * @param {{ keys?: string[], force?: boolean, reencode?: boolean, log?: (msg: string) => void }} [options]
+ * `reencode` also re-encodes videos from their originals. `inherit` maps a new
+ * key to an existing one whose hand-written fields it takes over (a replacement).
+ * @param {{ keys?: string[], force?: boolean, reencode?: boolean, inherit?: Record<string, string>, log?: (msg: string) => void }} [options]
  */
-export async function syncMedia({ keys, force = false, reencode = false, log = console.log } = {}) {
+export async function syncMedia({ keys, force = false, reencode = false, inherit = {}, log = console.log } = {}) {
   const objects = await listObjects();
   const current = readManifest();
   const wanted = keys ? new Set(keys) : null;
@@ -418,7 +438,7 @@ export async function syncMedia({ keys, force = false, reencode = false, log = c
       const o = todo[next++];
       try {
         // A renamed upload (clip.mov → clip.mp4) inherits whatever was written for either key.
-        const prev = current[o.key] ?? current[o.key.replace(/\.[^.]+$/, ".mp4")];
+        const prev = current[o.key] ?? current[o.key.replace(/\.[^.]+$/, ".mp4")] ?? current[inherit[o.key]];
         const r = await probe(o, prev, { reencode, log });
         results.push({ from: o.key, ...r });
         log(`  ${current[r.key] ? "updated" : "added"} ${r.key}`);
@@ -439,7 +459,7 @@ export async function syncMedia({ keys, force = false, reencode = false, log = c
 
   updateManifest((m) => {
     for (const r of results) {
-      m[r.key] = merge(m[r.key] ?? m[r.from], r.entry, { reencoded: r.reencoded });
+      m[r.key] = merge(m[r.key] ?? m[r.from] ?? m[inherit[r.from]], r.entry, { reencoded: r.reencoded });
     }
     for (const key of removed) delete m[key];
   });

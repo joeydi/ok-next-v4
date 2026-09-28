@@ -3,11 +3,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
 import {
   CACHE_CONTROL,
+  deleteMedia,
   getObjectBuffer,
   mediaType,
   moveMedia,
@@ -79,13 +80,8 @@ function destinationKey(from: string, input: string) {
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Moves an asset to a new key and rewrites references to it in the source. */
-export async function moveEntry(from: string, input: string) {
-  assertDev();
-  const to = destinationKey(from, input);
-  if (to === from) return { key: from, files: [] as string[] };
-  await moveMedia(from, to);
-
+/** Points references to `from` in the source at `to`. Returns the files changed. */
+function rewriteRefs(from: string, to: string) {
   // Whole-key matches only: after a quote, "=", ":" or whitespace; before a quote, whitespace or line end.
   const re = new RegExp(`(?<=["'\\s=:])${escapeRe(from)}(?=["'\\s]|$)`, "gm");
   const files: string[] = [];
@@ -98,27 +94,96 @@ export async function moveEntry(from: string, input: string) {
       files.push(file);
     }
   }
-  return { key: to, files };
+  return files;
+}
+
+/** Moves an asset to a new key and rewrites references to it in the source. */
+export async function moveEntry(from: string, input: string) {
+  assertDev();
+  const to = destinationKey(from, input);
+  if (to === from) return { key: from, files: [] as string[] };
+  await moveMedia(from, to);
+  return { key: to, files: rewriteRefs(from, to) };
+}
+
+/** Deletes an asset. Returns the files that still reference it (the build fails until they're fixed). */
+export async function deleteEntry(key: string) {
+  assertDev();
+  await deleteMedia(key);
+  return scanUsage([key]).usage[key].map((u) => u.file);
+}
+
+async function presign(key: string, type: string) {
+  const { s3, Bucket } = r2();
+  const headers = { "Content-Type": type || "application/octet-stream", "Cache-Control": CACHE_CONTROL };
+  const url = await getSignedUrl(
+    s3,
+    new PutObjectCommand({ Bucket, Key: key, ContentType: headers["Content-Type"], CacheControl: CACHE_CONTROL }),
+    { expiresIn: 600 },
+  );
+  return { key, url, headers };
 }
 
 /** Presigned PUT URLs so the browser uploads straight to R2 (videos are too big for an action body). */
 export async function presignUploads(folder: string, files: { name: string; type: string }[]) {
   assertDev();
-  const { s3, Bucket } = r2();
   const prefix = folder.split("/").map((s) => slugName(s.trim())).filter(Boolean).join("/");
   return Promise.all(
-    files.map(async (f) => {
+    files.map((f) => {
       const key = [prefix, slugName(f.name)].filter(Boolean).join("/");
       if (!mediaType(key)) throw new Error(`Unsupported file type: ${f.name}`);
-      const headers = { "Content-Type": f.type || "application/octet-stream", "Cache-Control": CACHE_CONTROL };
-      const url = await getSignedUrl(
-        s3,
-        new PutObjectCommand({ Bucket, Key: key, ContentType: headers["Content-Type"], CacheControl: CACHE_CONTROL }),
-        { expiresIn: 600 },
-      );
-      return { key, url, headers };
+      return presign(key, f.type);
     }),
   );
+}
+
+/**
+ * A presigned PUT for a replacement. It goes to a fresh key next to the old one
+ * (hero.jpg → hero-v2.png → hero-v3.png), since objects are cached for a year.
+ */
+export async function presignReplace(from: string, file: { name: string; type: string }) {
+  assertDev();
+  const manifest = readManifest();
+  const old = manifest[from];
+  if (!old) throw new Error(`Unknown key ${from}`);
+  const ext = path.extname(slugName(file.name)).toLowerCase();
+  const type = mediaType(`x${ext}`);
+  if (!type) throw new Error(`Unsupported file type: ${file.name}`);
+  if ((type === "video") !== (old.type === "video")) {
+    throw new Error(old.type === "video" ? "Replace a video with a video." : "Replace an image with an image.");
+  }
+
+  const { s3, Bucket } = r2();
+  const stem = from.replace(/\.[^.]+$/, "").replace(/-v\d+$/, "");
+  for (let n = 2; ; n++) {
+    const key = `${stem}-v${n}${ext}`;
+    // Videos end up as .mp4, so that key has to be free too.
+    const final = type === "video" ? key.replace(/\.[^.]+$/, ".mp4") : key;
+    if (manifest[key] || manifest[final]) continue;
+    const taken = await s3.send(new HeadObjectCommand({ Bucket, Key: key })).then(
+      () => true,
+      () => false,
+    );
+    if (!taken) return presign(key, file.type);
+  }
+}
+
+/**
+ * Finishes a replacement once the browser has uploaded it: reads the new file
+ * (taking over the old entry's alt, caption and sound choice, flagged for review),
+ * points references at it and deletes the old asset.
+ */
+export async function replaceEntry(from: string, uploadedKey: string) {
+  assertDev();
+  const { renamed, errors } = await syncMedia({ keys: [uploadedKey], inherit: { [uploadedKey]: from }, log: () => {} });
+  if (errors.length) throw new Error(errors[0].error);
+  const to: string = renamed[0]?.to ?? uploadedKey;
+  // Only let go of the old asset once the new one is in the manifest.
+  const e = readManifest()[to];
+  if (!e) throw new Error(`${uploadedKey} isn't in the bucket; ${from} was left as it was.`);
+  const files = rewriteRefs(from, to);
+  await deleteMedia(from);
+  return { key: to, files, needsSound: e.type === "video" && Boolean(e.hasAudio) && !e.audio };
 }
 
 // ── Alt text ──────────────────────────────────────────────────────────────────

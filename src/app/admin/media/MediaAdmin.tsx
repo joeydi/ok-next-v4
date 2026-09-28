@@ -6,7 +6,17 @@ import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
 import { mediaUrl } from "@/lib/media-url";
-import { generateAlt, moveEntry, presignUploads, saveEntry, setVideoAudio, syncBucket } from "./actions";
+import {
+  deleteEntry,
+  generateAlt,
+  moveEntry,
+  presignReplace,
+  presignUploads,
+  replaceEntry,
+  saveEntry,
+  setVideoAudio,
+  syncBucket,
+} from "./actions";
 import type { BrokenRef, Usage } from "./usage";
 
 export type AdminItem = {
@@ -92,6 +102,7 @@ const btn =
 const field = "w-full border border-rule bg-paper-light px-3 py-2 text-fl-14 focus:border-ink focus:outline-none";
 
 const kb = (n: number) => (n > 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.round(n / 1e3)} KB`);
+const inUse = (n: number) => `${n} file${n > 1 ? "s" : ""}`;
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 async function pool<T>(items: T[], size: number, fn: (item: T, i: number) => Promise<void>) {
@@ -126,6 +137,7 @@ export function MediaAdmin({
   const [notice, setNotice] = useState("");
   const [status, setStatus] = useState("");
   const [busy, startTransition] = useTransition();
+  const [confirmDialog, confirm] = useConfirm();
 
   const q = query.trim().toLowerCase();
   const shown = items.filter((i) => FILTERS[filter].test(i) && i.key.toLowerCase().includes(q));
@@ -184,7 +196,19 @@ export function MediaAdmin({
       const replacing = targets.filter((t) => items.some((i) => i.key === finalKey(t.key)));
       if (
         replacing.length &&
-        !confirm(`Replace ${replacing.map((t) => t.key).join(", ")}? The CDN may keep serving the old file for a while.`)
+        !(await confirm({
+          title: replacing.length > 1 ? "Overwrite existing files?" : "Overwrite an existing file?",
+          action: "Overwrite",
+          body: (
+            <>
+              <FileNames files={replacing.map((t) => finalKey(t.key))} />
+              <p>
+                Files are cached for a year, so the CDN may keep serving the old version. To swap a file safely, use
+                Replace in its details instead.
+              </p>
+            </>
+          ),
+        }))
       ) {
         return "Upload cancelled";
       }
@@ -207,6 +231,7 @@ export function MediaAdmin({
 
   return (
     <main id="main">
+      {confirmDialog}
       <Container className="flex flex-col gap-fl-32 pt-fl-56 pb-fl-96">
         <header className="flex flex-wrap items-end justify-between gap-fl-24 border-b border-rule pb-fl-24">
           <div className="flex flex-col gap-fl-8">
@@ -297,6 +322,10 @@ export function MediaAdmin({
               onMoved={(key, message) => {
                 setNotice(message);
                 setSelected(key);
+              }}
+              onDeleted={(message) => {
+                setStatus(message);
+                setSelected(null);
               }}
             />
           </Sheet>
@@ -731,7 +760,8 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      onClose={() => !unmounting.current && onClose()}
+      // React passes `close` up the component tree, so ignore the confirm dialogs inside.
+      onClose={(e) => e.target === e.currentTarget && !unmounting.current && onClose()}
       onClick={(e) => e.target === e.currentTarget && onClose()}
       className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-full max-w-[min(34rem,100vw)] border-0 border-l border-rule bg-paper p-0 text-ink shadow-[-24px_0_48px_rgb(28_25_22/0.12)] transition-transform duration-300 ease-out backdrop:bg-ink/40 starting:translate-x-full motion-reduce:transition-none"
     >
@@ -754,6 +784,97 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
         {children}
       </div>
     </dialog>
+  );
+}
+
+type ConfirmOptions = { title: string; body: ReactNode; action: string; danger?: boolean };
+
+/**
+ * A promise-based confirm() in the admin's own style: `if (!(await confirm({…}))) return;`.
+ * Render the returned element somewhere in the component. Ask before a transition
+ * starts, or after an await inside one: React holds a transition's synchronous
+ * updates until the action finishes, so the dialog would never appear.
+ */
+function useConfirm() {
+  const [asking, setAsking] = useState<(ConfirmOptions & { resolve: (ok: boolean) => void }) | null>(null);
+  const confirm = (options: ConfirmOptions) => new Promise<boolean>((resolve) => setAsking({ ...options, resolve }));
+  const element = asking && (
+    <ConfirmDialog
+      {...asking}
+      onAnswer={(ok) => {
+        asking.resolve(ok);
+        setAsking(null);
+      }}
+    />
+  );
+  return [element, confirm] as const;
+}
+
+/** Modal <dialog> over everything (the sheet included). Esc, Cancel or a click on the backdrop answer no. */
+function ConfirmDialog({ title, body, action, danger, onAnswer }: ConfirmOptions & { onAnswer: (ok: boolean) => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    const dialog = ref.current!;
+    if (!dialog.open) dialog.showModal();
+  }, []);
+
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby={titleId}
+      onClose={(e) => e.target === e.currentTarget && onAnswer(e.currentTarget.returnValue === "ok")}
+      onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}
+      className="m-auto w-full max-w-[min(30rem,calc(100vw-2rem))] border border-rule bg-paper p-0 text-ink shadow-[0_24px_48px_rgb(28_25_22/0.18)] transition-[opacity,translate] duration-200 ease-out backdrop:bg-ink/40 starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none"
+    >
+      <form method="dialog">
+        <div className="flex flex-col gap-fl-16 px-fl-24 py-fl-24">
+          <h2 id={titleId} className="text-fl-20 font-medium">
+            {title}
+          </h2>
+          <div className="flex flex-col gap-fl-12 text-fl-14 text-body">{body}</div>
+        </div>
+        <footer className="flex justify-end gap-2 border-t border-rule bg-paper-raised px-fl-24 py-fl-16">
+          {/* Enter shouldn't delete things, so destructive dialogs start on Cancel. */}
+          <button value="cancel" autoFocus={danger} className={cn(btn, "border-rule hover:border-ink")}>
+            Cancel
+          </button>
+          <button
+            value="ok"
+            autoFocus={!danger}
+            className={cn(
+              btn,
+              danger
+                ? "border-pink-ink bg-pink-ink text-paper hover:border-ink"
+                : "bg-ink text-paper hover:bg-ink-2",
+            )}
+          >
+            {action}
+          </button>
+        </footer>
+      </form>
+    </dialog>
+  );
+}
+
+/** A key (or file path) as a block, broken anywhere so long keys wrap. */
+function KeyBlock({ label, children }: { label?: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && <span className="text-fl-12 text-muted">{label}</span>}
+      <code className="block bg-sand px-2 py-1.5 font-mono text-fl-12 break-all text-ink">{children}</code>
+    </div>
+  );
+}
+
+function FileNames({ files }: { files: string[] }) {
+  return (
+    <ul className="flex flex-col gap-0.5 font-mono text-fl-12 break-all text-ink">
+      {files.map((f) => (
+        <li key={f}>{f}</li>
+      ))}
+    </ul>
   );
 }
 
@@ -784,6 +905,7 @@ function Detail({
   notice,
   onChange,
   onMoved,
+  onDeleted,
 }: {
   item: AdminItem;
   host?: string;
@@ -791,9 +913,12 @@ function Detail({
   notice: string;
   onChange: () => void;
   onMoved: (key: string, message: string) => void;
+  onDeleted: (message: string) => void;
 }) {
   const [dest, setDest] = useState(item.key);
   const moveId = useId();
+  const replaceInput = useRef<HTMLInputElement>(null);
+  const [confirmDialog, confirm] = useConfirm();
   const [alt, setAlt] = useState(item.alt);
   const [caption, setCaption] = useState(item.caption);
   const [context, setContext] = useState(item.context);
@@ -818,10 +943,26 @@ function Detail({
       return audio === "remove" ? "Sound removed. It now loops silently." : "Sound kept. It plays with controls.";
     });
 
-  const move = () =>
+  const move = async () => {
+    const files = item.usedIn.map((u) => u.file);
+    if (
+      files.length &&
+      !(await confirm({
+        title: "Move this file?",
+        action: "Move",
+        body: (
+          <>
+            <KeyBlock label="From">{item.key}</KeyBlock>
+            <KeyBlock label="To">{dest.trim()}</KeyBlock>
+            <p>References in {inUse(files.length)} will be updated:</p>
+            <FileNames files={files} />
+          </>
+        ),
+      }))
+    ) {
+      return;
+    }
     act(async () => {
-      const n = item.usedIn.length;
-      if (n && !confirm(`Move to ${dest.trim()}? References in ${n} file${n > 1 ? "s" : ""} will be updated.`)) return "";
       setStatus("Moving…");
       const r = await moveEntry(item.key, dest);
       const message = r.key === item.key ? "" : `Moved ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}`;
@@ -829,6 +970,73 @@ function Detail({
       if (r.key !== item.key) onMoved(r.key, message);
       return message;
     });
+  };
+
+  const replace = (file: File) =>
+    act(async () => {
+      setStatus("Preparing upload…");
+      const t = await presignReplace(item.key, { name: file.name, type: file.type });
+      const files = item.usedIn.map((u) => u.file);
+      const ok = await confirm({
+        title: "Replace this file?",
+        action: "Replace",
+        body: (
+          <>
+            <KeyBlock label="Current">{item.key}</KeyBlock>
+            <KeyBlock label={`New, from ${file.name}`}>{t.key}</KeyBlock>
+            {files.length > 0 && (
+              <>
+                <p>References in {inUse(files.length)} will be updated:</p>
+                <FileNames files={files} />
+              </>
+            )}
+            <p>The current file is then deleted from the bucket. Alt text and caption carry over for review.</p>
+          </>
+        ),
+      });
+      if (!ok) return "";
+      setStatus("Uploading…");
+      const res = await fetch(t.url, { method: "PUT", headers: t.headers, body: file });
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      setStatus(item.type === "video" ? "Encoding video and reading metadata (can take a minute)…" : "Reading metadata…");
+      const r = await replaceEntry(item.key, t.key);
+      const message =
+        `Replaced ${item.key} → ${r.key}${r.files.length ? ` · updated ${r.files.join(", ")}` : ""}` +
+        (r.needsSound ? " · this one has sound: choose Keep or Remove below" : "");
+      onMoved(r.key, message);
+      return message;
+    });
+
+  const remove = async () => {
+    const files = item.usedIn.map((u) => u.file);
+    const ok = await confirm({
+      title: files.length ? "Delete a file that's in use?" : "Delete this file?",
+      action: files.length ? "Delete anyway" : "Delete",
+      danger: true,
+      body: (
+        <>
+          <KeyBlock>{item.key}</KeyBlock>
+          {files.length > 0 && (
+            <div className="flex flex-col gap-fl-8 border border-pink-ink/40 bg-pink/5 p-fl-12">
+              <p>Still referenced in {inUse(files.length)}. The build fails until these are removed:</p>
+              <FileNames files={files} />
+            </div>
+          )}
+          <p>
+            {item.type === "video" ? "The video, its poster and its original upload are" : "The file is"} deleted from
+            the bucket. This can&rsquo;t be undone.
+          </p>
+        </>
+      ),
+    });
+    if (!ok) return;
+    act(async () => {
+      setStatus("Deleting…");
+      const left = await deleteEntry(item.key);
+      onDeleted(`Deleted ${item.key}${left.length ? ` · still referenced in ${left.join(", ")}` : ""}`);
+      return "";
+    });
+  };
 
   const generate = () =>
     act(async () => {
@@ -854,6 +1062,7 @@ function Detail({
 
   return (
     <>
+      {confirmDialog}
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <Section>
           <div className="flex items-start gap-fl-16">
@@ -1002,7 +1211,7 @@ function Detail({
           </label>
         </Section>
 
-        <Section title="Key" className="border-b-0">
+        <Section title="Key">
           <div className="flex items-center gap-2">
             <code className="min-w-0 flex-1 truncate bg-sand px-2 py-2 font-mono text-fl-12">{snippet}</code>
             <button
@@ -1044,6 +1253,37 @@ function Detail({
               ))}
             </datalist>
           </div>
+        </Section>
+
+        <Section title="File" className="border-b-0">
+          <p className="text-fl-14 text-body">
+            Replace uploads the new file under a new key, updates references to this one and deletes it. Alt text and
+            caption carry over for review.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className={btn} disabled={busy} onClick={() => replaceInput.current?.click()}>
+              Replace…
+            </button>
+            <button
+              type="button"
+              className={cn(btn, "border-pink-ink text-pink-ink hover:bg-pink-ink hover:text-paper")}
+              disabled={busy}
+              onClick={remove}
+            >
+              Delete
+            </button>
+          </div>
+          <input
+            ref={replaceInput}
+            type="file"
+            accept={item.type === "video" ? "video/*" : "image/*"}
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) replace(file);
+            }}
+          />
         </Section>
       </div>
 
