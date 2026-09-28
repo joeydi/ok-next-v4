@@ -3,7 +3,7 @@ import { qmul, quat } from "../math";
 import type { Item, SceneDef } from "../renderer";
 import { easeInOut, track, wrap } from "../timeline";
 
-// Tools for better work — a 3×3 grid of tall pillars around a pink hub. The
+// Business tools — a 3×3 grid of tall pillars around a pink hub. The
 // outer eight rise and fall in a wave that rolls a pink icosphere around the
 // ring. Same geometry and timing as Ring.tsx (1s).
 

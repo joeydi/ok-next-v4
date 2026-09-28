@@ -3,7 +3,7 @@ import { quat } from "../math";
 import type { Item, SceneDef } from "../renderer";
 import { bezier, track, wrap } from "../timeline";
 
-// Creative production — a row of columns slides from top right to bottom left
+// Digital production — a row of columns slides from top right to bottom left
 // under a spinning pink ball. Each column fades in and rises out of the ground
 // as it approaches, springs up and flashes pink as it reaches the centre,
 // bouncing the ball back into the air, then sinks and fades out as it moves

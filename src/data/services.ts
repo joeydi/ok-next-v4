@@ -1,7 +1,7 @@
 import type { MediaKey } from "@/lib/media";
 import { testimonials, type Testimonial } from "./home";
 
-export type ServiceSlug = "creative-production" | "cms-integrations" | "tools-for-better-work";
+export type ServiceSlug = "digital-production" | "cms-integrations" | "business-tools";
 
 export type Service = {
   slug: ServiceSlug;
@@ -28,10 +28,10 @@ export type Service = {
 };
 
 export const services: Record<ServiceSlug, Service> = {
-  "creative-production": {
-    slug: "creative-production",
+  "digital-production": {
+    slug: "digital-production",
     n: "01",
-    title: "Creative production",
+    title: "Digital production",
     metaDescription:
       "A development partner for agencies and marketing teams: fast, on-brand sites, campaigns, and the 3D and motion work a template can’t do.",
     audience: "Agencies + marketing teams",
@@ -44,10 +44,34 @@ export const services: Record<ServiceSlug, Service> = {
       eyebrow: "What I do",
       heading: "An extra pair of hands.",
       items: [
-        { n: "01", k: "Partnership", t: "A development partner for agencies", d: "I plug into your team when you need extra development capacity, specialized expertise, or simply another experienced developer to get the work out the door.", ex: "Marketing sites · Microsites · Overflow builds" },
-        { n: "02", k: "Campaigns", t: "From campaign to launch", d: "I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that ship on time and stay on brand.", ex: "Landing pages · Microsites · Email" },
-        { n: "03", k: "Special builds", t: "The hard stuff", d: "I build the 3D, motion, and interactive pieces that go beyond what a template can do, from product tours to scroll-driven stories.", ex: "3D product tours · Motion · Interactive" },
-        { n: "04", k: "Reporting", t: "Analytics and reporting", d: "I set up tracking and reporting from the start, so you can see what worked, what didn’t, and what to try next.", ex: "Tracking · Dashboards · Reporting" },
+        {
+          n: "01",
+          k: "Partnership",
+          t: "A development partner for agencies",
+          d: "I plug into your team when you need extra development capacity, specialized expertise, or simply another experienced developer to get the work out the door.",
+          ex: "Marketing sites · Microsites · Overflow builds",
+        },
+        {
+          n: "02",
+          k: "Campaigns",
+          t: "From campaign to launch",
+          d: "I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that ship on time and stay on brand.",
+          ex: "Landing pages · Microsites · Email",
+        },
+        {
+          n: "03",
+          k: "Special builds",
+          t: "The hard stuff",
+          d: "I build the 3D, motion, and interactive pieces that go beyond what a template can do, from product tours to scroll-driven stories.",
+          ex: "3D product tours · Motion · Interactive",
+        },
+        {
+          n: "04",
+          k: "Reporting",
+          t: "Analytics and reporting",
+          d: "I set up tracking and reporting from the start, so you can see what worked, what didn’t, and what to try next.",
+          ex: "Tracking · Dashboards · Reporting",
+        },
       ],
     },
     situations: {
@@ -64,10 +88,22 @@ export const services: Record<ServiceSlug, Service> = {
     process: {
       heading: "Quick, not careless.",
       items: [
-        { n: "01", t: "Get the brief", d: "A call with your team to understand the strategy, the brand, and the deadline." },
+        {
+          n: "01",
+          t: "Get the brief",
+          d: "A call with your team to understand the strategy, the brand, and the deadline.",
+        },
         { n: "02", t: "Scope it", d: "A clear plan for what gets built, by when, and what I need from you." },
-        { n: "03", t: "Build in the open", d: "Frequent previews so your team sees progress and gives feedback early." },
-        { n: "04", t: "Launch and measure", d: "Tracking in place at launch, and a clear read on how it’s performing." },
+        {
+          n: "03",
+          t: "Build in the open",
+          d: "Frequent previews so your team sees progress and gives feedback early.",
+        },
+        {
+          n: "04",
+          t: "Launch and measure",
+          d: "Tracking in place at launch, and a clear read on how it’s performing.",
+        },
       ],
     },
     work: {
@@ -99,10 +135,34 @@ export const services: Record<ServiceSlug, Service> = {
       eyebrow: "What I do",
       heading: "Four ways in.",
       items: [
-        { n: "01", k: "WordPress", t: "Custom WordPress, built to be edited", d: "Custom themes and blocks built around how your team actually publishes, so updating the site doesn’t require a developer.", ex: "Custom themes · Custom blocks · Multisite" },
-        { n: "02", k: "Integrations", t: "Connect the systems you already use", d: "I connect your website to your CRM, mailing list, Salesforce, and other systems, so information moves where it needs to without copy and paste.", ex: "Salesforce · CRMs · Mailing lists · APIs" },
-        { n: "03", k: "Migrations", t: "Move years of content safely", d: "Large content migrations, planned and scripted so content, media, metadata, and redirects make the move without anything quietly getting lost along the way.", ex: "Content audits · Scripted imports · Redirects" },
-        { n: "04", k: "Headless", t: "Content without the constraints", d: "Headless CMS architecture with a modern front end when you need more flexibility, better performance, or the same content delivered in more than one place.", ex: "Headless CMS · React · Custom APIs" },
+        {
+          n: "01",
+          k: "WordPress",
+          t: "Custom WordPress, built to be edited",
+          d: "Custom themes and blocks built around how your team actually publishes, so updating the site doesn’t require a developer.",
+          ex: "Custom themes · Custom blocks · Multisite",
+        },
+        {
+          n: "02",
+          k: "Integrations",
+          t: "Connect the systems you already use",
+          d: "I connect your website to your CRM, mailing list, Salesforce, and other systems, so information moves where it needs to without copy and paste.",
+          ex: "Salesforce · CRMs · Mailing lists · APIs",
+        },
+        {
+          n: "03",
+          k: "Migrations",
+          t: "Move years of content safely",
+          d: "Large content migrations, planned and scripted so content, media, metadata, and redirects make the move without anything quietly getting lost along the way.",
+          ex: "Content audits · Scripted imports · Redirects",
+        },
+        {
+          n: "04",
+          k: "Headless",
+          t: "Content without the constraints",
+          d: "Headless CMS architecture with a modern front end when you need more flexibility, better performance, or the same content delivered in more than one place.",
+          ex: "Headless CMS · React · Custom APIs",
+        },
       ],
     },
     situations: {
@@ -118,10 +178,26 @@ export const services: Record<ServiceSlug, Service> = {
     process: {
       heading: "Measure twice, migrate once.",
       items: [
-        { n: "01", t: "Audit what’s there", d: "We inventory the content, integrations, and editors involved, and decide what moves, what changes, and what retires." },
-        { n: "02", t: "Model the content", d: "I design content types and fields around how your team publishes, not around the old system’s limits." },
-        { n: "03", t: "Rehearse the move", d: "Scripted, repeatable imports we can run, check, and rerun until everything lands where it should." },
-        { n: "04", t: "Launch and hand off", d: "Redirects, training, and documentation so your team owns the new site from day one." },
+        {
+          n: "01",
+          t: "Audit what’s there",
+          d: "We inventory the content, integrations, and editors involved, and decide what moves, what changes, and what retires.",
+        },
+        {
+          n: "02",
+          t: "Model the content",
+          d: "I design content types and fields around how your team publishes, not around the old system’s limits.",
+        },
+        {
+          n: "03",
+          t: "Rehearse the move",
+          d: "Scripted, repeatable imports we can run, check, and rerun until everything lands where it should.",
+        },
+        {
+          n: "04",
+          t: "Launch and hand off",
+          d: "Redirects, training, and documentation so your team owns the new site from day one.",
+        },
       ],
     },
     work: {
@@ -135,14 +211,14 @@ export const services: Record<ServiceSlug, Service> = {
     contactNote: "Tell me about the system. Let’s Marie Kondo that Rube Goldberg machine.",
   },
 
-  "tools-for-better-work": {
-    slug: "tools-for-better-work",
+  "business-tools": {
+    slug: "business-tools",
     n: "03",
-    title: "Tools for better work",
+    title: "Business tools",
     metaDescription:
       "Internal tools that help teams work better: visibility into your data and knowledge, automation that clears bottlenecks, and monitoring for critical processes.",
     audience: "Internal teams",
-    h1: ["Tools for", "better *work.*"],
+    h1: ["Tools for", "*better work.*"],
     illustration: "ring",
     intro:
       "I build internal tools that give teams better access to their data and knowledge, automate repetitive work, and monitor the processes they depend on.",
@@ -151,9 +227,27 @@ export const services: Record<ServiceSlug, Service> = {
       eyebrow: "What I build",
       heading: "Three kinds of tools.",
       items: [
-        { n: "01", k: "Visibility", t: "See what your org knows", d: "Dashboards and internal search that pull data and knowledge out of scattered spreadsheets, inboxes, and people’s heads, and put it somewhere everyone can use.", ex: "Reporting dashboards · Knowledge bases · Data pipelines" },
-        { n: "02", k: "Automation", t: "Clear the bottlenecks", d: "Automation for the repetitive, error-prone steps that slow your team down, so people can spend their time on work that actually needs a person.", ex: "Workflow automation · Integrations · Internal apps" },
-        { n: "03", k: "Monitoring", t: "Know when something changes", d: "Quiet, reliable checks on the processes you depend on, with alerts that reach the right person before a small problem becomes a big one.", ex: "Alerts · Change tracking · Health checks" },
+        {
+          n: "01",
+          k: "Visibility",
+          t: "See what your org knows",
+          d: "Dashboards and internal search that pull data and knowledge out of scattered spreadsheets, inboxes, and people’s heads, and put it somewhere everyone can use.",
+          ex: "Reporting dashboards · Knowledge bases · Data pipelines",
+        },
+        {
+          n: "02",
+          k: "Automation",
+          t: "Clear the bottlenecks",
+          d: "Automation for the repetitive, error-prone steps that slow your team down, so people can spend their time on work that actually needs a person.",
+          ex: "Workflow automation · Integrations · Internal apps",
+        },
+        {
+          n: "03",
+          k: "Monitoring",
+          t: "Know when something changes",
+          d: "Quiet, reliable checks on the processes you depend on, with alerts that reach the right person before a small problem becomes a big one.",
+          ex: "Alerts · Change tracking · Health checks",
+        },
       ],
     },
     situations: {
@@ -169,10 +263,26 @@ export const services: Record<ServiceSlug, Service> = {
     process: {
       heading: "Small, useful, then better.",
       items: [
-        { n: "01", t: "Talk it through", d: "We start with a conversation about how the work happens today and where it hurts." },
-        { n: "02", t: "Map the work", d: "I sit with the people doing the job and map the data, tools, and handoffs involved." },
-        { n: "03", t: "Build something small", d: "We ship the smallest useful version first, so your team can use it and tell me what’s missing." },
-        { n: "04", t: "Make it last", d: "Documentation, training, and ongoing support so the tool keeps working after launch." },
+        {
+          n: "01",
+          t: "Talk it through",
+          d: "We start with a conversation about how the work happens today and where it hurts.",
+        },
+        {
+          n: "02",
+          t: "Map the work",
+          d: "I sit with the people doing the job and map the data, tools, and handoffs involved.",
+        },
+        {
+          n: "03",
+          t: "Build something small",
+          d: "We ship the smallest useful version first, so your team can use it and tell me what’s missing.",
+        },
+        {
+          n: "04",
+          t: "Make it last",
+          d: "Documentation, training, and ongoing support so the tool keeps working after launch.",
+        },
       ],
     },
     work: {

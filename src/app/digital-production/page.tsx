@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { ServicePage } from "@/components/ServicePage";
 import { services } from "@/data/services";
 
-const service = services["tools-for-better-work"];
+const service = services["digital-production"];
 
 export const metadata: Metadata = {
   title: service.title,
   description: service.metaDescription,
-  alternates: { canonical: "/tools-for-better-work" },
+  alternates: { canonical: "/digital-production" },
 };
 
 export default function Page() {

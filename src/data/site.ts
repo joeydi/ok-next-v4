@@ -19,9 +19,9 @@ export const NAV: readonly NavLink[] = [
     label: "Services",
     href: "/#services",
     children: [
-      { label: "Creative production", href: "/creative-production" },
+      { label: "Digital production", href: "/digital-production" },
       { label: "CMS & integrations", href: "/cms-integrations" },
-      { label: "Tools for better work", href: "/tools-for-better-work" },
+      { label: "Business tools", href: "/business-tools" },
     ],
   },
   { label: "About", href: "/#about" },

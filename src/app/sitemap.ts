@@ -3,7 +3,7 @@ import { SITE } from "@/data/site";
 import { getAllNotes } from "@/lib/notes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = ["", "/creative-production", "/cms-integrations", "/tools-for-better-work", "/notes"].map((p) => ({
+  const pages = ["", "/digital-production", "/cms-integrations", "/business-tools", "/notes"].map((p) => ({
     url: `${SITE.url}${p}`,
     changeFrequency: "monthly" as const,
     priority: p === "" ? 1 : 0.8,

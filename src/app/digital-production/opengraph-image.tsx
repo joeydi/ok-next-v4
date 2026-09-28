@@ -1,7 +1,7 @@
 import { services } from "@/data/services";
 import { OG_SIZE, renderOg } from "@/lib/og";
 
-const s = services["tools-for-better-work"];
+const s = services["digital-production"];
 
 export const alt = `${s.title} — Okayplus`;
 export const size = OG_SIZE;
