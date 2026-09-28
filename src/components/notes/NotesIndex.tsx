@@ -93,8 +93,8 @@ export function NotesList({
       </p>
       <ol>
         {shown.map((n, i) => (
-          // Rows blur in and out like pages do; rows that stay slide to their new place.
-          <ViewTransition key={n.slug} enter="page" exit="page" update="filter-move" default="none">
+          // Rows blur in and out; rows that stay slide to their new place.
+          <ViewTransition key={n.slug} enter="filter" exit="filter" update="filter-move" default="none">
             <li>
               <Link
                 href={`/notes/${n.slug}`}

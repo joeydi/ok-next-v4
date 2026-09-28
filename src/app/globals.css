@@ -142,21 +142,109 @@
 
 /* ---------- Page transitions (see PageTransition.tsx) ---------- */
 
-/* The old page lifts away, blurring as it fades; the new one rises in behind it
-   and comes into focus, starting before the old one has finished so the two
-   overlap. */
+/* The new page is revealed through a soft-edged circle that grows from where the
+   navigation started (the click, or the centre of a link picked by keyboard) until
+   it covers the screen, zooming up into focus as it goes. The old page zooms past
+   and blurs, wiped out just inside the circle's edge so it never shows through gaps
+   in the new page. Both scale from the start point. PageTransition.tsx sets that point
+   in each snapshot's own coordinates (the fallback assumes the snapshot's top left
+   is the screen's), and how far it is from the farthest corner of the screen. */
+@property --reveal {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --zoom {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+::view-transition-old(.page),
+::view-transition-new(.page) {
+  --reveal-at: var(--reveal-x, 50vw) var(--reveal-y, 50vh);
+  /* The edge fades over the outer 60% of the radius, so the solid centre only
+     reaches the farthest corner once the radius is 2.5 times as far. Each mask
+     zooms with its page, so dividing by the zoom keeps both circles the same size
+     on screen and the old page's hole never opens past the new page's edge. */
+  --reveal-r: calc(var(--reveal) * 2.5 * var(--reveal-reach, 100vmax) / var(--zoom));
+  transform-origin: var(--reveal-at);
+  scale: var(--zoom);
+}
+
 ::view-transition-old(.page) {
-  /* Fallback; PageTransition.tsx pins this to the bottom of the screen. */
-  transform-origin: bottom;
-  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both page-out;
+  mask-image: radial-gradient(
+    circle at var(--reveal-at),
+    transparent calc(var(--reveal-r) * 0.4),
+    #000 calc(var(--reveal-r) * 0.7)
+  );
+  animation:
+    800ms cubic-bezier(0.65, 0, 0.35, 1) both page-reveal,
+    600ms cubic-bezier(0.65, 0, 0.35, 1) both page-out,
+    400ms cubic-bezier(0.4, 0, 1, 1) both page-blur-out;
 }
 
 ::view-transition-new(.page) {
-  transform-origin: top;
-  animation: 500ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both page-in;
+  mask-image: radial-gradient(
+    circle at var(--reveal-at),
+    #000 calc(var(--reveal-r) * 0.4),
+    rgb(0 0 0 / 0.84) calc(var(--reveal-r) * 0.55),
+    rgb(0 0 0 / 0.5) calc(var(--reveal-r) * 0.7),
+    rgb(0 0 0 / 0.16) calc(var(--reveal-r) * 0.85),
+    transparent var(--reveal-r)
+  );
+  animation:
+    800ms cubic-bezier(0.65, 0, 0.35, 1) both page-reveal,
+    600ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both page-in,
+    400ms cubic-bezier(0, 0, 0.6, 1) 200ms both page-blur-in;
+}
+
+@keyframes page-reveal {
+  to {
+    --reveal: 1;
+  }
 }
 
 @keyframes page-out {
+  to {
+    --zoom: 1.125;
+  }
+}
+
+@keyframes page-in {
+  from {
+    --zoom: 0.75;
+  }
+}
+
+/* The old page blurs faster and faster up to the halfway point; the new one starts
+   coming into focus on the mirrored curve before that, as it starts to zoom. */
+@keyframes page-blur-out {
+  to {
+    filter: blur(16px);
+  }
+}
+
+@keyframes page-blur-in {
+  from {
+    filter: blur(16px);
+  }
+}
+
+/* Rows that come and go when filtering the notes list (NotesIndex.tsx) lift away
+   and rise in like pages used to, fading instead of being masked. */
+::view-transition-old(.filter) {
+  transform-origin: bottom;
+  animation: 300ms cubic-bezier(0.4, 0, 1, 1) both filter-out;
+}
+
+::view-transition-new(.filter) {
+  transform-origin: top;
+  animation: 500ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both filter-in;
+}
+
+@keyframes filter-out {
   to {
     opacity: 0;
     translate: 0 -16px;
@@ -165,7 +253,7 @@
   }
 }
 
-@keyframes page-in {
+@keyframes filter-in {
   from {
     opacity: 0;
     translate: 0 24px;
@@ -174,8 +262,7 @@
   }
 }
 
-/* Filtering the notes list (NotesIndex.tsx) reuses the page animations for rows
-   that come and go; rows that stay slide to their new place. */
+/* Rows that stay slide to their new place. */
 ::view-transition-group(.filter-move),
 ::view-transition-group(notes-footer) {
   animation-duration: 500ms;
@@ -195,8 +282,8 @@
 
 /* The nav bar holds still above the moving pages. Its snapshot loses the backdrop
    blur (which doesn't work in the transition overlay either), so the outgoing bar
-   is backed with paper to hide the old page beneath it, then fades once that page
-   has gone. */
+   is backed with paper to hide the old page beneath it, then fades as the reveal
+   finishes covering that page. */
 ::view-transition-group(site-nav) {
   z-index: 100;
   animation: none;
@@ -211,7 +298,7 @@
 ::view-transition-old(site-nav) {
   border-radius: var(--radius-lg);
   background: var(--color-paper);
-  animation: 200ms ease 250ms both nav-out;
+  animation: 200ms ease 600ms both nav-out;
 }
 
 @keyframes nav-out {
@@ -251,6 +338,12 @@
   ::view-transition-new(*),
   ::view-transition-group(*) {
     animation: none !important;
+  }
+
+  /* Unanimated, the reveal would stay at nothing. */
+  ::view-transition-old(.page),
+  ::view-transition-new(.page) {
+    mask-image: none;
   }
 }
 
