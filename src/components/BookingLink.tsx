@@ -23,9 +23,9 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
     url.searchParams.set("embed_type", "PopupText");
     url.searchParams.set("hide_gdpr_banner", "1");
     // Colours only apply on paid Calendly plans; ignored otherwise.
-    url.searchParams.set("background_color", "fbf8f3");
-    url.searchParams.set("text_color", "1c1916");
-    url.searchParams.set("primary_color", "d4203f");
+    url.searchParams.set("background_color", "faf7f4");
+    url.searchParams.set("text_color", "1d1a17");
+    url.searchParams.set("primary_color", "d01f3e");
     setSrc(url.href);
   };
 
@@ -75,7 +75,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close"
-            className="absolute z-10 top-2 right-2 sm:-top-3 sm:-right-3 grid size-10 place-items-center rounded-full bg-ink text-paper shadow-md transition-colors hover:bg-ink-3"
+            className="absolute z-10 top-2 right-2 sm:-top-3 sm:-right-3 grid size-10 place-items-center rounded-full bg-ink text-paper shadow-md transition-colors hover:bg-body"
           >
             <svg
               viewBox="0 0 24 24"
