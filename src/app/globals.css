@@ -68,13 +68,16 @@
     text-decoration: none;
   }
 
+  /* 69% is as far as the ring can fade and keep 3:1 against paper (WCAG 1.4.11).
+     The radius sits in base, so a component or utility radius (frames, pills) wins. */
   :focus-visible {
-    outline: 2px solid var(--color-pink-ink);
+    outline: 3px solid color-mix(in srgb, var(--color-pink-ink) 69%, transparent);
     outline-offset: 3px;
+    border-radius: 4px;
   }
 
   footer :focus-visible {
-    outline-color: var(--color-pink);
+    outline-color: color-mix(in srgb, var(--color-pink) 80%, transparent);
   }
 
   ::selection {
