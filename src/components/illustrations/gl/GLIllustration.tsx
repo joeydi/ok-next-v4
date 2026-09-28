@@ -213,7 +213,7 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
   return (
     <Stage labels={scene.labels} guideEnd={scene.guideEnd} className={className}>
       {/* The grid, as vector under the poster and canvas: baked into the poster it was 80% of its bytes. */}
-      <svg className="ok-illo-gl ok-illo-floor" viewBox="0 0 620 660">
+      <svg className="ok-illo-gl ok-illo-floor" viewBox="0 0 620 660" aria-hidden="true">
         <defs>
           <pattern id={gridId} width="44" height="44" x="-90" y="-90" patternUnits="userSpaceOnUse">
             <path d="M0 .5H44M.5 0V44" stroke="#CDC0B2" />

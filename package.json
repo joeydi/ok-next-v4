@@ -6,9 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "format": "biome check --write",
-    "format:check": "biome check",
+    "lint": "biome lint",
+    "format": "biome check --write --linter-enabled=false",
+    "check": "biome check",
     "media": "node --env-file-if-exists=.env.local scripts/media.mjs"
   },
   "dependencies": {
@@ -37,8 +37,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.6",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "typescript": "^5"

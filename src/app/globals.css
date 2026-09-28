@@ -339,6 +339,7 @@
   ::view-transition-old(*),
   ::view-transition-new(*),
   ::view-transition-group(*) {
+    /* biome-ignore lint/complexity/noImportantStyles: has to beat the per-name animations above */
     animation: none !important;
   }
 

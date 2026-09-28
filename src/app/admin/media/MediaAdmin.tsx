@@ -83,7 +83,7 @@ function changeView(v: View) {
   try {
     localStorage.setItem(VIEW_STORAGE, v);
   } catch {}
-  viewListeners.forEach((fn) => fn());
+  for (const fn of viewListeners) fn();
 }
 
 const pixels = (i: AdminItem) => i.width * i.height;
@@ -301,6 +301,7 @@ export function MediaAdmin({
             aria-label="Filter by key or folder"
             className={cn(field, "ml-auto w-full sm:w-64")}
           />
+          {/* biome-ignore lint/a11y/useSemanticElements: a fieldset brings its own styling and legend for a row of buttons */}
           <div role="group" aria-label="View" className="flex">
             {(Object.keys(VIEWS) as View[]).map((v) => (
               <button
@@ -698,6 +699,7 @@ function Uploader({
   const listId = useId();
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: a drop target for drags; the file input is the keyboard path
     <div
       onDragOver={(e) => {
         e.preventDefault();
@@ -774,6 +776,7 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
   }, []);
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click-to-close; Escape closes it from the keyboard
     <dialog
       ref={ref}
       aria-labelledby={titleId}
@@ -851,6 +854,7 @@ function ConfirmDialog({
   }, []);
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click-to-close; Escape closes it from the keyboard
     <dialog
       ref={ref}
       aria-labelledby={titleId}
@@ -866,11 +870,12 @@ function ConfirmDialog({
           <div className="flex flex-col gap-fl-12 text-fl-14 text-body">{body}</div>
         </div>
         <footer className="flex justify-end gap-2 border-t border-rule bg-paper-raised px-fl-24 py-fl-16">
-          {/* Enter shouldn't delete things, so destructive dialogs start on Cancel. */}
-          <button value="cancel" autoFocus={danger} className={cn(btn, "border-rule hover:border-ink")}>
+          {/* biome-ignore-start lint/a11y/noAutofocus: Enter shouldn't delete things, so destructive dialogs start on Cancel */}
+          <button type="submit" value="cancel" autoFocus={danger} className={cn(btn, "border-rule hover:border-ink")}>
             Cancel
           </button>
           <button
+            type="submit"
             value="ok"
             autoFocus={!danger}
             className={cn(
@@ -880,6 +885,7 @@ function ConfirmDialog({
           >
             {action}
           </button>
+          {/* biome-ignore-end lint/a11y/noAutofocus: see above */}
         </footer>
       </form>
     </dialog>
@@ -1119,6 +1125,7 @@ function Detail({
           <div className="bg-sand" style={{ backgroundColor: item.color }}>
             {host &&
               (item.type === "video" ? (
+                // biome-ignore lint/a11y/useMediaCaption: dev-only preview of site media
                 <video
                   src={mediaUrl(item.key)}
                   poster={item.poster ? mediaUrl(item.poster) : undefined}

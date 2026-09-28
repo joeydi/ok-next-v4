@@ -60,6 +60,7 @@ export function NotesList({
 
   return (
     <>
+      {/* biome-ignore lint/a11y/useSemanticElements: a fieldset brings its own styling and legend for a row of buttons */}
       <div
         role="group"
         aria-label="Filter notes"

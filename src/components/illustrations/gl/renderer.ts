@@ -620,7 +620,7 @@ export class Renderer {
     gl.deleteTexture(this.shadowTex);
     for (const m of [this.box, this.ball, this.quad]) {
       gl.deleteVertexArray(m.vao);
-      m.bufs.forEach((b) => gl.deleteBuffer(b));
+      for (const b of m.bufs) gl.deleteBuffer(b);
     }
   }
 }

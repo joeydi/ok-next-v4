@@ -8,8 +8,9 @@ Next.js 16 · React 19 · Tailwind CSS v4 · MDX · Vercel
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # static build; every route is prerendered
-npm run lint
-npm run format   # Biome: formats and sorts imports; format:check to check without writing
+npm run lint     # Biome
+npm run format   # Biome: formats and sorts imports
+npm run check    # lint, format and imports together, without writing
 node scripts/fluid.mjs   # regenerate src/app/fluid.css after changing the scale
 npm run media            # sync src/data/media.json with the R2 bucket (see Media)
 ```

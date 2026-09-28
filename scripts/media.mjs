@@ -128,7 +128,7 @@ export function readManifest() {
 
 function writeManifest(manifest) {
   const sorted = Object.fromEntries(Object.entries(manifest).sort(([a], [b]) => a.localeCompare(b)));
-  writeFileSync(MANIFEST, JSON.stringify(sorted, null, 2) + "\n");
+  writeFileSync(MANIFEST, `${JSON.stringify(sorted, null, 2)}\n`);
 }
 
 /** Read-modify-write, so concurrent admin edits aren't lost to a long sync. */
@@ -154,7 +154,7 @@ function merge(prev, facts, { reencoded = false } = {}) {
 
 // ── Probing ───────────────────────────────────────────────────────────────────
 
-const hex = ({ r, g, b }) => "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
+const hex = ({ r, g, b }) => `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
 
 async function imageFacts(input) {
   const meta = await sharp(input).metadata();

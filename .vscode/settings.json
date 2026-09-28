@@ -1,4 +1,5 @@
 {
+  "eslint.enable": false,
   "editor.codeActionsOnSave": { "source.organizeImports.biome": "explicit" },
   "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },
   "[javascriptreact]": { "editor.defaultFormatter": "biomejs.biome" },

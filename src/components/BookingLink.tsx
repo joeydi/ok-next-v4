@@ -63,6 +63,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
         {children}
       </a>
       {src && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click-to-close; Escape closes it from the keyboard
         <dialog
           ref={ref}
           aria-label="Book a 20-min call"

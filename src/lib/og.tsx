@@ -81,7 +81,6 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoSrc} width={150} height={35} alt="" />
         <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
           JOE DI STEFANO / DESIGNER + DEVELOPER
@@ -131,7 +130,6 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
           </div>
         </div>
         {imageSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imageSrc}
             {...FRAME}
@@ -139,7 +137,6 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
             style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }}
           />
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={cube} width={160} height={160} alt="" />
         )}
       </div>
