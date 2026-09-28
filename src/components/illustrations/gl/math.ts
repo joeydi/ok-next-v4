@@ -110,6 +110,17 @@ export function qmul(a: Quat, b: Quat): Quat {
   ];
 }
 
+/** v rotated by q. */
+export function qrot([x, y, z, w]: Quat, v: Vec): Vec {
+  // v + 2w(u × v) + 2u × (u × v), with u = (x, y, z)
+  const cx = y * v[2] - z * v[1], cy = z * v[0] - x * v[2], cz = x * v[1] - y * v[0];
+  return [
+    v[0] + 2 * (w * cx + y * cz - z * cy),
+    v[1] + 2 * (w * cy + z * cx - x * cz),
+    v[2] + 2 * (w * cz + x * cy - y * cx),
+  ];
+}
+
 /**
  * Writes T(c) · R(q) · S(sx, sy, sz) · T(o) into `out`: a model matrix built in
  * place, without four intermediate matrices per object per frame. `o` offsets

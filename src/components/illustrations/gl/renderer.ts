@@ -13,9 +13,14 @@ export type BoxItem = {
   half: Vec;
   q?: Quat;
   pal: Palette;
+  /** A second palette blended toward by `mix` (0–1), e.g. a flash of colour. */
+  pal2?: Palette;
+  mix?: number;
+  /** Walls fade into the paper at their foot, reaching full colour this fraction of the way up. */
+  groundFade?: number;
   /** Which faces (by local axis x, y, z) carry the 1px inset edge line. */
   edges?: Vec;
-  /** 0 = paper, 1 = fully drawn. */
+  /** Opacity: 0 = gone, 1 = solid. */
   fade?: number;
 };
 
@@ -77,7 +82,8 @@ export const DEFAULT_SETTINGS: Settings = {
 const W = 620, H = 660;
 const PAPER = "#F3EFE8";
 const TINT = "#A39284";
-const LIGHT_EXTENT = 450;
+/** Half-width of the light's view (px): covers the widest scene (BounceRow's row). */
+const LIGHT_EXTENT = 600;
 /** How far grounded boxes extend below the floor in the shadow pass (px). */
 const SINK = 30;
 /** The floor beyond the AO grid, out past every canvas edge. Multiples of CELL keep seams exact. */
@@ -85,6 +91,8 @@ const FLOOR_MIN = -1500, FLOOR_MAX = 1800;
 const DEFAULT_FLOOR: Rect = [-150, -150, 450, 450];
 /** Floor mesh spacing for per-vertex AO (px). */
 const CELL = 6;
+/** Boxes up to this size (px) use the coarser mesh: small faces need fewer AO samples. */
+const SMALL_BOX = 90;
 
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
 
@@ -117,6 +125,26 @@ function boxMesh(n = 10): MeshData {
         }
     }
   return { v, idx };
+}
+
+/**
+ * World half-extents of a box turned only by right angles (from its model
+ * matrix, whose columns are the scaled axes), or null if it's turned otherwise.
+ */
+function alignedHalf(m: Mat4): Vec | null {
+  const h: Vec = [0, 0, 0];
+  for (let j = 0; j < 3; j++) {
+    let axes = 0;
+    for (let i = 0; i < 3; i++) {
+      const v = Math.abs(m[j * 4 + i]);
+      if (v > 1e-3) {
+        axes++;
+        h[i] += v / 2;
+      }
+    }
+    if (axes !== 1) return null;
+  }
+  return h;
 }
 
 /** The ball's 80 flat facets (not indexed: each corner carries its facet's normal and barycentrics). */
@@ -178,6 +206,7 @@ function checkProgram(gl: WebGL2RenderingContext, p: WebGLProgram) {
 export class Renderer {
   private loc = new Map<string, WebGLUniformLocation | null>();
   private box: Mesh;
+  private smallBox: Mesh;
   private ball: Mesh;
   private quad: Mesh;
   private floors = new Map<string, Mesh>();
@@ -226,7 +255,8 @@ export class Renderer {
     private depth: WebGLProgram,
     private dither: boolean,
   ) {
-    this.box = this.mesh(boxMesh());
+    this.box = this.mesh(boxMesh(10));
+    this.smallBox = this.mesh(boxMesh(5));
     this.ball = this.mesh(ballMesh());
     this.quad = this.mesh(quadMesh());
     this.shadowFbo = gl.createFramebuffer()!;
@@ -347,7 +377,8 @@ export class Renderer {
       if (it.kind === "box") trs(m, it.center, it.q ?? Q0, it.half[0] * 2, it.half[1] * 2, it.half[2] * 2, [-0.5, -0.5, -0.5]);
       else trs(m, it.center, it.q ?? Q0, it.r, it.r, it.r);
     });
-    const meshOf = (it: Item) => (it.kind === "box" ? this.box : this.ball);
+    const meshOf = (it: Item) =>
+      it.kind === "ball" ? this.ball : Math.max(...it.half) * 2 > SMALL_BOX ? this.box : this.smallBox;
     // One texel per step of the 6×6 PCF grid, so the grid spans the penumbra.
     const size = Math.round(Math.min(2048, Math.max(128, (2 * LIGHT_EXTENT) / Math.max(s.shadowSoft / 3, 0.5))));
     this.shadowMap(size);
@@ -367,9 +398,10 @@ export class Renderer {
       // Boxes standing on the floor reach a little below it here, so the floor at
       // their foot is clearly behind their back faces and doesn't leak light.
       let model = this.models[i];
-      if (it.kind === "box" && !it.q && Math.abs(it.center[2] - it.half[2] - floorZ) < 1) {
-        const top = it.center[2] + it.half[2], bottom = floorZ - SINK;
-        model = trs(this.scratch, [it.center[0], it.center[1], (top + bottom) / 2], Q0, it.half[0] * 2, it.half[1] * 2, top - bottom, [-0.5, -0.5, -0.5]);
+      const h = it.kind === "box" ? alignedHalf(model) : null;
+      if (h && Math.abs(it.center[2] - h[2] - floorZ) < 1) {
+        const top = it.center[2] + h[2], bottom = floorZ - SINK;
+        model = trs(this.scratch, [it.center[0], it.center[1], (top + bottom) / 2], Q0, h[0] * 2, h[1] * 2, top - bottom, [-0.5, -0.5, -0.5]);
       }
       gl.uniformMatrix4fv(this.u(this.depth, "uModel"), false, model);
       gl.uniform1f(this.u(this.depth, "uFade"), it.fade ?? 1);
@@ -417,13 +449,17 @@ export class Renderer {
     gl.uniform4fv(this.u(p, "uOccB"), occB);
     gl.uniform4fv(this.u(p, "uOccQ"), occQ);
 
-    list.forEach((it, i) => {
+    const drawItem = (i: number) => {
+      const it = list[i];
       gl.uniformMatrix4fv(this.u(p, "uModel"), false, this.models[i]);
       gl.uniform1i(this.u(p, "uSelf"), i);
       gl.uniform1f(this.u(p, "uFade"), it.fade ?? 1);
       if (it.kind === "box") {
         gl.uniform1i(this.u(p, "uKind"), 0);
         gl.uniform3fv(this.u(p, "uPal"), this.palette(it.pal));
+        gl.uniform3fv(this.u(p, "uPal2"), this.palette(it.pal2 ?? it.pal));
+        gl.uniform1f(this.u(p, "uMix"), it.mix ?? 0);
+        gl.uniform1f(this.u(p, "uGroundFade"), it.groundFade ?? 0);
         gl.uniform3f(this.u(p, "uSize"), it.half[0] * 2, it.half[1] * 2, it.half[2] * 2);
         gl.uniform3fv(this.u(p, "uEdgeAxes"), it.edges ?? [0, 0, 0]);
         gl.uniform1f(this.u(p, "uEdge"), s.edges && it.edges ? 1 : 0);
@@ -432,7 +468,10 @@ export class Renderer {
         gl.uniform1f(this.u(p, "uEdge"), s.edges ? (it.edge ?? 0) : 0);
       }
       this.draw(meshOf(it));
-    });
+    };
+    const indices = list.map((_, i) => i);
+    const solid = (i: number) => (list[i].fade ?? 1) >= 1;
+    indices.filter(solid).forEach(drawItem);
 
     // Floor last: it only darkens what's already behind the canvas (the paper
     // and GLIllustration's SVG grid). A mesh near the objects takes AO; plain
@@ -466,6 +505,14 @@ export class Renderer {
       gl.uniformMatrix4fv(this.u(p, "uModel"), false, m);
       this.draw(this.quad);
     }
+
+    // Fading objects last, far to near, over everything behind them. Only
+    // their near faces: the view flips y, so those wind clockwise (GL's back).
+    gl.uniform1i(this.u(p, "uOccN"), list.length);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.FRONT);
+    indices.filter((i) => !solid(i)).reverse().forEach(drawItem);
+    gl.disable(gl.CULL_FACE);
     gl.depthMask(true);
     gl.disable(gl.BLEND);
     gl.bindVertexArray(null);
@@ -478,7 +525,7 @@ export class Renderer {
     gl.deleteProgram(this.depth);
     gl.deleteTexture(this.shadowTex);
     gl.deleteFramebuffer(this.shadowFbo);
-    for (const m of [this.box, this.ball, this.quad, ...this.floors.values()]) {
+    for (const m of [this.box, this.smallBox, this.ball, this.quad, ...this.floors.values()]) {
       gl.deleteVertexArray(m.vao);
       m.bufs.forEach((b) => gl.deleteBuffer(b));
     }

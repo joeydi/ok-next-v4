@@ -8,9 +8,6 @@ import { DEFAULT_SETTINGS, Renderer, type Settings } from "@/components/illustra
 import { SCENES, type SceneName } from "@/components/illustrations/gl/scenes";
 import { cn } from "@/lib/cn";
 
-const MODES = { side: "Side by side", overlay: "Overlay", gl: "WebGL only" };
-type Mode = keyof typeof MODES;
-
 // Illustration widths the pages actually use (see page.tsx / ServicePage.tsx).
 const WIDTHS: [label: string, px: number][] = [
   ["320 vp", 288],
@@ -30,9 +27,8 @@ const SLIDERS: [key: keyof Omit<Settings, "edges">, label: string, min: number, 
   ["floorAo", "Floor contact AO", 0, 1, 0.01],
 ];
 
-export function IllustrationLab({ css }: { css: Record<SceneName, ReactNode> }) {
-  const [name, setName] = useState<SceneName>("ring");
-  const [mode, setMode] = useState<Mode>("side");
+export function IllustrationLab() {
+  const [name, setName] = useState<SceneName>("puzzle-cube");
   const [width, setWidth] = useState(540);
   const [playing, setPlaying] = useState(true);
   const [poster, setPoster] = useState("");
@@ -72,8 +68,6 @@ export function IllustrationLab({ css }: { css: Record<SceneName, ReactNode> }) 
     setPoster(error ?? written.map((w: { file: string; bytes: number }) => `${w.file.split("/").pop()} ${(w.bytes / 1024).toFixed(1)}KB`).join(" · "));
   }
 
-  const gl = <GLIllustration scene={name} time={time} settings={settings} className="w-full" />;
-  const cssView = css[name];
 
   return (
     <Container className="py-fl-40 font-mono text-[12px]">
@@ -82,15 +76,15 @@ export function IllustrationLab({ css }: { css: Record<SceneName, ReactNode> }) 
       <div className="mb-8 grid gap-x-10 gap-y-3 md:grid-cols-2">
         <Row label="Scene">
           {Object.keys(SCENES).map((k) => (
-            <Chip key={k} on={k === name} onClick={() => setName(k as SceneName)}>
+            <Chip
+              key={k}
+              on={k === name}
+              onClick={() => {
+                setName(k as SceneName);
+                setTime(0);
+              }}
+            >
               {k}
-            </Chip>
-          ))}
-        </Row>
-        <Row label="View">
-          {Object.entries(MODES).map(([k, l]) => (
-            <Chip key={k} on={k === mode} onClick={() => setMode(k as Mode)}>
-              {l}
             </Chip>
           ))}
         </Row>
@@ -161,27 +155,9 @@ export function IllustrationLab({ css }: { css: Record<SceneName, ReactNode> }) 
         </Row>
       </div>
 
-      {mode === "side" ? (
-        <div className="flex flex-wrap gap-8">
-          <Panel label="CSS" width={width}>
-            {cssView}
-          </Panel>
-          <Panel label="WebGL" width={width}>
-            {gl}
-          </Panel>
-        </div>
-      ) : mode === "overlay" ? (
-        <Panel label="CSS + WebGL at 50%" width={width}>
-          <div className="relative">
-            {cssView}
-            <div className="absolute inset-0 opacity-50">{gl}</div>
-          </div>
-        </Panel>
-      ) : (
-        <Panel label="WebGL" width={width}>
-          {gl}
-        </Panel>
-      )}
+      <figure style={{ width }} className="max-w-full outline outline-rule">
+        <GLIllustration scene={name} time={time} settings={settings} className="w-full" />
+      </figure>
     </Container>
   );
 }
@@ -204,14 +180,5 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
     >
       {children}
     </button>
-  );
-}
-
-function Panel({ label, width, children }: { label: string; width: number; children: ReactNode }) {
-  return (
-    <figure style={{ width }} className="max-w-full">
-      <figcaption className="mb-2 text-muted">{label}</figcaption>
-      <div className="outline outline-rule">{children}</div>
-    </figure>
   );
 }

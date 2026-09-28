@@ -162,6 +162,9 @@ in float vOcc;
 
 uniform int uKind;
 uniform vec3 uPal[3];
+uniform vec3 uPal2[3];
+uniform float uMix;
+uniform float uGroundFade;
 uniform vec3 uSize;
 uniform vec3 uEdgeAxes;
 uniform float uEdge;
@@ -232,9 +235,11 @@ void main() {
   vec3 col;
 
   if (uKind == 0) {
-    // The design's flat shading: weights blend smoothly as a box turns.
+    // The design's flat shading: weights blend smoothly as a box turns. uPal2
+    // is a second palette to blend toward (a flash), by uMix.
     vec3 w = n * n;
-    col = w.z * uPal[0] + w.y * uPal[1] + w.x * uPal[2];
+    col = mix(w.z * uPal[0] + w.y * uPal[1] + w.x * uPal[2], w.z * uPal2[0] + w.y * uPal2[1] + w.x * uPal2[2], uMix);
+    vec3 edgeCol = mix(uPal[2], uPal2[2], uMix);
     if (uEdge > 0.0) {
       vec3 an = abs(vObjN);
       vec2 uv, sz;
@@ -245,8 +250,10 @@ void main() {
       float d = min(min(px.x, sz.x - px.x), min(px.y, sz.y - px.y));
       float aa = max(fwidth(d), 1e-4);
       float e = dot(an, uEdgeAxes) * clamp((uEdge - d) / aa + 0.5, 0.0, 1.0);
-      col = mix(col, uPal[2], e);
+      col = mix(col, edgeCol, e);
     }
+    // Walls that rise out of the paper: paper at the foot, the wall colour by uGroundFade of the height.
+    if (uGroundFade > 0.0) col = mix(col, uPaper, (1.0 - abs(vObjN.z)) * (1.0 - clamp(vLocal.z / uGroundFade, 0.0, 1.0)));
     col *= mix(vec3(1.0), uTint, dark);
   } else if (uKind == 1) {
     // Darken along the pink ramp so shadowed facets stay pink rather than going grey.
@@ -269,7 +276,8 @@ void main() {
     float a = clamp(max(k.x, max(k.y, k.z)), 0.0, 1.0);
     frag = vec4(col - uPaper * (1.0 - a), a);
   } else {
-    frag = vec4(mix(uPaper, col, uFade), 1.0);
+    // Fading objects are translucent (premultiplied), so the grid and floor show through.
+    frag = vec4(col * uFade, uFade);
   }
 }
 `;
