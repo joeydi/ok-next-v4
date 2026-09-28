@@ -31,7 +31,7 @@ export function Stage({
         <Guide x={300} y1={20} y2={guideEnd + 40} color="#FF4D6A" />
         {children}
         <Label y={110} n="01" text={labels[0]} />
-        <Label y={205} n="02" text={labels[1]} color="#D4203F" />
+        <Label y={205} n="02" text={labels[1]} color="#D01F3E" />
         <Label y={300} n="03" text={labels[2]} />
       </div>
     </div>

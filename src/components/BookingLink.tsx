@@ -25,7 +25,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
     // Colours only apply on paid Calendly plans; ignored otherwise.
     url.searchParams.set("background_color", "fbf9f7");
     url.searchParams.set("text_color", "1d1a17");
-    url.searchParams.set("primary_color", "d4203f");
+    url.searchParams.set("primary_color", "d01f3e");
     setSrc(url.href);
   };
 

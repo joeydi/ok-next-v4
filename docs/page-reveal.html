@@ -12,29 +12,29 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
   :root {
-    --bg: #f3efe8;
-    --raised: #faf7f2;
-    --ink: #1c1916;
-    --body: #4a443d;
-    --muted: #6b645b;
-    --rule: #d9d1c4;
-    --grid: #e6dfd3;
+    --bg: #f2ece6;
+    --raised: #fbf9f7;
+    --ink: #1d1a17;
+    --body: #4e463e;
+    --muted: #746759;
+    --rule: #d8ccbf;
+    --grid: #e8dfd6;
     --pink: #ff4d6a;
-    --pink-ink: #d4203f;
-    --old: #8c7f70;
-    --nav: #a8987f;
-    --root: #b9b0a3;
-    --code-bg: #ebe5db;
+    --pink-ink: #d01f3e;
+    --old: #92806d;
+    --nav: #a49381;
+    --root: #bcad9d;
+    --code-bg: #ede6de;
 
     /* The mock site always keeps the site's own light palette. */
-    --site-paper: #f3efe8;
-    --site-raised: #f8f5f0;
-    --site-ink: #1c1916;
-    --site-body: #4a443d;
-    --site-muted: #6b645b;
-    --site-rule: #d9d1c4;
+    --site-paper: #f2ece6;
+    --site-raised: #f7f3ef;
+    --site-ink: #1d1a17;
+    --site-body: #4e463e;
+    --site-muted: #746759;
+    --site-rule: #d8ccbf;
     --site-pink: #ff4d6a;
-    --site-pink-ink: #d4203f;
+    --site-pink-ink: #d01f3e;
 
     --serif: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
     --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -44,37 +44,37 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg: #1c1916;
-      --raised: #252119;
-      --ink: #f3efe8;
-      --body: #d9d1c4;
-      --muted: #a89f93;
-      --rule: #3a3631;
-      --grid: #2e2a26;
+      --bg: #1d1a17;
+      --raised: #23201d;
+      --ink: #f2ece6;
+      --body: #d8ccbf;
+      --muted: #b0a08f;
+      --rule: #39342e;
+      --grid: #322d28;
       --pink: #ff5c77;
       --pink-ink: #ff7088;
-      --old: #b3a695;
-      --nav: #8f826e;
-      --root: #6b645b;
-      --code-bg: #2a2621;
+      --old: #b6a695;
+      --nav: #92806d;
+      --root: #746759;
+      --code-bg: #2a2622;
     }
   }
 
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #1c1916;
-    --raised: #252119;
-    --ink: #f3efe8;
-    --body: #d9d1c4;
-    --muted: #a89f93;
-    --rule: #3a3631;
-    --grid: #2e2a26;
+    --bg: #1d1a17;
+    --raised: #23201d;
+    --ink: #f2ece6;
+    --body: #d8ccbf;
+    --muted: #b0a08f;
+    --rule: #39342e;
+    --grid: #322d28;
     --pink: #ff5c77;
     --pink-ink: #ff7088;
-    --old: #b3a695;
-    --nav: #8f826e;
-    --root: #6b645b;
-    --code-bg: #2a2621;
+    --old: #b6a695;
+    --nav: #92806d;
+    --root: #746759;
+    --code-bg: #2a2622;
   }
 
   * { box-sizing: border-box; }
@@ -208,7 +208,7 @@
     background: var(--site-raised);
     border: 1px solid color-mix(in srgb, var(--site-rule) 60%, transparent);
     border-radius: 0.3cqw;
-    box-shadow: 0 0.1cqw 0.3cqw rgb(28 25 22 / 0.06);
+    box-shadow: 0 0.1cqw 0.3cqw rgb(29 26 23 / 0.06);
     cursor: pointer;
   }
 
@@ -266,7 +266,7 @@
   .site-nav .logo { font-family: var(--serif); font-size: 1.7cqw; letter-spacing: -0.02em; text-transform: none; font-style: italic; margin-right: auto; }
   .site-nav .who { color: var(--site-muted); margin-right: auto; }
   .site-nav .on, .site-nav .hello { color: var(--site-pink-ink); }
-  .site-nav.old-nav { background: var(--site-raised); border: 1px solid rgb(28 25 22 / 0.08); }
+  .site-nav.old-nav { background: var(--site-raised); border: 1px solid rgb(29 26 23 / 0.08); }
 
   .origin-mark {
     position: absolute;
@@ -906,12 +906,12 @@
         <polygon points="${cx},${cy + s / 2} ${cx + w},${cy} ${cx + w},${cy + h} ${cx},${cy + s / 2 + h}" fill="${right}"/>
         <polygon points="${cx},${cy - s / 2} ${cx + w},${cy} ${cx},${cy + s / 2} ${cx - w},${cy}" fill="${top}"/>`;
     };
-    const paper = ["#faf7f2", "#ddd3c4", "#c9bdab"];
+    const paper = ["#fbf9f7", "#ded3c7", "#c8baab"];
     const pink = ["#ff7189", "#e8405d", "#c92c48"];
     let grid = "";
     for (let i = -6; i <= 6; i++) {
-      grid += `<line x1="${200 + i * 34.6 - 260}" y1="${220 + i * 20 - 150}" x2="${200 + i * 34.6 + 260}" y2="${220 + i * 20 + 150}" stroke="#ddd4c6" stroke-width="0.8"/>`;
-      grid += `<line x1="${200 + i * 34.6 + 260}" y1="${220 - i * 20 - 150}" x2="${200 + i * 34.6 - 260}" y2="${220 - i * 20 + 150}" stroke="#ddd4c6" stroke-width="0.8"/>`;
+      grid += `<line x1="${200 + i * 34.6 - 260}" y1="${220 + i * 20 - 150}" x2="${200 + i * 34.6 + 260}" y2="${220 + i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
+      grid += `<line x1="${200 + i * 34.6 + 260}" y1="${220 - i * 20 - 150}" x2="${200 + i * 34.6 - 260}" y2="${220 - i * 20 + 150}" stroke="#ded3c7" stroke-width="0.8"/>`;
     }
     svg.innerHTML = `
       <defs>
