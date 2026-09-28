@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import { Stage } from "../primitives";
 import { posterPath, posterSrcSet } from "./poster";
-import { DEFAULT_SETTINGS, planeToCanvas, Renderer, type SceneDef, type Settings } from "./renderer";
+import { DEFAULT_SETTINGS, planeToCanvas, Renderer, type Player, type SceneDef, type Settings } from "./renderer";
 import { SCENES, type SceneName } from "./scenes";
 
 /** Drawing-buffer budget: up to 2× density, less for very large illustrations. */
@@ -37,11 +37,14 @@ type Props = {
  * at once. The renderer starts when the page is idle and the illustration is
  * near the viewport, then takes over on the poster's own frame. It stops off
  * screen; under prefers-reduced-motion, or without WebGL2, the poster stays.
+ * A scene with a player (`play`) runs that instead of its loop, and takes
+ * drags inside its `hitArea` once live.
  */
 export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, time, settings }: Props) {
   const scene = SCENES[name];
   const gridId = useId();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hitRef = useRef<HTMLDivElement>(null);
   const props = useRef({ time, settings });
   const redraw = useRef<() => void>(() => {});
 
@@ -54,9 +57,12 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     const canvas = canvasRef.current!;
     const box = canvas.closest<HTMLElement>(".ok-illo")!;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+    const hit = hitRef.current;
     let r: Renderer | null = null;
+    let player: Player | null = null;
     let loading = false, disposed = false, near = false;
     let raf = 0, origin = 0;
+    let held: number | null = null;
     let cancelStart = () => {};
 
     const draw = (now: number) => {
@@ -64,8 +70,11 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       const { time, settings = DEFAULT_SETTINGS } = props.current;
       // The clock starts on the poster's frame, so the hand-over doesn't jump.
       origin ||= now;
-      const t = time ?? (scene.posterTime + (now - origin) / 1000) % scene.duration;
-      r.render(scene, scene.frame(t), settings);
+      const items =
+        time === undefined && scene.play
+          ? (player ??= scene.play()).frame(now / 1000)
+          : scene.frame(time ?? (scene.posterTime + (now - origin) / 1000) % scene.duration);
+      r.render(scene, items, settings);
       if (!("live" in box.dataset)) box.dataset.live = "";
     };
     const tick = (now: number) => {
@@ -141,7 +150,44 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     canvas.addEventListener("webglcontextlost", lost);
     canvas.addEventListener("webglcontextrestored", update);
 
+    // Pointer input for the player, in canvas px. The canvas's box includes the Stage's scaling.
+    const at = (e: PointerEvent): [number, number] => {
+      const b = canvas.getBoundingClientRect();
+      return [((e.clientX - b.left) / b.width) * 620, ((e.clientY - b.top) / b.height) * 660];
+    };
+    const cursor = (e: PointerEvent) => {
+      if (hit && e.pointerType === "mouse") hit.style.cursor = held !== null ? "grabbing" : player?.hover(...at(e)) ? "grab" : "";
+    };
+    const down = (e: PointerEvent) => {
+      if (!player || held !== null || !player.down(...at(e), e.timeStamp / 1000)) return;
+      e.preventDefault();
+      held = e.pointerId;
+      hit!.setPointerCapture(held);
+      cursor(e);
+    };
+    const move = (e: PointerEvent) => {
+      if (e.pointerId === held) player?.move(...at(e), e.timeStamp / 1000);
+      else if (held === null) cursor(e);
+    };
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== held) return;
+      held = null;
+      player?.up(e.timeStamp / 1000);
+      cursor(e);
+    };
+    hit?.addEventListener("pointerdown", down);
+    hit?.addEventListener("pointermove", move);
+    hit?.addEventListener("pointerup", up);
+    hit?.addEventListener("pointercancel", up);
+    hit?.addEventListener("lostpointercapture", up);
+
     return () => {
+      if (held !== null && hit?.hasPointerCapture(held)) hit.releasePointerCapture(held);
+      hit?.removeEventListener("pointerdown", down);
+      hit?.removeEventListener("pointermove", move);
+      hit?.removeEventListener("pointerup", up);
+      hit?.removeEventListener("pointercancel", up);
+      hit?.removeEventListener("lostpointercapture", up);
       disposed = true;
       cancelAnimationFrame(raf);
       cancelStart();
@@ -183,6 +229,13 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
         />
       </picture>
       <canvas ref={canvasRef} className="ok-illo-gl" />
+      {scene.hitArea && (
+        <div
+          ref={hitRef}
+          className="ok-illo-gl ok-illo-hit"
+          style={{ clipPath: `polygon(${scene.hitArea.map(([x, y]) => `${x}px ${y}px`).join(", ")})` }}
+        />
+      )}
     </Stage>
   );
 }

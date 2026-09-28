@@ -52,6 +52,22 @@ export type SceneDef = {
   /** Floor area drawn in tiles, taking AO (multiples of 60); objects and their AO reach must stay inside. */
   floor?: Rect;
   frame(t: number): Item[];
+  /** Makes the scene interactive on the page: a player that stands in for `frame`. */
+  play?: () => Player;
+  /** Canvas-px outline that takes the player's pointer input (and touch, instead of scrolling). */
+  hitArea?: [number, number][];
+};
+
+/** An interactive run of a scene: owns its clock and takes pointer input in canvas px. */
+export type Player = {
+  /** The items at `now` (s, the rAF clock). */
+  frame(now: number): Item[];
+  /** Whether the press landed on something to drag; `t` is the event's time (s). */
+  down(x: number, y: number, t: number): boolean;
+  move(x: number, y: number, t: number): void;
+  up(t: number): void;
+  /** Whether something draggable is under the pointer. */
+  hover(x: number, y: number): boolean;
 };
 
 export type Settings = {
@@ -145,7 +161,7 @@ function quadMesh(): MeshData {
 }
 
 /** Convex hull of 2D points, counter-clockwise (Andrew's monotone chain). */
-function hull(points: [number, number][]) {
+export function hull(points: [number, number][]) {
   const p = points.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   const turn = (o: number[], a: number[], b: number[]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
   const half = (pts: [number, number][]) => {
@@ -163,7 +179,7 @@ function hull(points: [number, number][]) {
 const CANVAS_TO_CLIP = mul(translate(-1, 1, 0), scale(2 / W, -2 / H, -1 / 1000));
 
 /** Plane px → canvas px: the handoff's rotateX(58deg) rotateZ(-45deg) (after the scene's `pre`) about the plane's centre, (300, 400) on the canvas. */
-export const planeToCanvas = (scene: SceneDef) =>
+export const planeToCanvas = (scene: Pick<SceneDef, "pre">) =>
   mul(translate(300, 400, 0), ...(scene.pre ? [scene.pre] : []), rotateX(deg(58)), rotateZ(deg(-45)), translate(-150, -150, 0));
 
 function startProgram(gl: WebGL2RenderingContext, vs: string, fs: string) {
