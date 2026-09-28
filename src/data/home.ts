@@ -5,33 +5,6 @@ export const principles = [
   { n: "04", t: "Say it plainly", d: "If something isn’t worth doing, I’ll tell you, and we’ll find what is." },
 ];
 
-export const services = [
-  {
-    n: "01",
-    href: "/creative-production",
-    kicker: "Agencies + marketing teams",
-    t: "Creative production",
-    d: "Agencies call me when they need extra development firepower or something their in-house team can’t handle. Marketing teams bring me in to turn campaign ideas into digital work that ships quickly and stays on brand.",
-    a: "For getting your ambitious projects over the line.",
-  },
-  {
-    n: "02",
-    href: "/cms-integrations",
-    kicker: "Non-profits + large orgs",
-    t: "CMS & integrations",
-    d: "I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations, connecting content and systems without disrupting the people who depend on them.",
-    a: "For when nobody remembers why it works that way.",
-  },
-  {
-    n: "03",
-    href: "/tools-for-better-work",
-    kicker: "Internal teams",
-    t: "Tools for better work",
-    d: "I build internal tools that give teams better access to their data and knowledge, automate repetitive work, and monitor the processes they depend on.",
-    a: "For the spreadsheet everyone’s afraid to touch.",
-  },
-];
-
 export type Testimonial = { q: string; name: string; role: string; initials: string };
 
 export const testimonials = {

@@ -5,7 +5,8 @@ import { Contact, SiteFooter } from "@/components/Footer";
 import { MediaImage } from "@/components/MediaImage";
 import { GLIllustration } from "@/components/illustrations";
 import { Cite } from "@/components/Testimonial";
-import { principles, services, testimonials } from "@/data/home";
+import { principles, testimonials } from "@/data/home";
+import { services } from "@/data/services";
 import { getMedia } from "@/lib/media";
 
 const headshot = getMedia("home/headshot.jpg");
@@ -98,21 +99,21 @@ function Services() {
         </p>
       </div>
       <div className="grid gap-fl-24 lg:grid-cols-3">
-        {services.map((s) => (
+        {Object.values(services).map((s) => (
           <Link
-            key={s.n}
-            href={s.href}
+            key={s.slug}
+            href={`/${s.slug}`}
             className="frame hover-card hover-lift flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
           >
             <div className="mono-label flex justify-between gap-4 text-muted">
-              <span>{s.kicker}</span>
+              <span>{s.audience}</span>
               <span className="shrink-0 whitespace-nowrap">/ {s.n}</span>
             </div>
             <h3 className="display mt-fl-40 text-fl-36 leading-[1.05] tracking-[-.015em]">
-              <span className="hover-title">{s.t}</span>
+              <span className="hover-title">{s.title}</span>
             </h3>
-            <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{s.d}</p>
-            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.45] font-semibold">{s.a}</div>
+            <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{s.intro}</p>
+            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.45] font-semibold">{s.tagline}</div>
           </Link>
         ))}
       </div>
