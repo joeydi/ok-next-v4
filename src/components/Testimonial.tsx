@@ -7,7 +7,7 @@ export function Cite({ t }: { t: T }) {
       <Avatar initials={t.initials} />
       <span className="flex flex-col gap-1">
         <span className="mono-label">{t.name}</span>
-        <span className="text-fl-14 text-muted-on-dark">{t.role}</span>
+        <span className="text-fl-14 text-muted-light">{t.role}</span>
       </span>
     </figcaption>
   );

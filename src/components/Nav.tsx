@@ -71,7 +71,7 @@ export function Nav() {
           <Logo />
         </Link>
 
-        <div className={cn("hidden transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none xl:col-span-4 xl:block", dark ? "text-muted-on-dark" : "text-muted")}>
+        <div className={cn("hidden transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none xl:col-span-4 xl:block", dark ? "text-muted-light" : "text-muted")}>
           {SITE.author} / {SITE.tagline}
         </div>
 

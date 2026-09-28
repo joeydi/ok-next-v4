@@ -80,7 +80,7 @@ export function NotesList({
               )}
             >
               {f.label}
-              <span className={on ? "text-pink-ink" : "text-muted-on-dark"}>
+              <span aria-hidden="true" className={on ? "text-pink-ink" : "text-muted-light"}>
                 {String(count(f.value)).padStart(2, "0")}
               </span>
             </button>

@@ -136,7 +136,7 @@ function About() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,#1C191600_35%,#1C1916F2_88%,#1C1916_100%)]" />
         <Container className="absolute inset-x-0 bottom-fl-64 flex flex-col items-start justify-between gap-fl-24 lg:flex-row lg:items-end">
           <div className="flex flex-col gap-fl-24">
-            <Eyebrow n="03" className="text-muted-on-dark">
+            <Eyebrow n="03" className="text-muted-light">
               About
             </Eyebrow>
             <h2 className="display text-fl-96 leading-[.95] tracking-[-.03em]">
@@ -161,7 +161,7 @@ function Testimonials() {
   return (
     <Container as="section" aria-labelledby="kind-words" className="pt-fl-120">
       <div className="mb-fl-64 flex flex-col gap-fl-20">
-        <Eyebrow n="04" className="text-muted-on-dark">
+        <Eyebrow n="04" className="text-muted-light">
           In their words
         </Eyebrow>
         <h2 id="kind-words" className="display text-fl-60 leading-none tracking-heading">
