@@ -29,7 +29,7 @@ const SLIDERS: [key: keyof Omit<Settings, "edges">, label: string, min: number, 
 
 export function IllustrationLab() {
   const [name, setName] = useState<SceneName>("puzzle-cube");
-  const [width, setWidth] = useState(540);
+  const [width, setWidth] = useState(951);
   const [playing, setPlaying] = useState(true);
   const [poster, setPoster] = useState("");
   const [time, setTime] = useState(0);
