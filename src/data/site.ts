@@ -10,11 +10,22 @@ export const SITE = {
   bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
 } as const;
 
-export const NAV = [
+export type NavLink = { label: string; href: string; children?: readonly NavLink[] };
+
+/** `children` show in a dropdown under their parent on desktop. Service titles match `src/data/services.ts`, kept apart so the client nav doesn't bundle the page copy. */
+export const NAV: readonly NavLink[] = [
   { label: "Approach", href: "/#approach" },
-  { label: "Services", href: "/#services" },
+  {
+    label: "Services",
+    href: "/#services",
+    children: [
+      { label: "Creative production", href: "/creative-production" },
+      { label: "CMS & integrations", href: "/cms-integrations" },
+      { label: "Tools for better work", href: "/tools-for-better-work" },
+    ],
+  },
   { label: "About", href: "/#about" },
   { label: "Notes", href: "/notes" },
-] as const;
+];
 
 export const CONTACT_HREF = "/#contact";

@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useSyncExternalStore } from "react";
+import { useRef, useSyncExternalStore, type FocusEvent, type MouseEvent, type PointerEvent, type ToggleEvent } from "react";
 import { CONTACT_HREF, NAV, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
-
-const SERVICE_PATHS = ["/creative-production", "/cms-integrations", "/tools-for-better-work"];
 
 /** Home sections the nav links to, in page order. */
 const SECTIONS = ["approach", "services", "about", "contact"];
@@ -28,13 +26,16 @@ function currentSection(): string | null {
 /** "page" for the route a link leads to, "location" for the home section scrolled into view. */
 function current(href: string, pathname: string, section: string | null): "page" | "location" | undefined {
   if (href === "/notes") return pathname.startsWith("/notes") ? "page" : undefined;
-  if (href === "/#services" && SERVICE_PATHS.includes(pathname)) return "page";
   if (pathname === "/" && href === `/#${section}`) return "location";
   return undefined;
 }
 
 function closeMenu() {
   document.getElementById("site-menu")?.hidePopover();
+}
+
+function closeServices() {
+  document.getElementById("services-menu")?.hidePopover();
 }
 
 function onScroll(cb: () => void) {
@@ -66,15 +67,74 @@ export function Nav() {
   const navRef = useRef<HTMLElement>(null);
   const state = useSyncExternalStore(onScroll, () => navState(navRef.current), (): NavState => "top");
   const section = useSyncExternalStore(onScroll, currentSection, () => null);
-  const links = NAV.map((l) => ({ ...l, current: current(l.href, pathname, section) }));
+  // A parent is the current page while one of its children is.
+  const links = NAV.map((l) => ({
+    ...l,
+    current: l.children?.some((c) => c.href === pathname) ? ("page" as const) : current(l.href, pathname, section),
+  }));
   const contactCurrent = current(CONTACT_HREF, pathname, section);
   const dark = state === "dark";
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<number>(undefined);
+  const clicked = useRef(false);
   const accent = dark ? "text-pink" : "text-pink-ink";
   // Menu items bleed into the menu's padding so the hover fill sits around the text, which stays put.
   const menuItem = cn(
     "-mx-2.5 block rounded-md px-2.5 py-2.5 transition-colors duration-200 motion-reduce:transition-none",
     dark ? "hover:bg-paper/10" : "hover:bg-ink/5",
   );
+  const divider = cn(
+    "mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none",
+    dark ? "border-paper/10" : "border-rule-dark/10",
+  );
+
+  // "Services" stays a link to the home section; its menu of service pages opens on
+  // mouse hover or keyboard focus. The menu sits inside the <li> in the DOM, so pointer
+  // and focus events treat it as part of the link; a short delay carries the pointer
+  // across the gap below the bar.
+  function openServices() {
+    window.clearTimeout(closeTimer.current);
+    const menu = servicesRef.current;
+    if (menu && !menu.matches(":popover-open")) menu.showPopover();
+  }
+
+  function hoverServices(e: PointerEvent) {
+    if (e.pointerType === "mouse" && !clicked.current) openServices();
+  }
+
+  // The page transition after a click re-enters the link under a still pointer, so hover
+  // stays off until the pointer really moves away.
+  function clickServices(e: MouseEvent<HTMLAnchorElement>) {
+    closeServices();
+    clicked.current = true;
+    const li = e.currentTarget.parentElement;
+    const onMove = (m: globalThis.PointerEvent) => {
+      if (li?.contains(m.target as Node)) return;
+      clicked.current = false;
+      document.removeEventListener("pointermove", onMove);
+    };
+    document.addEventListener("pointermove", onMove);
+  }
+
+  function leaveServices(e: PointerEvent) {
+    if (e.pointerType === "mouse") closeTimer.current = window.setTimeout(closeServices, 200);
+  }
+
+  // Keyboard focus only, so a tap on the link just follows it.
+  function focusServices(e: FocusEvent) {
+    if (e.target.matches(":focus-visible")) openServices();
+  }
+
+  function blurServices(e: FocusEvent) {
+    if (!e.currentTarget.contains(e.relatedTarget)) closeServices();
+  }
+
+  // Positions the menu where anchor positioning isn't supported (see globals.css).
+  function toggleServices(e: ToggleEvent<HTMLDivElement>) {
+    if (e.newState === "closed") return;
+    const trigger = e.currentTarget.previousElementSibling;
+    if (trigger) e.currentTarget.style.setProperty("--trigger-left", `${trigger.getBoundingClientRect().left}px`);
+  }
 
   // Sticky rather than fixed: as a direct child of <body> it stays put for the whole
   // page but keeps its space in the flow. The bar reaches half a gutter past the
@@ -88,9 +148,9 @@ export function Nav() {
         className={cn(
           "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-strong motion-reduce:transition-none lg:py-[17px]",
           state === "light" && "border-rule-dark/10 bg-paper-light/50 backdrop-blur-md",
-          // At the top the bar is bare; give it the menu's glass while the menu is open.
+          // At the top the bar is bare; give it the menus' glass while one is open.
           state === "top" &&
-            "has-[#site-menu:popover-open]:border-rule-dark/10 has-[#site-menu:popover-open]:bg-paper-light/50 has-[#site-menu:popover-open]:backdrop-blur-md",
+            "has-[.nav-menu:popover-open]:border-rule-dark/10 has-[.nav-menu:popover-open]:bg-paper-light/50 has-[.nav-menu:popover-open]:backdrop-blur-md",
           dark && "border-paper/10 bg-ink/50 text-paper backdrop-blur-md",
         )}
       >
@@ -104,13 +164,67 @@ export function Nav() {
 
         {/* Desktop links */}
         <ul className="hidden justify-end gap-fl-32 lg:col-span-9 lg:flex xl:col-span-5">
-          {links.map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} aria-current={l.current} className={l.current ? accent : undefined}>
-                {l.label}
-              </Link>
-            </li>
-          ))}
+          {links.map((l) =>
+            l.children ? (
+              <li
+                key={l.href}
+                className="group"
+                onPointerEnter={hoverServices}
+                onPointerLeave={leaveServices}
+                onFocus={focusServices}
+                onBlur={blurServices}
+              >
+                <Link
+                  href={l.href}
+                  onClick={clickServices}
+                  aria-current={l.current}
+                  className={cn("services-trigger", l.current && accent)}
+                >
+                  {l.label}{" "}
+                  <span
+                    aria-hidden
+                    className="inline-block [view-transition-name:nav-caret] transition-transform duration-350 ease-in-out-strong group-has-[:popover-open]:rotate-180 motion-reduce:transition-none"
+                  >
+                    ↓
+                  </span>
+                </Link>
+                <div
+                  ref={servicesRef}
+                  id="services-menu"
+                  popover="auto"
+                  data-theme={dark ? "dark" : undefined}
+                  className="nav-menu services-menu"
+                  onBeforeToggle={toggleServices}
+                >
+                  <ul className="flex flex-col">
+                    {l.children.map((s) => (
+                      <li key={s.href}>
+                        <Link
+                          href={s.href}
+                          onClick={closeServices}
+                          aria-current={pathname === s.href ? "page" : undefined}
+                          className={cn(menuItem, pathname === s.href && accent)}
+                        >
+                          {s.label}
+                        </Link>
+                      </li>
+                    ))}
+                    <li className={divider}>
+                      <Link href={l.href} onClick={closeServices} className={menuItem}>
+                        All services →
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            ) : (
+              <li key={l.href}>
+                <Link href={l.href} aria-current={l.current} className={l.current ? accent : undefined}>
+                  {l.label}
+                </Link>
+              </li>
+            ),
+          )}
           <li>
             <Link href={CONTACT_HREF} aria-current={contactCurrent} className={accent}>
               Say hello <span className="nudge">→</span>
@@ -123,7 +237,7 @@ export function Nav() {
           <button type="button" popoverTarget="site-menu" className="mono-label -my-2 cursor-pointer py-2">
             Menu
           </button>
-          <div id="site-menu" popover="auto" data-theme={dark ? "dark" : undefined} className="site-menu">
+          <div id="site-menu" popover="auto" data-theme={dark ? "dark" : undefined} className="nav-menu site-menu">
             <ul className="flex flex-col">
               {links.map((l) => (
                 <li key={l.href}>
@@ -137,7 +251,7 @@ export function Nav() {
                   </Link>
                 </li>
               ))}
-              <li className={cn("mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none", dark ? "border-paper/10" : "border-rule-dark/10")}>
+              <li className={divider}>
                 <Link href={CONTACT_HREF} onClick={closeMenu} aria-current={contactCurrent} className={cn(menuItem, accent)}>
                   Say hello →
                 </Link>
