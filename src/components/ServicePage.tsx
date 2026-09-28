@@ -24,13 +24,13 @@ function caseStudy(href?: string) {
 
 export function ServicePage({ service: s }: { service: Service }) {
   const three = s.capabilities.items.length === 3;
-  const workMedia = s.work.media ? getMedia(s.work.media) : caseStudy(s.work.href)?.image;
+  const workMedia = s.work.image ? getMedia(s.work.image) : caseStudy(s.work.href)?.image;
 
   // With a case study the whole block is the link, so it takes the hover-card treatment.
   const work = (
     <>
       <Placeholder
-        label={s.work.image}
+        label={s.work.imageLabel}
         media={workMedia}
         sizes="(min-width: 1024px) 55vw, 100vw"
         className={cn("col-span-12 aspect-4/3 lg:col-span-7", s.work.href && "hover-lift")}

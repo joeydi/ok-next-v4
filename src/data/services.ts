@@ -21,8 +21,8 @@ export type Service = {
   };
   situations: { heading: string; items: { n: string; t: string }[] };
   process: { heading: string; items: { n: string; t: string; d: string }[] };
-  /** `image` labels the placeholder until there's media: `media` (an R2 key), or else the image of the note `href` links to. */
-  work: { title: string; d: string; tags: string; image: string; media?: MediaKey; href?: string };
+  /** `imageLabel` labels the placeholder until there's media: `image` (an R2 key), or else the image of the note `href` links to. */
+  work: { title: string; d: string; tags: string; image?: MediaKey; imageLabel: string; href?: string };
   quote: Testimonial;
   contactNote: string;
 };
@@ -107,10 +107,11 @@ export const services: Record<ServiceSlug, Service> = {
       ],
     },
     work: {
-      title: "Mamava 3D product tour",
-      d: "An interactive 3D product tour that lets customers explore Mamava’s privacy pods before they buy, using custom-rendered assets to showcase a product designed and built in Vermont.",
-      tags: "Interactive 3D · Custom renders · Product marketing",
-      image: "video — Mamava 3D product tour",
+      title: "Queen City Development Group",
+      d: "A new logo, brand guidelines and website for a Burlington, Vermont firm that works across construction, design & development, investment and property management.",
+      tags: "Branding · WordPress · Front + back end",
+      imageLabel: "image — QCDG brand guidelines",
+      href: "/notes/queen-city-development-group",
     },
     quote: {
       ...testimonials.kathleen,
@@ -201,11 +202,12 @@ export const services: Record<ServiceSlug, Service> = {
       ],
     },
     work: {
-      title: "Columbia Capital",
-      d: "Design exploration, branding, a new homepage, and front and back end development for an investment firm that helps entrepreneurs build successful businesses.",
-      tags: "WordPress · Branding · Front + back end",
-      image: "screenshot — colcap.com homepage",
-      href: "/notes/columbia-capital",
+      title: "Frank Lloyd Wright Foundation",
+      d: "A custom WordPress portal with passwordless, Salesforce-verified sign-in, giving Foundation members access to Quarterly back issues, members-only events and partner benefits.",
+      tags: "WordPress · Salesforce · GSAP",
+      image: "notes/frank-lloyd-wright-foundation/flw-members-quarterly-archive.png",
+      imageLabel: "image — FLW members portal",
+      href: "/notes/frank-lloyd-wright-foundation",
     },
     quote: testimonials.tom,
     contactNote: "Tell me about the system. Let’s Marie Kondo that Rube Goldberg machine.",
@@ -289,7 +291,7 @@ export const services: Record<ServiceSlug, Service> = {
       title: "Arizona Education Progress Meter",
       d: "A data tool measuring the state’s progress toward its Achieve60 AZ goal, used by policy makers, educators, civic leaders, and business leaders across Arizona.",
       tags: "Headless CMS · React · Custom API · Mapbox GL",
-      image: "screenshot — Education Progress Meter map + indicator chart",
+      imageLabel: "screenshot — Education Progress Meter map + indicator chart",
       href: "/notes/arizona-education-progress-meter",
     },
     quote: {
