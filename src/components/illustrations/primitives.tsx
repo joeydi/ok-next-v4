@@ -64,10 +64,10 @@ export function Grid() {
   return <div className="ok-illo-grid" />;
 }
 
-/** The 300×300 isometric plane centred at (300, 400). */
-export function Scene({ children }: { children: ReactNode }) {
+/** The 300×300 isometric plane centred at (300, 400). `pre` is applied before the iso rotation (e.g. to shift or zoom the plane). */
+export function Scene({ pre, children }: { pre?: string; children: ReactNode }) {
   return (
-    <div className="ok-illo-scene">
+    <div className="ok-illo-scene" style={pre ? { transform: `${pre} rotateX(58deg) rotateZ(-45deg)` } : undefined}>
       <Grid />
       {children}
     </div>
@@ -88,10 +88,12 @@ export type BoxProps = {
   /** Transform used when not animating (overrides the default placement). */
   still?: string;
   vars?: Vars;
+  /** CSS animation shorthands for the [top, front/back, left/right] faces, e.g. to animate their colours. */
+  faceAnim?: readonly [top: string, side1: string, side2: string];
 };
 
 /** Solid box: a top face plus four walls. */
-export function Box({ x, y, z = 0, w, d, h, c, rot = 0, anim, still, vars }: BoxProps) {
+export function Box({ x, y, z = 0, w, d, h, c, rot = 0, anim, still, vars, faceAnim }: BoxProps) {
   const [top, s1, s2] = c;
   const style: Style = {
     position: "absolute",
@@ -107,14 +109,14 @@ export function Box({ x, y, z = 0, w, d, h, c, rot = 0, anim, still, vars }: Box
     ...vars,
     animation: anim,
   };
-  const face = (s: CSSProperties) => ({ position: "absolute", ...s }) as CSSProperties;
+  const face = (i: 0 | 1 | 2, s: CSSProperties) => ({ position: "absolute", ...s, animation: faceAnim?.[i] }) as CSSProperties;
   return (
     <div style={style}>
-      <div style={face({ left: 0, top: d, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
-      <div style={face({ left: 0, top: 0, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
-      <div style={face({ left: w, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
-      <div style={face({ left: 0, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
-      <div style={face({ left: 0, top: 0, width: w, height: d, background: top, transform: `translateZ(${h}px)`, boxShadow: `inset 0 0 0 1px ${s2}` })} />
+      <div style={face(1, { left: 0, top: d, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
+      <div style={face(1, { left: 0, top: 0, width: w, height: h, background: s1, transformOrigin: "top", transform: "rotateX(90deg)" })} />
+      <div style={face(2, { left: w, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
+      <div style={face(2, { left: 0, top: 0, width: h, height: d, background: s2, transformOrigin: "left", transform: "rotateY(-90deg)" })} />
+      <div style={face(0, { left: 0, top: 0, width: w, height: d, background: top, transform: `translateZ(${h}px)`, boxShadow: `inset 0 0 0 1px ${s2}` })} />
     </div>
   );
 }
