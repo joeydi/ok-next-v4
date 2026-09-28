@@ -80,8 +80,8 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 const W = 620, H = 660;
-const PAPER = "#F3EFE8";
-const TINT = "#A39284";
+const PAPER = "#F2ECE6";
+const TINT = "#A49381";
 /** The floor beyond the tiles, out past every canvas edge (integers, so seams are exact). */
 const FLOOR_MIN = -1500, FLOOR_MAX = 1800;
 const DEFAULT_FLOOR: Rect = [-150, -150, 450, 450];

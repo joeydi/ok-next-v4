@@ -85,7 +85,7 @@ export function Nav() {
   );
   const divider = cn(
     "mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none",
-    dark ? "border-paper/10" : "border-rule-dark/10",
+    dark ? "border-paper/10" : "border-rule/50",
   );
 
   // "Services" stays a link to the home section; its menu of service pages opens on
@@ -147,10 +147,10 @@ export function Nav() {
         aria-label="Primary"
         className={cn(
           "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-strong motion-reduce:transition-none lg:py-[17px]",
-          state === "light" && "border-rule-dark/10 bg-paper-light/50 backdrop-blur-md",
+          state === "light" && "border-ink-2/10 bg-paper-light/50 backdrop-blur-md",
           // At the top the bar is bare; give it the menus' glass while one is open.
           state === "top" &&
-            "has-[.nav-menu:popover-open]:border-rule-dark/10 has-[.nav-menu:popover-open]:bg-paper-light/50 has-[.nav-menu:popover-open]:backdrop-blur-md",
+            "has-[.nav-menu:popover-open]:border-ink-2/10 has-[.nav-menu:popover-open]:bg-paper-light/50 has-[.nav-menu:popover-open]:backdrop-blur-md",
           dark && "border-paper/10 bg-ink/50 text-paper backdrop-blur-md",
         )}
       >

@@ -3,21 +3,19 @@
 @import "../components/illustrations/illustrations.css";
 
 @theme {
-  --color-paper: #f3efe8;
-  --color-paper-raised: #f8f5f0;
-  --color-paper-light: #fbf8f3;
-  --color-sand: #ebe5db;
-  --color-rule: #d9d1c4;
-  --color-guide: #c9bfb0;
-  --color-ink: #1c1916;
-  --color-ink-2: #2e2a26;
-  --color-ink-3: #3a3631;
-  --color-rule-dark: #3a3631;
-  --color-body: #4a443d;
-  --color-muted: #6b645b;
-  --color-muted-light: #a89f93;
+  --color-paper: #f2ece6;
+  --color-paper-raised: #f7f3ef;
+  --color-paper-light: #faf7f4;
+  --color-sand: #ede6de;
+  --color-rule: #d8ccbf;
+  --color-guide: #cdc0b2;
+  --color-ink: #1d1a17;
+  --color-ink-2: #322d28;
+  --color-body: #4e463e;
+  --color-muted: #746759;
+  --color-muted-light: #b0a08f;
   --color-pink: #ff4d6a;
-  --color-pink-ink: #d4203f;
+  --color-pink-ink: #d01f3e;
 
   --font-display: gelica, Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
@@ -116,12 +114,12 @@
 /* Striped image placeholder. */
 @utility stripes {
   background-color: var(--color-sand);
-  background-image: repeating-linear-gradient(135deg, rgb(28 25 22 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(135deg, rgb(29 26 23 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 @utility stripes-dark {
   background-color: var(--color-ink);
-  background-image: repeating-linear-gradient(135deg, rgb(243 239 232 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(135deg, rgb(242 236 230 / 0.06) 0 2px, transparent 2px 12px);
 }
 
 /* Arrow that nudges right when its parent link is hovered or focused. */
@@ -354,8 +352,8 @@
   .frame {
     border-radius: 4px;
     box-shadow:
-      0px 1px 1px rgba(56, 28, 0, 0.04),
-      0px 2px 4px rgba(56, 28, 0, 0.08);
+      0px 1px 1px color-mix(in srgb, var(--color-body) 4%, transparent),
+      0px 2px 4px color-mix(in srgb, var(--color-body) 8%, transparent);
   }
 
   /* ---------- Hover cards ---------- */
@@ -383,8 +381,11 @@
   .hover-lift {
     --lift-scale: 1.025;
     --lift-shadow:
-      0px 1px 1px rgba(56, 28, 0, 0.05), 0px 3px 3px rgba(56, 28, 0, 0.04), 0px 6px 6px rgba(56, 28, 0, 0.03),
-      0px 10px 10px rgba(56, 28, 0, 0.02), 0px 16px 16px rgba(56, 28, 0, 0.01);
+      0px 1px 1px color-mix(in srgb, var(--color-body) 5%, transparent),
+      0px 3px 3px color-mix(in srgb, var(--color-body) 4%, transparent),
+      0px 6px 6px color-mix(in srgb, var(--color-body) 3%, transparent),
+      0px 10px 10px color-mix(in srgb, var(--color-body) 2%, transparent),
+      0px 16px 16px color-mix(in srgb, var(--color-body) 1%, transparent);
 
     will-change: transform;
     transition:
@@ -430,7 +431,7 @@
     margin: 4px 0 0;
     min-width: 13rem;
     padding: 10px 20px;
-    border: 1px solid color-mix(in srgb, var(--color-rule-dark) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-ink-2) 10%, transparent);
     border-radius: var(--radius-lg);
     background: color-mix(in srgb, var(--color-paper-light) 50%, transparent);
     backdrop-filter: blur(var(--blur-md));

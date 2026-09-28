@@ -12,18 +12,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
   :root {
-    --bg: #f3efe8;
-    --surface: #fbf8f3;
-    --ink: #1c1916;
-    --body: #4a443d;
-    --muted: #6b645b;
-    --line: #d9d1c4;
-    --grid: #e4ddd2;
-    --accent: #d4203f;
-    --wedge: rgba(212, 32, 63, 0.08);
-    --dot-ring: #8a8278;
-    --tip-bg: #1c1916;
-    --tip-ink: #f3efe8;
+    --bg: #f2ece6;
+    --surface: #faf7f4;
+    --ink: #1d1a17;
+    --body: #4e463e;
+    --muted: #746759;
+    --line: #d8ccbf;
+    --grid: #e3d9ce;
+    --accent: #d01f3e;
+    --wedge: rgba(208, 31, 62, 0.08);
+    --dot-ring: #92806d;
+    --tip-bg: #1d1a17;
+    --tip-ink: #f2ece6;
     --display: gelica, "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
     --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -31,34 +31,34 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --bg: #1c1916;
-      --surface: #25221e;
-      --ink: #f3efe8;
-      --body: #c9bfb0;
-      --muted: #a89f93;
-      --line: #3a3631;
-      --grid: #2e2a26;
+      --bg: #1d1a17;
+      --surface: #23201d;
+      --ink: #f2ece6;
+      --body: #cdc0b2;
+      --muted: #b0a08f;
+      --line: #39342e;
+      --grid: #322d28;
       --accent: #ff4d6a;
       --wedge: rgba(255, 77, 106, 0.1);
-      --dot-ring: #8a8278;
-      --tip-bg: #f3efe8;
-      --tip-ink: #1c1916;
+      --dot-ring: #92806d;
+      --tip-bg: #f2ece6;
+      --tip-ink: #1d1a17;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg: #1c1916;
-    --surface: #25221e;
-    --ink: #f3efe8;
-    --body: #c9bfb0;
-    --muted: #a89f93;
-    --line: #3a3631;
-    --grid: #2e2a26;
+    --bg: #1d1a17;
+    --surface: #23201d;
+    --ink: #f2ece6;
+    --body: #cdc0b2;
+    --muted: #b0a08f;
+    --line: #39342e;
+    --grid: #322d28;
     --accent: #ff4d6a;
     --wedge: rgba(255, 77, 106, 0.1);
-    --dot-ring: #8a8278;
-    --tip-bg: #f3efe8;
-    --tip-ink: #1c1916;
+    --dot-ring: #92806d;
+    --tip-bg: #f2ece6;
+    --tip-ink: #1d1a17;
   }
 
   * { box-sizing: border-box; }
@@ -128,7 +128,7 @@
     letter-spacing: 0.04em;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .chip:hover, .swatch.is-active .chip { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(56, 28, 0, 0.12); }
+  .chip:hover, .swatch.is-active .chip { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(78, 70, 62, 0.12); }
   .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .chip .copied { opacity: 0; transition: opacity 0.2s; }
   .chip.did-copy .copied { opacity: 1; }
@@ -154,6 +154,7 @@
   svg .hit { fill: transparent; cursor: pointer; }
   svg g.pt.is-active .dot { stroke: var(--ink); stroke-width: 2; }
   svg .leader { stroke: var(--muted); stroke-width: 1; }
+  svg .curve { stroke: var(--accent); stroke-width: 1.5; stroke-opacity: 0.6; fill: none; }
 
   /* Table */
   .table-wrap { overflow-x: auto; border-top: 1px solid var(--line); }
@@ -185,7 +186,7 @@
     align-items: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   }
-  .tip .sq { width: 28px; height: 28px; border-radius: 2px; grid-row: span 2; border: 1px solid rgba(138, 130, 120, 0.6); }
+  .tip .sq { width: 28px; height: 28px; border-radius: 2px; grid-row: span 2; border: 1px solid rgba(146, 128, 109, 0.6); }
   .tip b { font-weight: 500; }
   .tip span { opacity: 0.75; }
 
@@ -200,7 +201,7 @@
   <header>
     <div class="label crumbs"><span>/ Tokens</span><span id="count"></span><span>src/app/globals.css</span></div>
     <h1>Palette<span>.</span></h1>
-    <p class="lede">Every <code>--color-*</code> token in the okaypl.us theme, with its HSL position. The neutrals all hold a warm hue between 30° and 38°, and they get more saturated as they get lighter. Click a swatch to copy its hex.</p>
+    <p class="lede">Every <code>--color-*</code> token in the okaypl.us theme, with its HSL position. The neutrals share one warm hue, 31°, and take their saturation from their lightness, so they get more saturated as they get lighter. Click a swatch to copy its hex.</p>
   </header>
 
   <section aria-labelledby="swatches-h">
@@ -220,14 +221,14 @@
       <figure>
         <figcaption>
           <strong>Saturation × lightness</strong>
-          <p>The neutrals trace a curve: the inks stay near 10% saturation, then the papers climb to 50% at the lightest step.</p>
+          <p>The line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)). It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. Lightness sits on 2.5% steps, except paper-light at 97% to stay clear of white, and hex rounding leaves each dot within about a point of both.</p>
         </figcaption>
         <div class="plot" id="sl"></div>
       </figure>
       <figure>
         <figcaption>
           <strong>Hue wheel</strong>
-          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 13 neutral tokens. The pinks sit at 350°, about 40° away.</p>
+          <p>Angle is hue and distance from the centre is saturation. The shaded wedge holds all 11 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away.</p>
         </figcaption>
         <div class="plot" id="wheel"></div>
       </figure>
@@ -262,15 +263,15 @@
 
 <script>
   const TOKENS = [
-    ["paper", "#f3efe8"], ["paper-raised", "#f8f5f0"], ["paper-light", "#fbf8f3"], ["sand", "#ebe5db"],
-    ["rule", "#d9d1c4"], ["guide", "#c9bfb0"], ["ink", "#1c1916"], ["ink-2", "#2e2a26"], ["ink-3", "#3a3631"],
-    ["rule-dark", "#3a3631"], ["body", "#4a443d"], ["muted", "#6b645b"],
-    ["muted-light", "#a89f93"], ["pink", "#ff4d6a"], ["pink-ink", "#d4203f"],
+    ["paper", "#f2ece6"], ["paper-raised", "#f7f3ef"], ["paper-light", "#faf7f4"], ["sand", "#ede6de"],
+    ["rule", "#d8ccbf"], ["guide", "#cdc0b2"], ["ink", "#1d1a17"], ["ink-2", "#322d28"],
+    ["body", "#4e463e"], ["muted", "#746759"],
+    ["muted-light", "#b0a08f"], ["pink", "#ff4d6a"], ["pink-ink", "#d01f3e"],
   ];
   const GROUPS = [
     ["Paper", ["paper-light", "paper-raised", "paper", "sand"]],
-    ["Rules", ["rule", "guide", "rule-dark"]],
-    ["Ink & text", ["ink", "ink-2", "ink-3", "body", "muted", "muted-light"]],
+    ["Rules", ["rule", "guide"]],
+    ["Ink & text", ["ink", "ink-2", "body", "muted", "muted-light"]],
     ["Accent", ["pink", "pink-ink"]],
   ];
 
@@ -296,7 +297,7 @@
     return (x + 0.05) / (y + 0.05);
   };
 
-  const PAPER = "#f3efe8", INK = "#1c1916";
+  const PAPER = "#f2ece6", INK = "#1d1a17";
   const byName = new Map(TOKENS.map(([name, hex]) => {
     const hsl = hslOf(hex);
     return [name, { name, hex, ...hsl, onPaper: contrast(hex, PAPER), onInk: contrast(hex, INK) }];
@@ -453,6 +454,10 @@
     }
     el("text", { class: "axis-title", x: m.l + iw, y: H - 4, "text-anchor": "end" }, svg, "Saturation →");
     el("text", { class: "axis-title", x: -(m.t + ih), y: 10, transform: "rotate(-90)", "text-anchor": "start" }, svg, "Lightness →");
+    // The neutrals' saturation rule, from 10% at black to 45% at white.
+    const target = (l) => 10 + 35 * (1 - Math.sqrt(1 - (l / 100) ** 2));
+    const curve = Array.from({ length: 101 }, (_, l) => `${l ? "L" : "M"}${x(target(l)).toFixed(1)} ${y(l).toFixed(1)}`).join("");
+    el("path", { class: "curve", d: curve }, svg);
     const items = points.map((p) => ({ p, x: x(p.s), y: y(p.l), text: p.names.join(" = ") }));
     const labels = el("g", {}, svg);
     for (const it of items) dot(svg, it.p, it.x, it.y);
