@@ -200,6 +200,11 @@ ${occlusion}
 // Soft shadow: for each other object the light-ward ray from p passes near,
 // the distance from that ray to the object's outline (in the light's plane)
 // sets how much of it is in shadow, over a penumbra ±uShadowSoft wide.
+// A point beyond a box face turned toward the light sees all of the light past
+// that box, so the box can't shade it however wide the penumbra (a tile's top
+// just above the platform it sits on). That eases in over the last SHIELD px
+// below the face's plane, and as the face turns edge-on, so nothing pops.
+#define SHIELD 4.0
 float shadow(vec3 p) {
   vec2 q = vec2(dot(p, uLightU), dot(p, uLightV));
   float vis = 1.0;
@@ -212,7 +217,7 @@ float shadow(vec3 p) {
     vec4 c = texelFetch(uShadowData, ivec2(0, i), 0);
     if (dot(c.xyz - p, uLight) < -bound.w || seenThrough(p, i)) continue;
     vec4 e = texelFetch(uShadowData, ivec2(1, i), 0);
-    float d;
+    float d, open = 0.0;
     if (c.w > 0.5) {
       // Sphere: skip it if it's wholly on the far side of p from the light.
       vec3 oc = c.xyz - p;
@@ -220,7 +225,12 @@ float shadow(vec3 p) {
       d = length(cross(oc, uLight)) - e.x;
     } else {
       // Box: the ray has to pass through it grown by the penumbra, toward the light.
-      vec3 lp = qrot(texelFetch(uShadowData, ivec2(2, i), 0), p - c.xyz);
+      vec4 qi = texelFetch(uShadowData, ivec2(2, i), 0);
+      vec3 lp = qrot(qi, p - c.xyz), ll = qrot(qi, uLight);
+      vec3 beyond = lp * sign(ll) - (e.xyz - uShadowSoft);
+      vec3 shield = smoothstep(-SHIELD, 0.0, beyond) * smoothstep(0.0, 0.2, abs(ll));
+      open = max(max(shield.x, shield.y), shield.z);
+      if (open >= 1.0) continue;
       vec3 inv = texelFetch(uShadowData, ivec2(3, i), 0).xyz;
       vec3 t0 = (-e.xyz - lp) * inv, t1 = (e.xyz - lp) * inv;
       vec3 lo = min(t0, t1), hi = max(t0, t1);
@@ -232,7 +242,7 @@ float shadow(vec3 p) {
         d = max(d, dot(l.xy, q) - l.z);
       }
     }
-    vis = min(vis, mix(1.0, smoothstep(-uShadowSoft, uShadowSoft, d), e.w));
+    vis = min(vis, mix(1.0, smoothstep(-uShadowSoft, uShadowSoft, d), e.w * (1.0 - open)));
   }
   return vis;
 }
