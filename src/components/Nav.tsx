@@ -209,11 +209,6 @@ export function Nav() {
                         </Link>
                       </li>
                     ))}
-                    <li className={divider}>
-                      <Link href={l.href} onClick={closeServices} className={menuItem}>
-                        All services →
-                      </Link>
-                    </li>
                   </ul>
                 </div>
               </li>
