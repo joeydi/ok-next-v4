@@ -85,10 +85,8 @@ const TINT = "#A39284";
 /** The floor beyond the tiles, out past every canvas edge (integers, so seams are exact). */
 const FLOOR_MIN = -1500, FLOOR_MAX = 1800;
 const DEFAULT_FLOOR: Rect = [-150, -150, 450, 450];
-/** Floor tile size, and the vertex spacing inside tiles for per-vertex AO (px). */
-const TILE = 60, CELL = 6;
-/** Boxes up to this size (px) use the coarser mesh: small faces need fewer AO samples. */
-const SMALL_BOX = 90;
+/** Floor tile size (px): each tile loops over only the objects in reach. */
+const TILE = 60;
 
 /** Texels per object in the shadow data: shape (5) and up to 8 outline edges. */
 const SHADOW_ROW = 13;
@@ -99,8 +97,8 @@ const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 
 type MeshData = { v: number[]; idx?: number[] };
 type Mesh = { vao: WebGLVertexArrayObject; bufs: WebGLBuffer[]; count: number; type: number | null };
 
-/** Unit cube, each face an n×n grid so per-vertex AO has somewhere to vary. */
-function boxMesh(n = 10): MeshData {
+/** Unit cube, each face an n×n grid. */
+function boxMesh(n = 1): MeshData {
   const v: number[] = [], idx: number[] = [];
   for (let a = 0; a < 3; a++)
     for (const s of [1, -1]) {
@@ -140,18 +138,7 @@ function ballMesh(): MeshData {
   return { v };
 }
 
-/** One floor tile: TILE px square, vertices CELL apart, placed per tile. */
-function tileMesh(): MeshData {
-  const n = TILE / CELL;
-  const v: number[] = [], idx: number[] = [];
-  for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) v.push(i * CELL, j * CELL, 0, 0, 0, 1, 1, 1, 1);
-  const at = (i: number, j: number) => i * (n + 1) + j;
-  for (let i = 0; i < n; i++)
-    for (let j = 0; j < n; j++) idx.push(at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j), at(i + 1, j + 1), at(i, j + 1));
-  return { v, idx };
-}
-
-/** Unit quad, placed per strip of the floor outside the grid. */
+/** Unit quad, placed per floor tile and per strip of the floor outside them. */
 function quadMesh(): MeshData {
   const corners: Vec[] = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]];
   return { v: corners.flatMap((c) => [...c, 0, 0, 1, 1, 1, 1]), idx: [0, 1, 2, 0, 2, 3] };
@@ -200,10 +187,8 @@ function checkProgram(gl: WebGL2RenderingContext, p: WebGLProgram) {
 export class Renderer {
   private loc = new Map<string, WebGLUniformLocation | null>();
   private box: Mesh;
-  private smallBox: Mesh;
   private ball: Mesh;
   private quad: Mesh;
-  private tile: Mesh;
   private shadowTex: WebGLTexture;
   private shadowData = new Float32Array(SHADOW_ROW * 4 * MAX_OCC);
   private colors = new Map<string, number[]>();
@@ -245,11 +230,9 @@ export class Renderer {
     private lit: WebGLProgram,
     private dither: boolean,
   ) {
-    this.box = this.mesh(boxMesh(10));
-    this.smallBox = this.mesh(boxMesh(5));
+    this.box = this.mesh(boxMesh());
     this.ball = this.mesh(ballMesh());
     this.quad = this.mesh(quadMesh());
-    this.tile = this.mesh(tileMesh());
     this.shadowTex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, this.shadowTex);
     gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA32F, SHADOW_ROW, MAX_OCC);
@@ -396,8 +379,6 @@ export class Renderer {
       if (it.kind === "box") trs(m, it.center, it.q ?? Q0, it.half[0] * 2, it.half[1] * 2, it.half[2] * 2, [-0.5, -0.5, -0.5]);
       else trs(m, it.center, it.q ?? Q0, it.r, it.r, it.r);
     });
-    const meshOf = (it: Item) =>
-      it.kind === "ball" ? this.ball : Math.max(...it.half) * 2 > SMALL_BOX ? this.box : this.smallBox;
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
@@ -433,6 +414,24 @@ export class Renderer {
     /** For a patch of floor: the objects whose shadow can land on it. */
     const rowsForRect = ([x0, y0, x1, y1]: Rect) =>
       onFloor.flatMap((f, j) => (Math.hypot(Math.max(x0 - f.x, 0, f.x - x1), Math.max(y0 - f.y, 0, f.y - y1)) < f.r ? [j] : []));
+
+    // Which objects can occlude a draw: those whose bounding sphere comes within the AO radius.
+    const aoIdx = new Int32Array(MAX_OCC);
+    const setAo = (rows: number[]) => {
+      aoIdx.set(rows);
+      gl.uniform1iv(this.u(p, "uAoIdx"), aoIdx);
+      gl.uniform1i(this.u(p, "uAoN"), rows.length);
+    };
+    const aoForObject = (i: number) =>
+      list.flatMap((other, j) => {
+        const gap = Math.hypot(...sub(other.center, list[i].center)) - bounds[i].r3 - bounds[j].r3;
+        return j !== i && gap < s.aoRadius ? [j] : [];
+      });
+    const aoForRect = ([x0, y0, x1, y1]: Rect) =>
+      list.flatMap(({ center: [x, y, z] }, j) => {
+        const gap = Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(y0 - y, 0, y - y1), z - floorZ) - bounds[j].r3;
+        return gap < s.aoRadius ? [j] : [];
+      });
     gl.uniform1f(this.u(p, "uShadowSoft"), s.shadowSoft);
     gl.uniform3fv(this.u(p, "uLightU"), this.lightU);
     gl.uniform3fv(this.u(p, "uLightV"), this.lightV);
@@ -448,7 +447,7 @@ export class Renderer {
     gl.uniform1f(this.u(p, "uFloorZ"), floorZ);
     gl.uniform1f(this.u(p, "uDither"), this.dither ? 1 : 0);
 
-    // Every object occludes every other; each draw skips itself (uSelf).
+    // Every object can occlude every other; each draw picks the ones in reach (setAo).
     const { occA, occB, occQ } = this;
     list.forEach((it, i) => {
       const q = it.q ?? Q0;
@@ -459,7 +458,6 @@ export class Renderer {
       occB[i * 4 + 3] = it.kind === "box" ? 0 : 1;
       occQ.set(q, i * 4);
     });
-    gl.uniform1i(this.u(p, "uOccN"), list.length);
     gl.uniform4fv(this.u(p, "uOccA"), occA);
     gl.uniform4fv(this.u(p, "uOccB"), occB);
     gl.uniform4fv(this.u(p, "uOccQ"), occQ);
@@ -467,8 +465,8 @@ export class Renderer {
     const drawItem = (i: number) => {
       const it = list[i];
       gl.uniformMatrix4fv(this.u(p, "uModel"), false, this.models[i]);
-      gl.uniform1i(this.u(p, "uSelf"), i);
       setRows(rowsForObject(i));
+      setAo(aoForObject(i));
       gl.uniform1f(this.u(p, "uFade"), it.fade ?? 1);
       if (it.kind === "box") {
         gl.uniform1i(this.u(p, "uKind"), 0);
@@ -483,7 +481,7 @@ export class Renderer {
         gl.uniform1i(this.u(p, "uKind"), 1);
         gl.uniform1f(this.u(p, "uEdge"), s.edges ? (it.edge ?? 0) : 0);
       }
-      this.draw(meshOf(it));
+      this.draw(it.kind === "box" ? this.box : this.ball);
     };
     const indices = list.map((_, i) => i);
     const solid = (i: number) => (list[i].fade ?? 1) >= 1;
@@ -495,8 +493,8 @@ export class Renderer {
 
     // Floor last: it only darkens what's already behind the canvas (the paper
     // and GLIllustration's SVG grid). Near the objects it's drawn in TILE
-    // tiles, each with its own shadow rows and a mesh for per-vertex AO; plain
-    // strips cover the rest of the canvas. Integer bounds keep the seams exact.
+    // tiles, each with its own shadow and AO rows; strips without AO cover the
+    // rest of the canvas. Integer bounds keep the seams exact.
     // Only where no solid object was drawn: an object dipping below the floor
     // (a puzzle-cube slice turn) would otherwise take the floor's contact shadow.
     gl.stencilFunc(gl.EQUAL, 0, 0xff);
@@ -505,22 +503,24 @@ export class Renderer {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.depthMask(false);
     gl.uniform1i(this.u(p, "uKind"), 2);
-    gl.uniform1i(this.u(p, "uSelf"), -1);
     gl.uniform1f(this.u(p, "uFade"), 1);
     gl.uniform1f(this.u(p, "uEdge"), 0);
     const m = this.scratch.fill(0);
-    m[0] = m[5] = m[10] = m[15] = 1;
+    m[0] = m[5] = TILE;
+    m[10] = m[15] = 1;
     m[14] = floorZ;
     const [x0, y0, x1, y1] = scene.floor ?? DEFAULT_FLOOR;
     for (let x = x0; x < x1; x += TILE)
       for (let y = y0; y < y1; y += TILE) {
+        const tile: Rect = [x, y, x + TILE, y + TILE];
         m[12] = x;
         m[13] = y;
         gl.uniformMatrix4fv(this.u(p, "uModel"), false, m);
-        setRows(rowsForRect([x, y, x + TILE, y + TILE]));
-        this.draw(this.tile);
+        setRows(rowsForRect(tile));
+        setAo(aoForRect(tile));
+        this.draw(this.quad);
       }
-    gl.uniform1i(this.u(p, "uOccN"), 0);
+    setAo([]);
     const strips: Rect[] = [
       [FLOOR_MIN, FLOOR_MIN, x0, FLOOR_MAX],
       [x1, FLOOR_MIN, FLOOR_MAX, FLOOR_MAX],
@@ -541,7 +541,6 @@ export class Renderer {
     // Fading objects last, far to near, over everything behind them. Only
     // their near faces: the view flips y, so those wind clockwise (GL's back).
     gl.disable(gl.STENCIL_TEST);
-    gl.uniform1i(this.u(p, "uOccN"), list.length);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
     indices.filter((i) => !solid(i)).reverse().forEach(drawItem);
@@ -556,7 +555,7 @@ export class Renderer {
     const gl = this.gl;
     gl.deleteProgram(this.lit);
     gl.deleteTexture(this.shadowTex);
-    for (const m of [this.box, this.smallBox, this.ball, this.quad, this.tile]) {
+    for (const m of [this.box, this.ball, this.quad]) {
       gl.deleteVertexArray(m.vao);
       m.bufs.forEach((b) => gl.deleteBuffer(b));
     }

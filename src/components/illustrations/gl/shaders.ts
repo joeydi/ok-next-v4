@@ -3,43 +3,53 @@
 //   1 ball  — the pink ramp from icosphere.ts shaded per facet + optional facet edges
 //   2 floor — transparent shadow catcher (the grid is SVG, under the canvas)
 // All three take ambient occlusion and a soft shadow from the other objects
-// (boxes and spheres, ≤ MAX_OCC), both analytic, so nothing is sampled on a
-// grid that moving objects could step across. AO is smooth, so it's
-// evaluated per vertex on subdivided meshes and interpolated; shadows are
-// per pixel against each object's outline as the light sees it.
+// (boxes and spheres, ≤ MAX_OCC), both analytic and per pixel, so nothing is
+// sampled on a grid that moving objects could step across (per-vertex AO
+// flickered where a box's contact edge slid over the floor's vertices). AO
+// is against each object's faces; shadows against its outline as the light
+// sees it. Each draw only loops over the objects the CPU found in reach.
 
 export const MAX_OCC = 32;
 
 const common = /* glsl */ `
 float ign(vec2 p) { return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715)))); }
+vec3 qrot(vec4 q, vec3 v) { return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v); }
 `;
 
 export const LIT_VS = /* glsl */ `#version 300 es
-#define MAX_OCC ${MAX_OCC}
-#define TAU 6.2831853
-
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNor;
 layout(location = 2) in vec3 aBar;
 uniform mat4 uModel;
 uniform mat4 uViewProj;
-uniform float uAoRadius;
-
-// Every object in the frame; a draw skips its own (uSelf).
-uniform int uOccN;
-uniform int uSelf;
-uniform vec4 uOccA[MAX_OCC]; // centre xyz, strength
-uniform vec4 uOccB[MAX_OCC]; // half-size xyz (sphere: radius in x), kind (0 box, 1 sphere)
-uniform vec4 uOccQ[MAX_OCC]; // orientation quaternion
 
 out vec3 vWorld;
 out vec3 vNor;
 out vec3 vLocal;
 out vec3 vObjN;
 out vec3 vBar;
-out float vOcc;
 
-vec3 qrot(vec4 q, vec3 v) { return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v); }
+void main() {
+  vec4 w = uModel * vec4(aPos, 1.0);
+  vWorld = w.xyz;
+  vNor = transpose(inverse(mat3(uModel))) * aNor;
+  vLocal = aPos;
+  vObjN = aNor;
+  vBar = aBar;
+  gl_Position = uViewProj * w;
+}
+`;
+
+const occlusion = /* glsl */ `
+#define TAU 6.2831853
+
+// Every object in the frame; the rows that can occlude this draw (never its own) are chosen on the CPU.
+uniform vec4 uOccA[MAX_OCC]; // centre xyz, strength
+uniform vec4 uOccB[MAX_OCC]; // half-size xyz (sphere: radius in x), kind (0 box, 1 sphere)
+uniform vec4 uOccQ[MAX_OCC]; // orientation quaternion
+uniform int uAoIdx[MAX_OCC];
+uniform int uAoN;
+uniform float uAoRadius;
 
 // Directions below the receiver's horizon are pulled up onto it (cheap clipping).
 vec3 horizon(vec3 v, vec3 n) {
@@ -71,9 +81,7 @@ float quadOcc(vec3 p, vec3 n, vec3 a, vec3 b, vec3 c, vec3 d) {
 
 // Occlusion of a box centred at the origin: its (up to three) faces turned toward p.
 float boxOcc(vec3 p, vec3 n, vec3 h) {
-  // A point on or under the box (floor beneath a pillar) takes the value at the
-  // foot of a wall, so interpolating toward it neither lightens nor overshoots
-  // the contact.
+  // A point on or under the box (floor beneath a fading pillar) takes the value at the foot of a wall.
   if (all(lessThan(abs(p), h + 0.5))) return 0.5;
   vec3 f = sign(p) * h;
   vec3 on = step(h, abs(p));
@@ -100,34 +108,23 @@ float sphOcc(vec3 p, vec3 n, vec3 c, float r) {
 
 float occlusion(vec3 p, vec3 n) {
   float o = 0.0;
-  for (int i = 0; i < MAX_OCC; i++) {
-    if (i >= uOccN) break;
-    if (i == uSelf) continue;
+  for (int k = 0; k < MAX_OCC; k++) {
+    if (k >= uAoN) break;
+    int i = uAoIdx[k];
     vec4 a = uOccA[i], b = uOccB[i];
-    float dist, occ;
     if (b.w < 0.5) {
       vec4 q = uOccQ[i] * vec4(-1.0, -1.0, -1.0, 1.0);
       vec3 lp = qrot(q, p - a.xyz);
-      dist = length(max(abs(lp) - b.xyz, 0.0));
-      occ = boxOcc(lp, qrot(q, n), b.xyz);
+      float dist = length(max(abs(lp) - b.xyz, 0.0));
+      if (dist >= uAoRadius) continue;
+      o += a.w * boxOcc(lp, qrot(q, n), b.xyz) * (1.0 - smoothstep(0.0, uAoRadius, dist));
     } else {
-      dist = max(length(p - a.xyz) - b.x, 0.0);
-      occ = sphOcc(p, n, a.xyz, b.x);
+      float dist = max(length(p - a.xyz) - b.x, 0.0);
+      if (dist >= uAoRadius) continue;
+      o += a.w * sphOcc(p, n, a.xyz, b.x) * (1.0 - smoothstep(0.0, uAoRadius, dist));
     }
-    o += a.w * occ * (1.0 - smoothstep(0.0, uAoRadius, dist));
   }
   return o;
-}
-
-void main() {
-  vec4 w = uModel * vec4(aPos, 1.0);
-  vWorld = w.xyz;
-  vNor = transpose(inverse(mat3(uModel))) * aNor;
-  vLocal = aPos;
-  vObjN = aNor;
-  vBar = aBar;
-  vOcc = uOccN > 0 ? occlusion(w.xyz, normalize(vNor)) : 0.0;
-  gl_Position = uViewProj * w;
 }
 `;
 
@@ -143,7 +140,6 @@ in vec3 vNor;
 in vec3 vLocal;
 in vec3 vObjN;
 in vec3 vBar;
-in float vOcc;
 
 uniform int uKind;
 uniform vec3 uPal[3];
@@ -170,7 +166,6 @@ uniform sampler2D uShadowData;
 uniform int uShadowIdx[MAX_OCC];
 uniform int uShadowN;
 uniform float uAoStr;
-uniform float uAoRadius;
 uniform float uFloorAo;
 uniform float uFloorZ;
 uniform float uDither;
@@ -178,8 +173,7 @@ uniform float uDither;
 out vec4 frag;
 
 ${common}
-
-vec3 qrot(vec4 q, vec3 v) { return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v); }
+${occlusion}
 
 // Soft shadow: for each other object the light-ward ray from p passes near,
 // the distance from that ray to the object's outline (in the light's plane)
@@ -234,7 +228,7 @@ void main() {
   // Surfaces turned from the light keep their designed shade; lit ones take cast shadows.
   float facing = smoothstep(0.0, 0.2, dot(n, uLight));
   float shade = facing > 0.0 ? (1.0 - mix(1.0, shadow(vWorld), facing)) * uShadowStr : 0.0;
-  float occ = vOcc;
+  float occ = uAoN > 0 ? occlusion(vWorld, n) : 0.0;
   if (uKind != 2) {
     float above = max(vWorld.z - uFloorZ, 0.0);
     occ += uFloorAo * 0.5 * (1.0 - n.z) * (1.0 - smoothstep(0.0, uAoRadius, above));
