@@ -8,14 +8,17 @@ import { Accent } from "./Accent";
 import { Container } from "./Container";
 import { Eyebrow } from "./Eyebrow";
 import { Contact, SiteFooter } from "./Footer";
-import { BounceRow, Conveyor, Ring } from "./illustrations";
+import { BounceRow, Conveyor, GLIllustration } from "./illustrations";
 import { Placeholder } from "./Placeholder";
 import { Cite } from "./Testimonial";
 
 const ILLUSTRATIONS = {
   "bounce-row": BounceRow,
   conveyor: Conveyor,
-  ring: Ring,
+  // WebGL; `sizes` follows the hero width below (49.51% of the page, capped at 1920).
+  ring: ({ className }: { className?: string }) => (
+    <GLIllustration scene="ring" sizes="(min-width: 1024px) min(49.51vw, 951px), min(100vw, 540px)" className={className} />
+  ),
 };
 
 /** Shared template for the three service pages. */
