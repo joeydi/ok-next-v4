@@ -196,6 +196,7 @@ export class Renderer {
   // Cached until the scene or light changes.
   private viewScene: SceneDef | null = null;
   private view = identity();
+  private toViewer: Vec = [0, 0, 1];
   private lightKey = "";
   private light: Vec = [0, 0, 1];
   // The plane the light sees, perpendicular to it.
@@ -359,6 +360,10 @@ export class Renderer {
     if (scene !== this.viewScene) {
       this.viewScene = scene;
       this.view = mul(CANVAS_TO_CLIP, planeToCanvas(scene));
+      // The one direction that keeps clip x and y, pointed toward smaller depth.
+      const row = (r: number): Vec => [this.view[r], this.view[4 + r], this.view[8 + r]];
+      const d = norm(cross(row(0), row(1)));
+      this.toViewer = dot(d, row(2)) > 0 ? [-d[0], -d[1], -d[2]] : d;
     }
     const lightKey = `${s.azimuth},${s.elevation}`;
     if (lightKey !== this.lightKey) {
@@ -436,6 +441,7 @@ export class Renderer {
     gl.uniform3fv(this.u(p, "uLightU"), this.lightU);
     gl.uniform3fv(this.u(p, "uLightV"), this.lightV);
     gl.uniformMatrix4fv(this.u(p, "uViewProj"), false, view);
+    gl.uniform3fv(this.u(p, "uView"), this.toViewer);
     gl.uniform3fv(this.u(p, "uLight"), this.light);
     gl.uniform3fv(this.u(p, "uBallLight"), LIGHT);
     gl.uniform3fv(this.u(p, "uPaper"), this.color(PAPER));

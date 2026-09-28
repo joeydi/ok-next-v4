@@ -50,6 +50,27 @@ uniform vec4 uOccQ[MAX_OCC]; // orientation quaternion
 uniform int uAoIdx[MAX_OCC];
 uniform int uAoN;
 uniform float uAoRadius;
+// Toward the viewer (the camera is orthographic).
+uniform vec3 uView;
+
+// Whether p is seen through object i while it fades. What shows through a
+// fading object is the scene without it, so it neither shades nor occludes p;
+// otherwise a fading box shows its own contact shadow through its faces.
+bool seenThrough(vec3 p, int i) {
+  vec4 a = uOccA[i], b = uOccB[i];
+  if (a.w >= 1.0) return false;
+  if (b.w > 0.5) {
+    vec3 oc = a.xyz - p;
+    return dot(oc, uView) > -b.x && length(cross(oc, uView)) < b.x;
+  }
+  vec4 q = uOccQ[i] * vec4(-1.0, -1.0, -1.0, 1.0);
+  vec3 lp = qrot(q, p - a.xyz), ld = qrot(q, uView);
+  vec3 inv = (step(0.0, ld) * 2.0 - 1.0) / max(abs(ld), 1e-6);
+  vec3 t0 = (-b.xyz - lp) * inv, t1 = (b.xyz - lp) * inv;
+  vec3 lo = min(t0, t1), hi = max(t0, t1);
+  float far = min(min(hi.x, hi.y), hi.z);
+  return max(max(lo.x, lo.y), lo.z) <= far && far > 0.0;
+}
 
 // Directions below the receiver's horizon are pulled up onto it (cheap clipping).
 vec3 horizon(vec3 v, vec3 n) {
@@ -111,6 +132,7 @@ float occlusion(vec3 p, vec3 n) {
   for (int k = 0; k < MAX_OCC; k++) {
     if (k >= uAoN) break;
     int i = uAoIdx[k];
+    if (seenThrough(p, i)) continue;
     vec4 a = uOccA[i], b = uOccB[i];
     if (b.w < 0.5) {
       vec4 q = uOccQ[i] * vec4(-1.0, -1.0, -1.0, 1.0);
@@ -188,7 +210,7 @@ float shadow(vec3 p) {
     vec4 bound = texelFetch(uShadowData, ivec2(4, i), 0);
     if (length(q - bound.xy) > bound.z + uShadowSoft) continue;
     vec4 c = texelFetch(uShadowData, ivec2(0, i), 0);
-    if (dot(c.xyz - p, uLight) < -bound.w) continue;
+    if (dot(c.xyz - p, uLight) < -bound.w || seenThrough(p, i)) continue;
     vec4 e = texelFetch(uShadowData, ivec2(1, i), 0);
     float d;
     if (c.w > 0.5) {
