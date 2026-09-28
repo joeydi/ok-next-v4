@@ -73,7 +73,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <GLIllustration
             scene={s.illustration}
             sizes="(min-width: 1024px) min(49.51vw, 951px), min(100vw, 540px)"
-            className="mx-auto mt-fl-40 w-full lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:max-w-none lg:right-0"
+            className="mx-auto mt-fl-40 w-full lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:mt-0 lg:w-[calc(49.51*var(--pvw))] lg:right-0"
           />
           <div className="lg:mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-normal text-pretty text-body">{s.intro}</p>
