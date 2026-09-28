@@ -108,7 +108,7 @@ function Services() {
               <span>{s.kicker}</span>
               <span className="shrink-0 whitespace-nowrap">/ {s.n}</span>
             </div>
-            <h3 className="display mt-fl-40 text-fl-36 tracking-[-.015em]">
+            <h3 className="display mt-fl-40 text-fl-36 leading-[1.05] tracking-[-.015em]">
               <span className="hover-title">{s.t}</span>
             </h3>
             <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{s.d}</p>

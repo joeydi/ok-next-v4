@@ -107,8 +107,10 @@ export function ServicePage({ service: s }: { service: Service }) {
                 </div>
                 <h3
                   className={cn(
-                    "display mt-fl-40 leading-[1.05] tracking-[-.015em]",
+                    "display mt-fl-40 tracking-[-.015em]",
                     three ? "text-fl-36" : "text-fl-30 text-balance",
+                    // After the size: cn drops a leading-* that a later text-* size follows.
+                    "leading-[1.05]",
                   )}
                 >
                   {c.t}
