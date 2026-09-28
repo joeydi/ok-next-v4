@@ -145,7 +145,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           </SectionHead>
           <ol className="grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2 lg:grid-cols-4">
             {s.process.items.map((step) => (
-              <li key={step.n} className="flex flex-col gap-fl-12 border-t border-ink pt-fl-20">
+              <li key={step.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
                 <div className="font-mono text-fl-14 text-pink-ink">{step.n}</div>
                 <h3 className="display text-fl-30 tracking-[-.01em]">{step.t}</h3>
                 <p className="text-fl-18 leading-[1.55] text-pretty text-body">{step.d}</p>
