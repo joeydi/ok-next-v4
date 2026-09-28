@@ -51,6 +51,11 @@ export function Nav() {
   const state = useSyncExternalStore(onScroll, () => navState(navRef.current), (): NavState => "top");
   const dark = state === "dark";
   const accent = dark ? "text-pink" : "text-pink-ink";
+  // Menu items bleed into the menu's padding so the hover fill sits around the text, which stays put.
+  const menuItem = cn(
+    "-mx-2.5 block rounded-md px-2.5 py-2.5 transition-colors duration-200 motion-reduce:transition-none",
+    dark ? "hover:bg-paper/10" : "hover:bg-ink/5",
+  );
 
   // Sticky rather than fixed: as a direct child of <body> it stays put for the whole
   // page but keeps its space in the flow. The bar reaches half a gutter past the
@@ -107,14 +112,14 @@ export function Nav() {
                     href={l.href}
                     onClick={closeMenu}
                     aria-current={l.active ? "page" : undefined}
-                    className={cn("block py-2.5", l.active && accent)}
+                    className={cn(menuItem, l.active && accent)}
                   >
                     {l.label}
                   </Link>
                 </li>
               ))}
               <li className={cn("mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-strong motion-reduce:transition-none", dark ? "border-paper/10" : "border-rule-dark/10")}>
-                <Link href={CONTACT_HREF} onClick={closeMenu} className={cn("block py-2.5", accent)}>
+                <Link href={CONTACT_HREF} onClick={closeMenu} className={cn(menuItem, accent)}>
                   Say hello →
                 </Link>
               </li>
