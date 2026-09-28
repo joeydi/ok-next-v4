@@ -1,4 +1,4 @@
-import type { Vec } from "../icosphere";
+import { norm, type Vec } from "../icosphere";
 
 // Column-major 4×4 matrices (the layout WebGL expects) and x,y,z,w quaternions.
 
@@ -61,42 +61,10 @@ export function rotateZ(rad: number): Mat4 {
 
 export const deg = (d: number) => (d * Math.PI) / 180;
 
-export function ortho(l: number, r: number, b: number, t: number, n: number, f: number): Mat4 {
-  const m = identity();
-  m[0] = 2 / (r - l);
-  m[5] = 2 / (t - b);
-  m[10] = -2 / (f - n);
-  m[12] = -(r + l) / (r - l);
-  m[13] = -(t + b) / (t - b);
-  m[14] = -(f + n) / (f - n);
-  return m;
-}
-
-const vsub = (a: Vec, b: Vec): Vec => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const vcross = (a: Vec, b: Vec): Vec => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-const vnorm = (v: Vec): Vec => {
-  const l = Math.hypot(...v);
-  return [v[0] / l, v[1] / l, v[2] / l];
-};
-
-export function lookAt(eye: Vec, target: Vec, up: Vec): Mat4 {
-  const z = vnorm(vsub(eye, target));
-  const x = vnorm(vcross(up, z));
-  const y = vcross(z, x);
-  const m = identity();
-  m[0] = x[0]; m[4] = x[1]; m[8] = x[2];
-  m[1] = y[0]; m[5] = y[1]; m[9] = y[2];
-  m[2] = z[0]; m[6] = z[1]; m[10] = z[2];
-  m[12] = -(x[0] * eye[0] + x[1] * eye[1] + x[2] * eye[2]);
-  m[13] = -(y[0] * eye[0] + y[1] * eye[1] + y[2] * eye[2]);
-  m[14] = -(z[0] * eye[0] + z[1] * eye[1] + z[2] * eye[2]);
-  return m;
-}
-
 export const Q0: Quat = [0, 0, 0, 1];
 
 export function quat(axis: Vec, rad: number): Quat {
-  const [x, y, z] = vnorm(axis), s = Math.sin(rad / 2);
+  const [x, y, z] = norm(axis), s = Math.sin(rad / 2);
   return [x * s, y * s, z * s, Math.cos(rad / 2)];
 }
 

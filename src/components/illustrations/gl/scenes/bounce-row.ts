@@ -74,6 +74,6 @@ export const bounceRow: SceneDef = {
   // The centre column at its hit, flashing pink under the ball.
   posterTime: 0,
   // The row runs well past the plane; this covers where columns are up, plus AO reach.
-  floor: [-324, -36, 672, 336],
+  floor: [-360, -60, 720, 360],
   frame,
 };

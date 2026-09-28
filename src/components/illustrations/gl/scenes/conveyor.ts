@@ -86,6 +86,6 @@ export const conveyor: SceneDef = {
   posterTime: 3.2,
   pre: mul(translate(-60, 0, 0), scale(1.25)),
   // The belt runs along y; this covers where platforms are up, plus AO reach.
-  floor: [-114, -270, 414, 558],
+  floor: [-120, -300, 420, 600],
   frame,
 };

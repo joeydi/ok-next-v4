@@ -1,11 +1,11 @@
 import { cross, dot, icosphere, LIGHT, norm, sub, type Vec } from "../icosphere";
 import type { Palette } from "../primitives";
-import { deg, identity, lookAt, mul, ortho, Q0, rotateX, rotateZ, scale, translate, trs, type Mat4, type Quat } from "./math";
-import { DEPTH_FS, DEPTH_VS, LIT_FS, LIT_VS, MAX_OCC } from "./shaders";
+import { deg, identity, mul, Q0, qrot, rotateX, rotateZ, scale, translate, trs, type Mat4, type Quat } from "./math";
+import { LIT_FS, LIT_VS, MAX_OCC } from "./shaders";
 
 // A tiny WebGL2 renderer for the hero illustrations. Scenes use the CSS
-// version's coordinates: px on the 300×300 iso plane, y down, z up. The camera
-// reproduces `.ok-illo-scene`'s transform exactly, so it's orthographic.
+// handoff's coordinates: px on the 300×300 iso plane, y down, z up. The camera
+// is the handoff's scene transform exactly, so it's orthographic.
 
 export type BoxItem = {
   kind: "box";
@@ -49,7 +49,7 @@ export type SceneDef = {
   /** Screen-space transform applied before the iso rotation, like Scene's `pre`. */
   pre?: Mat4;
   floorZ?: number;
-  /** Floor area that takes AO (multiples of 6); objects and their reach must stay inside. */
+  /** Floor area drawn in tiles, taking AO (multiples of 60); objects and their AO reach must stay inside. */
   floor?: Rect;
   frame(t: number): Item[];
 };
@@ -82,17 +82,16 @@ export const DEFAULT_SETTINGS: Settings = {
 const W = 620, H = 660;
 const PAPER = "#F3EFE8";
 const TINT = "#A39284";
-/** Half-width of the light's view (px): covers the widest scene (BounceRow's row). */
-const LIGHT_EXTENT = 600;
-/** How far grounded boxes extend below the floor in the shadow pass (px). */
-const SINK = 30;
-/** The floor beyond the AO grid, out past every canvas edge. Multiples of CELL keep seams exact. */
+/** The floor beyond the tiles, out past every canvas edge (integers, so seams are exact). */
 const FLOOR_MIN = -1500, FLOOR_MAX = 1800;
 const DEFAULT_FLOOR: Rect = [-150, -150, 450, 450];
-/** Floor mesh spacing for per-vertex AO (px). */
-const CELL = 6;
+/** Floor tile size, and the vertex spacing inside tiles for per-vertex AO (px). */
+const TILE = 60, CELL = 6;
 /** Boxes up to this size (px) use the coarser mesh: small faces need fewer AO samples. */
 const SMALL_BOX = 90;
+
+/** Texels per object in the shadow data: shape (5) and up to 8 outline edges. */
+const SHADOW_ROW = 13;
 
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
 
@@ -127,26 +126,6 @@ function boxMesh(n = 10): MeshData {
   return { v, idx };
 }
 
-/**
- * World half-extents of a box turned only by right angles (from its model
- * matrix, whose columns are the scaled axes), or null if it's turned otherwise.
- */
-function alignedHalf(m: Mat4): Vec | null {
-  const h: Vec = [0, 0, 0];
-  for (let j = 0; j < 3; j++) {
-    let axes = 0;
-    for (let i = 0; i < 3; i++) {
-      const v = Math.abs(m[j * 4 + i]);
-      if (v > 1e-3) {
-        axes++;
-        h[i] += v / 2;
-      }
-    }
-    if (axes !== 1) return null;
-  }
-  return h;
-}
-
 /** The ball's 80 flat facets (not indexed: each corner carries its facet's normal and barycentrics). */
 function ballMesh(): MeshData {
   const v: number[] = [];
@@ -161,14 +140,14 @@ function ballMesh(): MeshData {
   return { v };
 }
 
-/** A mesh over `rect` in plane px, vertices CELL apart. */
-function floorMesh([x0, y0, x1, y1]: Rect): MeshData {
-  const nx = Math.round((x1 - x0) / CELL), ny = Math.round((y1 - y0) / CELL);
+/** One floor tile: TILE px square, vertices CELL apart, placed per tile. */
+function tileMesh(): MeshData {
+  const n = TILE / CELL;
   const v: number[] = [], idx: number[] = [];
-  for (let i = 0; i <= nx; i++) for (let j = 0; j <= ny; j++) v.push(x0 + i * CELL, y0 + j * CELL, 0, 0, 0, 1, 1, 1, 1);
-  const at = (i: number, j: number) => i * (ny + 1) + j;
-  for (let i = 0; i < nx; i++)
-    for (let j = 0; j < ny; j++) idx.push(at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j), at(i + 1, j + 1), at(i, j + 1));
+  for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) v.push(i * CELL, j * CELL, 0, 0, 0, 1, 1, 1, 1);
+  const at = (i: number, j: number) => i * (n + 1) + j;
+  for (let i = 0; i < n; i++)
+    for (let j = 0; j < n; j++) idx.push(at(i, j), at(i + 1, j), at(i + 1, j + 1), at(i, j), at(i + 1, j + 1), at(i, j + 1));
   return { v, idx };
 }
 
@@ -178,10 +157,25 @@ function quadMesh(): MeshData {
   return { v: corners.flatMap((c) => [...c, 0, 0, 1, 1, 1, 1]), idx: [0, 1, 2, 0, 2, 3] };
 }
 
+/** Convex hull of 2D points, counter-clockwise (Andrew's monotone chain). */
+function hull(points: [number, number][]) {
+  const p = points.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const turn = (o: number[], a: number[], b: number[]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const half = (pts: [number, number][]) => {
+    const h: [number, number][] = [];
+    for (const q of pts) {
+      while (h.length >= 2 && turn(h[h.length - 2], h[h.length - 1], q) <= 0) h.pop();
+      h.push(q);
+    }
+    return h.slice(0, -1);
+  };
+  return [...half(p), ...half(p.reverse())];
+}
+
 /** Maps canvas px (y down, z toward the viewer) to clip space. */
 const CANVAS_TO_CLIP = mul(translate(-1, 1, 0), scale(2 / W, -2 / H, -1 / 1000));
 
-/** Plane px → canvas px: exactly `.ok-illo-scene`'s transform (plus the scene's `pre`) about its centre (300, 400). */
+/** Plane px → canvas px: the handoff's rotateX(58deg) rotateZ(-45deg) (after the scene's `pre`) about the plane's centre, (300, 400) on the canvas. */
 export const planeToCanvas = (scene: SceneDef) =>
   mul(translate(300, 400, 0), ...(scene.pre ? [scene.pre] : []), rotateX(deg(58)), rotateZ(deg(-45)), translate(-150, -150, 0));
 
@@ -209,10 +203,9 @@ export class Renderer {
   private smallBox: Mesh;
   private ball: Mesh;
   private quad: Mesh;
-  private floors = new Map<string, Mesh>();
-  private shadowTex: WebGLTexture | null = null;
-  private shadowSize = 0;
-  private shadowFbo: WebGLFramebuffer;
+  private tile: Mesh;
+  private shadowTex: WebGLTexture;
+  private shadowData = new Float32Array(SHADOW_ROW * 4 * MAX_OCC);
   private colors = new Map<string, number[]>();
   private palettes = new WeakMap<Palette, Float32Array>();
   // Cached until the scene or light changes.
@@ -220,7 +213,9 @@ export class Renderer {
   private view = identity();
   private lightKey = "";
   private light: Vec = [0, 0, 1];
-  private lightVP = identity();
+  // The plane the light sees, perpendicular to it.
+  private lightU: Vec = [1, 0, 0];
+  private lightV: Vec = [0, 1, 0];
   // Scratch, reused every frame.
   private models: Mat4[] = [];
   private scratch = identity();
@@ -239,49 +234,27 @@ export class Renderer {
     if (!gl) throw new Error("WebGL2 unavailable");
     const ext = gl.getExtension("KHR_parallel_shader_compile");
     const lit = startProgram(gl, LIT_VS, LIT_FS);
-    const depth = startProgram(gl, DEPTH_VS, DEPTH_FS);
-    if (ext)
-      while (![lit, depth].every((p) => gl.getProgramParameter(p, ext.COMPLETION_STATUS_KHR)))
-        await new Promise((r) => setTimeout(r, 16));
+    if (ext) while (!gl.getProgramParameter(lit, ext.COMPLETION_STATUS_KHR)) await new Promise((r) => setTimeout(r, 16));
     checkProgram(gl, lit);
-    checkProgram(gl, depth);
-    return new Renderer(canvas, gl, lit, depth, dither);
+    return new Renderer(canvas, gl, lit, dither);
   }
 
   private constructor(
     private canvas: HTMLCanvasElement,
     private gl: WebGL2RenderingContext,
     private lit: WebGLProgram,
-    private depth: WebGLProgram,
     private dither: boolean,
   ) {
     this.box = this.mesh(boxMesh(10));
     this.smallBox = this.mesh(boxMesh(5));
     this.ball = this.mesh(ballMesh());
     this.quad = this.mesh(quadMesh());
-    this.shadowFbo = gl.createFramebuffer()!;
-  }
-
-  /** (Re)allocates the shadow map at `size`² texels. */
-  private shadowMap(size: number) {
-    if (size === this.shadowSize) return;
-    const gl = this.gl;
-    if (this.shadowTex) gl.deleteTexture(this.shadowTex);
-    this.shadowSize = size;
+    this.tile = this.mesh(tileMesh());
     this.shadowTex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, this.shadowTex);
-    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.DEPTH_COMPONENT24, size, size);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_FUNC, gl.LEQUAL);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowFbo);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.shadowTex, 0);
-    gl.drawBuffers([gl.NONE]);
-    gl.readBuffer(gl.NONE);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA32F, SHADOW_ROW, MAX_OCC);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   }
 
   private mesh({ v, idx }: MeshData): Mesh {
@@ -317,9 +290,8 @@ export class Renderer {
   }
 
   private u(p: WebGLProgram, name: string) {
-    const key = `${p === this.lit ? "l" : "d"}:${name}`;
-    if (!this.loc.has(key)) this.loc.set(key, this.gl.getUniformLocation(p, name));
-    return this.loc.get(key)!;
+    if (!this.loc.has(name)) this.loc.set(name, this.gl.getUniformLocation(p, name));
+    return this.loc.get(name)!;
   }
 
   private color(hex: string) {
@@ -333,11 +305,61 @@ export class Renderer {
     return a;
   }
 
-  private floor(rect: Rect) {
-    const key = rect.join();
-    let m = this.floors.get(key);
-    if (!m) this.floors.set(key, (m = this.mesh(floorMesh(rect))));
-    return m;
+  /**
+   * Each object as the light sees it, one texture row per object: centre and
+   * kind; half-size grown by the penumbra (box) or radius (ball), and opacity;
+   * the inverse rotation; the light direction in the box's frame (inverted,
+   * for a slab test); a bounding circle of its outline and its 3D bounding
+   * radius; then the outline's edges as lines (nx, ny, c) in the light's
+   * plane, padded to 8. Returns each object's bounds for choosing rows per draw.
+   */
+  private shadowRows(list: Item[], soft: number) {
+    const d = this.shadowData.fill(0);
+    const bounds: { u: number; v: number; r: number; r3: number }[] = [];
+    const L = this.light, U = this.lightU, V = this.lightV;
+    const onPlane = (p: Vec): [number, number] => [dot(p, U), dot(p, V)];
+    list.forEach((it, i) => {
+      const row = i * SHADOW_ROW * 4;
+      const set = (texel: number, v: number[]) => d.set(v, row + texel * 4);
+      const [cu, cv] = onPlane(it.center);
+      if (it.kind === "ball") {
+        set(0, [...it.center, 1]);
+        set(1, [it.r, 0, 0, it.fade ?? 1]);
+        set(4, [cu, cv, it.r, it.r]);
+        bounds.push({ u: cu, v: cv, r: it.r, r3: it.r });
+        return;
+      }
+      const q = it.q ?? Q0, inv: Quat = [-q[0], -q[1], -q[2], q[3]];
+      const ld = qrot(inv, L).map((x) => 1 / (Math.abs(x) < 1e-6 ? 1e-6 : x));
+      set(0, [...it.center, 0]);
+      set(1, [it.half[0] + soft, it.half[1] + soft, it.half[2] + soft, it.fade ?? 1]);
+      set(2, inv);
+      set(3, [...ld, 0]);
+      const corners = [-1, 1].flatMap((x) =>
+        [-1, 1].flatMap((y) =>
+          [-1, 1].map((z) => {
+            const o = qrot(q, [x * it.half[0], y * it.half[1], z * it.half[2]]);
+            return onPlane([it.center[0] + o[0], it.center[1] + o[1], it.center[2] + o[2]]);
+          }),
+        ),
+      );
+      const h = hull(corners);
+      const r = Math.max(0, ...h.map(([u, v]) => Math.hypot(u - cu, v - cv))), r3 = Math.hypot(...it.half);
+      set(4, [cu, cv, r, r3]);
+      bounds.push({ u: cu, v: cv, r, r3 });
+      // Outward edge lines of the counter-clockwise outline; a degenerate one casts nothing.
+      const lines = h.flatMap((a, k) => {
+        const b = h[(k + 1) % h.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len < 1e-6) return [];
+        const nx = (b[1] - a[1]) / len, ny = -(b[0] - a[0]) / len;
+        return [[nx, ny, nx * a[0] + ny * a[1], 0]];
+      });
+      for (let k = 0; k < 8; k++) set(5 + k, lines.length >= 3 ? lines[Math.min(k, lines.length - 1)] : [0, 0, -1e9, 0]);
+    });
+    const gl = this.gl;
+    gl.bindTexture(gl.TEXTURE_2D, this.shadowTex);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, SHADOW_ROW, MAX_OCC, gl.RGBA, gl.FLOAT, d);
+    return bounds;
   }
 
   /** Sets the drawing buffer size in device pixels. */
@@ -359,15 +381,12 @@ export class Renderer {
     if (lightKey !== this.lightKey) {
       this.lightKey = lightKey;
       const az = deg(s.azimuth), el = deg(s.elevation);
-      this.light = [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)];
-      const target: Vec = [150, 150, 100];
-      const eye = target.map((x, i) => x + this.light[i] * 1000) as Vec;
-      this.lightVP = mul(
-        ortho(-LIGHT_EXTENT, LIGHT_EXTENT, -LIGHT_EXTENT, LIGHT_EXTENT, 400, 1600),
-        lookAt(eye, target, Math.abs(this.light[2]) > 0.99 ? [0, 1, 0] : [0, 0, 1]),
-      );
+      const L: Vec = [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)];
+      this.light = L;
+      this.lightU = norm(cross(L, Math.abs(L[2]) > 0.999 ? [1, 0, 0] : [0, 0, 1]));
+      this.lightV = cross(L, this.lightU);
     }
-    const { view, lightVP } = this;
+    const { view } = this;
 
     // Nearest first, so early depth testing skips shading hidden fragments.
     const depthOf = (it: Item) => view[2] * it.center[0] + view[6] * it.center[1] + view[10] * it.center[2];
@@ -379,53 +398,49 @@ export class Renderer {
     });
     const meshOf = (it: Item) =>
       it.kind === "ball" ? this.ball : Math.max(...it.half) * 2 > SMALL_BOX ? this.box : this.smallBox;
-    // One texel per step of the 6×6 PCF grid, so the grid spans the penumbra.
-    const size = Math.round(Math.min(2048, Math.max(128, (2 * LIGHT_EXTENT) / Math.max(s.shadowSoft / 3, 0.5))));
-    this.shadowMap(size);
-
-    // Shadow pass: back faces only, so lit faces never shadow themselves.
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowFbo);
-    gl.viewport(0, 0, size, size);
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
     gl.disable(gl.BLEND);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.FRONT);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
-    gl.useProgram(this.depth);
-    gl.uniformMatrix4fv(this.u(this.depth, "uLightVP"), false, lightVP);
-    list.forEach((it, i) => {
-      // Boxes standing on the floor reach a little below it here, so the floor at
-      // their foot is clearly behind their back faces and doesn't leak light.
-      let model = this.models[i];
-      const h = it.kind === "box" ? alignedHalf(model) : null;
-      if (h && Math.abs(it.center[2] - h[2] - floorZ) < 1) {
-        const top = it.center[2] + h[2], bottom = floorZ - SINK;
-        model = trs(this.scratch, [it.center[0], it.center[1], (top + bottom) / 2], Q0, h[0] * 2, h[1] * 2, top - bottom, [-0.5, -0.5, -0.5]);
-      }
-      gl.uniformMatrix4fv(this.u(this.depth, "uModel"), false, model);
-      gl.uniform1f(this.u(this.depth, "uFade"), it.fade ?? 1);
-      this.draw(meshOf(it));
-    });
-    gl.disable(gl.CULL_FACE);
-
-    // Main pass.
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     const p = this.lit;
     gl.useProgram(p);
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.shadowTex);
-    gl.uniform1i(this.u(p, "uShadowMap"), 0);
+    const bounds = this.shadowRows(list, s.shadowSoft);
+    gl.uniform1i(this.u(p, "uShadowData"), 0);
+    // Which rows can shade a draw, so each pixel only loops over those.
+    const shadowIdx = new Int32Array(MAX_OCC);
+    const setRows = (rows: number[]) => {
+      shadowIdx.set(rows);
+      gl.uniform1iv(this.u(p, "uShadowIdx"), shadowIdx);
+      gl.uniform1i(this.u(p, "uShadowN"), rows.length);
+    };
+    /** For an object: the others whose outlines come near its own and sit toward the light. */
+    const rowsForObject = (i: number) =>
+      list.flatMap((other, j) => {
+        const a = bounds[i], b = bounds[j];
+        const toward = dot(sub(other.center, list[i].center), this.light) > -(a.r3 + b.r3);
+        return j !== i && toward && Math.hypot(a.u - b.u, a.v - b.v) <= a.r + b.r + 2 * s.shadowSoft ? [j] : [];
+      });
+    // Where each object's shadow can land on the floor: its bounding sphere
+    // pushed down the light onto the floor, widened by the slant and penumbra.
+    const L = this.light;
+    const onFloor = list.map((it, j) => {
+      const k = (it.center[2] - floorZ) / L[2];
+      return { x: it.center[0] - L[0] * k, y: it.center[1] - L[1] * k, r: bounds[j].r3 / L[2] + s.shadowSoft };
+    });
+    /** For a patch of floor: the objects whose shadow can land on it. */
+    const rowsForRect = ([x0, y0, x1, y1]: Rect) =>
+      onFloor.flatMap((f, j) => (Math.hypot(Math.max(x0 - f.x, 0, f.x - x1), Math.max(y0 - f.y, 0, f.y - y1)) < f.r ? [j] : []));
+    gl.uniform1f(this.u(p, "uShadowSoft"), s.shadowSoft);
+    gl.uniform3fv(this.u(p, "uLightU"), this.lightU);
+    gl.uniform3fv(this.u(p, "uLightV"), this.lightV);
     gl.uniformMatrix4fv(this.u(p, "uViewProj"), false, view);
-    gl.uniformMatrix4fv(this.u(p, "uLightVP"), false, lightVP);
     gl.uniform3fv(this.u(p, "uLight"), this.light);
     gl.uniform3fv(this.u(p, "uBallLight"), LIGHT);
     gl.uniform3fv(this.u(p, "uPaper"), this.color(PAPER));
     gl.uniform3fv(this.u(p, "uTint"), this.color(TINT));
-    gl.uniform1f(this.u(p, "uTexel"), 1 / size);
     gl.uniform1f(this.u(p, "uShadowStr"), s.shadowStrength);
     gl.uniform1f(this.u(p, "uAoStr"), s.aoStrength);
     gl.uniform1f(this.u(p, "uAoRadius"), s.aoRadius);
@@ -453,6 +468,7 @@ export class Renderer {
       const it = list[i];
       gl.uniformMatrix4fv(this.u(p, "uModel"), false, this.models[i]);
       gl.uniform1i(this.u(p, "uSelf"), i);
+      setRows(rowsForObject(i));
       gl.uniform1f(this.u(p, "uFade"), it.fade ?? 1);
       if (it.kind === "box") {
         gl.uniform1i(this.u(p, "uKind"), 0);
@@ -474,8 +490,9 @@ export class Renderer {
     indices.filter(solid).forEach(drawItem);
 
     // Floor last: it only darkens what's already behind the canvas (the paper
-    // and GLIllustration's SVG grid). A mesh near the objects takes AO; plain
-    // strips cover the rest of the canvas.
+    // and GLIllustration's SVG grid). Near the objects it's drawn in TILE
+    // tiles, each with its own shadow rows and a mesh for per-vertex AO; plain
+    // strips cover the rest of the canvas. Integer bounds keep the seams exact.
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.depthMask(false);
@@ -483,26 +500,33 @@ export class Renderer {
     gl.uniform1i(this.u(p, "uSelf"), -1);
     gl.uniform1f(this.u(p, "uFade"), 1);
     gl.uniform1f(this.u(p, "uEdge"), 0);
-    const rect = scene.floor ?? DEFAULT_FLOOR;
     const m = this.scratch.fill(0);
     m[0] = m[5] = m[10] = m[15] = 1;
     m[14] = floorZ;
-    gl.uniformMatrix4fv(this.u(p, "uModel"), false, m);
-    this.draw(this.floor(rect));
+    const [x0, y0, x1, y1] = scene.floor ?? DEFAULT_FLOOR;
+    for (let x = x0; x < x1; x += TILE)
+      for (let y = y0; y < y1; y += TILE) {
+        m[12] = x;
+        m[13] = y;
+        gl.uniformMatrix4fv(this.u(p, "uModel"), false, m);
+        setRows(rowsForRect([x, y, x + TILE, y + TILE]));
+        this.draw(this.tile);
+      }
     gl.uniform1i(this.u(p, "uOccN"), 0);
-    const [x0, y0, x1, y1] = rect;
     const strips: Rect[] = [
       [FLOOR_MIN, FLOOR_MIN, x0, FLOOR_MAX],
       [x1, FLOOR_MIN, FLOOR_MAX, FLOOR_MAX],
       [x0, FLOOR_MIN, x1, y0],
       [x0, y1, x1, FLOOR_MAX],
     ];
-    for (const [a, b, c, d] of strips) {
+    for (const strip of strips) {
+      const [a, b, c, d] = strip;
       m[0] = c - a;
       m[5] = d - b;
       m[12] = a;
       m[13] = b;
       gl.uniformMatrix4fv(this.u(p, "uModel"), false, m);
+      setRows(rowsForRect(strip));
       this.draw(this.quad);
     }
 
@@ -522,10 +546,8 @@ export class Renderer {
   dispose() {
     const gl = this.gl;
     gl.deleteProgram(this.lit);
-    gl.deleteProgram(this.depth);
     gl.deleteTexture(this.shadowTex);
-    gl.deleteFramebuffer(this.shadowFbo);
-    for (const m of [this.box, this.smallBox, this.ball, this.quad, ...this.floors.values()]) {
+    for (const m of [this.box, this.smallBox, this.ball, this.quad, this.tile]) {
       gl.deleteVertexArray(m.vao);
       m.bufs.forEach((b) => gl.deleteBuffer(b));
     }
