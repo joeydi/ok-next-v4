@@ -64,6 +64,13 @@ canvas.ok-illo-gl {
   visibility: hidden;
 }
 
+/* A player's drag area, clipped to the scene's hitArea: live only once the
+   canvas is, and it keeps touches that start on it from scrolling the page. */
+.ok-illo[data-live] .ok-illo-hit {
+  pointer-events: auto;
+  touch-action: none;
+}
+
 .ok-illo-label {
   position: absolute;
   left: 500px;
