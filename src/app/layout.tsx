@@ -5,6 +5,7 @@ import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
+import { JsonLd, siteGraph } from "@/lib/jsonld";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Nav />
         {/* Each page renders its own <main id="main"> followed by its footer variant. */}
         <PageTransition>{children}</PageTransition>
+        <JsonLd data={siteGraph()} />
         <Analytics />
         <SpeedInsights />
       </body>

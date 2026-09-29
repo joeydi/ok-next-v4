@@ -6,6 +6,7 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { type NoteSummary, NotesIndex, NotesList } from "@/components/notes/NotesIndex";
 import { Placeholder } from "@/components/Placeholder";
+import { JsonLd, notesIndexGraph } from "@/lib/jsonld";
 import { formatDate, getAllNotes } from "@/lib/notes";
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default function NotesPage() {
 
   return (
     <>
+      <JsonLd data={notesIndexGraph(all)} />
       <main id="main">
         <Container as="header" className="pt-fl-56 pb-fl-72">
           <Eyebrow details={[`${all.length} posts`]}>Notes</Eyebrow>

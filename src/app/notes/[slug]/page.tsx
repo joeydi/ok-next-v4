@@ -8,6 +8,7 @@ import { Contact, SiteFooter } from "@/components/Footer";
 import { MediaImage } from "@/components/MediaImage";
 import { Placeholder } from "@/components/Placeholder";
 import { SITE } from "@/data/site";
+import { JsonLd, noteGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
 import { formatDate, getAllNotes, getNote } from "@/lib/notes";
 
@@ -55,6 +56,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
 
   return (
     <>
+      <JsonLd data={noteGraph(meta)} />
       <main id="main">
         <article>
           <Container as="header" className="pt-fl-56 pb-fl-64">

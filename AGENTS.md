@@ -23,6 +23,7 @@ The original design handoff lives in `design_handoff_okayplus_site/`. Treat it a
 - **Dev-only routes** — `*.dev.tsx` / `*.dev.ts` files exist only under `next dev` (`pageExtensions` in `next.config.ts`), so they never ship. Generated route types don't include them; type their props by hand.
 - **Notes / case studies** — `src/content/notes/*.mdx`; the filename is the slug. Frontmatter is parsed + validated in `src/lib/notes.ts` (bad tags or media keys throw at build). `draft: true` shows in dev only. MDX components (`Lead`, `Figure`, `PullQuote`, `TocAnchor`) are registered in `src/mdx-components.tsx` and defined in `src/components/mdx.tsx`; article grid layout lives in the `.note-body` rules in `globals.css`.
 - **Social cards** — every route has an `opengraph-image.tsx` built on `renderOg` in `src/lib/og.tsx` (Satori: Hanken Grotesk, not Gelica, and JPEG/PNG only).
+- **Structured data** — JSON-LD builders and the `<JsonLd>` component are in `src/lib/jsonld.tsx` (typed with `schema-dts`). The layout emits the site graph (Person, ProfessionalService, WebSite); service pages (via `ServicePage`), notes and `/notes` add their own nodes, which point back at those by `@id`. A new kind of route should add its own builder there.
 - **Page transitions** — `PageTransition` wraps pages in React's `<ViewTransition>`; the reveal animations are the `.page` rules in `globals.css`. Each page renders its own `<main id="main">` and footer.
 
 ## Checks

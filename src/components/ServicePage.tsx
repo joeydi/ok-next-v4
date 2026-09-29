@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/cn";
+import { JsonLd, serviceGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
 import { getNote } from "@/lib/notes";
 import { Accent } from "./Accent";
@@ -55,6 +56,7 @@ export function ServicePage({ service: s }: { service: Service }) {
 
   return (
     <>
+      <JsonLd data={serviceGraph(s)} />
       <main id="main">
         {/* Hero */}
         <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">

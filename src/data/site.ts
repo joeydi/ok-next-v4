@@ -7,6 +7,8 @@ export const SITE = {
   email: "joeydi@okaypl.us",
   description:
     "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams, agencies, and non-profits figure out what's worth building, then build it well.",
+  /** Joe's own profiles, listed on the Person in the JSON-LD. */
+  sameAs: ["https://www.linkedin.com/in/joeydi/", "https://x.com/joeydi"],
   bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
 } as const;
 
