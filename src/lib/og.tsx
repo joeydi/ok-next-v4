@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
-import { cubeMarkSvg } from "./cube-mark";
 import type { Media } from "./media";
 import { mediaImageUrl } from "./media-url";
 
@@ -19,7 +18,9 @@ const logo = readFile(path.join(process.cwd(), "public/assets/okayplus.svg"), "u
   (svg) => `data:image/svg+xml;base64,${Buffer.from(svg.replace(/#374151/g, "#1D1A17")).toString("base64")}`,
 );
 
-const cube = `data:image/svg+xml;base64,${Buffer.from(cubeMarkSvg({ background: null, size: 160 })).toString("base64")}`;
+const icon = readFile(path.join(process.cwd(), "src/app/icon.svg")).then(
+  (svg) => `data:image/svg+xml;base64,${svg.toString("base64")}`,
+);
 
 // The framed image beside the title, at 16:9.
 const FRAME = { width: 520, height: 293 };
@@ -28,12 +29,12 @@ const FRAME = { width: 520, height: 293 };
 async function imageData(media: Media) {
   const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
   if (!key) return undefined;
-  // A network hiccup at build time costs the image, not the deploy: the card falls back to the cube.
+  // A network hiccup at build time costs the image, not the deploy: the card falls back to the icon.
   const res = await fetch(mediaImageUrl(key, { width: FRAME.width * 2, quality: 85, format: "jpeg" })).catch(
     () => null,
   );
   if (!res?.ok) {
-    console.warn(`og: couldn't fetch ${key} (${res?.status ?? "network error"}); using the cube`);
+    console.warn(`og: couldn't fetch ${key} (${res?.status ?? "network error"}); using the icon`);
     return undefined;
   }
   return `data:image/jpeg;base64,${Buffer.from(await res.arrayBuffer()).toString("base64")}`;
@@ -41,10 +42,15 @@ async function imageData(media: Media) {
 
 /**
  * `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces.
- * An `image` (a video's poster) sits framed beside the title; without one, or for an SVG, the cube mark does.
+ * An `image` (a video's poster) sits framed beside the title; without one, or for an SVG, the site icon does.
  */
 export async function renderOg({ eyebrow, title, image }: { eyebrow: string; title: string; image?: Media }) {
-  const [[hanken, mono], logoSrc, imageSrc] = await Promise.all([fonts, logo, image && imageData(image)]);
+  const [[hanken, mono], logoSrc, iconSrc, imageSrc] = await Promise.all([
+    fonts,
+    logo,
+    icon,
+    image && imageData(image),
+  ]);
   const words = title.split(/(\*.+?\*)/).flatMap((chunk) => {
     const pink = chunk.startsWith("*");
     return chunk
@@ -137,7 +143,7 @@ export async function renderOg({ eyebrow, title, image }: { eyebrow: string; tit
             style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }}
           />
         ) : (
-          <img src={cube} width={160} height={160} alt="" />
+          <img src={iconSrc} width={160} height={160} alt="" />
         )}
       </div>
     </div>,
