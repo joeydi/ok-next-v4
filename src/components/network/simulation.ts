@@ -37,8 +37,11 @@ const PLACE_TRIES = 10;
 const PULL_RADIUS = 240;
 const RING_RADIUS = 64;
 /** The pull per px off the ring, per step, up to MAX_PULL (px per step). */
-const PULL_STIFFNESS = 0.12;
+const PULL_STIFFNESS = 0.06;
 const MAX_PULL = 6;
+/** How fast the pull takes hold while the pointer moves, and lets go once it stops (share per step). */
+const GRIP_IN = 0.2;
+const GRIP_OUT = 0.03;
 /** Pulled nodes also circle the pointer (px per step), so a moving pointer doesn't pile them up behind it. */
 const ORBIT = 1;
 /** Nodes the pointer pulls keep this far apart (px), spreading them around the ring. */
@@ -61,6 +64,10 @@ export type Network = {
   avoid: Rect[];
   /** Where the pointer is over the canvas, if it is. */
   pointer: [x: number, y: number] | null;
+  /** Whether the pointer is moving. */
+  moving: boolean;
+  /** The pull's strength, 0–1: it builds while the pointer moves and fades once it rests. */
+  grip: number;
   /** Live nodes: the first `count` slots of each array. */
   count: number;
   /** Whether new nodes arrive one by one, or all at once (for a still frame). */
@@ -87,6 +94,8 @@ export function createNetwork(width: number, height: number, avoid: Rect[], stag
     height,
     avoid,
     pointer: null,
+    moving: false,
+    grip: 0,
     count: 0,
     stagger,
     born: new Float32Array(MAX_NODES),
@@ -169,14 +178,14 @@ function avoidance(rects: Rect[], px: number, py: number): [number, number] {
  * its velocity, so the node keeps wandering and slides around the ring rather than
  * sticking in place.
  */
-function pull(pointer: Network["pointer"], px: number, py: number): [number, number] {
-  if (!pointer) return [0, 0];
+function pull(pointer: Network["pointer"], grip: number, px: number, py: number): [number, number] {
+  if (!pointer || grip === 0) return [0, 0];
   const dx = px - pointer[0];
   const dy = py - pointer[1];
   const d = Math.hypot(dx, dy);
   if (d >= PULL_RADIUS || d === 0) return [0, 0];
 
-  const weight = Math.min(1, (PULL_RADIUS - d) / (PULL_RADIUS - 2 * RING_RADIUS));
+  const weight = grip * Math.min(1, (PULL_RADIUS - d) / (PULL_RADIUS - 2 * RING_RADIUS));
   const toRing = Math.min(MAX_PULL, Math.max(-MAX_PULL, (RING_RADIUS - d) * PULL_STIFFNESS)) * weight;
   const around = ORBIT * weight;
   return [(dx * toRing - dy * around) / d, (dy * toRing + dx * around) / d];
@@ -210,6 +219,9 @@ function spread(n: Network, count: number) {
 /** Advances every node that has arrived by one STEP. */
 export function step(n: Network, clock: number) {
   const { born, x, y, vx, vy, theta, maxSpeed, width, height, pointer } = n;
+  const holding = pointer && n.moving;
+  n.grip += ((holding ? 1 : 0) - n.grip) * (holding ? GRIP_IN : GRIP_OUT);
+  if (n.grip < 0.001) n.grip = 0;
   let reached = 0;
 
   for (let i = 0; i < n.count; i += 1) {
@@ -241,7 +253,7 @@ export function step(n: Network, clock: number) {
       vy[i] *= maxSpeed[i] / v;
     }
 
-    const [px, py] = pull(pointer, x[i], y[i]);
+    const [px, py] = pull(pointer, n.grip, x[i], y[i]);
     if (px || py) pulled[reached++] = i;
 
     x[i] += vx[i] + px;

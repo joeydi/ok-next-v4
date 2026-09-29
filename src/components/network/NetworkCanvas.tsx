@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import { NetworkRenderer } from "./renderer";
 import { createNetwork, instances, type Network, type Rect, resize, STEP, step } from "./simulation";
 
+/** How long after its last move the pointer still counts as moving (ms). */
+const MOVING = 100;
+
 /** Any CSS colour as 0–1 sRGB, by painting a pixel with it. */
 function rgb(color: string): [number, number, number] {
   const ctx = document.createElement("canvas").getContext("2d")!;
@@ -35,6 +38,8 @@ export function NetworkCanvas({ className }: { className?: string }) {
     let raf = 0;
     /** The pointer in client px, while it's over the page (or a finger is down). */
     let client: [number, number] | null = null;
+    /** When it last moved (ms); it counts as moving for a beat after, to bridge gaps between events. */
+    let movedAt = Number.NEGATIVE_INFINITY;
 
     const draw = () => {
       if (network) renderer.draw(instances(network, clock, renderer.data));
@@ -51,6 +56,7 @@ export function NetworkCanvas({ className }: { className?: string }) {
         const over =
           client && client[0] >= r.left && client[0] <= r.right && client[1] >= r.top && client[1] <= r.bottom;
         network.pointer = client && over ? [client[0] - r.left, client[1] - r.top] : null;
+        network.moving = now - movedAt < MOVING;
       }
       for (; pending >= STEP; pending -= STEP) {
         clock += STEP;
@@ -96,6 +102,7 @@ export function NetworkCanvas({ className }: { className?: string }) {
     // The canvas lets pointer events through to the text, so watch the window.
     const track = (e: PointerEvent) => {
       client = [e.clientX, e.clientY];
+      movedAt = e.timeStamp;
     };
     const release = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") client = null;
