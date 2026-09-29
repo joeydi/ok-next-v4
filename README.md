@@ -47,6 +47,7 @@ src/
     */opengraph-image.tsx social cards, built on src/lib/og.tsx
   components/             shared UI; illustrations/ holds the WebGL renderer and scenes
   content/notes/          notes and case studies (MDX)
+  content/docs/           design docs (MDX), shown at /admin/docs/<slug> in dev
   data/                   site constants, page copy, media.json
   lib/                    notes loader, media lookups, OG card, helpers
   mdx-components.tsx      components available in every note
@@ -54,7 +55,6 @@ scripts/
   fluid.mjs               writes src/app/fluid.css
   media.mjs               R2 sync, video encoding, manifest
 public/illustrations/     illustration posters (saved from the lab)
-docs/                     standalone design reference pages, viewable at /admin/docs/<name> in dev
 design_handoff_okayplus_site/   the original design handoff and 1440px comps
 ```
 
@@ -175,13 +175,13 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 
 The original design handoff is in `design_handoff_okayplus_site/`, with 1440px comps in `screenshots/`. Two service pages have been renamed since the handoff: `creative-production` is now `digital-production`, and `tools-for-better-work` is now `business-tools`.
 
-Standalone pages in `docs/` explain parts of the design system. Open them in a browser; they don't need the dev server.
+Design docs explain parts of the design system. They're MDX files in `src/content/docs/`, shown in the dev-only admin at `/admin/docs/<slug>` and listed in its sidebar:
 
-- [Palette](docs/palette.html): every `--color-*` token with its HSL position and contrast against paper and ink.
-- [Easing curves](docs/easing-curves.html): the five easing tokens (`--ease-*`), with where each one is used.
-- [Page reveal](docs/page-reveal.html): how the page transition reveals the next page from the click point, with a playable preview and every animation's timing and easing on one timeline.
+- **Palette** (`palette`): every `--color-*` token with its HSL position and contrast against paper and ink.
+- **Easing curves** (`easing-curves`): the five easing tokens (`--ease-*`), with where each one is used.
+- **View transitions** (`view-transitions`): how the page transition reveals the next page from the click point, with a playable preview and every animation's timing and easing on one timeline.
 
-They copy their values from `src/app/globals.css` by hand, so update them when the tokens, curves or transition timings change.
+They read every value from `src/app/globals.css` (through `src/lib/tokens.ts`), so they follow the tokens as they change. Their visuals are the components in `src/components/docs/`. `npm run check` fails if a doc copies a colour or curve instead of reading it. To write a new one, see `.claude/skills/design-doc/SKILL.md`.
 
 ## Deployment
 

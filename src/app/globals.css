@@ -47,6 +47,22 @@
     @media (width >= 64rem) {
       --nav-h: 5.5rem;
     }
+
+    /* Page transition timings and amounts (see "Page transitions" below). The
+       View transitions doc in the admin reads them from here. */
+    --view-transition-reveal: 800ms;
+    --view-transition-out: 600ms;
+    --view-transition-in: 600ms;
+    --view-transition-in-delay: 200ms;
+    --view-transition-blur: 400ms;
+    --view-transition-blur-radius: 16px;
+    --view-transition-zoom-out: 1.125;
+    --view-transition-zoom-in: 0.75;
+    --view-transition-nav-out: 200ms;
+    --view-transition-filter-out: 300ms;
+    --view-transition-filter-in: 500ms;
+    --view-transition-filter-in-delay: 150ms;
+    --view-transition-filter-move: 500ms;
   }
 
   html {
@@ -150,7 +166,9 @@
    and blurs, wiped out just inside the circle's edge so it never shows through gaps
    in the new page. Both scale from the start point. PageTransition.tsx sets that point
    in each snapshot's own coordinates (the fallback assumes the snapshot's top left
-   is the screen's), and how far it is from the farthest corner of the screen. */
+   is the screen's), and how far it is from the farthest corner of the screen.
+   .reveal-old and .reveal-new run the same rules on plain elements, for the
+   preview in the View transitions doc. */
 @property --reveal {
   syntax: "<number>";
   inherits: false;
@@ -164,7 +182,9 @@
 }
 
 ::view-transition-old(.page),
-::view-transition-new(.page) {
+::view-transition-new(.page),
+.reveal-old,
+.reveal-new {
   --reveal-at: var(--reveal-x, 50vw) var(--reveal-y, 50vh);
   /* The edge fades over the outer 60% of the radius, so the solid centre only
      reaches the farthest corner once the radius is 2.5 times as far. Each mask
@@ -175,19 +195,22 @@
   scale: var(--zoom);
 }
 
-::view-transition-old(.page) {
+::view-transition-old(.page),
+.reveal-old {
   mask-image: radial-gradient(
     circle at var(--reveal-at),
     transparent calc(var(--reveal-r) * 0.4),
     #000 calc(var(--reveal-r) * 0.7)
   );
   animation:
-    800ms var(--ease-in-out-cubic) both page-reveal,
-    600ms var(--ease-in-out-cubic) both page-out,
-    400ms var(--ease-in) both page-blur-out;
+    var(--view-transition-reveal) var(--ease-in-out-cubic) both page-reveal,
+    var(--view-transition-out) var(--ease-in-out-cubic) both page-out,
+    var(--view-transition-blur) var(--ease-in) both page-blur-out;
 }
 
-::view-transition-new(.page) {
+/* The View transitions doc's mask diagram (MaskDiagram.tsx) plots these stops. */
+::view-transition-new(.page),
+.reveal-new {
   mask-image: radial-gradient(
     circle at var(--reveal-at),
     #000 calc(var(--reveal-r) * 0.4),
@@ -197,9 +220,9 @@
     transparent var(--reveal-r)
   );
   animation:
-    800ms var(--ease-in-out-cubic) both page-reveal,
-    600ms var(--ease-out-expo) 200ms both page-in,
-    400ms var(--ease-out) 200ms both page-blur-in;
+    var(--view-transition-reveal) var(--ease-in-out-cubic) both page-reveal,
+    var(--view-transition-in) var(--ease-out-expo) var(--view-transition-in-delay) both page-in,
+    var(--view-transition-blur) var(--ease-out) var(--view-transition-in-delay) both page-blur-in;
 }
 
 @keyframes page-reveal {
@@ -210,13 +233,13 @@
 
 @keyframes page-out {
   to {
-    --zoom: 1.125;
+    --zoom: var(--view-transition-zoom-out);
   }
 }
 
 @keyframes page-in {
   from {
-    --zoom: 0.75;
+    --zoom: var(--view-transition-zoom-in);
   }
 }
 
@@ -224,13 +247,13 @@
    coming into focus on the mirrored curve before that, as it starts to zoom. */
 @keyframes page-blur-out {
   to {
-    filter: blur(16px);
+    filter: blur(var(--view-transition-blur-radius));
   }
 }
 
 @keyframes page-blur-in {
   from {
-    filter: blur(16px);
+    filter: blur(var(--view-transition-blur-radius));
   }
 }
 
@@ -238,12 +261,12 @@
    and rise in like pages used to, fading instead of being masked. */
 ::view-transition-old(.filter) {
   transform-origin: bottom;
-  animation: 300ms var(--ease-in) both filter-out;
+  animation: var(--view-transition-filter-out) var(--ease-in) both filter-out;
 }
 
 ::view-transition-new(.filter) {
   transform-origin: top;
-  animation: 500ms var(--ease-out-expo) 150ms both filter-in;
+  animation: var(--view-transition-filter-in) var(--ease-out-expo) var(--view-transition-filter-in-delay) both filter-in;
 }
 
 @keyframes filter-out {
@@ -267,7 +290,7 @@
 /* Rows that stay slide to their new place. */
 ::view-transition-group(.filter-move),
 ::view-transition-group(notes-footer) {
-  animation-duration: 500ms;
+  animation-duration: var(--view-transition-filter-move);
   animation-timing-function: var(--ease-in-out-quart);
 }
 
@@ -304,7 +327,7 @@
 ::view-transition-old(admin-sidebar) {
   border-radius: var(--radius-lg);
   background: var(--color-paper);
-  animation: 200ms ease 600ms both nav-out;
+  animation: var(--view-transition-nav-out) ease var(--view-transition-out) both nav-out;
 }
 
 @keyframes nav-out {
@@ -625,6 +648,8 @@
 
   .note-body > pre {
     overflow-x: auto;
+    /* The text-wrap above turns wrapping back on; code keeps its lines. */
+    text-wrap: nowrap;
     padding: var(--spacing-fl-24);
     background: var(--color-ink);
     color: var(--color-paper);
@@ -725,9 +750,27 @@
     margin-bottom: 0;
   }
 
+  /* Design docs in the admin (src/content/docs): the article grid without the
+     sidebar, prose from the left edge and the doc components full width. */
+  .doc-body > .doc-wide {
+    margin-block: var(--spacing-fl-40) var(--spacing-fl-48);
+  }
+  .doc-body > .doc-wide + :not(h2, h3) {
+    margin-top: 0;
+  }
+  .doc-body > h2 + .doc-wide {
+    margin-top: var(--spacing-fl-24);
+  }
+
   @media (width >= 64rem) {
     .note-body > * {
       grid-column: 4 / span 7;
+    }
+    .doc-body > * {
+      grid-column: 1 / span 8;
+    }
+    .doc-body > .doc-wide {
+      grid-column: 1 / -1;
     }
     /* Spans more rows than any intro has, so prose flows beside it and the
        first figure or quote (which needs columns 2+) is placed below it. A

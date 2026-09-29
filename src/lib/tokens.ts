@@ -1,0 +1,123 @@
+import fs from "node:fs";
+import path from "node:path";
+import { type Bezier, CSS_EASE } from "./bezier";
+
+// The design tokens as src/app/globals.css defines them, for the design docs in the
+// admin (src/content/docs). Read on every call, so a doc follows an edit to the CSS
+// without a restart. Server-only: it reads the file.
+
+const CSS = path.join(process.cwd(), "src/app/globals.css");
+
+/** Every `--<prefix>-<name>: <value>;` declaration, first definition wins. */
+function declarations(prefix: string): Map<string, string> {
+  const css = fs.readFileSync(CSS, "utf8");
+  const found = new Map<string, string>();
+  for (const [, name, value] of css.matchAll(new RegExp(`--${prefix}-([a-z0-9-]+):\\s*([^;]+);`, "g"))) {
+    if (!found.has(name)) found.set(name, value.trim());
+  }
+  if (!found.size) throw new Error(`tokens: no --${prefix}-* in globals.css`);
+  return found;
+}
+
+// ---------- Colours ----------
+
+export type ColorToken = {
+  name: string;
+  hex: string;
+  /** HSL: hue in degrees, saturation and lightness in percent. */
+  h: number;
+  s: number;
+  l: number;
+  /** WCAG contrast ratio against --color-paper and --color-ink. */
+  onPaper: number;
+  onInk: number;
+};
+
+const rgbOf = (hex: string) => [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255);
+
+function hslOf(hex: string) {
+  const [r, g, b] = rgbOf(hex);
+  const mx = Math.max(r, g, b);
+  const mn = Math.min(r, g, b);
+  const d = mx - mn;
+  const l = (mx + mn) / 2;
+  const s = d ? d / (1 - Math.abs(2 * l - 1)) : 0;
+  let h = 0;
+  if (d) {
+    h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h, s: s * 100, l: l * 100 };
+}
+
+const luminance = (hex: string) => {
+  const [r, g, b] = rgbOf(hex).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+/** WCAG contrast ratio between two hex colours. */
+export function contrast(a: string, b: string) {
+  const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+  return (x + 0.05) / (y + 0.05);
+}
+
+/** Every --color-* token, in the order globals.css lists them. */
+export function colors(): ColorToken[] {
+  const all = declarations("color");
+  const hex = (name: string) => {
+    const v = all.get(name);
+    if (!v || !/^#[0-9a-f]{6}$/i.test(v)) throw new Error(`tokens: --color-${name} isn't a 6-digit hex (${v})`);
+    return v.toLowerCase();
+  };
+  const paper = hex("paper");
+  const ink = hex("ink");
+  return [...all.keys()].map((name) => {
+    const h = hex(name);
+    return { name, hex: h, ...hslOf(h), onPaper: contrast(h, paper), onInk: contrast(h, ink) };
+  });
+}
+
+// ---------- Easing ----------
+
+export type EaseToken = { name: string; points: Bezier };
+
+/** Every --ease-* token, in the order globals.css lists them. */
+export function eases(): EaseToken[] {
+  return [...declarations("ease")].map(([name, value]) => {
+    const m = value.match(/^cubic-bezier\(([^)]+)\)$/);
+    const points = m?.[1].split(",").map(Number);
+    if (points?.length !== 4 || points.some(Number.isNaN))
+      throw new Error(`tokens: --ease-${name} isn't a cubic-bezier`);
+    return { name, points: points as unknown as Bezier };
+  });
+}
+
+/** One --ease-* token's curve, or CSS's own `ease` for "ease". */
+export function ease(name: string): Bezier {
+  if (name === "ease") return CSS_EASE;
+  const found = eases().find((e) => e.name === name);
+  if (!found) throw new Error(`tokens: no --ease-${name} in globals.css`);
+  return found.points;
+}
+
+// ---------- View transitions ----------
+
+/** The --view-transition-* timings and amounts, as numbers: ms, px or plain. */
+export function viewTransitions(): Record<string, number> {
+  return Object.fromEntries(
+    [...declarations("view-transition")].map(([name, value]) => {
+      const n = Number.parseFloat(value);
+      if (Number.isNaN(n)) throw new Error(`tokens: --view-transition-${name} isn't a number (${value})`);
+      return [name, n];
+    }),
+  );
+}
+
+/** One --view-transition-* value. A number passes through, for a browser default like its 250ms fade. */
+export function viewTransition(name: string | number): number {
+  if (typeof name === "number") return name;
+  const value = viewTransitions()[name];
+  if (value === undefined) throw new Error(`tokens: no --view-transition-${name} in globals.css`);
+  return value;
+}

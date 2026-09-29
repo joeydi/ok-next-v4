@@ -1,0 +1,195 @@
+---
+title: View transitions
+description: Every navigation reveals the next page through a soft-edged circle that grows from where you clicked. The old page zooms past and blurs as it's wiped away, while the new page zooms up into focus.
+order: 3
+---
+
+export const PAGE = [
+  { group: "Old page", pseudo: "::view-transition-old(.page)", tone: "muted" },
+  {
+    name: "page-reveal",
+    note: "Mask hides it from the centre out",
+    duration: "reveal",
+    ease: "in-out-cubic",
+    value: { label: "--reveal", from: 0, to: 1 },
+    change: "hidden from the centre out",
+  },
+  {
+    name: "page-out",
+    note: "Zooms past from the start point",
+    duration: "out",
+    ease: "in-out-cubic",
+    value: { label: "--zoom", from: 1, to: "zoom-out", digits: 3 },
+    change: "scale, and divides the mask radius",
+  },
+  {
+    name: "page-blur-out",
+    note: "Blurs, fastest just before halfway",
+    duration: "blur",
+    ease: "in",
+    value: { label: "blur", from: 0, to: "blur-radius", unit: "px", digits: 1 },
+  },
+  { group: "New page", pseudo: "::view-transition-new(.page)", tone: "pink" },
+  {
+    name: "page-reveal",
+    note: "Mask shows it from the centre out",
+    duration: "reveal",
+    ease: "in-out-cubic",
+    value: { label: "--reveal", from: 0, to: 1 },
+    change: "shown from the centre out",
+  },
+  {
+    name: "page-in",
+    note: "Zooms up, landing with the reveal",
+    duration: "in",
+    delay: "in-delay",
+    ease: "out-expo",
+    value: { label: "--zoom", from: "zoom-in", to: 1, digits: 3 },
+    change: "scale, and divides the mask radius",
+  },
+  {
+    name: "page-blur-in",
+    note: "Comes into focus as the zoom starts",
+    duration: "blur",
+    delay: "in-delay",
+    ease: "out",
+    value: { label: "blur", from: "blur-radius", to: 0, unit: "px", digits: 1 },
+  },
+  { group: "Nav", pseudo: "::view-transition-old(site-nav)", tone: "ink" },
+  {
+    name: "nav-out",
+    note: "Paper-backed old bar fades once the page is covered",
+    duration: "nav-out",
+    delay: "out",
+    ease: "ease",
+    value: { label: "opacity", from: 1, to: 0 },
+    change: "paper-backed bar",
+  },
+  { group: "Root", pseudo: "::view-transition-old/new(root) · browser default", tone: "guide" },
+  {
+    name: "fade-out / fade-in",
+    note: "Cross-fades the paper behind everything",
+    duration: 250,
+    ease: "ease",
+    value: { label: "opacity", from: 1, to: 0 },
+    change: "cross-fade of the page background",
+  },
+];
+
+export const FILTER = [
+  { group: "Leaving rows", pseudo: "::view-transition-old(.filter)", tone: "muted" },
+  { name: "filter-out", note: "Fades, lifts 16px and blurs from the bottom", duration: "filter-out", ease: "in" },
+  { group: "Arriving rows", pseudo: "::view-transition-new(.filter)", tone: "pink" },
+  {
+    name: "filter-in",
+    note: "Fades in, rising 24px into focus from the top",
+    duration: "filter-in",
+    delay: "filter-in-delay",
+    ease: "out-expo",
+  },
+  {
+    group: "Staying rows and footer",
+    pseudo: "::view-transition-group(.filter-move), group(notes-footer)",
+    tone: "ink",
+  },
+  { name: "group move", note: "Slides to its new position and size", duration: "filter-move", ease: "in-out-quart" },
+];
+
+`PageTransition.tsx` starts the transition and sets where the circle opens; the `.page` rules in `src/app/globals.css` animate it. Every timing and amount on this page is a `--view-transition-*` variable there, and every curve an `--ease-*` token, read from the CSS.
+
+<RevealPreview />
+
+## Every animation, to scale
+
+Times count from when the browser starts the view transition, once the new page has rendered. Each bar draws its easing curve: height is how far the animation has progressed.
+
+<Timeline rows={PAGE} step={100} live />
+
+Held still, with no animation: the nav's group and its new snapshot, and the services caret, which is named so the live, still-turning caret shows instead of the frozen one.
+
+## Five curves
+
+Each dot sits where the playhead puts the animation it names. See [Easing curves](/admin/docs/easing-curves) for every token.
+
+<DocGrid>
+  <TransitionCurve curves={[{ ease: "in-out-cubic", duration: "reveal" }]} used="page-reveal (both pages), page-out · dot: page-reveal">
+    A slow start keeps the circle tight around the click, the middle does the travelling, and the landing is gentle.
+  </TransitionCurve>
+  <TransitionCurve curves={[{ ease: "out-expo", duration: "in", delay: "in-delay" }]} used="page-in, filter-in · dot: page-in">
+    Starts late so it lands with the reveal, and does most of its zoom right away.
+  </TransitionCurve>
+  <TransitionCurve
+    title="Blur pair"
+    curves={[
+      { ease: "in", tone: "muted", label: "Old", duration: "blur" },
+      { ease: "out", label: "New", duration: "blur", delay: "in-delay" },
+    ]}
+    used="page-blur-out (grey), page-blur-in (pink) · dots: both"
+  >
+    Mirror images that overlap: the old page is still blurring while the new one is already coming into focus.
+  </TransitionCurve>
+  <TransitionCurve curves={[{ ease: "ease", tone: "ink", duration: "nav-out", delay: "out" }]} used="nav-out, the root cross-fade (browser default) · dot: nav-out">
+    The CSS default. Short enough here that its shape barely matters.
+  </TransitionCurve>
+</DocGrid>
+
+## Two gradients from one radius
+
+<DocFigure>
+  <MaskDiagram />
+</DocFigure>
+
+The radius is `r = --reveal × 2.5 × reach ÷ --zoom`, where **reach** is the distance from the start point to the farthest corner of the screen. `--reveal` is a registered `<number>`, so it can animate from 0 to 1 and the gradient follows it.
+
+**New page:** solid inside 0.4r, then an S-shaped fade to nothing at r. At `--reveal: 1` the solid centre is exactly reach across, so the page covers the screen as the animation ends.
+
+**Old page:** hidden inside 0.4r, fully visible from 0.7r. It's gone wherever the new page is solid, so it never shows through gaps in the new page. In the shaded band, both pages are partly visible.
+
+**The zoom is cancelled out.** Each mask is drawn in its own snapshot's coordinates, so it zooms with its page. The zoom runs through a registered `--zoom` that sets `scale`, and the radius is divided by it, so both circles always measure the same on screen.
+
+## Where the circle opens
+
+<DocCards>
+  <DocCard label="Click" title="Pointer position">
+    A capturing `click` listener records `clientX` and `clientY` when the target is inside a link.
+  </DocCard>
+  <DocCard label="Keyboard" title="Centre of the link">
+    Enter on a link fires a click with `detail === 0` and no coordinates, so the centre of the link's box is used.
+  </DocCard>
+  <DocCard label="Back / forward" title="Centre of the screen">
+    There's no click. `popstate` clears any stored point, so the reveal starts from the middle.
+  </DocCard>
+</DocCards>
+
+Each snapshot is as large as its element (often far taller than the screen) and placed by its group's transform. Once the transition is ready, `onExit` and `onEnter` subtract each group's offset and write the point into that snapshot's own coordinates. Both pages render `main` and a footer, so there are four rules. These came from a click on the Digital production card:
+
+```css
+/* injected into <head>, removed when the transition ends */
+::view-transition-old(_t_0_) { --reveal-x: 84px; --reveal-y: 1753px; --reveal-reach: 1481.6px; }
+::view-transition-old(_t_0__1) { --reveal-x: 84px; --reveal-y: -499px; --reveal-reach: 1481.6px; }
+::view-transition-new(_t_1_) { --reveal-x: 84px; --reveal-y: 215px; --reveal-reach: 1481.6px; }
+::view-transition-new(_t_1__1) { --reveal-x: 84px; --reveal-y: -3642px; --reveal-reach: 1481.6px; }
+```
+
+The same point is the `transform-origin` for both pages, so the zoom also starts from it.
+
+## Keyframes
+
+<KeyframeTable rows={PAGE} />
+
+Under `prefers-reduced-motion: reduce` every view transition animation is removed and both masks are turned off, so pages swap instantly.
+
+## Rows keep the old fade
+
+Filtering the notes list animates rows, not pages. Rows that leave or arrive use their own `.filter` class with the fade the pages used before, and rows that stay slide to their new place. The footer is lifted out as `notes-footer` so it slides with them.
+
+<Timeline rows={FILTER} step={50} />
+
+<DocGrid>
+  <TransitionCurve curves={[{ ease: "in", tone: "muted" }]} used="filter-out">
+    Accelerates away, so leaving rows get out of the way quickly.
+  </TransitionCurve>
+  <TransitionCurve curves={[{ ease: "in-out-quart", tone: "ink" }]} used="filter-move, notes-footer">
+    The site's shared in-out, also used for nav and menu transitions.
+  </TransitionCurve>
+</DocGrid>

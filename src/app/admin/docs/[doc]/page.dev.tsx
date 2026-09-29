@@ -1,32 +1,46 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ADMIN_DOCS } from "@/data/site";
+import { docComponents } from "@/components/docs";
+import { cn } from "@/lib/cn";
+import { getDoc } from "@/lib/docs";
 import { AdminShell } from "../../AdminShell";
 
-// Dev-only (see pageExtensions in next.config.ts): a design doc from docs/ beside the
-// admin sidebar, in a frame since each doc is a standalone page with its own styles.
+// Dev-only (see pageExtensions in next.config.ts): a design doc from src/content/docs,
+// beside the admin sidebar. Every doc shares this header and the article grid
+// (.note-body with .doc-body in globals.css); its visuals come from src/components/docs.
 
 type Props = { params: Promise<{ doc: string }> };
 
-const find = (doc: string) => ADMIN_DOCS.find((d) => d.href === `/admin/docs/${doc}`);
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  return { title: find((await params).doc)?.label ?? "Docs", robots: { index: false, follow: false } };
+  return { title: getDoc((await params).doc)?.title ?? "Docs", robots: { index: false, follow: false } };
 }
 
 export default async function DocPage({ params }: Props) {
   const { doc } = await params;
-  const entry = find(doc);
-  if (!entry) notFound();
+  const meta = getDoc(doc);
+  if (!meta) notFound();
+  const { default: Body } = await import(`@/content/docs/${doc}.mdx`);
+
   return (
     <AdminShell>
-      <div className="pt-fl-56 pb-fl-24">
-        <iframe
-          src={`/admin/docs/raw/${doc}.html`}
-          title={entry.label}
-          className="h-[calc(100svh-var(--nav-h)-var(--spacing-fl-56)-var(--spacing-fl-24))] w-full rounded-lg border border-rule"
-        />
-      </div>
+      <article className="pt-fl-56 pb-fl-96">
+        <header className="flex flex-col gap-fl-8 border-b border-rule pb-fl-40">
+          <span className="mono-label text-muted">/ Docs · dev only</span>
+          <h1
+            className={cn(
+              "display leading-none tracking-heading",
+              meta.size === "large" ? "text-fl-96 tracking-display" : "text-fl-60",
+            )}
+          >
+            {meta.title}
+            <span className="text-pink">.</span>
+          </h1>
+          {meta.description && <p className="note-lead mt-fl-16 max-w-[48rem] text-pretty">{meta.description}</p>}
+        </header>
+        <div className="note-body doc-body pt-fl-48">
+          <Body components={docComponents} />
+        </div>
+      </article>
     </AdminShell>
   );
 }

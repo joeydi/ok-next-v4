@@ -1,0 +1,56 @@
+---
+title: Easing curves
+description: The five easing tokens, what each one feels like, and where the site uses it.
+order: 2
+---
+
+The curves are the `--ease-*` variables in the `@theme` block of `src/app/globals.css`, and every value on this page is read from there. Use them as `var(--ease-…)` in CSS or as Tailwind `ease-…` classes rather than writing a `cubic-bezier()` inline. [View transitions](/admin/docs/view-transitions) shows how the page transition combines them.
+
+Each plot shows progress against time, with linear dashed behind it. On each track the pink dot moves with the curve and the grey dot at a constant speed, so you can compare them. Click a track to play it.
+
+## The curves
+
+<PlayAll />
+
+<DocGrid cols={3}>
+  <Curve
+    ease="in-out-quart"
+    title="In-out quart"
+    duration="filter-move"
+    used="Nav colours and background over dark sections, the nav menus and services caret (350ms), card title underlines, and notes rows sliding into place after a filter"
+  >
+    Holds back at both ends and does almost all of its movement in the middle. It is much steeper than the browser's own ease-in-out.
+  </Curve>
+  <Curve
+    ease="in-out-cubic"
+    title="In-out cubic"
+    duration="reveal"
+    used="The page transition's circular reveal on both pages, and the old page's zoom out"
+  >
+    A softer in-out than quart. It still starts and lands gently, but spreads more of the movement away from the middle.
+  </Curve>
+  <Curve
+    ease="out-expo"
+    title="Expo out"
+    duration={500}
+    used="Card lift and shadow on hover, notes rows arriving after a filter, and the new page's zoom"
+  >
+    A strong ease-out. Covers most of the distance right away, then spends the rest of its time settling.
+  </Curve>
+  <Curve
+    ease="out"
+    title="Ease out"
+    duration="blur"
+    used="The new page coming into focus, the booking dialog (300ms), and the media admin's drawer and confirm dialog"
+  >
+    The mirror image of ease in. Starts at full speed and slows evenly to a stop, without expo out's long tail. It replaces Tailwind's default ease-out.
+  </Curve>
+  <Curve
+    ease="in"
+    title="Ease in"
+    duration="filter-out"
+    used="Notes rows leaving after a filter, and the old page's blur"
+  >
+    Starts slowly and is at full speed when it ends, so whatever uses it accelerates away and never settles.
+  </Curve>
+</DocGrid>

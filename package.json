@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
-    "check": "biome check",
+    "check": "biome check && node scripts/check-docs.mjs",
     "media": "node --env-file-if-exists=.env.local scripts/media.mjs"
   },
   "dependencies": {

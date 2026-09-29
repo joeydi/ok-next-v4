@@ -1,0 +1,46 @@
+---
+title: Palette
+description: Every colour token in the theme, with its place in HSL. The neutrals share one warm hue and take their saturation from their lightness, so they get more saturated as they get lighter.
+order: 1
+size: large
+---
+
+The tokens are the `--color-*` variables in the `@theme` block of `src/app/globals.css`, and every value on this page is read from there. Use them as Tailwind classes (`bg-paper`, `text-muted`) or as `var(--color-…)`, never as a hex.
+
+## Swatches
+
+Each swatch shows its best contrast, against paper or ink, and copies its hex when clicked.
+
+<Swatches
+  groups={{
+    Paper: ["paper-light", "paper-raised", "paper", "sand"],
+    Rules: ["rule", "guide"],
+    "Ink & text": ["ink", "ink-2", "body", "muted", "muted-light"],
+    Accent: ["pink", "pink-ink"],
+  }}
+/>
+
+## HSL
+
+The neutrals are set from one rule rather than picked by eye, so a new one can be placed by its lightness alone. Hover a dot for its token and value.
+
+<DocGrid>
+  <DocFigure
+    title="Saturation × lightness"
+    caption="The dashed line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)). It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. Lightness sits on 2.5% steps, except paper-light at 97% to stay clear of white, and hex rounding leaves each dot within about a point of both."
+  >
+    <SaturationPlot />
+  </DocFigure>
+  <DocFigure
+    title="Hue wheel"
+    caption="Angle is hue and distance from the centre is saturation. The shaded wedge holds all 11 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away."
+  >
+    <HueWheel />
+  </DocFigure>
+</DocGrid>
+
+## Values
+
+Sorted by lightness. Contrast below 4.5:1, the WCAG minimum for body text, is marked in pink.
+
+<PaletteTable />

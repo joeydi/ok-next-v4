@@ -39,10 +39,3 @@ export const ADMIN_NAV: readonly NavLink[] = [
   { label: "Open Graph", href: "/admin/og" },
   { label: "Illustrations", href: "/admin/illustrations" },
 ];
-
-/** The design docs in docs/, shown in the admin sidebar. `href` ends in the file's name. */
-export const ADMIN_DOCS: readonly NavLink[] = [
-  { label: "Palette", href: "/admin/docs/palette" },
-  { label: "Easing", href: "/admin/docs/easing-curves" },
-  { label: "Page transitions", href: "/admin/docs/page-reveal" },
-];
