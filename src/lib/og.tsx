@@ -52,32 +52,47 @@ async function posterData(scene: SceneName) {
   };
 }
 
+/** An SVG drawing as a PNG data URI at the card's size, since satori can't read SVG. */
+async function backdropData(svg: string) {
+  const data = await sharp(Buffer.from(svg)).resize(OG_SIZE.width, OG_SIZE.height).png().toBuffer();
+  return `data:image/png;base64,${data.toString("base64")}`;
+}
+
 /**
  * `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces.
  * An `image` (a video's poster) sits framed beside the title; SVGs are skipped. Without one, an
- * `illustration` scene's poster sits in the bottom-right corner.
+ * `illustration` scene's poster sits in the bottom-right corner. A `backdrop` (an SVG
+ * document at OG_SIZE) fills the card behind everything.
  */
 export async function renderOg({
   eyebrow,
   title,
   image,
   illustration,
+  backdrop,
 }: {
   eyebrow: string;
   title: string;
   image?: Media;
   illustration?: SceneName;
+  backdrop?: string;
 }) {
-  const [[hanken, mono], imageSrc] = await Promise.all([fonts, image && imageData(image)]);
+  const [[hanken, mono], imageSrc, backdropSrc] = await Promise.all([
+    fonts,
+    image && imageData(image),
+    backdrop && backdropData(backdrop),
+  ]);
   const poster = !imageSrc && illustration ? await posterData(illustration) : undefined;
-  const words = title.split(/(\*.+?\*)/).flatMap((chunk) => {
+  // Words break only at spaces, so a star mid-word ("Notes*.*") colours part of it
+  // without adding word spacing.
+  const words: { text: string; pink: boolean }[][] = [[]];
+  for (const chunk of title.split(/(\*.+?\*)/)) {
     const pink = chunk.startsWith("*");
-    return chunk
-      .replace(/\*/g, "")
-      .split(/\s+/)
-      .filter(Boolean)
-      .map((w) => ({ w, pink }));
-  });
+    for (const part of chunk.replace(/\*/g, "").split(/(\s+)/)) {
+      if (/^\s+$/.test(part)) words.push([]);
+      else if (part) words[words.length - 1].push({ text: part, pink });
+    }
+  }
   // Beside an image the title gets a narrower column, so it steps down sooner.
   const size = imageSrc
     ? title.length > 48
@@ -106,6 +121,7 @@ export async function renderOg({
         fontFamily: "Hanken",
       }}
     >
+      {backdropSrc && <img src={backdropSrc} {...OG_SIZE} alt="" style={{ position: "absolute", left: 0, top: 0 }} />}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Logo width={150} height={35} style={{ color: "#FF4D6A" }} />
         <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
@@ -148,11 +164,17 @@ export async function renderOg({
               letterSpacing: "-0.035em",
             }}
           >
-            {words.map(({ w, pink }, i) => (
-              <span key={i} style={{ color: pink ? "#FF4D6A" : "#1D1A17", marginRight: size * 0.24 }}>
-                {w}
-              </span>
-            ))}
+            {words
+              .filter((pieces) => pieces.length)
+              .map((pieces, i) => (
+                <div key={i} style={{ display: "flex", marginRight: size * 0.24 }}>
+                  {pieces.map(({ text, pink }, j) => (
+                    <span key={j} style={{ color: pink ? "#FF4D6A" : "#1D1A17" }}>
+                      {text}
+                    </span>
+                  ))}
+                </div>
+              ))}
           </div>
         </div>
         {imageSrc && (

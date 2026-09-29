@@ -72,6 +72,8 @@ export type Network = {
   count: number;
   /** Whether new nodes arrive one by one, or all at once (for a still frame). */
   stagger: boolean;
+  /** 0–1, like Math.random; seeded for a frame that comes out the same every time. */
+  random: () => number;
   /** When each node arrives (s, on the simulation clock). */
   born: Float32Array;
   x: Float32Array;
@@ -83,16 +85,23 @@ export type Network = {
   radius: Float32Array;
 };
 
-const between = (min: number, max: number) => Math.random() * (max - min) + min;
+const between = (random: () => number, min: number, max: number) => random() * (max - min) + min;
 
 const inside = (rects: Rect[], px: number, py: number) =>
   rects.some(([x0, y0, x1, y1]) => px >= x0 && px <= x1 && py >= y0 && py <= y1);
 
-export function createNetwork(width: number, height: number, avoid: Rect[], stagger: boolean): Network {
+export function createNetwork(
+  width: number,
+  height: number,
+  avoid: Rect[],
+  stagger: boolean,
+  random: () => number = Math.random,
+): Network {
   const n: Network = {
     width,
     height,
     avoid,
+    random,
     pointer: null,
     moving: false,
     grip: 0,
@@ -131,17 +140,17 @@ export function resize(n: Network, width: number, height: number, avoid: Rect[],
 
 /** Starts node `i` somewhere outside the avoid rects, heading anywhere. */
 function place(n: Network, i: number, born: number) {
-  const heading = between(0, Math.PI * 2);
+  const heading = between(n.random, 0, Math.PI * 2);
   n.born[i] = born;
-  n.maxSpeed[i] = between(SPEED, SPEED * 2);
+  n.maxSpeed[i] = between(n.random, SPEED, SPEED * 2);
   for (let t = 0; t < PLACE_TRIES && (t === 0 || inside(n.avoid, n.x[i], n.y[i])); t += 1) {
-    n.x[i] = between(-OFFSET, n.width + OFFSET);
-    n.y[i] = between(-OFFSET, n.height + OFFSET);
+    n.x[i] = between(n.random, -OFFSET, n.width + OFFSET);
+    n.y[i] = between(n.random, -OFFSET, n.height + OFFSET);
   }
   n.vx[i] = Math.cos(heading) * n.maxSpeed[i];
   n.vy[i] = Math.sin(heading) * n.maxSpeed[i];
   n.theta[i] = 0;
-  n.radius[i] = Math.floor(between(MIN_RADIUS, MAX_RADIUS + 1));
+  n.radius[i] = Math.floor(between(n.random, MIN_RADIUS, MAX_RADIUS + 1));
 }
 
 /**
@@ -226,7 +235,7 @@ export function step(n: Network, clock: number) {
 
   for (let i = 0; i < n.count; i += 1) {
     if (born[i] > clock) continue;
-    theta[i] += between(-WANDER_CHANGE, WANDER_CHANGE);
+    theta[i] += between(n.random, -WANDER_CHANGE, WANDER_CHANGE);
 
     // The wander target, relative to the node: straight ahead, nudged around a small circle.
     const speed = Math.hypot(vx[i], vy[i]) || 1;
