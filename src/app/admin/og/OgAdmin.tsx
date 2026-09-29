@@ -188,7 +188,7 @@ export function OgAdmin({
           aria-label="Search routes by title or path"
           autoComplete="off"
           spellCheck={false}
-          className="w-72 max-w-full border border-rule bg-paper-light px-3 py-2 font-mono text-fl-14 focus:border-ink focus:outline-none"
+          className={cn(input, "w-72 max-w-full")}
         />
       </header>
 
@@ -266,7 +266,7 @@ function Card({
   const issues = problems(meta.value, img.value);
 
   return (
-    <article className="grid w-fit max-w-full gap-4">
+    <article className="grid gap-fl-24">
       <header className="flex flex-col gap-1">
         <a href={page.path} className="w-fit text-[20px] underline-offset-2 hover:underline">
           {page.label}
@@ -301,8 +301,8 @@ function Card({
         </div>
       </header>
 
-      <div className="flex flex-wrap items-start gap-8">
-        <div className="grid w-[520px] max-w-full content-start gap-3">
+      <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
+        <div className="grid min-w-0 content-start gap-3">
           {(meta.error || img.error) && <p className="whitespace-pre-wrap text-pink-ink">{meta.error ?? img.error}</p>}
           {issues.length > 0 && (
             <ul className="text-pink-ink">
@@ -312,18 +312,20 @@ function Card({
             </ul>
           )}
           {meta.value && (
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-              {Object.entries(meta.value).map(([k, v]) => (
-                <div key={k} className="contents">
-                  <dt className="text-muted">{k}</dt>
-                  <dd className="break-all">{v}</dd>
-                </div>
-              ))}
-            </dl>
+            <>
+              {/* Below lg the columns stack, so the tags fold away to keep the card near. */}
+              <details className="lg:hidden">
+                <summary className="cursor-pointer text-muted hover:text-ink">
+                  Tags · {Object.keys(meta.value).length}
+                </summary>
+                <Tags meta={meta.value} className="mt-2" />
+              </details>
+              <Tags meta={meta.value} className="hidden lg:grid" />
+            </>
           )}
         </div>
 
-        <div style={{ width }} className="flex max-w-full flex-col gap-2">
+        <div style={{ maxWidth: width }} className="flex w-full flex-col gap-2">
           <Frame
             img={img.value}
             alt={meta.value?.["og:image:alt"] ?? ""}
@@ -366,8 +368,8 @@ function Playground({
   return (
     <section className="mb-12 border-y border-rule py-6">
       <h2 className="mb-4 text-[20px]">Playground</h2>
-      <div className="flex flex-wrap gap-8">
-        <div className="grid w-[520px] max-w-full content-start gap-3">
+      <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
+        <div className="grid min-w-0 content-start gap-3">
           <Field id="og-eyebrow" label="Eyebrow (parts split by two spaces)">
             <input id="og-eyebrow" value={eyebrow} onChange={(e) => setEyebrow(e.target.value)} className={input} />
           </Field>
@@ -417,12 +419,26 @@ function Playground({
             </a>
           </div>
         </div>
-        <div style={{ width }} className="flex max-w-full flex-col gap-2">
+        <div style={{ maxWidth: width }} className="flex w-full flex-col gap-2">
           <CardFrame key={version} src={settled} guides={guides} />
           <p className="text-muted">Gelica, as the browser draws it for Save</p>
         </div>
       </div>
     </section>
+  );
+}
+
+/** The page's tags, one ruled row each. */
+function Tags({ meta, className }: { meta: Meta; className?: string }) {
+  return (
+    <dl className={cn("grid grid-cols-[auto_1fr] border-b border-rule/60", className)}>
+      {Object.entries(meta).map(([k, v]) => (
+        <div key={k} className="col-span-2 grid grid-cols-subgrid gap-x-4 border-t border-rule/60 py-1.5">
+          <dt className="text-muted">{k}</dt>
+          <dd className="wrap-anywhere">{v}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -492,8 +508,9 @@ function LinkPreview({ meta, src }: { meta: Meta; src?: string }) {
   );
 }
 
+/** The search field and the playground's fields. */
 const input =
-  "w-full rounded border border-rule bg-paper px-2 py-1 font-mono text-[12px] focus:border-ink focus:outline-none";
+  "w-full rounded-[4px] border border-rule bg-paper-light px-3 py-2 font-mono text-fl-14 focus:border-ink focus:outline-none";
 
 function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {
   return (
