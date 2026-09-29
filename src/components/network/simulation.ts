@@ -2,7 +2,8 @@
 // wanders (Reynolds steering: it seeks a point that jitters on a small circle
 // projected ahead of it), wraps at the edges, and any two nodes closer than
 // MAX_LENGTH are joined by a line that fades as they part. Nodes also steer out of
-// `avoid` rects (the quote), so they gather around the text. Positions are CSS px.
+// `avoid` rects (the quote), so they gather around the text, and the pointer pulls
+// nearby nodes onto a ring around itself. Positions are CSS px.
 
 /** One tick of the simulation, s. The motion was tuned per frame at 60fps. */
 export const STEP = 1 / 60;
@@ -32,6 +33,18 @@ const AVOID_FORCE = 0.01;
 const AVOID_MARGIN = 40;
 /** Tries at placing a node outside the avoid rects before settling for anywhere. */
 const PLACE_TRIES = 10;
+/** Nodes within this distance of the pointer (px) are pulled toward a ring of RING_RADIUS around it. */
+const PULL_RADIUS = 240;
+const RING_RADIUS = 64;
+/** The pull per px off the ring, per step, up to MAX_PULL (px per step). */
+const PULL_STIFFNESS = 0.12;
+const MAX_PULL = 6;
+/** Pulled nodes also circle the pointer (px per step), so a moving pointer doesn't pile them up behind it. */
+const ORBIT = 1;
+/** Nodes the pointer pulls keep this far apart (px), spreading them around the ring. */
+const SPACING = 16;
+/** Passes at SPACING per step; one can't keep up with the pull. */
+const SPREAD_PASSES = 2;
 
 /** Floats per instance: x0, y0, x1, y1, radius, alpha. A node is a zero-length segment. */
 export const STRIDE = 6;
@@ -46,6 +59,8 @@ export type Network = {
   width: number;
   height: number;
   avoid: Rect[];
+  /** Where the pointer is over the canvas, if it is. */
+  pointer: [x: number, y: number] | null;
   /** Live nodes: the first `count` slots of each array. */
   count: number;
   /** Whether new nodes arrive one by one, or all at once (for a still frame). */
@@ -71,6 +86,7 @@ export function createNetwork(width: number, height: number, avoid: Rect[], stag
     width,
     height,
     avoid,
+    pointer: null,
     count: 0,
     stagger,
     born: new Float32Array(MAX_NODES),
@@ -146,9 +162,55 @@ function avoidance(rects: Rect[], px: number, py: number): [number, number] {
   return [ax, ay];
 }
 
+/**
+ * How far to move a node at (px, py) toward the pointer's ring this step: a spring
+ * toward the ring, at full strength out to RING_RADIUS from it and fading to nothing
+ * at PULL_RADIUS, plus a drift around the pointer. It moves the node without touching
+ * its velocity, so the node keeps wandering and slides around the ring rather than
+ * sticking in place.
+ */
+function pull(pointer: Network["pointer"], px: number, py: number): [number, number] {
+  if (!pointer) return [0, 0];
+  const dx = px - pointer[0];
+  const dy = py - pointer[1];
+  const d = Math.hypot(dx, dy);
+  if (d >= PULL_RADIUS || d === 0) return [0, 0];
+
+  const weight = Math.min(1, (PULL_RADIUS - d) / (PULL_RADIUS - 2 * RING_RADIUS));
+  const toRing = Math.min(MAX_PULL, Math.max(-MAX_PULL, (RING_RADIUS - d) * PULL_STIFFNESS)) * weight;
+  const around = ORBIT * weight;
+  return [(dx * toRing - dy * around) / d, (dy * toRing + dx * around) / d];
+}
+
+/** Indices of the nodes in the pointer's reach, reused each step. */
+const pulled = new Int32Array(MAX_NODES);
+
+/** Nudges apart any two pulled nodes closer than SPACING, half each. */
+function spread(n: Network, count: number) {
+  const { x, y } = n;
+  for (let pass = 0; pass < SPREAD_PASSES; pass += 1) {
+    for (let a = 0; a < count; a += 1) {
+      for (let b = a + 1; b < count; b += 1) {
+        const i = pulled[a];
+        const j = pulled[b];
+        const dx = x[j] - x[i];
+        const dy = y[j] - y[i];
+        const d = Math.hypot(dx, dy);
+        if (d >= SPACING || d === 0) continue;
+        const push = (SPACING - d) / d / 2;
+        x[i] -= dx * push;
+        y[i] -= dy * push;
+        x[j] += dx * push;
+        y[j] += dy * push;
+      }
+    }
+  }
+}
+
 /** Advances every node that has arrived by one STEP. */
 export function step(n: Network, clock: number) {
-  const { born, x, y, vx, vy, theta, maxSpeed, width, height } = n;
+  const { born, x, y, vx, vy, theta, maxSpeed, width, height, pointer } = n;
+  let reached = 0;
 
   for (let i = 0; i < n.count; i += 1) {
     if (born[i] > clock) continue;
@@ -179,14 +241,19 @@ export function step(n: Network, clock: number) {
       vy[i] *= maxSpeed[i] / v;
     }
 
-    x[i] += vx[i];
-    y[i] += vy[i];
+    const [px, py] = pull(pointer, x[i], y[i]);
+    if (px || py) pulled[reached++] = i;
+
+    x[i] += vx[i] + px;
+    y[i] += vy[i] + py;
 
     if (x[i] < -OFFSET) x[i] = width + OFFSET;
     else if (x[i] > width + OFFSET) x[i] = -OFFSET;
     if (y[i] < -OFFSET) y[i] = height + OFFSET;
     else if (y[i] > height + OFFSET) y[i] = -OFFSET;
   }
+
+  spread(n, reached);
 }
 
 /** Writes the lines, then the nodes over them, into `out`; returns the instance count. */

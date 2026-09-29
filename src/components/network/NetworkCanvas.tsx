@@ -15,8 +15,8 @@ function rgb(color: string): [number, number, number] {
 
 /**
  * Canvas that fills its positioned parent. Nodes and lines take the canvas's text colour,
- * and steer out of any `[data-network-avoid]` element in that parent. It runs while on
- * screen; under prefers-reduced-motion it draws one still frame.
+ * steer out of any `[data-network-avoid]` element in that parent, and gather around the
+ * pointer. It runs while on screen; under prefers-reduced-motion it draws one still frame.
  */
 export function NetworkCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,6 +33,8 @@ export function NetworkCanvas({ className }: { className?: string }) {
     let pending = 0;
     let last = 0;
     let raf = 0;
+    /** The pointer in client px, while it's over the page (or a finger is down). */
+    let client: [number, number] | null = null;
 
     const draw = () => {
       if (network) renderer.draw(instances(network, clock, renderer.data));
@@ -44,6 +46,12 @@ export function NetworkCanvas({ className }: { className?: string }) {
       // background tab) resumes where it left off rather than catching up.
       pending += last ? Math.min((now - last) / 1000, 0.1) : 0;
       last = now;
+      if (network) {
+        const r = canvas.getBoundingClientRect();
+        const over =
+          client && client[0] >= r.left && client[0] <= r.right && client[1] >= r.top && client[1] <= r.bottom;
+        network.pointer = client && over ? [client[0] - r.left, client[1] - r.top] : null;
+      }
       for (; pending >= STEP; pending -= STEP) {
         clock += STEP;
         if (network) step(network, clock);
@@ -85,8 +93,32 @@ export function NetworkCanvas({ className }: { className?: string }) {
     });
     io.observe(canvas);
 
+    // The canvas lets pointer events through to the text, so watch the window.
+    const track = (e: PointerEvent) => {
+      client = [e.clientX, e.clientY];
+    };
+    const release = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") client = null;
+    };
+    const clear = () => {
+      client = null;
+    };
+    const root = document.documentElement;
+    window.addEventListener("pointermove", track, { passive: true });
+    window.addEventListener("pointerdown", track, { passive: true });
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", clear);
+    window.addEventListener("blur", clear);
+    root.addEventListener("pointerleave", clear);
+
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", track);
+      window.removeEventListener("pointerdown", track);
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", clear);
+      window.removeEventListener("blur", clear);
+      root.removeEventListener("pointerleave", clear);
       ro.disconnect();
       io.disconnect();
       renderer.destroy();
