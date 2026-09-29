@@ -29,3 +29,10 @@ export const NAV: readonly NavLink[] = [
 ];
 
 export const CONTACT_HREF = "/#contact";
+
+/** The dev-only admin tools, listed in the nav under `next dev`. */
+export const ADMIN_NAV: readonly NavLink[] = [
+  { label: "Media", href: "/admin/media" },
+  { label: "Illustrations", href: "/admin/illustrations" },
+  { label: "Open Graph", href: "/admin/og" },
+];

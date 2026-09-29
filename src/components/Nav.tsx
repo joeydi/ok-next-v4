@@ -10,7 +10,7 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { CONTACT_HREF, NAV, SITE } from "@/data/site";
+import { ADMIN_NAV, CONTACT_HREF, NAV, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
@@ -41,8 +41,77 @@ function closeMenu() {
   document.getElementById("site-menu")?.hidePopover();
 }
 
-function closeServices() {
-  document.getElementById("services-menu")?.hidePopover();
+function closeAdmin() {
+  document.getElementById("admin-menu")?.hidePopover();
+}
+
+// The admin tools only exist under `next dev`; this is inlined, so production drops the menu.
+const DEV = process.env.NODE_ENV === "development";
+
+/** Settings cog (Material Symbols, rounded fill), sized to the label text. */
+function Cog() {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className="size-[1.25em]">
+      <path
+        fill="currentColor"
+        d="M10.825 22q-.675 0-1.162-.45t-.588-1.1L8.85 18.8q-.325-.125-.612-.3t-.563-.375l-1.55.65q-.625.275-1.25.05t-.975-.8l-1.175-2.05q-.35-.575-.2-1.225t.675-1.075l1.325-1Q4.5 12.5 4.5 12.337v-.675q0-.162.025-.337l-1.325-1Q2.675 9.9 2.525 9.25t.2-1.225L3.9 5.975q.35-.575.975-.8t1.25.05l1.55.65q.275-.2.575-.375t.6-.3l.225-1.65q.1-.65.588-1.1T10.825 2h2.35q.675 0 1.163.45t.587 1.1l.225 1.65q.325.125.613.3t.562.375l1.55-.65q.625-.275 1.25-.05t.975.8l1.175 2.05q.35.575.2 1.225t-.675 1.075l-1.325 1q.025.175.025.338v.674q0 .163-.05.338l1.325 1q.525.425.675 1.075t-.2 1.225l-1.2 2.05q-.35.575-.975.8t-1.25-.05l-1.5-.65q-.275.2-.575.375t-.6.3l-.225 1.65q-.1.65-.587 1.1t-1.163.45zm1.225-6.5q1.45 0 2.475-1.025T15.55 12t-1.025-2.475T12.05 8.5q-1.475 0-2.488 1.025T8.55 12t1.013 2.475T12.05 15.5"
+      />
+    </svg>
+  );
+}
+
+/**
+ * A desktop dropdown that opens on mouse hover or keyboard focus. Its popover sits inside
+ * the trigger's <li> in the DOM, so pointer and focus events treat it as part of the
+ * trigger; a short delay carries the pointer across the gap below the bar.
+ */
+function useHoverMenu() {
+  const ref = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<number>(undefined);
+  const clicked = useRef(false);
+
+  function open() {
+    window.clearTimeout(closeTimer.current);
+    const menu = ref.current;
+    if (menu && !menu.matches(":popover-open")) menu.showPopover();
+  }
+
+  function close() {
+    ref.current?.hidePopover();
+  }
+
+  // The page transition after a click on a link trigger re-enters it under a still
+  // pointer, so hover stays off until the pointer really moves away.
+  function clickLink(e: MouseEvent<HTMLAnchorElement>) {
+    close();
+    clicked.current = true;
+    const li = e.currentTarget.parentElement;
+    const onMove = (m: globalThis.PointerEvent) => {
+      if (li?.contains(m.target as Node)) return;
+      clicked.current = false;
+      document.removeEventListener("pointermove", onMove);
+    };
+    document.addEventListener("pointermove", onMove);
+  }
+
+  /** Spread on the <li> that holds the trigger and the popover. */
+  const item = {
+    onPointerEnter(e: PointerEvent) {
+      if (e.pointerType === "mouse" && !clicked.current) open();
+    },
+    onPointerLeave(e: PointerEvent) {
+      if (e.pointerType === "mouse") closeTimer.current = window.setTimeout(close, 200);
+    },
+    // Keyboard focus only, so a tap on a link trigger just follows it.
+    onFocus(e: FocusEvent) {
+      if (e.target.matches(":focus-visible")) open();
+    },
+    onBlur(e: FocusEvent) {
+      if (!e.currentTarget.contains(e.relatedTarget)) close();
+    },
+  };
+
+  return { ref, open, close, clickLink, item };
 }
 
 function onScroll(cb: () => void) {
@@ -85,9 +154,7 @@ export function Nav() {
   }));
   const contactCurrent = current(CONTACT_HREF, pathname, section);
   const dark = state === "dark";
-  const servicesRef = useRef<HTMLDivElement>(null);
-  const closeTimer = useRef<number>(undefined);
-  const clicked = useRef(false);
+  const services = useHoverMenu();
   const accent = dark ? "text-pink" : "text-pink-ink";
   // Menu items bleed into the menu's padding so the hover fill sits around the text, which stays put.
   const menuItem = cn(
@@ -100,46 +167,7 @@ export function Nav() {
   );
 
   // "Services" stays a link to the home section; its menu of service pages opens on
-  // mouse hover or keyboard focus. The menu sits inside the <li> in the DOM, so pointer
-  // and focus events treat it as part of the link; a short delay carries the pointer
-  // across the gap below the bar.
-  function openServices() {
-    window.clearTimeout(closeTimer.current);
-    const menu = servicesRef.current;
-    if (menu && !menu.matches(":popover-open")) menu.showPopover();
-  }
-
-  function hoverServices(e: PointerEvent) {
-    if (e.pointerType === "mouse" && !clicked.current) openServices();
-  }
-
-  // The page transition after a click re-enters the link under a still pointer, so hover
-  // stays off until the pointer really moves away.
-  function clickServices(e: MouseEvent<HTMLAnchorElement>) {
-    closeServices();
-    clicked.current = true;
-    const li = e.currentTarget.parentElement;
-    const onMove = (m: globalThis.PointerEvent) => {
-      if (li?.contains(m.target as Node)) return;
-      clicked.current = false;
-      document.removeEventListener("pointermove", onMove);
-    };
-    document.addEventListener("pointermove", onMove);
-  }
-
-  function leaveServices(e: PointerEvent) {
-    if (e.pointerType === "mouse") closeTimer.current = window.setTimeout(closeServices, 200);
-  }
-
-  // Keyboard focus only, so a tap on the link just follows it.
-  function focusServices(e: FocusEvent) {
-    if (e.target.matches(":focus-visible")) openServices();
-  }
-
-  function blurServices(e: FocusEvent) {
-    if (!e.currentTarget.contains(e.relatedTarget)) closeServices();
-  }
-
+  // mouse hover or keyboard focus (see useHoverMenu).
   // Positions the menu where anchor positioning isn't supported (see globals.css).
   function toggleServices(e: ToggleEvent<HTMLDivElement>) {
     if (e.newState === "closed") return;
@@ -182,17 +210,10 @@ export function Nav() {
         <ul className="hidden justify-end gap-fl-32 lg:col-span-9 lg:flex xl:col-span-5">
           {links.map((l) =>
             l.children ? (
-              <li
-                key={l.href}
-                className="group"
-                onPointerEnter={hoverServices}
-                onPointerLeave={leaveServices}
-                onFocus={focusServices}
-                onBlur={blurServices}
-              >
+              <li key={l.href} className="group" {...services.item}>
                 <Link
                   href={l.href}
-                  onClick={clickServices}
+                  onClick={services.clickLink}
                   aria-current={l.current}
                   className={cn("services-trigger", l.current && accent)}
                 >
@@ -205,7 +226,7 @@ export function Nav() {
                   </span>
                 </Link>
                 <div
-                  ref={servicesRef}
+                  ref={services.ref}
                   id="services-menu"
                   popover="auto"
                   data-theme={dark ? "dark" : undefined}
@@ -217,7 +238,7 @@ export function Nav() {
                       <li key={s.href}>
                         <Link
                           href={s.href}
-                          onClick={closeServices}
+                          onClick={services.close}
                           aria-current={pathname === s.href ? "page" : undefined}
                           className={cn(menuItem, pathname === s.href && accent)}
                         >
@@ -241,6 +262,7 @@ export function Nav() {
               Say hello <span className="nudge">→</span>
             </Link>
           </li>
+          {DEV && <AdminMenu pathname={pathname} dark={dark} accent={accent} menuItem={menuItem} />}
         </ul>
 
         {/* Mobile: toggle + anchored popover */}
@@ -272,10 +294,73 @@ export function Nav() {
                   Say hello →
                 </Link>
               </li>
+              {DEV &&
+                ADMIN_NAV.map((a, i) => (
+                  <li key={a.href} className={i === 0 ? divider : undefined}>
+                    <Link
+                      href={a.href}
+                      onClick={closeMenu}
+                      aria-current={pathname === a.href ? "page" : undefined}
+                      className={cn(menuItem, pathname === a.href && accent)}
+                    >
+                      {a.label}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
       </nav>
     </Container>
+  );
+}
+
+/** Dev only: a cog at the end of the bar with the admin tools, hanging from the bar's right corner. */
+function AdminMenu({
+  pathname,
+  dark,
+  accent,
+  menuItem,
+}: {
+  pathname: string;
+  dark: boolean;
+  accent: string;
+  menuItem: string;
+}) {
+  const { ref, open, item } = useHoverMenu();
+  return (
+    <li className="group" {...item}>
+      <button
+        type="button"
+        onClick={open}
+        aria-label="Admin"
+        aria-controls="admin-menu"
+        className={cn("-my-2 flex cursor-pointer items-center py-2", pathname.startsWith("/admin") && accent)}
+      >
+        <Cog />
+      </button>
+      <div
+        ref={ref}
+        id="admin-menu"
+        popover="auto"
+        data-theme={dark ? "dark" : undefined}
+        className="nav-menu admin-menu"
+      >
+        <ul className="flex flex-col">
+          {ADMIN_NAV.map((a) => (
+            <li key={a.href}>
+              <Link
+                href={a.href}
+                onClick={closeAdmin}
+                aria-current={pathname === a.href ? "page" : undefined}
+                className={cn(menuItem, pathname === a.href && accent)}
+              >
+                {a.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
   );
 }

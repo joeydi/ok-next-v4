@@ -471,9 +471,18 @@
     overflow: visible;
   }
 
+  /* The dev-only admin menu hangs from the bar's right corner, like the mobile menu. */
+  .admin-menu {
+    position-anchor: --site-menu;
+    top: anchor(bottom);
+    right: anchor(right);
+    overflow: visible;
+  }
+
   /* An invisible bridge up to the trigger, so the pointer stays over the menu's <li>
      while it crosses the bar's padding. */
-  .services-menu::before {
+  .services-menu::before,
+  .admin-menu::before {
     content: "";
     position: absolute;
     inset: auto 0 100%;
@@ -510,6 +519,12 @@
       position: fixed;
       top: calc(var(--nav-h) - 0.75rem);
       left: calc(var(--trigger-left, 0px) - 20px);
+    }
+
+    .admin-menu {
+      position: fixed;
+      top: calc(var(--nav-h) - 0.75rem);
+      right: max(var(--spacing-gutter) / 2, (100vw - var(--container-page)) / 2 + var(--spacing-gutter) / 2);
     }
   }
 
