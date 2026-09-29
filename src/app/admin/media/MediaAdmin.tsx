@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useId, useRef, useState, useSyncExternalStore, useTransition } from "react";
-import { Container } from "@/components/Container";
 import { MediaImage } from "@/components/MediaImage";
 import { cn } from "@/lib/cn";
 import { mediaUrl } from "@/lib/media-url";
@@ -234,7 +233,7 @@ export function MediaAdmin({
   return (
     <main id="main">
       {confirmDialog}
-      <Container className="flex flex-col gap-fl-32 pt-fl-56 pb-fl-96">
+      <div className="flex flex-col gap-fl-32 pt-fl-56 pb-fl-96">
         <header className="flex flex-wrap items-end justify-between gap-fl-24 border-b border-rule pb-fl-24">
           <div className="flex flex-col gap-fl-8">
             <span className="mono-label text-muted">/ Admin · dev only</span>
@@ -378,7 +377,7 @@ export function MediaAdmin({
             ))}
           </ul>
         )}
-      </Container>
+      </div>
     </main>
   );
 }

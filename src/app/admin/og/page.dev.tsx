@@ -5,6 +5,7 @@ import { services } from "@/data/services";
 import { getAllNotes } from "@/lib/notes";
 import { isOgKeyFor, ogCard, ogMediaKey } from "@/lib/og-cards";
 import { readManifest } from "../../../../scripts/media.mjs";
+import { AdminShell } from "../AdminShell";
 import { type CardStatus, OgAdmin, type OgPage } from "./OgAdmin";
 
 // Dev-only (see pageExtensions in next.config.ts): every route's Open Graph card as
@@ -43,5 +44,9 @@ export default function OgAdminPage() {
     .map(([k]) => k)
     .sort();
 
-  return <OgAdmin pages={pages} notesError={notesError} scenes={Object.keys(SCENES)} mediaKeys={mediaKeys} />;
+  return (
+    <AdminShell>
+      <OgAdmin pages={pages} notesError={notesError} scenes={Object.keys(SCENES)} mediaKeys={mediaKeys} />
+    </AdminShell>
+  );
 }

@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { Container } from "@/components/Container";
 import { cn } from "@/lib/cn";
 
 /** Whether the Gelica card in the media store matches the card as it is now. */
@@ -169,7 +168,7 @@ export function OgAdmin({
   const shown = q ? pages.filter((p) => `${p.label} ${p.path}`.toLowerCase().includes(q)) : pages;
 
   return (
-    <Container className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
+    <div className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
       <header className="mb-fl-32 flex flex-wrap items-end justify-between gap-fl-24 border-b border-rule pb-fl-24">
         <div className="flex flex-col gap-fl-8">
           <span className="mono-label text-muted">/ Admin · dev only</span>
@@ -241,7 +240,7 @@ export function OgAdmin({
         ))}
         {shown.length === 0 && <p className="text-muted">No routes match “{query}”.</p>}
       </div>
-    </Container>
+    </div>
   );
 }
 

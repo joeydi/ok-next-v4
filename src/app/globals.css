@@ -282,22 +282,26 @@
   z-index: 50;
 }
 
-/* The nav bar holds still above the moving pages. Its snapshot loses the backdrop
-   blur (which doesn't work in the transition overlay either), so the outgoing bar
-   is backed with paper to hide the old page beneath it, then fades as the reveal
-   finishes covering that page. */
-::view-transition-group(site-nav) {
+/* The nav bar (and the admin sidebar, dev only) holds still above the moving pages.
+   Its snapshot loses the backdrop blur (which doesn't work in the transition overlay
+   either), so the outgoing bar is backed with paper to hide the old page beneath it,
+   then fades as the reveal finishes covering that page. */
+::view-transition-group(site-nav),
+::view-transition-group(admin-sidebar) {
   z-index: 100;
   animation: none;
 }
 
 ::view-transition-old(site-nav),
-::view-transition-new(site-nav) {
+::view-transition-new(site-nav),
+::view-transition-old(admin-sidebar),
+::view-transition-new(admin-sidebar) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-::view-transition-old(site-nav) {
+::view-transition-old(site-nav),
+::view-transition-old(admin-sidebar) {
   border-radius: var(--radius-lg);
   background: var(--color-paper);
   animation: 200ms ease 600ms both nav-out;

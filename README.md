@@ -43,7 +43,7 @@ src/
     cms-integrations/
     business-tools/
     notes/                index, [slug] post page, rss.xml
-    admin/                dev-only media admin and illustration lab (*.dev.tsx)
+    admin/                dev-only tools (media, Open Graph, illustrations) and docs viewer (*.dev.tsx)
     */opengraph-image.tsx social cards, built on src/lib/og.tsx
   components/             shared UI; illustrations/ holds the WebGL renderer and scenes
   content/notes/          notes and case studies (MDX)
@@ -54,7 +54,7 @@ scripts/
   fluid.mjs               writes src/app/fluid.css
   media.mjs               R2 sync, video encoding, manifest
 public/illustrations/     illustration posters (saved from the lab)
-docs/                     standalone design reference pages
+docs/                     standalone design reference pages, viewable at /admin/docs/<name> in dev
 design_handoff_okayplus_site/   the original design handoff and 1440px comps
 ```
 

@@ -33,9 +33,16 @@ export const NAV: readonly NavLink[] = [
 
 export const CONTACT_HREF = "/#contact";
 
-/** The dev-only admin tools, listed in the nav under `next dev`. */
+/** The dev-only admin tools, listed in the nav and the admin sidebar under `next dev`. */
 export const ADMIN_NAV: readonly NavLink[] = [
   { label: "Media", href: "/admin/media" },
-  { label: "Illustrations", href: "/admin/illustrations" },
   { label: "Open Graph", href: "/admin/og" },
+  { label: "Illustrations", href: "/admin/illustrations" },
+];
+
+/** The design docs in docs/, shown in the admin sidebar. `href` ends in the file's name. */
+export const ADMIN_DOCS: readonly NavLink[] = [
+  { label: "Palette", href: "/admin/docs/palette" },
+  { label: "Easing", href: "/admin/docs/easing-curves" },
+  { label: "Page transitions", href: "/admin/docs/page-reveal" },
 ];

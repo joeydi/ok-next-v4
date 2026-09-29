@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AdminShell } from "../AdminShell";
 import { IllustrationLab } from "./IllustrationLab";
 
 // Dev-only (see pageExtensions in next.config.ts): the WebGL illustrations with
@@ -7,5 +8,9 @@ import { IllustrationLab } from "./IllustrationLab";
 export const metadata: Metadata = { title: "Illustration lab", robots: { index: false, follow: false } };
 
 export default function IllustrationLabPage() {
-  return <IllustrationLab />;
+  return (
+    <AdminShell>
+      <IllustrationLab />
+    </AdminShell>
+  );
 }

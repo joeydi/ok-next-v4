@@ -1,7 +1,6 @@
 "use client";
 
 import { type ReactNode, useEffect, useState } from "react";
-import { Container } from "@/components/Container";
 import { GLIllustration } from "@/components/illustrations/gl/GLIllustration";
 import { POSTER_WIDTHS } from "@/components/illustrations/gl/poster";
 import { DEFAULT_SETTINGS, Renderer, type Settings } from "@/components/illustrations/gl/renderer";
@@ -75,7 +74,7 @@ export function IllustrationLab() {
   }
 
   return (
-    <Container className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
+    <div className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
       <header className="mb-fl-32 flex flex-col gap-fl-8 border-b border-rule pb-fl-24">
         <span className="mono-label text-muted">/ Admin · dev only</span>
         <h1 className="display text-fl-48 leading-none tracking-heading">Illustrations</h1>
@@ -167,7 +166,7 @@ export function IllustrationLab() {
       <figure style={{ width }} className="max-w-full outline outline-rule">
         <GLIllustration scene={name} time={time} settings={settings} className="w-full" />
       </figure>
-    </Container>
+    </div>
   );
 }
 

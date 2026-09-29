@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { services } from "@/data/services";
 import { readManifest } from "../../../../scripts/media.mjs";
+import { AdminShell } from "../AdminShell";
 import { type AdminItem, MediaAdmin } from "./MediaAdmin";
 import { scanUsage } from "./usage";
 
@@ -38,12 +39,14 @@ export default async function MediaAdminPage({
   ].sort();
 
   return (
-    <MediaAdmin
-      items={items}
-      broken={broken}
-      folders={folders}
-      initialKey={typeof key === "string" && manifest[key] ? key : null}
-      host={process.env.NEXT_PUBLIC_MEDIA_HOST}
-    />
+    <AdminShell>
+      <MediaAdmin
+        items={items}
+        broken={broken}
+        folders={folders}
+        initialKey={typeof key === "string" && manifest[key] ? key : null}
+        host={process.env.NEXT_PUBLIC_MEDIA_HOST}
+      />
+    </AdminShell>
   );
 }
