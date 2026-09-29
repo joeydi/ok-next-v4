@@ -8,7 +8,7 @@
 export const STEP = 1 / 60;
 
 /** Nodes per px² of free canvas (outside the avoid rects): 600 felt right at 1920×1280. */
-const DENSITY = 600 / 1_800_000;
+const DENSITY = 480 / 1_800_000;
 const MIN_NODES = 20;
 /** The pair search is O(n²), so very large screens stop here. */
 const MAX_NODES = 1000;
@@ -28,7 +28,7 @@ const FADE_IN = 0.4;
 const LINE_RADIUS = 0.5;
 /** The push out of an avoid rect. It turns a node's heading rather than shoving it. */
 const AVOID_FORCE = 0.01;
-/** Outside a rect, the push fades to nothing over this distance (px). */
+/** Inside a rect, the push builds to full strength over this distance from its edge (px). */
 const AVOID_MARGIN = 40;
 /** Tries at placing a node outside the avoid rects before settling for anywhere. */
 const PLACE_TRIES = 10;
@@ -120,29 +120,27 @@ function place(n: Network, i: number, born: number) {
 }
 
 /**
- * The push out of the avoid rects at (px, py), as a direction weighted 0–1: full
- * strength toward the nearest edge inside a rect, fading away from it outside.
+ * The push out of the avoid rects at (px, py), as a direction weighted 0–1: toward
+ * the nearest edge, building from nothing at the edge to full strength AVOID_MARGIN
+ * inside it, so nodes can drift over a rect's edges before turning back.
  */
 function avoidance(rects: Rect[], px: number, py: number): [number, number] {
   let ax = 0;
   let ay = 0;
 
   for (const [x0, y0, x1, y1] of rects) {
-    const dx = px - Math.min(Math.max(px, x0), x1);
-    const dy = py - Math.min(Math.max(py, y0), y1);
-    const d = Math.hypot(dx, dy);
+    const left = px - x0;
+    const right = x1 - px;
+    const top = py - y0;
+    const bottom = y1 - py;
+    const edge = Math.min(left, right, top, bottom);
+    if (edge <= 0) continue;
 
-    if (d === 0) {
-      const edge = Math.min(px - x0, x1 - px, py - y0, y1 - py);
-      if (edge === px - x0) ax -= 1;
-      else if (edge === x1 - px) ax += 1;
-      else if (edge === py - y0) ay -= 1;
-      else ay += 1;
-    } else if (d < AVOID_MARGIN) {
-      const weight = 1 - d / AVOID_MARGIN;
-      ax += (dx / d) * weight;
-      ay += (dy / d) * weight;
-    }
+    const weight = Math.min(1, edge / AVOID_MARGIN);
+    if (edge === left) ax -= weight;
+    else if (edge === right) ax += weight;
+    else if (edge === top) ay -= weight;
+    else ay += weight;
   }
 
   return [ax, ay];
