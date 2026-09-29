@@ -70,6 +70,7 @@ export function siteGraph(): Graph {
         image: abs("/opengraph-image"),
         description: SITE.description,
         email: SITE.email,
+        telephone: SITE.phone,
         founder: ref(ids.person),
         address,
         areaServed: "US",

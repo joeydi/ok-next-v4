@@ -5,6 +5,7 @@ export const SITE = {
   tagline: "Designer + developer",
   location: "Burlington, Vermont",
   email: "joeydi@okaypl.us",
+  phone: "+1-480-459-6720",
   description:
     "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams, agencies, and non-profits figure out what's worth building, then build it well.",
   /** Joe's own profiles, listed on the Person in the JSON-LD. */
