@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { isOgKeyFor, ogPaths } from "@/lib/og-cards";
 
 // Where each media key is referenced, found by plain text search over the source.
 // Also collects references to keys that aren't in the manifest.
@@ -46,6 +47,17 @@ export function scanUsage(keys: string[]) {
 
     for (const key of keys) if (text.includes(key)) usage[key].push({ file, ...note });
     for (const key of refs) if (!known.has(key)) broken.push({ key, file });
+  }
+
+  // Saved Open Graph cards (og/<name>-<hash>.png) are keyed in code, so no source
+  // mentions them: credit each to its route's card, as long as it's still that route's card.
+  const routes = ogPaths();
+  for (const key of keys) {
+    if (!key.startsWith("og/")) continue;
+    const route = routes.find((p) => isOgKeyFor(p, key));
+    if (!route) continue;
+    const dir = route.startsWith("/notes/") ? "/notes/[slug]" : route === "/" ? "" : route;
+    usage[key].push({ file: `src/app${dir}/opengraph-image.tsx`, title: `Open Graph card for ${route}` });
   }
   return { usage, broken };
 }

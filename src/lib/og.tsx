@@ -4,11 +4,16 @@ import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { Logo } from "@/components/Logo";
+import { networkSvg } from "@/components/network/frame";
+import type { Rect } from "@/components/network/simulation";
 import type { Media } from "./media";
-import { mediaImageUrl } from "./media-url";
+import { mediaImageUrl, mediaUrl } from "./media-url";
+import { type OgCard, ogCard, ogMediaKey } from "./og-cards";
 
 // Shared Open Graph card in the Field Notes style. Gelica can't be embedded
-// server-side (Adobe Fonts licence), so titles use Hanken Grotesk.
+// server-side (Adobe Fonts licence), so this satori version sets titles in Hanken
+// Grotesk; a Gelica one drawn in the browser (OgCardHtml, saved from /admin/og)
+// replaces it once it's in the media store. See ogImage.
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -21,7 +26,7 @@ const fonts = Promise.all([
 const FRAME = { width: 520, height: 293 };
 
 /** The asset (a video's poster) as a JPEG data URI, since satori can't read AVIF/WebP or SVG. */
-async function imageData(media: Media) {
+export async function imageData(media: Media) {
   const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
   if (!key) return undefined;
   // A network hiccup at build time costs the image, not the deploy: the card goes without it.
@@ -39,7 +44,7 @@ async function imageData(media: Media) {
 const POSTER = { width: 440, height: 380 };
 
 /** A scene's poster (public/illustrations/), trimmed to its content and fitted to POSTER, as a PNG data URI. */
-async function posterData(scene: SceneName) {
+export async function posterData(scene: SceneName) {
   const { data, info } = await sharp(path.join(process.cwd(), `public/illustrations/${scene}-1240.webp`))
     .trim({ threshold: 1 })
     .png()
@@ -52,6 +57,17 @@ async function posterData(scene: SceneName) {
   };
 }
 
+// The card's text blocks, padded so the network backdrop's nodes clear them: the
+// logo, the tagline, and the eyebrow + title.
+const NETWORK_AVOID: Rect[] = [
+  [24, 24, 254, 139],
+  [608, 24, 1176, 139],
+  [24, 384, 660, 606],
+];
+
+/** The /network animation's still for the card, as an SVG document at OG_SIZE. */
+export const networkBackdrop = () => networkSvg({ ...OG_SIZE, avoid: NETWORK_AVOID, color: "#FF4D6A" });
+
 /** An SVG drawing as a PNG data URI at the card's size, since satori can't read SVG. */
 async function backdropData(svg: string) {
   const data = await sharp(Buffer.from(svg)).resize(OG_SIZE.width, OG_SIZE.height).png().toBuffer();
@@ -61,26 +77,14 @@ async function backdropData(svg: string) {
 /**
  * `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces.
  * An `image` (a video's poster) sits framed beside the title; SVGs are skipped. Without one, an
- * `illustration` scene's poster sits in the bottom-right corner. A `backdrop` (an SVG
- * document at OG_SIZE) fills the card behind everything.
+ * `illustration` scene's poster sits in the bottom-right corner. `network` fills the card
+ * with a still of the /network animation.
  */
-export async function renderOg({
-  eyebrow,
-  title,
-  image,
-  illustration,
-  backdrop,
-}: {
-  eyebrow: string;
-  title: string;
-  image?: Media;
-  illustration?: SceneName;
-  backdrop?: string;
-}) {
+export async function renderOg({ eyebrow, title, image, illustration, network }: Omit<OgCard, "alt">) {
   const [[hanken, mono], imageSrc, backdropSrc] = await Promise.all([
     fonts,
     image && imageData(image),
-    backdrop && backdropData(backdrop),
+    network && backdropData(networkBackdrop()),
   ]);
   const poster = !imageSrc && illustration ? await posterData(illustration) : undefined;
   // Words break only at spaces, so a star mid-word ("Notes*.*") colours part of it
@@ -204,4 +208,37 @@ export async function renderOg({
       ],
     },
   );
+}
+
+/**
+ * Whether media.json has a key, read from disk rather than imported: under `next dev`
+ * the capture route rewrites it, and an imported copy keeps the version it loaded.
+ */
+async function inManifest(key: string) {
+  const manifest = JSON.parse(await readFile(path.join(process.cwd(), "src/data/media.json"), "utf8"));
+  return key in manifest;
+}
+
+/**
+ * A route's card: the Gelica one saved from /admin/og when the media store has it
+ * for the card as it is now, otherwise (none saved, stale, or unreachable) the
+ * satori one, with a warning at build time.
+ */
+export async function ogImage(path: string) {
+  const card = ogCard(path);
+  if (!card) throw new Error(`og: no card for ${path}`);
+  const key = ogMediaKey(path, card);
+  const warn = (why: string) =>
+    process.env.NODE_ENV === "production" && console.warn(`og: ${path} ${why}; using the Hanken card`);
+
+  if (!(await inManifest(key))) {
+    warn("has no current Gelica card (save it from /admin/og)");
+    return renderOg(card);
+  }
+  const res = await fetch(mediaUrl(key)).catch(() => null);
+  if (!res?.ok) {
+    warn(`couldn't fetch ${key} (${res?.status ?? "network error"})`);
+    return renderOg(card);
+  }
+  return new Response(await res.arrayBuffer(), { headers: { "Content-Type": "image/png" } });
 }

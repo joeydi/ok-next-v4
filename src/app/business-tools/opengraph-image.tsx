@@ -1,16 +1,10 @@
-import { services } from "@/data/services";
-import { OG_SIZE, renderOg } from "@/lib/og";
+import { OG_SIZE, ogImage } from "@/lib/og";
+import { ogCard } from "@/lib/og-cards";
 
-const s = services["business-tools"];
-
-export const alt = `${s.title} — Okayplus`;
+export const alt = ogCard("/business-tools")!.alt;
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
 export default function Image() {
-  return renderOg({
-    eyebrow: `/ Services  ${s.n}  ${s.audience}`,
-    title: s.h1.join(" "),
-    illustration: s.illustration,
-  });
+  return ogImage("/business-tools");
 }

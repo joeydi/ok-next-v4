@@ -1,13 +1,10 @@
-import { OG_SIZE, renderOg } from "@/lib/og";
+import { OG_SIZE, ogImage } from "@/lib/og";
+import { ogCard } from "@/lib/og-cards";
 
-export const alt = "Okayplus — Joe di Stefano, designer + developer in Burlington, Vermont";
+export const alt = ogCard("/")!.alt;
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
 export default function Image() {
-  return renderOg({
-    eyebrow: "/ 00  Burlington, Vermont",
-    title: "Let’s think it through, *together.*",
-    illustration: "puzzle-cube",
-  });
+  return ogImage("/");
 }

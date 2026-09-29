@@ -105,7 +105,7 @@ Regular **markdown** paragraphs sit in the centre column.
 - `Figure` layouts: `wide` (default, columns 2–12), `full`, `half` (put two in a row). Without `media`, a figure shows a striped placeholder with its `label`.
 - `Figure media` takes the alt text (and, without a `caption` prop, the caption) from the manifest; `alt="…"` overrides it.
 - Relative links (`/…`, `#…`) use client-side navigation. Other links open in a new tab.
-- Notes appear in the index, the sitemap and the RSS feed at `/notes/rss.xml`. Each gets a generated social card.
+- Notes appear in the index, the sitemap and the RSS feed at `/notes/rss.xml`. Each gets a social card: save its Gelica version from `/admin/og` before publishing, or it goes out with the Hanken stand-in.
 
 ## Media
 
@@ -152,15 +152,17 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 - The server renders a **poster** (the scene's `posterTime` frame, from `public/illustrations/`) so something shows at once. WebGL starts once the page is idle and the illustration is near the viewport, and stops off screen. Under `prefers-reduced-motion`, or without WebGL2, the poster stays.
 - The puzzle cube is interactive: it defines `play()` and a `hitArea`, so on the page you can drag its slices. Posters and the lab still use `frame(t)`.
 - **Lab:** [localhost:3000/admin/illustrations](http://localhost:3000/admin/illustrations) (dev only) shows each scene with a time scrubber, width presets and the lighting controls. **Copy settings** copies the current lighting to paste into `DEFAULT_SETTINGS` in `gl/renderer.ts`. **Save poster** writes the scene's AVIF/WebP posters into `public/illustrations/`.
-- After changing a scene or `DEFAULT_SETTINGS`, re-save the affected posters in the lab and commit them. The home and service social cards draw the 1240px WebP poster, so they pick up the change on the next build.
+- After changing a scene or `DEFAULT_SETTINGS`, re-save the affected posters in the lab and commit them. The home and service social cards draw the 1240px WebP poster: bump `CARD_VERSION` in `src/lib/og-cards.ts` and re-save them in `/admin/og`.
 
 ## Styling
 
 - **Tokens** (`src/app/globals.css`): colours (`--color-*`), easing curves (`--ease-*`), fonts, shared utilities (`px-page`, `grid-12`, `mono-label`, `display`, `stripes`, `nudge`) and the hover treatment (`hover-card`, `hover-title`, `hover-lift`).
 - **Fluid scale:** `text-fl-*` and `*-fl-*` spacing tokens scale linearly from 320px to 1920px and hit the design's exact px at 1440. They're generated into `src/app/fluid.css` by `scripts/fluid.mjs`. Edit the script and re-run it; don't edit the CSS.
 - **Page width:** page-level blocks go in `<Container>`, which adds the gutter and caps the width at 1920px. For widths taken from the comp as a share of the viewport, use `calc(N*var(--pvw))` rather than `vw`, so they stop growing at the cap.
-- **Fonts:** Gelica (display) comes from the Adobe Fonts kit `llb6krb`. Hanken Grotesk and IBM Plex Mono come from `next/font`. Social cards set titles in Hanken Grotesk, because Gelica's licence doesn't allow embedding it server-side.
-- **Social cards:** [localhost:3000/admin/og](http://localhost:3000/admin/og) (dev only) shows each route's card as its meta tags point to it, beside those tags, with warnings for missing tags or a wrong size. The playground renders a card from any eyebrow, title, illustration or media key.
+- **Fonts:** Gelica (display) comes from the Adobe Fonts kit `llb6krb`. Hanken Grotesk and IBM Plex Mono come from `next/font`. Adobe Fonts can't be used server-side, so social cards are drawn in the browser to get Gelica (see below).
+- **Social cards:** each route's card (eyebrow, title, image or illustration) is described in `src/lib/og-cards.ts`. [localhost:3000/admin/og](http://localhost:3000/admin/og) (dev only) shows each route's card as its meta tags point to it, beside those tags, with warnings for missing tags or a wrong size. The playground previews a Gelica card, as **Save** draws it, from any eyebrow, title, illustration or media key.
+  - **Gelica cards:** the card is drawn as HTML at `/admin/og/card?path=…`, where the Adobe Fonts kit sets the title in Gelica. **Save** (per route) or **Save stale & missing** screenshots it with your installed Chrome and uploads it to the media store as `og/<name>-<hash>.png`, adding it to `media.json` and deleting the route's older cards. Commit `media.json` afterwards.
+  - **Fallback:** the hash covers the card's content, so editing a title makes its saved card stale. A route without a current Gelica card gets a Hanken Grotesk card drawn by Satori at build time, and the build warns about it.
 - **Page transitions:** `PageTransition` wraps each page in a React `<ViewTransition>`. The next page is revealed through a mask that grows from the click point, using the `.page` rules in `globals.css`.
 
 ## Linting and formatting

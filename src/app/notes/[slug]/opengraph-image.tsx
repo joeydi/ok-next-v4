@@ -1,5 +1,5 @@
-import { formatDate, getAllNotes, getNote } from "@/lib/notes";
-import { OG_SIZE, renderOg } from "@/lib/og";
+import { getAllNotes } from "@/lib/notes";
+import { OG_SIZE, ogImage } from "@/lib/og";
 
 export const alt = "Okayplus note";
 export const size = OG_SIZE;
@@ -11,10 +11,5 @@ export function generateStaticParams() {
 }
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
-  const note = getNote((await params).slug)!;
-  return renderOg({
-    eyebrow: `/ Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`,
-    title: note.meta.title,
-    image: note.meta.image,
-  });
+  return ogImage(`/notes/${(await params).slug}`);
 }

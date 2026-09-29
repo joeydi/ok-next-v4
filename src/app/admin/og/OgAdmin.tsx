@@ -1,10 +1,43 @@
 "use client";
 
-import { type ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Container } from "@/components/Container";
 import { cn } from "@/lib/cn";
 
-export type OgPage = { path: string; label: string; draft?: boolean };
+/** Whether the Gelica card in the media store matches the card as it is now. */
+export type CardStatus = "saved" | "stale" | "missing";
+
+export type OgPage = { path: string; label: string; draft?: boolean; card?: CardStatus };
+
+/** Screenshots cards into the media store (/admin/og/capture); resolves to an error message, if any. */
+async function capture(query: string) {
+  const res = await fetch(`/admin/og/capture?${query}`, { method: "POST" });
+  if (res.ok) return null;
+  const body = await res.json().catch(() => null);
+  return body?.error ?? `HTTP ${res.status} — full error in the dev server terminal`;
+}
+
+/** A button that runs `action`, showing progress and any error beside it. */
+function CaptureButton({ label, action }: { label: string; action: () => Promise<string | null> }) {
+  const [state, setState] = useState<{ busy: boolean; error?: string | null }>({ busy: false });
+  return (
+    <span className="flex items-baseline gap-2">
+      <button
+        type="button"
+        disabled={state.busy}
+        onClick={async () => {
+          setState({ busy: true });
+          setState({ busy: false, error: await action() });
+        }}
+        className="text-pink-ink hover:text-ink disabled:text-muted"
+      >
+        {state.busy ? "Saving…" : label}
+      </button>
+      {state.error && <span className="text-pink-ink">{state.error}</span>}
+    </span>
+  );
+}
 
 type Meta = Record<string, string>;
 type Loaded = { src: string; ms: number; bytes: number; type: string; width: number; height: number };
@@ -130,6 +163,8 @@ export function OgAdmin({
   const [preview, setPreview] = useState(false);
   const [version, setVersion] = useState(0);
   const [query, setQuery] = useState("");
+  const router = useRouter();
+  const unsaved = pages.filter((p) => p.card && p.card !== "saved").length;
   const q = query.trim().toLowerCase();
   const shown = q ? pages.filter((p) => `${p.label} ${p.path}`.toLowerCase().includes(q)) : pages;
 
@@ -176,6 +211,22 @@ export function OgAdmin({
             Reload all
           </Chip>
         </Row>
+        <Row label="Gelica">
+          <span className="text-muted">
+            {pages.filter((p) => p.card === "saved").length} saved · {unsaved} stale or missing
+          </span>
+          {unsaved > 0 && (
+            <CaptureButton
+              label="Save stale & missing"
+              action={async () => {
+                const error = await capture("all=stale");
+                router.refresh();
+                setVersion((v) => v + 1);
+                return error;
+              }}
+            />
+          )}
+        </Row>
       </div>
 
       {/* Hidden rather than unmounted, so what's typed into it survives a search. */}
@@ -207,6 +258,7 @@ function Card({
   preview: boolean;
   version: number;
 }) {
+  const router = useRouter();
   const [own, setOwn] = useState(0);
   const meta = useMeta(page.path, version + own);
   const ogImage = meta.value?.["og:image"];
@@ -222,9 +274,30 @@ function Card({
         <div className="flex items-baseline gap-3">
           <span className="text-muted">{page.path}</span>
           {page.draft && <span className="text-pink-ink">draft</span>}
-          <button type="button" onClick={() => setOwn(own + 1)} className="ml-auto text-muted hover:text-ink">
-            Reload
-          </button>
+          <span className="ml-auto flex items-baseline gap-3">
+            {page.card && (
+              <>
+                <a
+                  href={`/admin/og/card?path=${encodeURIComponent(page.path)}`}
+                  className={page.card === "saved" ? "text-muted hover:text-ink" : "text-pink-ink hover:text-ink"}
+                >
+                  Gelica {page.card}
+                </a>
+                <CaptureButton
+                  label="Save"
+                  action={async () => {
+                    const error = await capture(`path=${encodeURIComponent(page.path)}`);
+                    router.refresh();
+                    setOwn((n) => n + 1);
+                    return error;
+                  }}
+                />
+              </>
+            )}
+            <button type="button" onClick={() => setOwn(own + 1)} className="text-muted hover:text-ink">
+              Reload
+            </button>
+          </span>
         </div>
       </header>
 
@@ -282,14 +355,13 @@ function Playground({
   const [image, setImage] = useState("");
   const [version, setVersion] = useState(0);
 
-  const url = `/admin/og/render?${new URLSearchParams({ eyebrow, title, illustration, image })}`;
+  const url = `/admin/og/card?${new URLSearchParams({ eyebrow, title, illustration, image })}`;
   // Re-render once typing pauses, not on every keystroke.
   const [settled, setSettled] = useState(url);
   useEffect(() => {
     const t = setTimeout(() => setSettled(url), 300);
     return () => clearTimeout(t);
   }, [url]);
-  const img = useOgImage(settled, version);
 
   return (
     <section className="mb-12 border-y border-rule py-6">
@@ -341,14 +413,13 @@ function Playground({
               Re-render
             </Chip>
             <a href={settled} target="_blank" rel="noreferrer" className="self-center text-muted hover:text-ink">
-              Open image ↗
+              Open card ↗
             </a>
           </div>
         </div>
         <div style={{ width }} className="flex max-w-full flex-col gap-2">
-          <Frame img={img.value} alt="" guides={guides} busy={img.loading} />
-          <Stats img={img.value} />
-          {img.error && <p className="whitespace-pre-wrap text-pink-ink">{img.error}</p>}
+          <CardFrame key={version} src={settled} guides={guides} />
+          <p className="text-muted">Gelica, as the browser draws it for Save</p>
         </div>
       </div>
     </section>
@@ -365,6 +436,33 @@ function Frame({ img, alt, guides, busy }: { img?: Loaded; alt: string; guides: 
         <div className="absolute inset-y-0 left-1/2 aspect-square -translate-x-1/2 outline-2 outline-pink outline-dashed" />
       )}
       {busy && <div className="absolute top-2 right-2 rounded-full bg-ink px-2 py-0.5 text-paper">Rendering…</div>}
+    </div>
+  );
+}
+
+/** The browser-drawn card page (1200×630) in an iframe, scaled to fit the frame's width. */
+function CardFrame({ src, guides }: { src: string; guides: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setScale(entry.contentRect.width / 1200));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="relative aspect-[1200/630] w-full overflow-hidden bg-paper outline outline-rule">
+      <iframe
+        src={src}
+        title="Card preview"
+        className="pointer-events-none absolute top-0 left-0 h-[630px] w-[1200px] origin-top-left border-0"
+        style={{ transform: `scale(${scale})` }}
+      />
+      {guides && (
+        <div className="absolute inset-y-0 left-1/2 aspect-square -translate-x-1/2 outline-2 outline-pink outline-dashed" />
+      )}
     </div>
   );
 }
