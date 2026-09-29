@@ -152,7 +152,7 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 - The server renders a **poster** (the scene's `posterTime` frame, from `public/illustrations/`) so something shows at once. WebGL starts once the page is idle and the illustration is near the viewport, and stops off screen. Under `prefers-reduced-motion`, or without WebGL2, the poster stays.
 - The puzzle cube is interactive: it defines `play()` and a `hitArea`, so on the page you can drag its slices. Posters and the lab still use `frame(t)`.
 - **Lab:** [localhost:3000/admin/illustrations](http://localhost:3000/admin/illustrations) (dev only) shows each scene with a time scrubber, width presets and the lighting controls. **Copy settings** copies the current lighting to paste into `DEFAULT_SETTINGS` in `gl/renderer.ts`. **Save poster** writes the scene's AVIF/WebP posters into `public/illustrations/`.
-- After changing a scene or `DEFAULT_SETTINGS`, re-save the affected posters in the lab and commit them.
+- After changing a scene or `DEFAULT_SETTINGS`, re-save the affected posters in the lab and commit them. The home and service social cards draw the 1240px WebP poster, so they pick up the change on the next build.
 
 ## Styling
 
@@ -160,6 +160,7 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 - **Fluid scale:** `text-fl-*` and `*-fl-*` spacing tokens scale linearly from 320px to 1920px and hit the design's exact px at 1440. They're generated into `src/app/fluid.css` by `scripts/fluid.mjs`. Edit the script and re-run it; don't edit the CSS.
 - **Page width:** page-level blocks go in `<Container>`, which adds the gutter and caps the width at 1920px. For widths taken from the comp as a share of the viewport, use `calc(N*var(--pvw))` rather than `vw`, so they stop growing at the cap.
 - **Fonts:** Gelica (display) comes from the Adobe Fonts kit `llb6krb`. Hanken Grotesk and IBM Plex Mono come from `next/font`. Social cards set titles in Hanken Grotesk, because Gelica's licence doesn't allow embedding it server-side.
+- **Social cards:** [localhost:3000/admin/og](http://localhost:3000/admin/og) (dev only) shows each route's card as its meta tags point to it, beside those tags, with warnings for missing tags or a wrong size. The playground renders a card from any eyebrow, title, illustration or media key.
 - **Page transitions:** `PageTransition` wraps each page in a React `<ViewTransition>`. The next page is revealed through a mask that grows from the click point, using the `.page` rules in `globals.css`.
 
 ## Linting and formatting

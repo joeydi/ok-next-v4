@@ -75,8 +75,12 @@ export function IllustrationLab() {
   }
 
   return (
-    <Container className="py-fl-40 font-mono text-[12px]">
-      <h1 className="mb-6 text-[20px]">Illustration lab</h1>
+    <Container className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
+      <header className="mb-fl-32 flex flex-col gap-fl-8 border-b border-rule pb-fl-24">
+        <span className="mono-label text-muted">/ Admin · dev only</span>
+        <h1 className="display text-fl-48 leading-none tracking-heading">Illustrations</h1>
+        <p className="font-mono text-fl-14 text-muted">{Object.keys(SCENES).length} scenes</p>
+      </header>
 
       <div className="mb-8 grid gap-x-10 gap-y-3 md:grid-cols-2">
         <Row label="Scene">
