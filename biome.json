@@ -17,7 +17,7 @@
   "css": { "parser": { "tailwindDirectives": true } },
   "overrides": [
     {
-      "includes": ["src/components/illustrations/gl/**"],
+      "includes": ["src/components/illustrations/gl/**", "src/components/network/**"],
       "linter": { "rules": { "correctness": { "useHookAtTopLevel": "off" } } }
     },
     {

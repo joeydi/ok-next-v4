@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
-import { NetworkCanvas } from "@/components/NetworkCanvas";
+import { NetworkCanvas } from "@/components/network/NetworkCanvas";
 
 const QUOTE =
   "Do stuff. Be clenched, curious. Not waiting for inspiration’s shove or society’s kiss on your forehead. Pay attention. It’s all about paying attention. Attention is vitality. It connects you with others. It makes you eager. *Stay eager.*";
