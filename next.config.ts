@@ -6,6 +6,9 @@ const nextConfig = (phase: string): NextConfig => ({
   // page.dev.tsx / route.dev.ts (the /admin tools) only exist under `next dev`,
   // so they never ship in a production build.
   pageExtensions: [...(phase === PHASE_DEVELOPMENT_SERVER ? ["dev.tsx", "dev.ts"] : []), "ts", "tsx", "md", "mdx"],
+  // Paper.js (/network) only runs in the browser, but bundling it for the server
+  // follows its Node-only requires (jsdom, canvas), which aren't installed.
+  serverExternalPackages: ["paper"],
   // URLs from the previous site. Its old blog posts lived at the root and weren't
   // carried over, so they're left to 404. `:path*` also matches the bare path,
   // and the first matching rule wins, so specific case studies come first.
