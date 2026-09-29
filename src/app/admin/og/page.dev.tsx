@@ -8,7 +8,7 @@ import { OgAdmin, type OgPage } from "./OgAdmin";
 // Dev-only (see pageExtensions in next.config.ts): every route's Open Graph card as
 // the page's meta tags point to it, plus a playground that renders cards from query params.
 
-export const metadata: Metadata = { title: "OG images", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Open Graph", robots: { index: false, follow: false } };
 
 export default function OgAdminPage() {
   let notes: OgPage[] = [];

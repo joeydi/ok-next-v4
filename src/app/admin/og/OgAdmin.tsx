@@ -129,15 +129,32 @@ export function OgAdmin({
   const [guides, setGuides] = useState(false);
   const [preview, setPreview] = useState(false);
   const [version, setVersion] = useState(0);
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const shown = q ? pages.filter((p) => `${p.label} ${p.path}`.toLowerCase().includes(q)) : pages;
 
   return (
     <Container className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
-      <header className="mb-fl-32 flex flex-col gap-fl-8 border-b border-rule pb-fl-24">
-        <span className="mono-label text-muted">/ Admin · dev only</span>
-        <h1 className="display text-fl-48 leading-none tracking-heading">OG images</h1>
-        <p className="font-mono text-fl-14 text-muted">
-          {pages.length} routes · {pages.filter((p) => p.draft).length} drafts
-        </p>
+      <header className="mb-fl-32 flex flex-wrap items-end justify-between gap-fl-24 border-b border-rule pb-fl-24">
+        <div className="flex flex-col gap-fl-8">
+          <span className="mono-label text-muted">/ Admin · dev only</span>
+          <h1 className="display text-fl-48 leading-none tracking-heading">Open Graph</h1>
+          <p className="font-mono text-fl-14 text-muted">
+            {q ? `${shown.length} of ${pages.length}` : pages.length} routes · {pages.filter((p) => p.draft).length}{" "}
+            drafts
+          </p>
+        </div>
+        {/* Filters the routes and hides the playground. */}
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search routes"
+          aria-label="Search routes by title or path"
+          autoComplete="off"
+          spellCheck={false}
+          className="w-72 max-w-full border border-rule bg-paper-light px-3 py-2 font-mono text-fl-14 focus:border-ink focus:outline-none"
+        />
       </header>
 
       <div className="mb-8 grid gap-y-3">
@@ -161,13 +178,17 @@ export function OgAdmin({
         </Row>
       </div>
 
-      <Playground width={width} guides={guides} scenes={scenes} mediaKeys={mediaKeys} />
+      {/* Hidden rather than unmounted, so what's typed into it survives a search. */}
+      <div hidden={Boolean(q)}>
+        <Playground width={width} guides={guides} scenes={scenes} mediaKeys={mediaKeys} />
+      </div>
 
       {notesError && <p className="mb-6 text-pink-ink">Notes failed to load: {notesError}</p>}
       <div className="grid gap-y-16">
-        {pages.map((p) => (
+        {shown.map((p) => (
           <Card key={p.path} page={p} width={width} guides={guides} preview={preview} version={version} />
         ))}
+        {shown.length === 0 && <p className="text-muted">No routes match “{query}”.</p>}
       </div>
     </Container>
   );
@@ -193,16 +214,18 @@ function Card({
   const issues = problems(meta.value, img.value);
 
   return (
-    <article className="grid gap-3">
-      <header className="flex items-baseline gap-3">
-        <a href={page.path} className="text-[14px] underline-offset-2 hover:underline">
+    <article className="grid w-fit max-w-full gap-4">
+      <header className="flex flex-col gap-1">
+        <a href={page.path} className="w-fit text-[20px] underline-offset-2 hover:underline">
           {page.label}
         </a>
-        <span className="text-muted">{page.path}</span>
-        {page.draft && <span className="text-pink-ink">draft</span>}
-        <button type="button" onClick={() => setOwn(own + 1)} className="text-muted hover:text-ink">
-          Reload
-        </button>
+        <div className="flex items-baseline gap-3">
+          <span className="text-muted">{page.path}</span>
+          {page.draft && <span className="text-pink-ink">draft</span>}
+          <button type="button" onClick={() => setOwn(own + 1)} className="ml-auto text-muted hover:text-ink">
+            Reload
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-wrap items-start gap-8">
@@ -270,7 +293,7 @@ function Playground({
 
   return (
     <section className="mb-12 border-y border-rule py-6">
-      <h2 className="mb-4 text-[14px]">Playground</h2>
+      <h2 className="mb-4 text-[20px]">Playground</h2>
       <div className="flex flex-wrap gap-8">
         <div className="grid w-[520px] max-w-full content-start gap-3">
           <Field id="og-eyebrow" label="Eyebrow (parts split by two spaces)">
