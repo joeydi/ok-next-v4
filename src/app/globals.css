@@ -51,7 +51,7 @@
     /* Page transition timings and amounts (see "Page transitions" below). The
        View transitions doc in the admin reads them from here. */
     --view-transition-reveal: 800ms;
-    --view-transition-out: 600ms;
+    --view-transition-out: 400ms;
     --view-transition-in: 600ms;
     --view-transition-in-delay: 200ms;
     --view-transition-blur: 400ms;
@@ -204,7 +204,7 @@
   );
   animation:
     var(--view-transition-reveal) var(--ease-in-out-cubic) both page-reveal,
-    var(--view-transition-out) var(--ease-in-out-cubic) both page-out,
+    var(--view-transition-out) var(--ease-in) both page-out,
     var(--view-transition-blur) var(--ease-in) both page-blur-out;
 }
 

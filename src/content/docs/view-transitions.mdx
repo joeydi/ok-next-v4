@@ -18,7 +18,7 @@ export const PAGE = [
     name: "page-out",
     note: "Zooms past from the start point",
     duration: "out",
-    ease: "in-out-cubic",
+    ease: "in",
     value: { label: "--zoom", from: 1, to: "zoom-out", digits: 3 },
     change: "scale, and divides the mask radius",
   },
@@ -112,7 +112,7 @@ Held still, with no animation: the nav's group and its new snapshot, and the ser
 Each dot sits where the playhead puts the animation it names. See [Easing curves](/admin/docs/easing-curves) for every token.
 
 <DocGrid>
-  <TransitionCurve curves={[{ ease: "in-out-cubic", duration: "reveal" }]} used="page-reveal (both pages), page-out · dot: page-reveal">
+  <TransitionCurve curves={[{ ease: "in-out-cubic", duration: "reveal" }]} used="page-reveal (both pages) · dot: page-reveal">
     A slow start keeps the circle tight around the click, the middle does the travelling, and the landing is gentle.
   </TransitionCurve>
   <TransitionCurve curves={[{ ease: "out-expo", duration: "in", delay: "in-delay" }]} used="page-in, filter-in · dot: page-in">
@@ -124,7 +124,7 @@ Each dot sits where the playhead puts the animation it names. See [Easing curves
       { ease: "in", tone: "muted", label: "Old", duration: "blur" },
       { ease: "out", label: "New", duration: "blur", delay: "in-delay" },
     ]}
-    used="page-blur-out (grey), page-blur-in (pink) · dots: both"
+    used="page-out and page-blur-out (grey), page-blur-in (pink) · dots: both"
   >
     Mirror images that overlap: the old page is still blurring while the new one is already coming into focus.
   </TransitionCurve>
