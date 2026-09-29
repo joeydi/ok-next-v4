@@ -4,6 +4,10 @@ import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { NetworkCanvas } from "@/components/network/NetworkCanvas";
 
+/** Her 2003 commencement address at Vassar College. */
+const SOURCE =
+  "https://www.openculture.com/2022/06/susan-sontags-commencement-address-advice-pay-attention-it-connects-you-with-others-it-makes-you-eager-stay-eager.html";
+
 const QUOTE =
   "Do stuff. Be clenched, curious. Not waiting for inspiration’s shove or society’s kiss on your forehead. Pay attention. It’s all about paying attention. Attention is vitality. It connects you with others. It makes you eager. *Stay eager.*";
 
@@ -24,12 +28,17 @@ export default function NetworkPage() {
           <Container className="grid-12 w-full py-fl-96">
             {/* Set like the notes' PullQuote (.note-quote). */}
             <figure data-network-avoid className="col-span-12 lg:col-span-10">
-              <blockquote className="display text-fl-60 leading-[1.08] tracking-heading text-balance">
+              <blockquote cite={SOURCE} className="display text-fl-60 leading-[1.08] tracking-heading text-balance">
                 <p>
                   <Accent text={QUOTE} />
                 </p>
               </blockquote>
-              <figcaption className="mono-label mt-fl-40">— Susan Sontag</figcaption>
+              <figcaption className="mono-label mt-fl-40 flex flex-wrap gap-x-fl-20 gap-y-2">
+                <span>— Susan Sontag</span>
+                <a href={SOURCE} target="_blank" rel="noopener noreferrer" className="text-pink-ink">
+                  Vassar College commencement, 2003 ↗
+                </a>
+              </figcaption>
             </figure>
           </Container>
         </section>
