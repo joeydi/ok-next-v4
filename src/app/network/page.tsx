@@ -23,7 +23,7 @@ export default function NetworkPage() {
           <NetworkCanvas className="absolute inset-0 -z-10 size-full text-pink" />
           <Container className="grid-12 w-full py-fl-96">
             {/* Set like the notes' PullQuote (.note-quote). */}
-            <figure className="col-span-12 lg:col-span-10">
+            <figure data-network-avoid className="col-span-12 lg:col-span-10">
               <blockquote className="display text-fl-60 leading-[1.08] tracking-heading text-balance">
                 <p>
                   <Accent text={QUOTE} />

@@ -1,13 +1,18 @@
 // The /network animation, first written with Paper.js for the old site. Each node
 // wanders (Reynolds steering: it seeks a point that jitters on a small circle
 // projected ahead of it), wraps at the edges, and any two nodes closer than
-// MAX_LENGTH are joined by a line that fades as they part. Positions are CSS px.
+// MAX_LENGTH are joined by a line that fades as they part. Nodes also steer out of
+// `avoid` rects (the quote), so they gather around the text. Positions are CSS px.
 
 /** One tick of the simulation, s. The motion was tuned per frame at 60fps. */
 export const STEP = 1 / 60;
 
-const NODE_COUNT = 60;
-const SPEED = 0.125;
+/** Nodes per px² of free canvas (outside the avoid rects): 600 felt right at 1920×1280. */
+const DENSITY = 600 / 1_800_000;
+const MIN_NODES = 20;
+/** The pair search is O(n²), so very large screens stop here. */
+const MAX_NODES = 1000;
+const SPEED = 0.25;
 const MIN_RADIUS = 2;
 const MAX_RADIUS = 4;
 const MAX_LENGTH = 120;
@@ -17,21 +22,36 @@ const OFFSET = 20;
 const WANDER_RADIUS = 5;
 const WANDER_DISTANCE = 100;
 const WANDER_CHANGE = 0.4;
-/** Nodes arrive one at a time, this far apart (s), each fading in over FADE_IN. */
-const ARRIVAL = 0.1;
+/** Nodes arrive one at a time, this far apart (s), each fading in over FADE_IN. New ones arrive the same way after a resize. */
+const ARRIVAL = 0.01;
 const FADE_IN = 0.4;
 const LINE_RADIUS = 0.5;
-
-/** By the time every node has arrived and faded in (s). */
-export const SETTLED = NODE_COUNT * ARRIVAL + FADE_IN;
+/** The push out of an avoid rect. It turns a node's heading rather than shoving it. */
+const AVOID_FORCE = 0.01;
+/** Outside a rect, the push fades to nothing over this distance (px). */
+const AVOID_MARGIN = 40;
+/** Tries at placing a node outside the avoid rects before settling for anywhere. */
+const PLACE_TRIES = 10;
 
 /** Floats per instance: x0, y0, x1, y1, radius, alpha. A node is a zero-length segment. */
 export const STRIDE = 6;
-export const MAX_INSTANCES = (NODE_COUNT * (NODE_COUNT - 1)) / 2 + NODE_COUNT;
+/** Room for far more lines than the density makes (about 8 per node); any past it are skipped. */
+const MAX_LINES = MAX_NODES * 40;
+export const MAX_INSTANCES = MAX_LINES + MAX_NODES;
+
+/** x0, y0, x1, y1 in canvas px. */
+export type Rect = [x0: number, y0: number, x1: number, y1: number];
 
 export type Network = {
   width: number;
   height: number;
+  avoid: Rect[];
+  /** Live nodes: the first `count` slots of each array. */
+  count: number;
+  /** Whether new nodes arrive one by one, or all at once (for a still frame). */
+  stagger: boolean;
+  /** When each node arrives (s, on the simulation clock). */
+  born: Float32Array;
   x: Float32Array;
   y: Float32Array;
   vx: Float32Array;
@@ -43,40 +63,97 @@ export type Network = {
 
 const between = (min: number, max: number) => Math.random() * (max - min) + min;
 
-export function createNetwork(width: number, height: number): Network {
+const inside = (rects: Rect[], px: number, py: number) =>
+  rects.some(([x0, y0, x1, y1]) => px >= x0 && px <= x1 && py >= y0 && py <= y1);
+
+export function createNetwork(width: number, height: number, avoid: Rect[], stagger: boolean): Network {
   const n: Network = {
     width,
     height,
-    x: new Float32Array(NODE_COUNT),
-    y: new Float32Array(NODE_COUNT),
-    vx: new Float32Array(NODE_COUNT),
-    vy: new Float32Array(NODE_COUNT),
-    theta: new Float32Array(NODE_COUNT),
-    maxSpeed: new Float32Array(NODE_COUNT),
-    radius: new Float32Array(NODE_COUNT),
+    avoid,
+    count: 0,
+    stagger,
+    born: new Float32Array(MAX_NODES),
+    x: new Float32Array(MAX_NODES),
+    y: new Float32Array(MAX_NODES),
+    vx: new Float32Array(MAX_NODES),
+    vy: new Float32Array(MAX_NODES),
+    theta: new Float32Array(MAX_NODES),
+    maxSpeed: new Float32Array(MAX_NODES),
+    radius: new Float32Array(MAX_NODES),
   };
-
-  for (let i = 0; i < NODE_COUNT; i += 1) {
-    const heading = between(0, Math.PI * 2);
-    n.maxSpeed[i] = between(SPEED, SPEED * 2);
-    n.x[i] = between(-OFFSET, width + OFFSET);
-    n.y[i] = between(-OFFSET, height + OFFSET);
-    n.vx[i] = Math.cos(heading) * n.maxSpeed[i];
-    n.vy[i] = Math.sin(heading) * n.maxSpeed[i];
-    n.radius[i] = Math.floor(between(MIN_RADIUS, MAX_RADIUS + 1));
-  }
-
+  resize(n, width, height, avoid, 0);
   return n;
 }
 
-/** How many nodes have arrived at `clock` (s). */
-const arrived = (clock: number) => Math.min(NODE_COUNT, Math.floor(clock / ARRIVAL) + 1);
+/** Sets the canvas size and avoid rects, adding or dropping nodes to keep the density. */
+export function resize(n: Network, width: number, height: number, avoid: Rect[], clock: number) {
+  Object.assign(n, { width, height, avoid });
+
+  // Free area: the canvas less the part of each rect inside it.
+  const covered = avoid.reduce(
+    (sum, [x0, y0, x1, y1]) =>
+      sum + Math.max(0, Math.min(x1, width) - Math.max(x0, 0)) * Math.max(0, Math.min(y1, height) - Math.max(y0, 0)),
+    0,
+  );
+  const target = Math.min(MAX_NODES, Math.max(MIN_NODES, Math.round((width * height - covered) * DENSITY)));
+
+  for (let i = n.count; i < target; i += 1) {
+    place(n, i, n.stagger ? clock + (i - n.count) * ARRIVAL : clock - FADE_IN);
+  }
+  n.count = target;
+}
+
+/** Starts node `i` somewhere outside the avoid rects, heading anywhere. */
+function place(n: Network, i: number, born: number) {
+  const heading = between(0, Math.PI * 2);
+  n.born[i] = born;
+  n.maxSpeed[i] = between(SPEED, SPEED * 2);
+  for (let t = 0; t < PLACE_TRIES && (t === 0 || inside(n.avoid, n.x[i], n.y[i])); t += 1) {
+    n.x[i] = between(-OFFSET, n.width + OFFSET);
+    n.y[i] = between(-OFFSET, n.height + OFFSET);
+  }
+  n.vx[i] = Math.cos(heading) * n.maxSpeed[i];
+  n.vy[i] = Math.sin(heading) * n.maxSpeed[i];
+  n.theta[i] = 0;
+  n.radius[i] = Math.floor(between(MIN_RADIUS, MAX_RADIUS + 1));
+}
+
+/**
+ * The push out of the avoid rects at (px, py), as a direction weighted 0–1: full
+ * strength toward the nearest edge inside a rect, fading away from it outside.
+ */
+function avoidance(rects: Rect[], px: number, py: number): [number, number] {
+  let ax = 0;
+  let ay = 0;
+
+  for (const [x0, y0, x1, y1] of rects) {
+    const dx = px - Math.min(Math.max(px, x0), x1);
+    const dy = py - Math.min(Math.max(py, y0), y1);
+    const d = Math.hypot(dx, dy);
+
+    if (d === 0) {
+      const edge = Math.min(px - x0, x1 - px, py - y0, y1 - py);
+      if (edge === px - x0) ax -= 1;
+      else if (edge === x1 - px) ax += 1;
+      else if (edge === py - y0) ay -= 1;
+      else ay += 1;
+    } else if (d < AVOID_MARGIN) {
+      const weight = 1 - d / AVOID_MARGIN;
+      ax += (dx / d) * weight;
+      ay += (dy / d) * weight;
+    }
+  }
+
+  return [ax, ay];
+}
 
 /** Advances every node that has arrived by one STEP. */
 export function step(n: Network, clock: number) {
-  const { x, y, vx, vy, theta, maxSpeed, width, height } = n;
+  const { born, x, y, vx, vy, theta, maxSpeed, width, height } = n;
 
-  for (let i = 0, count = arrived(clock); i < count; i += 1) {
+  for (let i = 0; i < n.count; i += 1) {
+    if (born[i] > clock) continue;
     theta[i] += between(-WANDER_CHANGE, WANDER_CHANGE);
 
     // The wander target, relative to the node: straight ahead, nudged around a small circle.
@@ -94,8 +171,10 @@ export function step(n: Network, clock: number) {
       sy *= MAX_FORCE / force;
     }
 
-    vx[i] += sx;
-    vy[i] += sy;
+    const [ax, ay] = avoidance(n.avoid, x[i], y[i]);
+
+    vx[i] += sx + ax * AVOID_FORCE;
+    vy[i] += sy + ay * AVOID_FORCE;
     const v = Math.hypot(vx[i], vy[i]);
     if (v > maxSpeed[i]) {
       vx[i] *= maxSpeed[i] / v;
@@ -114,9 +193,8 @@ export function step(n: Network, clock: number) {
 
 /** Writes the lines, then the nodes over them, into `out`; returns the instance count. */
 export function instances(n: Network, clock: number, out: Float32Array) {
-  const { x, y, radius } = n;
-  const count = arrived(clock);
-  const fade = (i: number) => Math.min(1, Math.max(0, (clock - i * ARRIVAL) / FADE_IN));
+  const { born, x, y, radius, count } = n;
+  const fade = (i: number) => Math.min(1, Math.max(0, (clock - born[i]) / FADE_IN));
   let k = 0;
 
   const push = (x0: number, y0: number, x1: number, y1: number, r: number, alpha: number) => {
@@ -130,8 +208,10 @@ export function instances(n: Network, clock: number, out: Float32Array) {
     k += 1;
   };
 
-  for (let i = 0; i < count; i += 1) {
-    for (let j = i + 1; j < count; j += 1) {
+  for (let i = 0; i < count && k < MAX_LINES; i += 1) {
+    if (born[i] > clock) continue;
+    for (let j = i + 1; j < count && k < MAX_LINES; j += 1) {
+      if (born[j] > clock) continue;
       const length = Math.hypot(x[j] - x[i], y[j] - y[i]);
       if (length < MAX_LENGTH) {
         push(x[i], y[i], x[j], y[j], LINE_RADIUS, (1 - length / MAX_LENGTH) * Math.min(fade(i), fade(j)));
@@ -139,7 +219,7 @@ export function instances(n: Network, clock: number, out: Float32Array) {
     }
   }
 
-  for (let i = 0; i < count; i += 1) push(x[i], y[i], x[i], y[i], radius[i], fade(i));
+  for (let i = 0; i < count; i += 1) if (born[i] <= clock) push(x[i], y[i], x[i], y[i], radius[i], fade(i));
 
   return k;
 }
