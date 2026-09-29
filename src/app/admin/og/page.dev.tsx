@@ -23,6 +23,7 @@ export default function OgAdminPage() {
     ...Object.entries(services).map(([slug, s]) => ({ path: `/${slug}`, label: s.title })),
     { path: "/notes", label: "Notes" },
     ...notes,
+    { path: "/network", label: "Network" },
   ];
   // Anything satori can draw: images and video posters, not SVGs.
   const mediaKeys = Object.entries(manifest as Record<string, { type: string }>)
