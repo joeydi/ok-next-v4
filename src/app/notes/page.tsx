@@ -40,8 +40,7 @@ export default function NotesPage() {
               Notes<span className="text-pink">.</span>
             </h1>
             <p className="col-span-12 mt-fl-32 text-fl-24 leading-normal text-pretty text-body md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
-              Project write-ups, process notes, and the occasional thing I made for fun. Mostly from Burlington,
-              Vermont.
+              Project write-ups, process notes, and the occasional thing I made for fun.
             </p>
           </div>
         </Container>

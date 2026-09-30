@@ -166,7 +166,7 @@ function Testimonials() {
           In their words
         </Eyebrow>
         <h2 id="kind-words" className="display text-fl-60 leading-none tracking-heading">
-          Kind words from good people.
+          Kicking ass and <s>taking names</s> <span className="text-pink">making friends.</span>
         </h2>
       </div>
       <div className="grid gap-x-fl-96 gap-y-fl-64 lg:grid-cols-2">
