@@ -167,7 +167,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                     <span className="display col-span-11 text-fl-36 leading-[1.05] tracking-[-.015em] md:col-span-7 md:col-start-3">
                       <span className="hover-title">{n.plainTitle}</span>
                     </span>
-                    <span aria-hidden="true" className="col-span-1 text-right text-fl-24 md:col-start-12">
+                    <span aria-hidden="true" className="col-span-1 text-right text-fl-24 leading-intro md:col-start-12">
                       <span className="nudge">→</span>
                     </span>
                   </Link>

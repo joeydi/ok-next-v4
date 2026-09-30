@@ -30,7 +30,7 @@ export function Contact({
         Contact
       </Eyebrow>
       <h2 className="display mt-fl-32 text-fl-168 leading-[.9] tracking-display">Say hello.</h2>
-      {note && <p className="mt-fl-28 max-w-[880px] text-fl-24 leading-normal text-muted-light">{note}</p>}
+      {note && <p className="mt-fl-28 max-w-[880px] text-fl-24 leading-intro text-muted-light">{note}</p>}
       <div
         className={cn("flex flex-wrap items-baseline gap-x-fl-56 gap-y-4 text-fl-30", note ? "mt-fl-40" : "mt-fl-48")}
       >

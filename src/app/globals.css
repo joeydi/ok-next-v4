@@ -35,6 +35,8 @@
   --leading-code: 1.5;
   /* Body copy at 18 and 20: cards, lists, descriptions and note articles. */
   --leading-copy: 1.6;
+  /* Intro paragraphs at 24, under a page's title and in the footer. */
+  --leading-intro: 1.5;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0, 0, 0.6, 1);

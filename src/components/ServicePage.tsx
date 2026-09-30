@@ -76,7 +76,7 @@ export function ServicePage({ service: s }: { service: Service }) {
             className="mx-auto w-full scale-120 lg:scale-100 lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:w-[calc(49.51*var(--pvw))] lg:right-0"
           />
           <div className="lg:mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
-            <p className="text-fl-24 leading-normal text-pretty text-body">{s.intro}</p>
+            <p className="text-fl-24 leading-intro text-pretty text-body">{s.intro}</p>
             <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-[1.3] text-pink-ink">
               {s.tagline}
             </p>

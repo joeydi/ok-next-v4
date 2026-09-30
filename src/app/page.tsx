@@ -56,7 +56,7 @@ function Hero() {
               className="frame object-cover saturate-[.85]"
             />
           </div>
-          <p className="text-fl-24 leading-normal text-pretty text-body">
+          <p className="text-fl-24 leading-intro text-pretty text-body">
             I’m Joe di Stefano, a designer and developer in Burlington, Vermont. For fifteen years I’ve worked alongside
             small teams, founders, and non-profits to figure out what’s worth building, then build it well.
           </p>

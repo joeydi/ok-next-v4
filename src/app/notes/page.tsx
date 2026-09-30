@@ -39,7 +39,7 @@ export default function NotesPage() {
             <h1 className="display col-span-12 text-fl-144 leading-[.9] tracking-display lg:col-span-7">
               Notes<span className="text-pink">.</span>
             </h1>
-            <p className="col-span-12 mt-fl-32 text-fl-24 leading-normal text-pretty text-body md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
+            <p className="col-span-12 mt-fl-32 text-fl-24 leading-intro text-pretty text-body md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
               Project write-ups, process notes, and the occasional thing I made for fun.
             </p>
           </div>

@@ -79,7 +79,7 @@ function Service() {
         className="absolute top-10 right-10 w-[713px]"
       />
       <div className="mt-18 flex max-w-[680px] flex-col gap-8">
-        <p className="text-[24px] leading-normal text-body">{s.intro}</p>
+        <p className="text-[24px] leading-intro text-body">{s.intro}</p>
         <p className="border-t border-rule pt-5 font-display text-[24px] leading-[1.3] text-pink-ink">{s.tagline}</p>
       </div>
     </div>
