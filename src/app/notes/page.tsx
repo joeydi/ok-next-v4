@@ -36,7 +36,7 @@ export default function NotesPage() {
         <Container as="header" className="pt-fl-56 pb-fl-72">
           <Eyebrow details={[`${all.length} posts`]}>Notes</Eyebrow>
           <div className="grid-12 mt-fl-48 items-end gap-y-fl-24">
-            <h1 className="display col-span-12 text-fl-144 leading-[.9] tracking-display lg:col-span-7">
+            <h1 className="display col-span-12 text-fl-144 leading-heading-144 tracking-display lg:col-span-7">
               Notes<span className="text-pink">.</span>
             </h1>
             <p className="col-span-12 mt-fl-32 text-fl-24 leading-intro text-pretty text-body md:col-span-8 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:pb-[18px]">
@@ -62,7 +62,7 @@ export default function NotesPage() {
                     {featured.tag} · {formatDate(featured.date)}
                   </span>
                 </div>
-                <h2 className="display text-fl-48 leading-[1.02] tracking-heading text-balance">
+                <h2 className="display text-fl-48 leading-heading-48 tracking-heading text-balance">
                   <span className="hover-title">{featured.plainTitle}</span>
                 </h2>
                 <p className="text-fl-18 leading-copy text-pretty text-body">{featured.description}</p>

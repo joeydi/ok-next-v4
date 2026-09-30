@@ -37,10 +37,6 @@
   --leading-copy: 1.6;
   /* Intro paragraphs at 24, under a page's title and in the footer. */
   --leading-intro: 1.5;
-  /* Gelica titles at 30: principles, process steps, service cards. */
-  --leading-title: 1.1;
-  /* Gelica running text: the note lead, list items, the pink line under a service intro. */
-  --leading-display-text: 1.3;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0, 0, 0.6, 1);
@@ -697,7 +693,7 @@
   .note-lead {
     font-family: var(--font-display);
     font-size: var(--text-fl-30);
-    line-height: var(--leading-display-text);
+    line-height: var(--leading-display-text-30);
     color: var(--color-ink);
   }
 
@@ -749,7 +745,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: var(--text-fl-60);
-    line-height: 1.08;
+    line-height: var(--leading-display-text-60);
     letter-spacing: var(--tracking-heading);
     text-wrap: balance;
     color: var(--color-ink);

@@ -9,7 +9,7 @@ export function DocCard({ label, title, children }: { label: string; title: stri
   return (
     <div className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
       <span className="mono-label text-muted">{label}</span>
-      <h3 className="display text-fl-30 leading-[1.1] tracking-heading text-ink">{title}</h3>
+      <h3 className="display text-fl-30 leading-heading-30 tracking-heading text-ink">{title}</h3>
       <div className="text-fl-18 leading-[1.6] text-pretty text-body">{children}</div>
     </div>
   );

@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { fonts, type SizeToken, sizeAt, trackings, typeScale } from "@/lib/tokens";
+import { fonts, leadings, type SizeToken, sizeAt, trackings, typeScale } from "@/lib/tokens";
 import { DocFacts } from "./DocTable";
 import { placeLabels } from "./Palette";
 import { type Face, type TypeStyle, typeStyles } from "./typeUsage";
@@ -375,6 +375,23 @@ export function LeadingPlot() {
   const y = (l: number) => m.t + (1 - (l - lo) / (hi - lo)) * ih;
   const r = (uses: number) => 4 + Math.sqrt(uses) * 1.6;
   const leadingTicks = Array.from({ length: Math.round((hi - lo) / 0.2) + 1 }, (_, i) => lo + i * 0.2);
+  // The Gelica scales fluid.css generates (--leading-heading-*, --leading-display-text-*),
+  // across the sizes plotted, each labelled at its start: the text scale to the left
+  // of its first mark, the heading scale under its first, where no marks sit.
+  const scales = (
+    [
+      { name: "display-text", label: "Text scale", dx: -14, dy: 0, anchor: "end" },
+      { name: "heading", label: "Heading scale", dx: 0, dy: 26, anchor: "middle" },
+    ] as const
+  ).map(({ name, label, dx, dy, anchor }) => {
+    const steps = Object.entries(leadings())
+      .filter(([k]) => new RegExp(`^${name}-\\d+$`).test(k))
+      .map(([k, l]) => ({ size: Number(k.slice(name.length + 1)), leading: l }))
+      .filter((p) => p.size <= sizes[sizes.length - 1])
+      .sort((a, b) => a.size - b.size);
+    const at = { x: x(steps[0].size) + dx, y: y(steps[0].leading) + dy, anchor };
+    return { label, steps, at };
+  });
   const placed = points.map((p) => ({ x: x(p.size), y: y(p.leading), text: String(p.leading), r: r(p.uses) }));
 
   return (
@@ -420,6 +437,28 @@ export function LeadingPlot() {
           <text x={-(m.t + ih)} y={12} transform="rotate(-90)" className="fill-ink">
             Line height →
           </text>
+          {scales.map((sc) => (
+            <path
+              key={sc.label}
+              d={sc.steps.map((p, i) => `${i ? "L" : "M"}${x(p.size).toFixed(1)} ${y(p.leading).toFixed(1)}`).join("")}
+              fill="none"
+              className="stroke-pink/50"
+              strokeWidth={1.5}
+              strokeDasharray="5 4"
+            />
+          ))}
+          {scales.map((sc) => (
+            <text
+              key={sc.label}
+              x={sc.at.x}
+              y={sc.at.y}
+              textAnchor={sc.at.anchor}
+              dominantBaseline="central"
+              className="fill-pink-ink"
+            >
+              {sc.label}
+            </text>
+          ))}
           {[...points]
             .sort((a, b) => b.uses - a.uses)
             .map((p) => (

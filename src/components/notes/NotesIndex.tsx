@@ -106,7 +106,7 @@ export function NotesList({
                 </span>
                 <span className="mono-label col-span-10 text-muted md:col-span-2 lg:pt-2.5">{n.tag}</span>
                 <span className="col-span-12 flex flex-col gap-fl-12 md:col-span-9 md:col-start-4 lg:col-span-6">
-                  <span className="display text-fl-36 leading-[1.05] tracking-heading text-balance">
+                  <span className="display text-fl-36 leading-heading-36 tracking-heading text-balance">
                     <span className="hover-title">{n.plainTitle}</span>
                   </span>
                   {n.description && (

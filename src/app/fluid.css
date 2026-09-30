@@ -38,5 +38,24 @@
   --spacing-fl-160: clamp(5rem, 3.5714rem + 7.1429vw, 12.1429rem);
   --spacing-gutter: clamp(1.25rem, 0.4643rem + 3.9286vw, 5.1786rem);
 
+  --leading-heading-30: 1.1;
+  --leading-heading-36: 1.07;
+  --leading-heading-48: 1.03;
+  --leading-heading-60: 1;
+  --leading-heading-96: 0.93;
+  --leading-heading-144: 0.87;
+  --leading-heading-168: 0.85;
+  --leading-heading-192: 0.85;
+  --leading-display-text-24: 1.3;
+  --leading-display-text-26: 1.28;
+  --leading-display-text-30: 1.25;
+  --leading-display-text-36: 1.21;
+  --leading-display-text-48: 1.14;
+  --leading-display-text-60: 1.09;
+  --leading-display-text-96: 0.98;
+  --leading-display-text-144: 0.89;
+  --leading-display-text-168: 0.85;
+  --leading-display-text-192: 0.85;
+
   --container-page: 120rem;
 }

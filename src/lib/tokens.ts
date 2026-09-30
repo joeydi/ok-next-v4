@@ -124,10 +124,10 @@ export function trackings(): { name: string; em: number }[] {
   });
 }
 
-/** Every --leading-* token, as a plain line-height. */
+/** Every --leading-* token, as a plain line-height: globals.css's, and the Gelica scales fluid.css generates. */
 export function leadings(): Record<string, number> {
   return Object.fromEntries(
-    [...declarations("leading")].map(([name, value]) => {
+    [...declarations("leading"), ...declarations("leading", FLUID)].map(([name, value]) => {
       const n = Number(value);
       if (Number.isNaN(n)) throw new Error(`tokens: --leading-${name} isn't a plain number (${value})`);
       return [name, n];

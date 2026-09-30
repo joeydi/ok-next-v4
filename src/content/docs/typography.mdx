@@ -64,11 +64,11 @@ Gelica is tightened as it gets bigger, and the mono caps are opened up. Each tok
 
 ## Styles in use
 
-Line heights are always numbers. Anything that sets none takes `--leading-body` (1.3, Hanken Grotesk's own `normal`), intro paragraphs use `--leading-intro` (1.5), Gelica titles at 30 use `--leading-title` (1.1) and Gelica running text `--leading-display-text` (1.3), body copy (cards, lists, descriptions and note articles) uses `--leading-copy` (1.6, as `leading-copy`), the mono utilities set `--leading-mono` (1.6) and code blocks `--leading-code` (1.5). Avoid Tailwind's `leading-normal`: it's 1.5, not the font's `normal`, so use `leading-intro` instead.
+Line heights are always numbers. Anything that sets none takes `--leading-body` (1.3, Hanken Grotesk's own `normal`), intro paragraphs use `--leading-intro` (1.5), Gelica takes its line height from two scales that `scripts/fluid.mjs` generates, one token per size: headings use `leading-heading-*` (1.1 at 30 down to 0.85 at 168) and running text such as the note lead, list items and quotes uses `leading-display-text-*` (1.3 at 24 down to 0.85), so use the one matching the size (`text-fl-48 leading-heading-48`). body copy (cards, lists, descriptions and note articles) uses `--leading-copy` (1.6, as `leading-copy`), the mono utilities set `--leading-mono` (1.6) and code blocks `--leading-code` (1.5). Avoid Tailwind's `leading-normal`: it's 1.5, not the font's `normal`, so use `leading-intro` instead.
 
 <DocFigure
   title="Leading × size"
-  caption="Gelica titles tighten as they grow, from 1.1 at 30 to 0.9 at 168, while reading text sits between 1.3 and 1.6. Hover a mark for its face and how often it's used."
+  caption="The dashed lines are the two Gelica scales, straight on this log size axis: headings from 1.1 at 30 and running text from 1.3 at 24, meeting at 0.85 at 168. Reading text in the other faces sits between 1.3 and 1.6. Hover a mark for its face and how often it's used."
 >
   <LeadingPlot />
 </DocFigure>

@@ -28,7 +28,10 @@ export default function NetworkPage() {
           <Container className="grid-12 w-full py-fl-96">
             {/* Set like the notes' PullQuote (.note-quote). */}
             <figure data-network-avoid className="col-span-12 lg:col-span-10">
-              <blockquote cite={SOURCE} className="display text-fl-60 leading-[1.08] tracking-heading text-balance">
+              <blockquote
+                cite={SOURCE}
+                className="display text-fl-60 leading-display-text-60 tracking-heading text-balance"
+              >
                 <p>
                   <Accent text={QUOTE} />
                 </p>

@@ -60,6 +60,26 @@ const named = {
   gutter: [64, 20],
 };
 
+// Gelica line-heights, one per type size: straight lines on a log size scale that
+// tighten as the type grows, one for headings and a looser one for running text
+// (the note lead, list items, quotes). [design px, line-height] at each end; sizes
+// past the end hold its value. Used as `leading-heading-60`, `leading-display-text-30`.
+const displayLeading = {
+  heading: [
+    [30, 1.1],
+    [168, 0.85],
+  ],
+  "display-text": [
+    [24, 1.3],
+    [168, 0.85],
+  ],
+};
+
+function leadingAt(size, [[s0, l0], [s1, l1]]) {
+  const t = Math.min(1, Math.log(size / s0) / Math.log(s1 / s0));
+  return +(l0 + (l1 - l0) * t).toFixed(2);
+}
+
 const rem = (px) => `${+(px / 16).toFixed(4)}rem`;
 
 function fluid(design, min) {
@@ -79,6 +99,12 @@ for (const [d, m] of Object.entries(type)) lines.push(`  --text-fl-${d}: ${fluid
 lines.push("");
 for (const [d, m] of Object.entries(space)) lines.push(`  --spacing-fl-${d}: ${fluid(+d, m)};`);
 for (const [name, [d, m]] of Object.entries(named)) lines.push(`  --spacing-${name}: ${fluid(d, m)};`);
+lines.push("");
+for (const [name, ends] of Object.entries(displayLeading)) {
+  for (const d of Object.keys(type).filter((d) => +d >= ends[0][0])) {
+    lines.push(`  --leading-${name}-${d}: ${leadingAt(+d, ends)};`);
+  }
+}
 lines.push("");
 // Page max width (<Container>, `max-w-page`) — stops where the scale stops growing.
 lines.push(`  --container-page: ${rem(VW_MAX)};`);

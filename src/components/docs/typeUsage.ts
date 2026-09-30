@@ -41,7 +41,7 @@ const TAILWIND_LEADING: Record<string, number> = { tight: 1.25, snug: 1.375, nor
 
 /** A line-height class's value: `leading-none`, `leading-[1.6]` or a --leading-* token. */
 function leadingOf(classes: string) {
-  const m = classes.match(/(?<![\w:-])leading-(?:\[([\d.]+)\]|([a-z-]+))/);
+  const m = classes.match(/(?<![\w:-])leading-(?:\[([\d.]+)\]|([a-z][a-z0-9-]*))/);
   if (!m) return undefined;
   if (m[1]) return num(m[1]);
   if (m[2] === "none") return "1";
@@ -126,7 +126,7 @@ function fromTsx(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
 
 /** A rule's line-height: a number, "normal", or a --leading-* token's value. */
 function ruleLeading(body: string) {
-  const m = body.match(/line-height:\s*(?:var\(--leading-([a-z-]+)\)|([\d.]+|normal))/);
+  const m = body.match(/line-height:\s*(?:var\(--leading-([a-z][a-z0-9-]*)\)|([\d.]+|normal))/);
   if (!m) return undefined;
   const v = m[1] ? leadings()[m[1]] : m[2];
   return v === undefined || v === "normal" ? v : num(String(v));
