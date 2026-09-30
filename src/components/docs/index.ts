@@ -9,7 +9,7 @@ import { PlayAll } from "./PlayTrack";
 import { RevealPreview } from "./RevealPreview";
 import { KeyframeTable, Timeline } from "./Timeline";
 import { TransitionCurve } from "./TransitionCurve";
-import { FluidScalePlot, Trackings, Typeface, TypeScale, TypeStyles } from "./Typography";
+import { FluidScalePlot, LeadingPlot, Trackings, Typeface, TypeScale, TypeStyles } from "./Typography";
 
 // Components available in every design doc (src/content/docs/*.mdx) without importing.
 // Passed to the doc's MDX by /admin/docs/[doc], so they never reach the notes; links
@@ -33,6 +33,7 @@ export const docComponents: MDXComponents = {
   TypeScale,
   FluidScalePlot,
   Trackings,
+  LeadingPlot,
   TypeStyles,
   // Easing
   Curve,

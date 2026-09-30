@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { fonts, type SizeToken, sizeAt, trackings, typeScale } from "@/lib/tokens";
 import { DocFacts } from "./DocTable";
+import { placeLabels } from "./Palette";
 import { type Face, type TypeStyle, typeStyles } from "./typeUsage";
 import { ViewportMarker } from "./ViewportMarker";
 
@@ -304,6 +305,136 @@ export function Trackings() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ---------- Leading × size ----------
+
+// Each face's mark: shape and fill, so the legend and the plot agree and a face is
+// never told apart by colour alone.
+const FACE_MARKS: { face: Face; label: string; fill: string }[] = [
+  { face: "display", label: "Gelica", fill: "fill-pink" },
+  { face: "sans", label: "Hanken Grotesk", fill: "fill-ink-2" },
+  { face: "mono", label: "Plex Mono", fill: "fill-muted" },
+  { face: "code", label: "Code", fill: "fill-muted-light" },
+];
+
+function Mark({ face, x, y, r }: { face: Face; x: number; y: number; r: number }) {
+  const fill = FACE_MARKS.find((m) => m.face === face)?.fill;
+  const ring = cn(fill, "stroke-paper-light");
+  if (face === "display") return <circle cx={x} cy={y} r={r} className={ring} strokeWidth={2} />;
+  if (face === "sans")
+    return <rect x={x - r} y={y - r} width={r * 2} height={r * 2} rx={1.5} className={ring} strokeWidth={2} />;
+  if (face === "mono")
+    return (
+      <rect
+        x={x - r}
+        y={y - r}
+        width={r * 2}
+        height={r * 2}
+        rx={1.5}
+        transform={`rotate(45 ${x} ${y})`}
+        className={ring}
+        strokeWidth={2}
+      />
+    );
+  const h = r * 1.15;
+  return (
+    <path d={`M${x} ${y - h - 1}L${x + h + 1} ${y + h}L${x - h - 1} ${y + h}Z`} className={ring} strokeWidth={2} />
+  );
+}
+
+/**
+ * Leading against font size for every style the site sets: one mark per face, size
+ * and leading, sized by how often it's used and labelled with its leading. Size runs
+ * on a log scale so the small sizes don't bunch up.
+ */
+export function LeadingPlot() {
+  // One point per face, size and leading; tracking, case and weight don't change it.
+  const points: { face: Face; size: number; leading: number; uses: number }[] = [];
+  for (const s of typeStyles()) {
+    const leading = Number(s.leading);
+    if (Number.isNaN(leading)) continue;
+    const p = points.find((q) => q.face === s.face && q.size === Number(s.size) && q.leading === leading);
+    if (p) p.uses += s.uses.length;
+    else points.push({ face: s.face, size: Number(s.size), leading, uses: s.uses.length });
+  }
+  const sizes = [...new Set(points.map((p) => p.size))].sort((a, b) => a - b);
+
+  const W = 720;
+  const H = 400;
+  const m = { t: 16, r: 24, b: 44, l: 48 };
+  const iw = W - m.l - m.r;
+  const ih = H - m.t - m.b;
+  const [x0, x1] = [Math.log(sizes[0] * 0.85), Math.log(sizes[sizes.length - 1] * 1.12)];
+  const lo = Math.floor(Math.min(...points.map((p) => p.leading)) * 5) / 5;
+  // Headroom above the loosest, so its mark clears the top edge.
+  const hi = Math.ceil((Math.max(...points.map((p) => p.leading)) + 0.1) * 5) / 5;
+  const x = (px: number) => m.l + ((Math.log(px) - x0) / (x1 - x0)) * iw;
+  const y = (l: number) => m.t + (1 - (l - lo) / (hi - lo)) * ih;
+  const r = (uses: number) => 4 + Math.sqrt(uses) * 1.6;
+  const leadingTicks = Array.from({ length: Math.round((hi - lo) / 0.2) + 1 }, (_, i) => lo + i * 0.2);
+  const placed = points.map((p) => ({ x: x(p.size), y: y(p.leading), text: String(p.leading), r: r(p.uses) }));
+
+  return (
+    <div className="flex flex-col gap-fl-16">
+      <ul className="flex flex-wrap gap-x-fl-24 gap-y-2 font-mono text-fl-12 text-ink-2">
+        {FACE_MARKS.map((f) => (
+          <li key={f.face} className="flex items-center gap-2">
+            <svg viewBox="0 0 16 16" aria-hidden="true" className="size-4">
+              <Mark face={f.face} x={8} y={8} r={5} />
+            </svg>
+            {f.label}
+          </li>
+        ))}
+        <li className="text-muted">Larger marks are used more</li>
+      </ul>
+      {/* Scrolls sideways on a phone rather than shrinking its labels past reading. */}
+      <div className="overflow-x-auto">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-label="Scatter plot of line height against font size for each type style, by typeface"
+          className="block h-auto w-full min-w-[34rem] font-mono text-[11px]"
+        >
+          {leadingTicks.map((l) => (
+            <g key={l}>
+              <line x1={m.l} x2={m.l + iw} y1={y(l)} y2={y(l)} className="stroke-rule" />
+              <text x={m.l - 8} y={y(l)} textAnchor="end" dominantBaseline="central" className="fill-muted">
+                {l.toFixed(1)}
+              </text>
+            </g>
+          ))}
+          {sizes.map((px) => (
+            <g key={px}>
+              <line x1={x(px)} x2={x(px)} y1={m.t} y2={m.t + ih} className="stroke-rule/60" />
+              <text x={x(px)} y={m.t + ih + 18} textAnchor="middle" className="fill-muted">
+                {px}
+              </text>
+            </g>
+          ))}
+          <text x={m.l + iw} y={H - 4} textAnchor="end" className="fill-ink">
+            Font size, px at 1440 →
+          </text>
+          <text x={-(m.t + ih)} y={12} transform="rotate(-90)" className="fill-ink">
+            Line height →
+          </text>
+          {[...points]
+            .sort((a, b) => b.uses - a.uses)
+            .map((p) => (
+              <g key={`${p.face}${p.size}${p.leading}`}>
+                <Mark face={p.face} x={x(p.size)} y={y(p.leading)} r={r(p.uses)} />
+                <title>{`${p.face} · ${p.size}px · ${p.leading}\n${p.uses} ${p.uses === 1 ? "use" : "uses"}`}</title>
+              </g>
+            ))}
+          {placeLabels(placed, { x: m.l + 2, y: m.t, w: iw, h: ih }).map((l) => (
+            <text key={`${l.text}${l.x}${l.y}`} x={l.x} y={l.y} dominantBaseline="central" className="fill-ink-2">
+              {l.text}
+            </text>
+          ))}
+        </svg>
+      </div>
     </div>
   );
 }

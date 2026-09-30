@@ -66,6 +66,13 @@ Gelica is tightened as it gets bigger, and the mono caps are opened up. Each tok
 
 Line heights are always numbers. Anything that sets none takes `--leading-body` (1.3, Hanken Grotesk's own `normal`), intro paragraphs use `--leading-intro` (1.5), Gelica titles at 30 use `--leading-title` (1.1) and Gelica running text `--leading-display-text` (1.3), body copy (cards, lists, descriptions and note articles) uses `--leading-copy` (1.6, as `leading-copy`), the mono utilities set `--leading-mono` (1.6) and code blocks `--leading-code` (1.5). Avoid Tailwind's `leading-normal`: it's 1.5, not the font's `normal`, so use `leading-intro` instead.
 
+<DocFigure
+  title="Leading × size"
+  caption="Gelica titles tighten as they grow, from 1.1 at 30 to 0.9 at 168, while reading text sits between 1.3 and 1.6. Hover a mark for its face and how often it's used."
+>
+  <LeadingPlot />
+</DocFigure>
+
 Every combination of face, size, weight, leading and tracking set in `src/app`, `src/components` and `globals.css`, found by scanning the source, so this list follows the code. Tracking written inline instead of from a token is marked in pink: a value that turns up in more than one place is a candidate for a new `--tracking-*` token.
 
 <TypeStyles />

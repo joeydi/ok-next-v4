@@ -119,27 +119,30 @@ export function PaletteTable() {
 
 // ---------- Charts ----------
 
-type Placed = { x: number; y: number; text: string };
+/** A label for a mark at x, y. `r` is the mark's radius: 7 for the palette's dots. */
+type Placed = { x: number; y: number; text: string; r?: number };
 const CHAR = 6.6; // advance of 11px Plex Mono
 const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 type Box = { x: number; y: number; w: number; h: number };
 
-/** Puts each label on the first side of its dot that clears every dot, label and edge. */
-function placeLabels(items: Placed[], bounds: Box) {
-  const taken: Box[] = items.map((it) => ({ x: it.x - 9, y: it.y - 9, w: 18, h: 18 }));
+/** Puts each label on the first side of its mark that clears every mark, label and edge. Labels are 11px Plex Mono. */
+export function placeLabels(items: Placed[], bounds: Box) {
+  const taken: Box[] = items.map(({ x, y, r = 7 }) => ({ x: x - r - 2, y: y - r - 2, w: 2 * r + 4, h: 2 * r + 4 }));
   const out: { x: number; y: number; text: string }[] = [];
   for (const it of items) {
     const w = it.text.length * CHAR;
     const h = 14;
+    // The offsets below fit a 7px dot; a bigger mark pushes its label out by the difference.
+    const d = (it.r ?? 7) - 7;
     const spots = [
-      [it.x + 12, it.y - h / 2],
-      [it.x - 12 - w, it.y - h / 2],
-      [it.x + 8, it.y - 22],
-      [it.x + 8, it.y + 8],
-      [it.x - 8 - w, it.y - 22],
-      [it.x - 8 - w, it.y + 8],
-      [it.x - w / 2, it.y - 26],
-      [it.x - w / 2, it.y + 12],
+      [it.x + 12 + d, it.y - h / 2],
+      [it.x - 12 - d - w, it.y - h / 2],
+      [it.x + 8 + d, it.y - 22 - d],
+      [it.x + 8 + d, it.y + 8 + d],
+      [it.x - 8 - d - w, it.y - 22 - d],
+      [it.x - 8 - d - w, it.y + 8 + d],
+      [it.x - w / 2, it.y - 26 - d],
+      [it.x - w / 2, it.y + 12 + d],
     ];
     for (const [x, y] of spots) {
       const box = { x, y, w, h };

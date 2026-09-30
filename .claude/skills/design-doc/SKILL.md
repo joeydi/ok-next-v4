@@ -64,7 +64,7 @@ They're available in every doc without importing, registered in `src/components/
 
 **Type**
 - `<Typeface font="display" name="Gelica" source="Adobe Fonts" weights={[400]} use="…">…</Typeface>`
-- `<TypeScale />`, `<FluidScalePlot />`, `<Trackings />`
+- `<TypeScale />`, `<FluidScalePlot />`, `<Trackings />`, `<LeadingPlot />`
 - `<TypeStyles />`: every type style the site sets, scanned from its source (`typeUsage.ts`)
 
 **Motion**
