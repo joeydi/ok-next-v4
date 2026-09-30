@@ -34,7 +34,7 @@ export function Contact({
       <div
         className={cn("flex flex-wrap items-baseline gap-x-fl-56 gap-y-4 text-fl-30", note ? "mt-fl-40" : "mt-fl-48")}
       >
-        <a href={`mailto:${SITE.email}`} className="border-b-2 border-pink pb-1">
+        <a href={`mailto:${SITE.email}`} className="border-b-2 border-pink pb-fl-4">
           {SITE.email}
         </a>
         <BookingLink className="text-muted-light">

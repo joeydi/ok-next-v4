@@ -420,7 +420,7 @@
     background-repeat: no-repeat;
     background-position: 0 90%;
     background-size: 0% 0.075em;
-    padding-bottom: 4px;
+    padding-bottom: var(--spacing-fl-4);
     transition: background-size 0.5s var(--ease-in-out-quart);
   }
 
