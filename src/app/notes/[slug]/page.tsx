@@ -85,10 +85,9 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                   blurDataURL={headshot.blurDataURL}
                   className="size-14 frame object-cover"
                 />
-                <div className="mono-text text-muted">
-                  JOE DI STEFANO
-                  <br />
-                  {meta.byline}
+                <div className="flex flex-col text-muted">
+                  <span className="mono-label">{SITE.author}</span>
+                  <span className="mono-text">{meta.byline}</span>
                 </div>
               </div>
             </div>
