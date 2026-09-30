@@ -52,5 +52,14 @@
   --leading-display-text-144: 0.89;
   --leading-display-text-168: 0.85;
 
+  --tracking-display-24: -0.02em;
+  --tracking-display-30: -0.02em;
+  --tracking-display-36: -0.022em;
+  --tracking-display-48: -0.024em;
+  --tracking-display-60: -0.026em;
+  --tracking-display-96: -0.03em;
+  --tracking-display-144: -0.034em;
+  --tracking-display-168: -0.035em;
+
   --container-page: 120rem;
 }

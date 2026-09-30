@@ -115,9 +115,9 @@ export function fonts(): FontToken[] {
   }));
 }
 
-/** Every --tracking-* token, in em. */
+/** Every --tracking-* token, in em: globals.css's, and Gelica's per-size scale fluid.css generates. */
 export function trackings(): { name: string; em: number }[] {
-  return [...declarations("tracking")].map(([name, value]) => {
+  return [...declarations("tracking"), ...declarations("tracking", FLUID)].map(([name, value]) => {
     const em = Number.parseFloat(value);
     if (Number.isNaN(em) || !value.endsWith("em")) throw new Error(`tokens: --tracking-${name} isn't in em (${value})`);
     return { name, em };

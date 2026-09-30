@@ -33,7 +33,7 @@ function Home() {
     <div className="flex h-full flex-col gap-12 px-18 pt-36">
       <div className="flex flex-col gap-5">
         <Eyebrow n="02">How I help</Eyebrow>
-        <h2 className="display text-[60px] leading-heading-60 tracking-heading">Where I fit in.</h2>
+        <h2 className="display text-[60px] leading-heading-60 tracking-display-60">Where I fit in.</h2>
       </div>
       <div className="grid grid-cols-3 gap-6">
         {Object.values(services).map((s) => (
@@ -47,7 +47,7 @@ function Home() {
               <span>{s.audience}</span>
               <span>/ {s.n}</span>
             </span>
-            <span className="display mt-10 text-[36px] leading-heading-36 tracking-heading">{s.title}</span>
+            <span className="display mt-10 text-[36px] leading-heading-36 tracking-display-36">{s.title}</span>
             <span className="text-[18px] leading-[1.55] text-body">{s.intro}</span>
           </button>
         ))}
@@ -62,7 +62,7 @@ function Service() {
   return (
     <div className="relative h-full px-18 pt-36">
       <Eyebrow details={[s.n, s.audience]}>Services</Eyebrow>
-      <h1 className="display relative z-10 mt-12 text-[144px] leading-heading-144 tracking-display">
+      <h1 className="display relative z-10 mt-12 text-[144px] leading-heading-144 tracking-display-144">
         {s.h1.map((line, i) => (
           <Fragment key={line}>
             {i > 0 && <br />}
@@ -80,7 +80,7 @@ function Service() {
       />
       <div className="mt-18 flex max-w-[680px] flex-col gap-8">
         <p className="text-[24px] leading-intro text-body">{s.intro}</p>
-        <p className="border-t border-rule pt-5 font-display text-[24px] leading-display-text-24 text-pink-ink">
+        <p className="border-t border-rule pt-5 font-display text-[24px] leading-display-text-24 tracking-display-24 text-pink-ink">
           {s.tagline}
         </p>
       </div>

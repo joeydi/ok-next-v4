@@ -38,7 +38,7 @@ export function ServicePage({ service: s }: { service: Service }) {
       />
       <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
         <Eyebrow n="04">Recent work</Eyebrow>
-        <h2 className="display text-fl-48 leading-heading-48 tracking-heading">
+        <h2 className="display text-fl-48 leading-heading-48 tracking-display-48">
           <span className="hover-title">{s.work.title}</span>
         </h2>
         <p className="text-fl-18 leading-copy text-pretty text-body">{s.work.d}</p>
@@ -61,7 +61,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <Eyebrow href="/#services" details={[s.n, s.audience]}>
             Services
           </Eyebrow>
-          <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display">
+          <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display-144">
             {s.h1.map((line, i) => (
               <Fragment key={i}>
                 {i > 0 && <br />}
@@ -77,7 +77,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           />
           <div className="lg:mt-fl-72 flex flex-col gap-fl-32 lg:max-w-[calc(47.22*var(--pvw))]">
             <p className="text-fl-24 leading-intro text-pretty text-body">{s.intro}</p>
-            <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-display-text-24 text-pink-ink">
+            <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-display-text-24 tracking-display-24 text-pink-ink">
               {s.tagline}
             </p>
           </div>
@@ -103,9 +103,11 @@ export function ServicePage({ service: s }: { service: Service }) {
                 </div>
                 <h3
                   className={cn(
-                    "display mt-fl-40 tracking-heading",
+                    "display mt-fl-40",
                     // Leading after the size: cn drops a leading-* that a later text-* size follows.
-                    three ? "text-fl-36 leading-heading-36" : "text-fl-30 leading-heading-30 text-balance",
+                    three
+                      ? "text-fl-36 leading-heading-36 tracking-display-36"
+                      : "text-fl-30 leading-heading-30 tracking-display-30 text-balance",
                   )}
                 >
                   {c.t}
@@ -129,7 +131,9 @@ export function ServicePage({ service: s }: { service: Service }) {
                 className="grid grid-cols-[2.5rem_1fr] items-baseline gap-fl-16 border-t border-rule py-fl-22 sm:grid-cols-[56px_1fr]"
               >
                 <span className="mono-text text-pink-ink">{item.n}</span>
-                <p className="font-display text-fl-30 leading-display-text-30 text-pretty">{item.t}</p>
+                <p className="font-display text-fl-30 leading-display-text-30 tracking-display-30 text-pretty">
+                  {item.t}
+                </p>
               </li>
             ))}
           </ul>
@@ -144,7 +148,7 @@ export function ServicePage({ service: s }: { service: Service }) {
             {s.process.items.map((step) => (
               <li key={step.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
                 <div className="mono-text text-pink-ink">{step.n}</div>
-                <h3 className="display text-fl-30 leading-heading-30 tracking-heading">{step.t}</h3>
+                <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">{step.t}</h3>
                 <p className="text-fl-18 leading-copy text-pretty text-body">{step.d}</p>
               </li>
             ))}
@@ -167,7 +171,7 @@ export function ServicePage({ service: s }: { service: Service }) {
         <Container>
           <div className="grid-12">
             <figure className="col-span-12 flex flex-col gap-fl-32 lg:col-span-9">
-              <blockquote className="display text-fl-48 leading-display-text-48 tracking-heading text-pretty">
+              <blockquote className="display text-fl-48 leading-display-text-48 tracking-display-48 text-pretty">
                 “{s.quote.q}”
               </blockquote>
               <Cite t={s.quote} />
@@ -196,7 +200,7 @@ function SectionHead({
   return (
     <div className={cn("flex flex-col gap-fl-20", className)}>
       <Eyebrow n={n}>{eyebrow}</Eyebrow>
-      <h2 className={cn("display text-fl-60 leading-heading-60 tracking-heading", balance && "text-balance")}>
+      <h2 className={cn("display text-fl-60 leading-heading-60 tracking-display-60", balance && "text-balance")}>
         {children}
       </h2>
     </div>

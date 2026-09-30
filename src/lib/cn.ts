@@ -10,7 +10,7 @@ export const cn = createCn({
       text: [fluid],
       spacing: [fluid, "gutter"],
       container: ["page"],
-      tracking: ["display", "heading", "label", "label-tight"],
+      tracking: ["display", "label", "label-tight", (v: string) => /^display-\d+$/.test(v)],
       leading: ["body", "intro", "copy", "mono", "code", (v: string) => /^(heading|display-text)-\d+$/.test(v)],
     },
     classGroups: {

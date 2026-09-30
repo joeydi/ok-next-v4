@@ -28,8 +28,10 @@ export default async function DocPage({ params }: Props) {
           <span className="mono-label text-muted">/ Docs · dev only</span>
           <h1
             className={cn(
-              "display leading-none tracking-heading",
-              meta.size === "large" ? "text-fl-96 tracking-display" : "text-fl-60",
+              "display",
+              meta.size === "large"
+                ? "text-fl-96 leading-heading-96 tracking-display-96"
+                : "text-fl-60 leading-heading-60 tracking-display-60",
             )}
           >
             {meta.title}

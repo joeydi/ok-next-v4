@@ -172,7 +172,7 @@ export function OgAdmin({
       <header className="mb-fl-32 flex flex-wrap items-end justify-between gap-fl-24 border-b border-rule pb-fl-24">
         <div className="flex flex-col gap-fl-8">
           <span className="mono-label text-muted">/ Admin · dev only</span>
-          <h1 className="display text-fl-48 leading-none tracking-heading">Open Graph</h1>
+          <h1 className="display text-fl-48 leading-heading-48 tracking-display-48">Open Graph</h1>
           <p className="font-mono text-fl-14 text-muted">
             {q ? `${shown.length} of ${pages.length}` : pages.length} routes · {pages.filter((p) => p.draft).length}{" "}
             drafts

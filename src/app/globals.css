@@ -23,8 +23,9 @@
 
   --tracking-label: 0.06em;
   --tracking-label-tight: 0.04em;
+  /* Gelica takes its tracking from the per-size scale in fluid.css (tracking-display-*);
+     this one is for the social cards' titles, whose size isn't on the scale. */
   --tracking-display: -0.035em;
-  --tracking-heading: -0.02em;
 
   /* The base line-height, Hanken Grotesk's own "normal" as a number, so anything that
      sets none gets the same height in every face and while fonts load. */
@@ -694,6 +695,7 @@
     @apply display;
     font-size: var(--text-fl-30);
     line-height: var(--leading-display-text-30);
+    letter-spacing: var(--tracking-display-30);
     color: var(--color-ink);
   }
 
@@ -745,7 +747,7 @@
     margin-block: var(--spacing-fl-96) calc(var(--spacing-fl-56) + var(--spacing-fl-24));
     font-size: var(--text-fl-60);
     line-height: var(--leading-display-text-60);
-    letter-spacing: var(--tracking-heading);
+    letter-spacing: var(--tracking-display-60);
     text-wrap: balance;
     color: var(--color-ink);
   }

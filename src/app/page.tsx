@@ -35,7 +35,7 @@ function Hero() {
   return (
     <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-88 lg:min-h-[calc(61.11*var(--pvw))]">
       <Eyebrow n="00">Introduction</Eyebrow>
-      <h1 className="display relative z-10 mt-fl-48 w-fit max-w-[clamp(16.25rem,46.25vw+7rem,62.5rem)] text-fl-168 leading-heading-168 tracking-display">
+      <h1 className="display relative z-10 mt-fl-48 w-fit max-w-[clamp(16.25rem,46.25vw+7rem,62.5rem)] text-fl-168 leading-heading-168 tracking-display-168">
         Let’s think it through <span className="text-pink">together.</span>
       </h1>
       <GLIllustration
@@ -71,7 +71,7 @@ function Approach() {
     <Container as="section" id="approach" className="grid-12 gap-y-fl-48 py-fl-96">
       <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4">
         <Eyebrow n="01">How I work</Eyebrow>
-        <h2 className="display text-fl-60 leading-heading-60 tracking-heading text-balance">
+        <h2 className="display text-fl-60 leading-heading-60 tracking-display-60 text-balance">
           A partner, not a vendor.
         </h2>
       </div>
@@ -79,7 +79,7 @@ function Approach() {
         {principles.map((p) => (
           <div key={p.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
             <div className="mono-text text-pink-ink">{p.n}</div>
-            <h3 className="display text-fl-30 leading-heading-30 tracking-heading">{p.t}</h3>
+            <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">{p.t}</h3>
             <p className="text-fl-18 leading-copy text-pretty text-body">{p.d}</p>
           </div>
         ))}
@@ -94,7 +94,7 @@ function Services() {
       <div className="mb-fl-48 flex flex-col justify-between gap-fl-24 md:flex-row md:items-end">
         <div className="flex flex-col gap-fl-20">
           <Eyebrow n="02">How I help</Eyebrow>
-          <h2 className="display text-fl-60 leading-heading-60 tracking-heading">Where I fit in.</h2>
+          <h2 className="display text-fl-60 leading-heading-60 tracking-display-60">Where I fit in.</h2>
         </div>
         <p className="max-w-[400px] text-fl-18 leading-copy text-body">
           Most engagements touch more than one of these. We’ll figure out which one matters first.
@@ -111,7 +111,7 @@ function Services() {
               <span>{s.audience}</span>
               <span className="shrink-0 whitespace-nowrap">/ {s.n}</span>
             </div>
-            <h3 className="display mt-fl-40 text-fl-36 leading-heading-36 tracking-heading">
+            <h3 className="display mt-fl-40 text-fl-36 leading-heading-36 tracking-display-36">
               <span className="hover-title">{s.title}</span>
             </h3>
             <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{s.intro}</p>
@@ -142,7 +142,7 @@ function About() {
             <Eyebrow n="03" className="text-muted-light">
               About
             </Eyebrow>
-            <h2 className="display text-fl-96 leading-heading-96 tracking-[-.03em]">
+            <h2 className="display text-fl-96 leading-heading-96 tracking-display-96">
               Hi, I’m Joe.
               <br />
               (On the left.)
@@ -167,7 +167,7 @@ function Testimonials() {
         <Eyebrow n="04" className="text-muted-light">
           In their words
         </Eyebrow>
-        <h2 id="kind-words" className="display text-fl-60 leading-heading-60 tracking-heading">
+        <h2 id="kind-words" className="display text-fl-60 leading-heading-60 tracking-display-60">
           Kicking ass and <s>taking names</s> <span className="text-pink">making friends.</span>
         </h2>
       </div>

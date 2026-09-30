@@ -77,7 +77,7 @@ export function IllustrationLab() {
     <div className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
       <header className="mb-fl-32 flex flex-col gap-fl-8 border-b border-rule pb-fl-24">
         <span className="mono-label text-muted">/ Admin · dev only</span>
-        <h1 className="display text-fl-48 leading-none tracking-heading">Illustrations</h1>
+        <h1 className="display text-fl-48 leading-heading-48 tracking-display-48">Illustrations</h1>
         <p className="font-mono text-fl-14 text-muted">{Object.keys(SCENES).length} scenes</p>
       </header>
 

@@ -72,7 +72,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               Notes
             </Eyebrow>
             <div className="grid-12 mt-fl-48 gap-y-fl-24">
-              <h1 className="display col-span-12 text-fl-96 leading-heading-96 tracking-[-.03em] text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
+              <h1 className="display col-span-12 text-fl-96 leading-heading-96 tracking-display-96 text-balance lg:col-span-10 lg:max-w-[calc(73.61*var(--pvw))]">
                 <Accent text={meta.title} />
               </h1>
               <div className="col-span-12 mt-fl-48 flex items-center gap-fl-16 border-t border-rule pt-fl-20 sm:col-span-6 lg:col-span-4">
@@ -164,7 +164,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                     className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28 hover-card"
                   >
                     <span className="mono-label col-span-12 text-muted md:col-span-2">{n.tag}</span>
-                    <span className="display col-span-11 text-fl-36 leading-heading-36 tracking-heading md:col-span-7 md:col-start-3">
+                    <span className="display col-span-11 text-fl-36 leading-heading-36 tracking-display-36 md:col-span-7 md:col-start-3">
                       <span className="hover-title">{n.plainTitle}</span>
                     </span>
                     <span aria-hidden="true" className="col-span-1 text-right text-fl-24 leading-intro md:col-start-12">

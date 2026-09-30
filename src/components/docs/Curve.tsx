@@ -37,7 +37,7 @@ export function Curve({
         <span>{ms}ms</span>
         <span>--ease-{ease}</span>
       </div>
-      <h3 className="display text-fl-36 leading-none tracking-heading text-ink">{title}</h3>
+      <h3 className="display text-fl-36 leading-none tracking-display-36 text-ink">{title}</h3>
       <CurvePlot curves={[{ points }]} end={`${ms}ms`} label={`${title}: ${css}`} />
       <PlayTrack ease={ease} duration={ms} label={title} />
       <div className="text-fl-18 leading-[1.6] text-pretty text-body">{children}</div>

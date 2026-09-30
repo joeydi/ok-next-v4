@@ -5,7 +5,7 @@ order: 2
 size: large
 ---
 
-The faces are the `--font-*` variables and the letter spacing the `--tracking-*` variables in the `@theme` block of `src/app/globals.css`. The sizes are the `--text-fl-*` variables in `src/app/fluid.css`, which `scripts/fluid.mjs` generates: edit the script and rerun it, never the CSS. Every value on this page is read from those files. Use them as classes (`display`, `mono-label`, `mono-text`, `text-fl-24`, `tracking-heading`) rather than px or em values inline.
+The faces are the `--font-*` variables and the letter spacing the `--tracking-*` variables in the `@theme` block of `src/app/globals.css`. The sizes are the `--text-fl-*` variables in `src/app/fluid.css`, which `scripts/fluid.mjs` generates: edit the script and rerun it, never the CSS. Every value on this page is read from those files. Use them as classes (`display`, `mono-label`, `mono-text`, `text-fl-24`, `tracking-display-24`) rather than px or em values inline.
 
 ## Typefaces
 
@@ -58,7 +58,7 @@ Each size set at its own width here, in the face the site sets it in most, with 
 
 ## Tracking
 
-Gelica is tightened as it gets bigger, and the mono caps are opened up. Each token is set over the same text without it.
+Gelica is tightened as it gets bigger, on a scale `scripts/fluid.mjs` generates like its line heights: one `tracking-display-*` token per size, from −0.02em at 30 (and below) to −0.035em at 168, on the same log curve. Use the one matching the size, headings and running text alike (`text-fl-96 tracking-display-96`). The mono caps are opened up instead. `tracking-display` remains only for the social cards' titles, whose size isn't on the scale. Each token is set over the same text without it.
 
 <Trackings />
 

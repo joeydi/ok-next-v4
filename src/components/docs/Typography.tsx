@@ -73,7 +73,7 @@ export function Typeface({
         <span>{source}</span>
       </div>
       <div style={style} className="flex items-baseline justify-between gap-fl-16 text-ink">
-        <span className="text-fl-36 leading-none tracking-heading">{name}</span>
+        <span className="text-fl-36 leading-none tracking-display-36">{name}</span>
         <span aria-hidden="true" className="text-fl-96 leading-none">
           Aa
         </span>
@@ -268,7 +268,8 @@ export function FluidScalePlot() {
 
 /**
  * Every --tracking-* token set on a sample, above the same sample untracked. The
- * label trackings are shown on mono caps at label size, the rest on Gelica.
+ * label trackings are shown on mono caps at label size, the rest on Gelica: the
+ * per-size scale from fluid.css at each size, and the admin's two tokens at 60.
  */
 export function Trackings() {
   const styles = typeStyles();
@@ -279,10 +280,13 @@ export function Trackings() {
         const uses = styles
           .filter((s) => s.tracking && "token" in s.tracking && s.tracking.token === t.name)
           .reduce((n, s) => n + s.uses.length, 0);
+        // Gelica's per-size tokens are shown at their own size; the rest at 60.
+        const size = t.name.match(/^display-(\d+)$/)?.[1] ?? "60";
         const sample: CSSProperties = label
           ? { ...faceStyle("mono"), fontSize: "var(--text-fl-14)", textTransform: "uppercase" }
-          : { ...faceStyle("display"), fontSize: "var(--text-fl-60)", lineHeight: 1 };
-        const text = label ? "/ 01 · Selected work · 2026" : "Say it plainly.";
+          : { ...faceStyle("display"), fontSize: `var(--text-fl-${size})`, lineHeight: 1 };
+        // One word at the hero sizes, so the pair stays on a line each.
+        const text = label ? "/ 01 · Selected work · 2026" : Number(size) >= 144 ? "Plainly." : "Say it plainly.";
         return (
           <div
             key={t.name}

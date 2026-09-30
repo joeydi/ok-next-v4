@@ -73,9 +73,18 @@ const displayLeading = {
   ],
 };
 
-function leadingAt(size, [[s0, l0], [s1, l1]]) {
-  const t = Math.min(1, Math.log(size / s0) / Math.log(s1 / s0));
-  return +(l0 + (l1 - l0) * t).toFixed(2);
+// Gelica letter-spacing, one per size on the same kind of line: tightening from the
+// headings' -0.02em at 30 to -0.035em at 168. Sizes below 30 hold its value. Used for
+// headings and running text alike, as `tracking-display-96`.
+const displayTracking = [
+  [30, -0.02],
+  [168, -0.035],
+];
+
+/** The value at `size` on a line through two [design px, value] ends, straight on a log size scale. */
+function scaleAt(size, [[s0, v0], [s1, v1]], digits) {
+  const t = Math.min(1, Math.max(0, Math.log(size / s0) / Math.log(s1 / s0)));
+  return +(v0 + (v1 - v0) * t).toFixed(digits);
 }
 
 const rem = (px) => `${+(px / 16).toFixed(4)}rem`;
@@ -100,8 +109,12 @@ for (const [name, [d, m]] of Object.entries(named)) lines.push(`  --spacing-${na
 lines.push("");
 for (const [name, ends] of Object.entries(displayLeading)) {
   for (const d of Object.keys(type).filter((d) => +d >= ends[0][0])) {
-    lines.push(`  --leading-${name}-${d}: ${leadingAt(+d, ends)};`);
+    lines.push(`  --leading-${name}-${d}: ${scaleAt(+d, ends, 2)};`);
   }
+}
+lines.push("");
+for (const d of Object.keys(type).filter((d) => +d >= 24)) {
+  lines.push(`  --tracking-display-${d}: ${scaleAt(+d, displayTracking, 3)}em;`);
 }
 lines.push("");
 // Page max width (<Container>, `max-w-page`) — stops where the scale stops growing.

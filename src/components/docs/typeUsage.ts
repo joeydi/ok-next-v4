@@ -64,7 +64,7 @@ function fromClasses(classes: string): Omit<TypeStyle, "uses" | "sample"> | null
       : "sans";
   // Both mono utilities set --leading-mono themselves.
   const leading = leadingOf(classes) ?? (label || text ? num(String(leadings().mono)) : undefined);
-  const token = classes.match(/(?<![\w:-])tracking-([a-z-]+)\b/)?.[1];
+  const token = classes.match(/(?<![\w:-])tracking-([a-z][a-z0-9-]*)\b/)?.[1];
   const em = classes.match(/(?<![\w:-])tracking-\[(-?[\d.]+)em\]/)?.[1];
   const weight = classes.match(/(?<![\w:-])font-(medium|semibold|bold)\b/)?.[1];
   return {
@@ -153,7 +153,7 @@ function fromCss(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
         ? "display"
         : body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
     const leading = ruleLeading(body);
-    const token = body.match(/letter-spacing:\s*var\(--tracking-([a-z-]+)\)/)?.[1];
+    const token = body.match(/letter-spacing:\s*var\(--tracking-([a-z][a-z0-9-]*)\)/)?.[1];
     const weight = body.match(/font-weight:\s*(\d+)/)?.[1];
     add(
       {

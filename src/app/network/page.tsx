@@ -30,7 +30,7 @@ export default function NetworkPage() {
             <figure data-network-avoid className="col-span-12 lg:col-span-10">
               <blockquote
                 cite={SOURCE}
-                className="display text-fl-60 leading-display-text-60 tracking-heading text-balance"
+                className="display text-fl-60 leading-display-text-60 tracking-display-60 text-balance"
               >
                 <p>
                   <Accent text={QUOTE} />
