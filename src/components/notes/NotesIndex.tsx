@@ -101,7 +101,7 @@ export function NotesList({
                 href={`/notes/${n.slug}`}
                 className="hover-card grid-12 items-start gap-y-fl-12 border-t border-rule py-fl-32"
               >
-                <span className="col-span-2 font-mono text-fl-14 text-pink-ink md:col-span-1 lg:pt-2.5">
+                <span className="mono-text col-span-2 text-pink-ink md:col-span-1 lg:pt-2.5">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="mono-label col-span-10 text-muted md:col-span-2 lg:pt-2.5">{n.tag}</span>

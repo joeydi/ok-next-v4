@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { leadings } from "@/lib/tokens";
 
 // The type styles the site actually sets, for the Typography doc: every className
 // with a --text-fl-* size (or mono-label) in src/app and src/components, and every
@@ -33,20 +34,32 @@ const WEIGHTS: Record<string, number> = { medium: 500, semibold: 600, bold: 700 
 const lineOf = (text: string, i: number) => text.slice(0, i).split("\n").length;
 const num = (v: string) => String(Number(v));
 
+/** A line-height class's value: `leading-none`, `leading-normal`, `leading-[1.6]` or a --leading-* token. */
+function leadingOf(classes: string) {
+  const m = classes.match(/(?<![\w:-])leading-(?:\[([\d.]+)\]|([a-z-]+))/);
+  if (!m) return undefined;
+  if (m[1]) return num(m[1]);
+  if (m[2] === "none") return "1";
+  if (m[2] === "normal") return "normal";
+  const token = leadings()[m[2]];
+  return token === undefined ? undefined : num(String(token));
+}
+
 /** A className's classes as one style, or null when it sets no size. */
 function fromClasses(classes: string): Omit<TypeStyle, "uses" | "sample"> | null {
   const has = (re: RegExp) => re.test(classes);
+  // The mono utilities: caps labels, and text that isn't caps.
   const label = has(/(?<![\w:-])mono-label\b/);
-  const size = classes.match(/(?<![\w:-])text-fl-(\d+)\b/)?.[1] ?? (label ? "14" : null);
+  const text = has(/(?<![\w:-])mono-text\b/);
+  const size = classes.match(/(?<![\w:-])text-fl-(\d+)\b/)?.[1] ?? (label || text ? "14" : null);
   if (!size) return null;
   const face: Face = has(/(?<![\w:-])(?:font-)?display\b/)
     ? "display"
-    : label || has(/(?<![\w:-])font-mono\b/)
+    : label || text || has(/(?<![\w:-])font-mono\b/)
       ? "mono"
       : "sans";
-  const leadingClass = classes.match(/(?<![\w:-])leading-(none|normal|\[([\d.]+)\])/);
-  const leading =
-    leadingClass && (leadingClass[1] === "none" ? "1" : (leadingClass[2] && num(leadingClass[2])) || "normal");
+  // Both mono utilities set --leading-mono themselves.
+  const leading = leadingOf(classes) ?? (label || text ? num(String(leadings().mono)) : undefined);
   const token = classes.match(/(?<![\w:-])tracking-([a-z-]+)\b/)?.[1];
   const em = classes.match(/(?<![\w:-])tracking-\[(-?[\d.]+)em\]/)?.[1];
   const weight = classes.match(/(?<![\w:-])font-(medium|semibold|bold)\b/)?.[1];
@@ -54,8 +67,16 @@ function fromClasses(classes: string): Omit<TypeStyle, "uses" | "sample"> | null
     face,
     size,
     weight: weight ? WEIGHTS[weight] : undefined,
-    leading: leading ?? undefined,
-    tracking: em ? { em: Number(em) } : token ? { token } : label ? { token: "label" } : undefined,
+    leading,
+    tracking: em
+      ? { em: Number(em) }
+      : token
+        ? { token }
+        : label
+          ? { token: "label" }
+          : text
+            ? { token: "label-tight" }
+            : undefined,
     uppercase: label || has(/(?<![\w:-])uppercase\b/),
   };
 }
@@ -89,7 +110,7 @@ function fromTsx(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
     const strings = [...text.matchAll(/"([^"]*)"|`([^`]*)`/g)].map((s) => s[1] ?? s[2]);
     // Strings that set a size are alternatives (`small ? "text-fl-12" : "text-fl-14"`);
     // the rest (the face, the leading) apply to each.
-    const sized = strings.filter((s) => /text-fl-\d+|mono-label/.test(s));
+    const sized = strings.filter((s) => /text-fl-\d+|mono-(?:label|text)\b/.test(s));
     const shared = strings.filter((s) => !sized.includes(s)).join(" ");
     const sample = textAfter(src, end);
     for (const s of sized) {
@@ -99,13 +120,30 @@ function fromTsx(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
   }
 }
 
-/** Rules in globals.css that set a --text-fl-* size, with their family, leading and tracking. */
+/** A rule's line-height: a number, "normal", or a --leading-* token's value. */
+function ruleLeading(body: string) {
+  const m = body.match(/line-height:\s*(?:var\(--leading-([a-z-]+)\)|([\d.]+|normal))/);
+  if (!m) return undefined;
+  const v = m[1] ? leadings()[m[1]] : m[2];
+  return v === undefined || v === "normal" ? v : num(String(v));
+}
+
+/**
+ * Rules in globals.css that set a --text-fl-* size, with their family, leading and
+ * tracking, and rules that `@apply` a mono utility, with their own leading.
+ */
 function fromCss(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) => void) {
+  for (const m of src.matchAll(/@apply ([^;]*\bmono-(?:label|text)\b[^;]*);/g)) {
+    const open = src.lastIndexOf("{", m.index);
+    const style = fromClasses(m[1]);
+    const leading = ruleLeading(src.slice(open, src.indexOf("}", m.index)));
+    if (style) add({ ...style, leading: leading ?? style.leading }, lineOf(src, open));
+  }
   for (const m of src.matchAll(/font-size:\s*var\(--text-fl-(\d+)\)/g)) {
     const open = src.lastIndexOf("{", m.index);
     const body = src.slice(open, src.indexOf("}", m.index));
     const family = body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
-    const leading = body.match(/line-height:\s*([\d.]+|normal)/)?.[1];
+    const leading = ruleLeading(body);
     const token = body.match(/letter-spacing:\s*var\(--tracking-([a-z-]+)\)/)?.[1];
     const weight = body.match(/font-weight:\s*(\d+)/)?.[1];
     add(
@@ -113,7 +151,7 @@ function fromCss(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
         face: family === "display" ? "display" : family === "mono" ? "mono" : "sans",
         size: m[1],
         weight: weight && weight !== "400" && family !== "mono" ? Number(weight) : undefined,
-        leading: leading && leading !== "normal" ? num(leading) : leading,
+        leading,
         tracking: token ? { token } : undefined,
         uppercase: /text-transform:\s*uppercase/.test(body),
       },

@@ -76,7 +76,7 @@ function Approach() {
       <div className="col-span-12 grid gap-x-fl-48 gap-y-fl-56 sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
         {principles.map((p) => (
           <div key={p.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
-            <div className="font-mono text-fl-14 text-pink-ink">{p.n}</div>
+            <div className="mono-text text-pink-ink">{p.n}</div>
             <h3 className="display text-fl-30 tracking-[-.01em]">{p.t}</h3>
             <p className="text-fl-18 leading-[1.55] text-pretty text-body">{p.d}</p>
           </div>

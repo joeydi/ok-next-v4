@@ -85,7 +85,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                   blurDataURL={headshot.blurDataURL}
                   className="size-14 frame object-cover"
                 />
-                <div className="font-mono text-fl-14 leading-[1.6] text-muted">
+                <div className="mono-text text-muted">
                   JOE DI STEFANO
                   <br />
                   {meta.byline}
@@ -103,7 +103,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               <aside className="note-aside">
                 {toc.length > 0 && (
                   <nav aria-label="In this post" className="flex flex-col gap-1.5">
-                    <span className="text-ink">IN THIS POST</span>
+                    <span className="mono-label text-ink">IN THIS POST</span>
                     {toc.map((t) => (
                       <a key={t.id} href={`#${t.id}`}>
                         {t.label}
@@ -115,12 +115,17 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                   <dl className="flex flex-col gap-1.5">
                     {project.map(([k, v]) => (
                       <div key={k}>
-                        <dt className="text-ink uppercase">{k}</dt>
+                        <dt className="mono-label text-ink">{k}</dt>
                         <dd>{v}</dd>
                       </div>
                     ))}
                     {meta.link && (
-                      <a href={meta.link} target="_blank" rel="noopener noreferrer" className="text-pink-ink">
+                      <a
+                        href={meta.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mono-label text-pink-ink"
+                      >
                         VISIT THE SITE ↗
                       </a>
                     )}
@@ -128,7 +133,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                 )}
                 {meta.tools && meta.tools.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-ink">TOOLS</span>
+                    <span className="mono-label text-ink">TOOLS</span>
                     <ul className="flex flex-col gap-1.5">
                       {meta.tools.map((t) => (
                         <li key={t}>{t}</li>
@@ -159,9 +164,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                     href={`/notes/${n.slug}`}
                     className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28 hover-card"
                   >
-                    <span className="col-span-12 font-mono text-fl-14 tracking-label-tight text-muted md:col-span-2">
-                      {n.tag}
-                    </span>
+                    <span className="mono-label col-span-12 text-muted md:col-span-2">{n.tag}</span>
                     <span className="display col-span-11 text-fl-36 leading-[1.05] tracking-[-.015em] md:col-span-7 md:col-start-3">
                       <span className="hover-title">{n.plainTitle}</span>
                     </span>

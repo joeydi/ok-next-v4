@@ -59,9 +59,9 @@ export function Placeholder({
     <div
       {...(alt ? { role: "img", "aria-label": alt } : { "aria-hidden": true })}
       className={cn(
-        "frame flex items-end font-mono text-muted",
+        "frame flex items-end text-muted",
         dark ? "stripes-dark" : "stripes",
-        small ? "p-fl-12 text-fl-12" : "p-fl-20 text-fl-14",
+        small ? "p-fl-12 font-mono text-fl-12" : "mono-text p-fl-20",
         className,
       )}
     >

@@ -42,9 +42,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <span className="hover-title">{s.work.title}</span>
         </h2>
         <p className="text-fl-18 leading-[1.6] text-pretty text-body">{s.work.d}</p>
-        <div className="border-t border-rule pt-fl-16 font-mono text-fl-14 leading-[1.7] tracking-[.02em] text-body uppercase">
-          {s.work.tags}
-        </div>
+        <div className="mono-label border-t border-rule pt-fl-16 text-body">{s.work.tags}</div>
         {s.work.href && (
           <span className="mono-label text-pink-ink">
             Read the case study <span className="nudge">→</span>
@@ -114,9 +112,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                   {c.t}
                 </h3>
                 <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{c.d}</p>
-                <div className="border-t border-rule pt-[18px] font-mono text-fl-14 leading-[1.7] tracking-[.02em] text-body">
-                  {c.ex}
-                </div>
+                <div className="mono-text border-t border-rule pt-[18px] text-body">{c.ex}</div>
               </div>
             ))}
           </div>
@@ -133,7 +129,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                 key={item.n}
                 className="grid grid-cols-[2.5rem_1fr] items-baseline gap-fl-16 border-t border-rule py-fl-22 sm:grid-cols-[56px_1fr]"
               >
-                <span className="font-mono text-fl-14 text-pink-ink">{item.n}</span>
+                <span className="mono-text text-pink-ink">{item.n}</span>
                 <p className="font-display text-fl-30 leading-[1.25] text-pretty">{item.t}</p>
               </li>
             ))}
@@ -148,7 +144,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <ol className="grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2 lg:grid-cols-4">
             {s.process.items.map((step) => (
               <li key={step.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
-                <div className="font-mono text-fl-14 text-pink-ink">{step.n}</div>
+                <div className="mono-text text-pink-ink">{step.n}</div>
                 <h3 className="display text-fl-30 tracking-[-.01em]">{step.t}</h3>
                 <p className="text-fl-18 leading-[1.55] text-pretty text-body">{step.d}</p>
               </li>

@@ -124,6 +124,17 @@ export function trackings(): { name: string; em: number }[] {
   });
 }
 
+/** Every --leading-* token, as a plain line-height. */
+export function leadings(): Record<string, number> {
+  return Object.fromEntries(
+    [...declarations("leading")].map(([name, value]) => {
+      const n = Number(value);
+      if (Number.isNaN(n)) throw new Error(`tokens: --leading-${name} isn't a plain number (${value})`);
+      return [name, n];
+    }),
+  );
+}
+
 export type SizeToken = {
   /** The design px at the comp width, as in `text-fl-24`. */
   name: string;

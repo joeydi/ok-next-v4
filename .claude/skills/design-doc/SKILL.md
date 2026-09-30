@@ -80,7 +80,7 @@ Chart colours are the tones in `src/components/docs/tone.ts`: `pink` (the subjec
 When no component fits, add one to `src/components/docs/` rather than writing markup in the MDX:
 - a server component reading `src/lib/tokens.ts`, with a `"use client"` child only for interaction
 - `doc-wide` on its root, so it spans the full width
-- utilities and tokens only: `mono-label`, `display`, `text-fl-*`, `border-rule`, `bg-paper-light`, the tones
+- utilities and tokens only: `mono-label`, `mono-text`, `display`, `text-fl-*`, `border-rule`, `bg-paper-light`, the tones
 - register it in `index.ts` and list it above
 
 For any chart or plot, load the **dataviz** skill first. Draw in the site's palette through the tones (pink for the subject, neutrals for the rest), label directly rather than with legends where you can, and keep grid lines in `rule`.

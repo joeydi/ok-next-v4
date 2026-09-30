@@ -49,7 +49,7 @@ export function Figure({
         natural={Boolean(m)}
         className="note-fig-media"
       />
-      {shown && <figcaption className="mono-label mt-fl-28 tracking-label-tight text-muted">{shown}</figcaption>}
+      {shown && <figcaption className="mono-label mt-fl-28 text-muted">{shown}</figcaption>}
     </figure>
   );
 }
