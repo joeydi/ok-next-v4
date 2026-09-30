@@ -93,7 +93,7 @@ export function ServicePage({ service: s }: { service: Service }) {
               <div
                 key={c.n}
                 className={cn(
-                  "frame flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised pt-fl-28 pb-fl-32",
+                  "frame flex flex-col gap-fl-18 bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised pt-fl-28 pb-fl-32",
                   three ? "px-fl-32 lg:min-h-[calc(29.17*var(--pvw))]" : "px-fl-28 xl:min-h-[calc(30.56*var(--pvw))]",
                 )}
               >
@@ -113,7 +113,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                   {c.t}
                 </h3>
                 <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{c.d}</p>
-                <div className="mono-text border-t border-rule pt-[18px] text-body">{c.ex}</div>
+                <div className="mono-text border-t border-rule pt-fl-18 text-body">{c.ex}</div>
               </div>
             ))}
           </div>

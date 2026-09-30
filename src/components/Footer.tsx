@@ -25,7 +25,7 @@ export function Contact({
   className?: string;
 }) {
   return (
-    <div id="contact" className={cn("scroll-mt-6", className)}>
+    <div id="contact" className={className}>
       <Eyebrow n={n} className="text-muted-light">
         Contact
       </Eyebrow>
@@ -41,7 +41,7 @@ export function Contact({
           Book a 20-min call <span className="nudge">→</span>
         </BookingLink>
       </div>
-      <div className="mono-label mt-fl-120 flex flex-wrap justify-between gap-x-6 gap-y-2 border-t border-ink-2 pt-fl-24 text-muted-light">
+      <div className="mono-label mt-fl-120 flex flex-wrap justify-between gap-x-6 gap-y-fl-8 border-t border-ink-2 pt-fl-24 text-muted-light">
         <span>{SITE.name}</span>
         <span>{SITE.location}</span>
         <span>© {new Date().getFullYear()}</span>

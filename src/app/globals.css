@@ -79,8 +79,8 @@
     background: var(--color-paper);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Anchor jumps land below the sticky nav; targets add their own breathing room. */
-    scroll-padding-top: var(--nav-h);
+    /* Anchor jumps land below the sticky nav, with room to breathe. */
+    scroll-padding-top: calc(var(--nav-h) + var(--spacing-fl-24));
   }
 
   body {
@@ -638,7 +638,6 @@
     @apply mono-label;
     margin-top: var(--spacing-fl-56);
     color: var(--color-ink);
-    scroll-margin-top: 24px;
   }
 
   .note-body > h2::before {
@@ -713,7 +712,6 @@
   .note-body > .note-anchor {
     display: block;
     height: 0;
-    scroll-margin-top: 24px;
   }
   .note-body > .note-anchor + * {
     margin-top: 0;
@@ -722,7 +720,6 @@
   /* Figures */
   .note-fig {
     margin-block: var(--spacing-fl-48) var(--spacing-fl-48);
-    scroll-margin-top: 24px;
   }
   .note-fig + * {
     margin-top: 0;

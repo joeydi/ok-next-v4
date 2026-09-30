@@ -161,7 +161,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                 <li key={n.slug}>
                   <Link
                     href={`/notes/${n.slug}`}
-                    className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28 hover-card"
+                    className="grid-12 items-baseline gap-y-fl-8 border-t border-rule py-fl-28 hover-card"
                   >
                     <span className="mono-label col-span-12 text-muted md:col-span-2">{n.tag}</span>
                     <span className="display col-span-11 text-fl-36 leading-heading-36 tracking-display-36 md:col-span-7 md:col-start-3">

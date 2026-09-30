@@ -36,7 +36,7 @@ export default function NetworkPage() {
                   <Accent text={QUOTE} />
                 </p>
               </blockquote>
-              <figcaption className="mono-label mt-fl-40 flex flex-wrap gap-x-fl-20 gap-y-2">
+              <figcaption className="mono-label mt-fl-40 flex flex-wrap gap-x-fl-20 gap-y-fl-8">
                 <span>— Susan Sontag</span>
                 <a href={SOURCE} target="_blank" rel="noopener noreferrer" className="text-pink-ink">
                   Vassar College commencement, 2003 ↗

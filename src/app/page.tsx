@@ -105,7 +105,7 @@ function Services() {
           <Link
             key={s.slug}
             href={`/${s.slug}`}
-            className="frame hover-card hover-lift flex flex-col gap-[18px] bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
+            className="frame hover-card hover-lift flex flex-col gap-fl-18 bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
           >
             <div className="mono-label flex justify-between gap-4 text-muted">
               <span>{s.audience}</span>
@@ -115,7 +115,7 @@ function Services() {
               <span className="hover-title">{s.title}</span>
             </h3>
             <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{s.intro}</p>
-            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.4] font-semibold">{s.tagline}</div>
+            <div className="border-t border-rule pt-fl-18 text-fl-18 leading-[1.4] font-semibold">{s.tagline}</div>
           </Link>
         ))}
       </div>
@@ -125,7 +125,7 @@ function Services() {
 
 function About() {
   return (
-    <div id="about" className="relative -scroll-mt-(--nav-h) overflow-hidden">
+    <div id="about" className="relative -scroll-mt-[calc(var(--nav-h)+var(--spacing-fl-24))] overflow-hidden">
       <div className="relative h-[max(640px,62.5vw)]">
         <MediaImage
           src={festival.key}

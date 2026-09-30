@@ -89,7 +89,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
-          <div className="frame relative size-full overflow-hidden bg-paper-light pb-9">
+          <div className="frame relative size-full overflow-hidden bg-paper-light pb-fl-40">
             {!loaded && (
               <p className="mono-label absolute inset-0 grid place-items-center text-muted" aria-live="polite">
                 Loading…
