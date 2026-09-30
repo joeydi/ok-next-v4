@@ -14,10 +14,14 @@ const SPECIMEN = "Hamburgefonstiv";
 const PARAGRAPH =
   "Body copy sets a comfortable measure so a paragraph reads easily at every width, and the leading shows once it wraps onto a second line.";
 const HEADING = "A heading long enough to wrap";
+const CODE = ".river {\n  float: left;\n  shape-outside: url(/river.png);\n}";
 const WEIGHT_NAMES: Record<number, string> = { 400: "Regular", 500: "Medium", 600: "Semibold", 700: "Bold" };
 
 const r1 = (n: number) => String(Math.round(n * 10) / 10);
-const faceStyle = (face: Face): CSSProperties => ({ fontFamily: `var(--font-${face})` });
+// Code is set in the mono face.
+const faceStyle = (face: Face): CSSProperties => ({
+  fontFamily: `var(--font-${face === "code" ? "mono" : face})`,
+});
 
 /** How often each size is set, and in which face most. */
 function sizeUsage(styles: TypeStyle[]) {
@@ -337,7 +341,7 @@ export function TypeStyles() {
                 {s.weight ? ` · ${s.weight}` : ""}
                 {s.uppercase ? " · caps" : ""}
               </span>
-              <span className="text-fl-12 text-muted">leading {s.leading ?? "normal"}</span>
+              <span className="text-fl-12 text-muted">leading {s.leading}</span>
               <span className={cn("text-fl-12", inline ? "text-pink-ink" : "text-muted")}>
                 {inline ? `tracking ${trackingText(s.tracking)} · no token` : trackingText(s.tracking)}
               </span>
@@ -367,10 +371,13 @@ export function TypeStyles() {
                 small && "max-w-160 text-pretty",
                 // Leading only shows over two lines, so a heading's sample wraps.
                 !s.sample && !small && s.face === "display" && "max-w-[10em]",
+                s.face === "code" && "whitespace-pre",
               )}
             >
-              {s.sample ??
-                (s.face === "mono" ? SPECIMEN : small ? PARAGRAPH : s.face === "display" ? HEADING : SPECIMEN)}
+              {s.face === "code"
+                ? CODE
+                : (s.sample ??
+                  (s.face === "mono" ? SPECIMEN : small ? PARAGRAPH : s.face === "display" ? HEADING : SPECIMEN))}
             </p>
           </div>
         );

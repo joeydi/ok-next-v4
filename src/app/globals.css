@@ -26,8 +26,13 @@
   --tracking-display: -0.035em;
   --tracking-heading: -0.02em;
 
+  /* The base line-height, Hanken Grotesk's own "normal" as a number, so anything that
+     sets none gets the same height in every face and while fonts load. */
+  --leading-body: 1.3;
   /* Line height of both mono utilities, so a label that wraps reads like one that doesn't. */
   --leading-mono: 1.6;
+  /* Code blocks: looser than the body, for lines of code. */
+  --leading-code: 1.5;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0, 0, 0.6, 1);
@@ -80,8 +85,7 @@
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    /* The design never sets a base line-height; elements inherit "normal". */
-    line-height: normal;
+    line-height: var(--leading-body);
   }
 
   a {
@@ -662,9 +666,11 @@
     background: var(--color-ink);
     color: var(--color-paper);
     font-size: var(--text-fl-14);
-    line-height: 1.6;
+    line-height: var(--leading-code);
   }
+  /* Blocks set code at the block's size; inline code stays 0.85em of its text. */
   .note-body > pre code {
+    font-size: 1em;
     background: none;
     padding: 0;
   }

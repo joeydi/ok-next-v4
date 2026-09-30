@@ -8,14 +8,15 @@ import { leadings } from "@/lib/tokens";
 // tracking. Read on every call, like src/lib/tokens.ts. The admin, the docs and
 // dev-only files are left out, so it describes only what ships.
 
-export type Face = "display" | "sans" | "mono";
+/** "code" is Plex Mono too, in the code blocks' own style. */
+export type Face = "display" | "sans" | "mono" | "code";
 
 export type TypeStyle = {
   face: Face;
   /** The --text-fl-* token, as in `text-fl-24`. */
   size: string;
   weight?: number;
-  /** A line-height: a number as written, or "normal". Unset inherits the body's "normal". */
+  /** A line-height as a number, or "normal" (the font's own). Unset takes --leading-body. */
   leading?: string;
   /** A --tracking-* token name, or `em` for a value written inline. */
   tracking?: { token: string } | { em: number };
@@ -34,14 +35,17 @@ const WEIGHTS: Record<string, number> = { medium: 500, semibold: 600, bold: 700 
 const lineOf = (text: string, i: number) => text.slice(0, i).split("\n").length;
 const num = (v: string) => String(Number(v));
 
-/** A line-height class's value: `leading-none`, `leading-normal`, `leading-[1.6]` or a --leading-* token. */
+// Tailwind's own --leading-* scale, for the names globals.css doesn't set. Note
+// `leading-normal` is 1.5, not CSS's font-dependent "normal".
+const TAILWIND_LEADING: Record<string, number> = { tight: 1.25, snug: 1.375, normal: 1.5, relaxed: 1.625, loose: 2 };
+
+/** A line-height class's value: `leading-none`, `leading-[1.6]` or a --leading-* token. */
 function leadingOf(classes: string) {
   const m = classes.match(/(?<![\w:-])leading-(?:\[([\d.]+)\]|([a-z-]+))/);
   if (!m) return undefined;
   if (m[1]) return num(m[1]);
   if (m[2] === "none") return "1";
-  if (m[2] === "normal") return "normal";
-  const token = leadings()[m[2]];
+  const token = leadings()[m[2]] ?? TAILWIND_LEADING[m[2]];
   return token === undefined ? undefined : num(String(token));
 }
 
@@ -142,13 +146,14 @@ function fromCss(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
   for (const m of src.matchAll(/font-size:\s*var\(--text-fl-(\d+)\)/g)) {
     const open = src.lastIndexOf("{", m.index);
     const body = src.slice(open, src.indexOf("}", m.index));
-    const family = body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
+    const selector = src.slice(src.lastIndexOf("}", open) + 1, open);
+    const family = /\b(?:pre|code)\b/.test(selector) ? "code" : body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
     const leading = ruleLeading(body);
     const token = body.match(/letter-spacing:\s*var\(--tracking-([a-z-]+)\)/)?.[1];
     const weight = body.match(/font-weight:\s*(\d+)/)?.[1];
     add(
       {
-        face: family === "display" ? "display" : family === "mono" ? "mono" : "sans",
+        face: family === "display" || family === "mono" || family === "code" ? family : "sans",
         size: m[1],
         weight: weight && weight !== "400" && family !== "mono" ? Number(weight) : undefined,
         leading,
@@ -166,7 +171,10 @@ const keyOf = (s: Omit<TypeStyle, "uses" | "sample">) =>
 /** Every type style the site sets, largest first, then most used. */
 export function typeStyles(): TypeStyle[] {
   const styles = new Map<string, TypeStyle>();
-  const addFrom = (file: string) => (style: Omit<TypeStyle, "uses">, line: number) => {
+  // Unset leading inherits the body's.
+  const body = num(String(leadings().body));
+  const addFrom = (file: string) => (set: Omit<TypeStyle, "uses">, line: number) => {
+    const style = { ...set, leading: set.leading ?? body };
     const key = keyOf(style);
     const found = styles.get(key);
     if (found) {

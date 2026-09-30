@@ -77,7 +77,7 @@ function Approach() {
         {principles.map((p) => (
           <div key={p.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
             <div className="mono-text text-pink-ink">{p.n}</div>
-            <h3 className="display text-fl-30 tracking-[-.01em]">{p.t}</h3>
+            <h3 className="display text-fl-30 leading-[1.2] tracking-[-.01em]">{p.t}</h3>
             <p className="text-fl-18 leading-[1.55] text-pretty text-body">{p.d}</p>
           </div>
         ))}
