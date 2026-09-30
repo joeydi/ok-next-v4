@@ -11,6 +11,7 @@ export const cn = createCn({
       spacing: [fluid, "gutter"],
       container: ["page"],
       tracking: ["display", "heading", "label", "label-tight"],
+      leading: ["body", "intro", "copy", "title", "display-text", "mono", "code"],
     },
     classGroups: {
       px: ["px-page"],

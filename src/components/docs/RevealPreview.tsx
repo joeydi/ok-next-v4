@@ -47,7 +47,7 @@ function Home() {
               <span>{s.audience}</span>
               <span>/ {s.n}</span>
             </span>
-            <span className="display mt-10 text-[36px] leading-[1.05] tracking-[-.015em]">{s.title}</span>
+            <span className="display mt-10 text-[36px] leading-[1.05] tracking-heading">{s.title}</span>
             <span className="text-[18px] leading-[1.55] text-body">{s.intro}</span>
           </button>
         ))}

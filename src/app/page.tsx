@@ -77,7 +77,7 @@ function Approach() {
         {principles.map((p) => (
           <div key={p.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
             <div className="mono-text text-pink-ink">{p.n}</div>
-            <h3 className="display text-fl-30 leading-[1.2] tracking-[-.01em]">{p.t}</h3>
+            <h3 className="display text-fl-30 leading-title tracking-heading">{p.t}</h3>
             <p className="text-fl-18 leading-copy text-pretty text-body">{p.d}</p>
           </div>
         ))}
@@ -109,7 +109,7 @@ function Services() {
               <span>{s.audience}</span>
               <span className="shrink-0 whitespace-nowrap">/ {s.n}</span>
             </div>
-            <h3 className="display mt-fl-40 text-fl-36 leading-[1.05] tracking-[-.015em]">
+            <h3 className="display mt-fl-40 text-fl-36 leading-[1.05] tracking-heading">
               <span className="hover-title">{s.title}</span>
             </h3>
             <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{s.intro}</p>

@@ -164,7 +164,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                     className="grid-12 items-baseline gap-y-2 border-t border-rule py-fl-28 hover-card"
                   >
                     <span className="mono-label col-span-12 text-muted md:col-span-2">{n.tag}</span>
-                    <span className="display col-span-11 text-fl-36 leading-[1.05] tracking-[-.015em] md:col-span-7 md:col-start-3">
+                    <span className="display col-span-11 text-fl-36 leading-[1.05] tracking-heading md:col-span-7 md:col-start-3">
                       <span className="hover-title">{n.plainTitle}</span>
                     </span>
                     <span aria-hidden="true" className="col-span-1 text-right text-fl-24 leading-intro md:col-start-12">
