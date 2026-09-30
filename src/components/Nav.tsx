@@ -315,7 +315,10 @@ export function Nav() {
   );
 }
 
-/** Dev only: a cog at the end of the bar with the admin tools, hanging from the bar's right corner. */
+/**
+ * Dev only: a cog at the end of the bar with the admin tools, hanging from the bar's right
+ * corner. Like "Services", the cog is a link (to the first tool) whose menu opens on hover or focus.
+ */
 function AdminMenu({
   pathname,
   dark,
@@ -327,18 +330,17 @@ function AdminMenu({
   accent: string;
   menuItem: string;
 }) {
-  const { ref, open, item } = useHoverMenu();
+  const { ref, clickLink, item } = useHoverMenu();
   return (
     <li className="group" {...item}>
-      <button
-        type="button"
-        onClick={open}
+      <Link
+        href={ADMIN_NAV[0].href}
+        onClick={clickLink}
         aria-label="Admin"
-        aria-controls="admin-menu"
-        className={cn("-my-2 flex cursor-pointer items-center py-2", pathname.startsWith("/admin") && accent)}
+        className={cn("-my-2 flex items-center py-2", pathname.startsWith("/admin") && accent)}
       >
         <Cog />
-      </button>
+      </Link>
       <div
         ref={ref}
         id="admin-menu"
