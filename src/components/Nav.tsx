@@ -178,14 +178,15 @@ export function Nav() {
   // Sticky rather than fixed: as a direct child of <body> it stays put for the whole
   // page but keeps its space in the flow. The bar reaches half a gutter past the
   // content so the links stay on the page grid once its background shows. Its view
-  // transition name holds it still above the pages as they transition.
+  // transition name holds it still above the pages as they transition. A flex row,
+  // so the links never wrap: they keep their width and the tagline gives way.
   return (
     <Container className="pointer-events-none sticky top-0 z-40 py-fl-12 lg:py-3">
       <nav
         ref={navRef}
         aria-label="Primary"
         className={cn(
-          "site-nav grid-12 mono-label pointer-events-auto -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-quart motion-reduce:transition-none lg:py-[17px]",
+          "site-nav mono-label pointer-events-auto flex justify-between gap-fl-24 -mx-[calc(var(--spacing-gutter)/2)] [view-transition-name:site-nav] items-center rounded-lg border border-transparent px-[calc(var(--spacing-gutter)/2)] py-fl-16 transition-[color,background-color,border-color,backdrop-filter] duration-500 ease-in-out-quart motion-reduce:transition-none lg:py-[17px]",
           state === "light" && "border-ink-2/10 bg-paper-light/50 backdrop-blur-md",
           // At the top the bar is bare; give it the menus' glass while one is open.
           state === "top" &&
@@ -193,13 +194,13 @@ export function Nav() {
           dark && "border-paper/10 bg-ink/50 text-paper backdrop-blur-md",
         )}
       >
-        <Link href="/" className="col-span-6 flex justify-self-start lg:col-span-3" aria-label="Okayplus home">
+        <Link href="/" className="flex shrink-0" aria-label="Okayplus home">
           <Logo />
         </Link>
 
         <div
           className={cn(
-            "hidden transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none xl:col-span-4 xl:block",
+            "hidden min-w-0 truncate transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none xl:block",
             dark ? "text-muted-light" : "text-muted",
           )}
         >
@@ -207,7 +208,7 @@ export function Nav() {
         </div>
 
         {/* Desktop links */}
-        <ul className="hidden justify-end gap-fl-32 lg:col-span-9 lg:flex xl:col-span-5">
+        <ul className="hidden shrink-0 gap-fl-32 whitespace-nowrap lg:flex">
           {links.map((l) =>
             l.children ? (
               <li key={l.href} className="group" {...services.item}>
@@ -266,7 +267,7 @@ export function Nav() {
         </ul>
 
         {/* Mobile: toggle + anchored popover */}
-        <div className="col-span-6 flex justify-end lg:hidden">
+        <div className="flex lg:hidden">
           <button type="button" popoverTarget="site-menu" className="mono-label -my-2 cursor-pointer py-2">
             Menu
           </button>
