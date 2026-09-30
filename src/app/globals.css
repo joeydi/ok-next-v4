@@ -33,7 +33,7 @@
   --leading-mono: 1.6;
   /* Code blocks: looser than the body, for lines of code. */
   --leading-code: 1.5;
-  /* Short copy in cards, lists and descriptions, at 18 and 20. */
+  /* Body copy at 18 and 20: cards, lists, descriptions and note articles. */
   --leading-copy: 1.6;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -594,7 +594,7 @@
     align-items: start;
     counter-reset: note-section;
     font-size: var(--text-fl-20);
-    line-height: 1.65;
+    line-height: var(--leading-copy);
     color: var(--color-ink-2);
   }
 
