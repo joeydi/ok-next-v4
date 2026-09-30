@@ -11,8 +11,9 @@ import { bezier } from "../timeline";
 // shade from the light, so tops stay light and sides shaded as cubes turn.
 //
 // On the page it's also a toy (play()): drag a cube sideways to turn its
-// horizontal layer, up or down to turn a vertical slice, and let go to have
-// the slice coast into the nearest quarter turn. Left alone for a few
+// horizontal layer, up or down to turn a vertical slice (which then turns
+// with the pointer round its axis, like a dial, so the cube stays under it),
+// and let go to have the slice coast into the nearest quarter turn. Left alone for a few
 // seconds, it undoes the turns until the pink layer is whole, then loops again.
 
 type Axis = 0 | 1 | 2;
@@ -52,6 +53,7 @@ const FRICTION = 5; // a throw coasts as if slowed by this (1/s): how far a flic
 const SPRING = 6; // the critically damped spring that lands a slice on its quarter (rad/s)
 const MAX_SPIN = 25; // fastest throw (rad/s)
 const LOCK = 6; // pointer travel before a drag picks its slice (canvas px)
+const NEAR = HALF; // the pointer this close to the turning axis holds the slice still (plane px)
 const UNDO = 6; // most time the undoing takes (s), however many turns there are
 
 /** Plane → canvas, for picking and dragging. */
@@ -155,24 +157,52 @@ type Drag = {
   axis?: Axis;
   turn?: Turn;
   a0: number;
-  /** How far the grabbed point moves per radian (canvas px). */
+  /** How far the grabbed point moves per radian (canvas px), for a grab on the axis. */
   s: [number, number];
+  /** Grabbed off the axis: the slice turns with the pointer's angle about it, last at `th` (null until it's clear of the axis). */
+  dial: boolean;
+  th: number | null;
   /** It waited for turns on another axis to land, so it starts from where the pointer is then. */
   waited: boolean;
   samples: [t: number, a: number][];
 };
+
+/** A point's distance from the cube's `axis` (plane px). */
+function radius(axis: Axis, p: Vec) {
+  const r = sub(p, CENTER);
+  r[axis] = 0;
+  return Math.hypot(...r);
+}
 
 /** Where the grabbed point moves on screen per radian of turn about `axis`. */
 function tangent(axis: Axis, hit: Vec): [number, number] {
   let r = sub(hit, CENTER);
   r[axis] = 0;
   // Grabbed on the axis (the top face's middle): turn as if by the corner nearest the viewer.
-  if (Math.hypot(...r) < PITCH / 2) {
+  if (radius(axis, hit) < PITCH / 2) {
     r = [-PITCH, PITCH, 0];
     r[axis] = 0;
   }
   return projectVec(VIEW, cross(AXES[axis], r));
 }
+
+/**
+ * The angle about `axis` (rad, turning the same way as the slice) of the point
+ * under the pointer in the plane the grabbed point turns in, or null too near
+ * the axis for the angle to mean much.
+ */
+function angleAt(axis: Axis, hit: Vec, x: number, y: number): number | null {
+  const { o, d } = rayAt(VIEW, x, y);
+  const s = (hit[axis] - o[axis]) / d[axis];
+  const p: Vec = [o[0] + d[0] * s, o[1] + d[1] * s, o[2] + d[2] * s];
+  if (radius(axis, p) < NEAR) return null;
+  const u = (axis + 1) % 3,
+    v = (axis + 2) % 3;
+  return Math.atan2(p[v] - CENTER[v], p[u] - CENTER[u]);
+}
+
+/** An angle wrapped into (−π, π]. */
+const wrap = (a: number) => a - 2 * Math.PI * Math.round(a / (2 * Math.PI));
 
 function play(): Player {
   const cube = solved();
@@ -283,12 +313,23 @@ function play(): Player {
     d.a0 = t.a;
     d.s = tangent(axis, d.hit);
     if (d.waited) [d.x0, d.y0] = [d.x, d.y];
+    d.dial = radius(axis, d.hit) >= PITCH / 2;
+    d.th = d.dial ? angleAt(axis, d.hit, d.x0, d.y0) : null;
   }
 
   function follow(d: Drag, now: number) {
-    if (!d.turn) return;
-    const [sx, sy] = d.s;
-    d.turn.a = d.a0 + ((d.x - d.x0) * sx + (d.y - d.y0) * sy) / (sx * sx + sy * sy);
+    if (!d.turn || d.axis === undefined) return;
+    if (d.dial) {
+      // Turns by however far the pointer went round, so the grabbed cube stays under it.
+      const th = angleAt(d.axis, d.hit, d.x, d.y);
+      if (th !== null) {
+        if (d.th !== null) d.turn.a += wrap(th - d.th);
+        d.th = th;
+      }
+    } else {
+      const [sx, sy] = d.s;
+      d.turn.a = d.a0 + ((d.x - d.x0) * sx + (d.y - d.y0) * sy) / (sx * sx + sy * sy);
+    }
     d.samples.push([now, d.turn.a]);
     while (d.samples[0][0] < now - 0.1) d.samples.shift();
   }
@@ -345,7 +386,21 @@ function play(): Player {
           release(t, (t.to * (EASE(Math.min(1, u + e)) - EASE(u))) / (e * t.dur));
         }
       }
-      drag = { cubie: p.i, hit: p.hit, face: p.face, x0: x, y0: y, x, y, a0: 0, s: [1, 0], waited: false, samples: [] };
+      drag = {
+        cubie: p.i,
+        hit: p.hit,
+        face: p.face,
+        x0: x,
+        y0: y,
+        x,
+        y,
+        a0: 0,
+        s: [1, 0],
+        dial: false,
+        th: null,
+        waited: false,
+        samples: [],
+      };
       return true;
     },
 
