@@ -101,7 +101,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
             {(toc.length > 0 || meta.tools?.length || project.length > 0) && (
               <aside className="note-aside">
                 {toc.length > 0 && (
-                  <nav aria-label="In this post" className="flex flex-col gap-1.5">
+                  <nav aria-label="In this post" className="flex flex-col gap-fl-8">
                     <span className="mono-label text-ink">IN THIS POST</span>
                     {toc.map((t) => (
                       <a key={t.id} href={`#${t.id}`}>
@@ -111,7 +111,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                   </nav>
                 )}
                 {project.length > 0 && (
-                  <dl className="flex flex-col gap-1.5">
+                  <dl className="flex flex-col gap-fl-8">
                     {project.map(([k, v]) => (
                       <div key={k}>
                         <dt className="mono-label text-ink">{k}</dt>
@@ -131,9 +131,9 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                   </dl>
                 )}
                 {meta.tools && meta.tools.length > 0 && (
-                  <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col gap-fl-8">
                     <span className="mono-label text-ink">TOOLS</span>
-                    <ul className="flex flex-col gap-1.5">
+                    <ul className="flex flex-col gap-fl-8">
                       {meta.tools.map((t) => (
                         <li key={t}>{t}</li>
                       ))}

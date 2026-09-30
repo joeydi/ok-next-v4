@@ -76,7 +76,7 @@ export function NotesList({
               aria-pressed={on}
               onClick={onPick && (() => onPick(f.value))}
               className={cn(
-                "mono-label flex cursor-pointer items-baseline gap-fl-8 border-b-2 pb-1.5 transition-colors hover:text-ink",
+                "mono-label flex cursor-pointer items-baseline gap-fl-8 border-b-2 pb-fl-6 transition-colors hover:text-ink",
                 on ? "border-pink text-ink" : "border-transparent text-muted",
               )}
             >
