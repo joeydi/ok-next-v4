@@ -1,0 +1,48 @@
+---
+title: Spacing & layout
+description: One fluid spacing scale, and a page frame built from it. Every step grows with the window like the type does, so padding, gaps and the gutter keep their proportions from a phone to a wide screen and hit the 1440 comps exactly.
+order: 3
+---
+
+The steps are the `--spacing-fl-*` variables and the gutter `--spacing-gutter` in `src/app/fluid.css`, which `scripts/fluid.mjs` generates along with the page's max width, `--container-page`: edit the script and rerun it, never the CSS. The frame's utilities (`px-page`, `grid-12`) and `--pvw` are in `src/app/globals.css`. Every value on this page is read from those files. Use the steps with any spacing utility (`p-fl-24`, `gap-y-fl-40`, `mt-fl-96`) rather than Tailwind's fixed steps or px.
+
+## Scale
+
+Each step is named for its px at 1440 and is a straight line from a smaller px at a 320 window, carried on to 1920 and clamped at both ends, the same as the type sizes. The large steps shrink to about half on a phone and the small ones to about three quarters, so sections close up more than the gaps inside them. The gutter is the one named step: 64 at 1440 like `fl-64`, but down to 20 on a phone, so narrow screens keep more of their width for content.
+
+<DocFigure
+  title="Space × viewport"
+  caption="Pink dots are the design px at 1440. The gutter is drawn in pink. Dashed lines are steps nothing on the site uses. Hover a line for its values."
+>
+  <FluidSpacePlot />
+</DocFigure>
+
+Each step drawn at its width in this window, with its px at 320, 1440 and 1920. Uses count every class and every `var(--spacing-…)` in `globals.css`, including those inside a `calc()`.
+
+<SpaceScale />
+
+## Page
+
+Every page-level block sits in `<Container>` (`src/components/Container.tsx`): `px-page` sets the gutter either side, and `max-w-page` caps it at `--container-page` and centres it. That's where the fluid scale stops growing too, so past 1920 the page just gains margins. Full-bleed backgrounds, like the footer's, go on a parent with the container inside.
+
+Inside it, `grid-12` lays blocks out on twelve columns with `fl-24` between them. Place things with `col-span-*` and `col-start-*`; most blocks span all twelve on a phone and split from `lg`. The note article (`.note-body`) is the same grid.
+
+<DocFigure
+  title="Frame × viewport"
+  caption="Each width is drawn the same size, so the rows compare as proportions. The gutter and gaps shrink on a phone, but less than the window does, so they take a larger share of it. The last row follows this window."
+>
+  <PageGrid />
+</DocFigure>
+
+<PageGridTable />
+
+Two more variables in `globals.css` measure off the frame:
+
+- `--pvw` is `1vw` that stops growing at `--container-page`. For widths and offsets taken from the comp as a share of the window, write `calc(N*var(--pvw))` rather than `Nvw`, so they stop at the cap along with everything else. The heroes' illustrations are placed this way.
+- `--nav-h` is the sticky nav's height, from its padding steps below `lg` and fixed from there. `scroll-padding-top` uses it, so anchor jumps land below the nav.
+
+## Spacing in use
+
+Every padding, margin, gap and offset set in `src/app`, `src/components` and `globals.css`, found by scanning the source, that isn't a step on the scale. Fixed px stays the same size at every width, which is right for controls that shouldn't shrink on a phone, such as the nav's hit areas, the skip link and the booking dialog's close button. Elsewhere, a fixed value is a candidate for the nearest step, marked in pink. Em and % values scale with their text or box, and worked-out values combine tokens, so they're only listed, in the table at the end.
+
+<SpacingInUse />

@@ -136,7 +136,7 @@ export function leadings(): Record<string, number> {
 }
 
 export type SizeToken = {
-  /** The design px at the comp width, as in `text-fl-24`. */
+  /** The name after the prefix: the design px for `text-fl-24`, `fl-24` or `gutter` for spacing. */
   name: string;
   /** The clamp's floor and ceiling, in px. */
   min: number;
@@ -151,24 +151,48 @@ export type SizeToken = {
 /** Font size in px of a --text-fl-* token at a viewport width. */
 export const sizeAt = (t: SizeToken, vw: number) => Math.min(t.max, Math.max(t.min, t.base + t.slope * vw));
 
+const px = (rem: string) => Number.parseFloat(rem) * 16;
+
 /**
- * The fluid type scale: every --text-fl-* token in src/app/fluid.css, the comp width
+ * One fluid scale from src/app/fluid.css: every --<prefix>-* token, the comp width
  * where each hits its design px, and the viewport widths where the scale starts and
  * stops growing.
  */
-export function typeScale() {
+function fluidScale(prefix: string) {
   const css = fs.readFileSync(FLUID, "utf8");
   // scripts/fluid.mjs writes its viewport widths into the header comment.
   const widths = css.match(/Linear from (\d+)px to (\d+)px; exact design values at (\d+)px/);
   if (!widths) throw new Error("tokens: fluid.css doesn't say its viewport widths");
   const [from, to, design] = widths.slice(1).map(Number);
-  const px = (rem: string) => Number.parseFloat(rem) * 16;
-  const sizes: SizeToken[] = [...declarations("text-fl", FLUID)].map(([name, value]) => {
+  const sizes: SizeToken[] = [...declarations(prefix, FLUID)].map(([name, value]) => {
     const m = value.match(/^clamp\(([\d.]+)rem,\s*([\d.-]+)rem \+ ([\d.]+)vw,\s*([\d.]+)rem\)$/);
-    if (!m) throw new Error(`tokens: --text-fl-${name} isn't a rem + vw clamp`);
+    if (!m) throw new Error(`tokens: --${prefix}-${name} isn't a rem + vw clamp`);
     return { name, min: px(m[1]), base: px(m[2]), slope: Number(m[3]) / 100, max: px(m[4]), value };
   });
   return { sizes, design, from, to };
+}
+
+/** The fluid type scale: every --text-fl-* token. */
+export const typeScale = () => fluidScale("text-fl");
+
+/** The fluid spacing scale: every --spacing-* token, the `fl-*` steps and the named ones like `gutter`. */
+export const spaceScale = () => fluidScale("spacing");
+
+/** The page's max width in px: --container-page, where the fluid scales stop growing. */
+export function containerPage() {
+  const value = declarations("container", FLUID).get("page");
+  if (!value?.endsWith("rem")) throw new Error(`tokens: --container-page isn't in rem (${value})`);
+  return px(value);
+}
+
+/** The `grid-12` utility in globals.css: its column count and the --spacing-* token between them. */
+export function pageGrid() {
+  const css = fs.readFileSync(CSS, "utf8");
+  const body = css.match(/@utility grid-12 \{([^}]*)\}/)?.[1] ?? "";
+  const columns = Number(body.match(/grid-template-columns:\s*repeat\((\d+),/)?.[1]);
+  const gap = body.match(/column-gap:\s*var\(--spacing-([a-z0-9-]+)\)/)?.[1];
+  if (!columns || !gap) throw new Error("tokens: @utility grid-12 isn't repeat(N, …) with a --spacing-* column-gap");
+  return { columns, gap };
 }
 
 // ---------- View transitions ----------

@@ -1,10 +1,10 @@
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { fonts, leadings, type SizeToken, sizeAt, trackings, typeScale } from "@/lib/tokens";
+import { fonts, leadings, trackings, typeScale } from "@/lib/tokens";
 import { DocFacts } from "./DocTable";
+import { FluidPlot } from "./FluidPlot";
 import { placeLabels } from "./Palette";
 import { type Face, type TypeStyle, typeStyles } from "./typeUsage";
-import { ViewportMarker } from "./ViewportMarker";
 
 // The Typography doc's visuals: the --font-*, --tracking-* and --text-fl-* tokens,
 // read from globals.css and fluid.css, and the styles the site builds from them,
@@ -152,115 +152,21 @@ export function TypeScale() {
 }
 
 /**
- * Each --text-fl-* token's px across viewport widths: a straight line between its
- * floor and ceiling, crossing its design px at the comp width. Unused sizes are
- * dashed. A marker follows the window's own width.
+ * Each --text-fl-* token's px across viewport widths (<FluidPlot>), unused sizes dashed.
  */
 export function FluidScalePlot() {
   const { sizes, design, from, to } = typeScale();
   const usage = sizeUsage(typeStyles());
-  const W = 720;
-  const H = 440;
-  const m = { t: 16, r: 44, b: 40, l: 52 };
-  const iw = W - m.l - m.r;
-  const ih = H - m.t - m.b;
-  const d0 = from - 160;
-  const d1 = to + 160;
-  const top = Math.ceil(Math.max(...sizes.map((s) => s.max)) / 40) * 40;
-  const x = (vw: number) => m.l + ((vw - d0) / (d1 - d0)) * iw;
-  const y = (px: number) => m.t + (1 - px / top) * ih;
-  const line = (t: SizeToken) =>
-    [d0, from, to, d1].map((vw, i) => `${i ? "L" : "M"}${x(vw).toFixed(1)} ${y(sizeAt(t, vw)).toFixed(1)}`).join("");
-
-  // Labels at the right end, largest first, pushed apart so they never touch.
-  const GAP = 12;
-  const labels = [...sizes].reverse().map((t) => ({ t, y: y(t.max) }));
-  for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + GAP);
-  const over = labels[labels.length - 1].y - (m.t + ih);
-  if (over > 0) for (const l of labels) l.y -= over;
-  for (let i = labels.length - 2; i >= 0; i--) labels[i].y = Math.min(labels[i].y, labels[i + 1].y - GAP);
-
-  const ticks = [from, 768, 1024, design, to];
-
   return (
-    // Scrolls sideways on a phone rather than shrinking its labels past reading.
-    <div className="overflow-x-auto">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        role="img"
-        aria-label={`Font size in px against viewport width for each text-fl token, from ${from} to ${to}px`}
-        className="block h-auto w-full min-w-[34rem] font-mono text-[11px]"
-      >
-        <rect x={x(d0)} y={m.t} width={x(from) - x(d0)} height={ih} className="fill-sand" />
-        <rect x={x(to)} y={m.t} width={x(d1) - x(to)} height={ih} className="fill-sand" />
-        {Array.from({ length: top / 40 + 1 }, (_, i) => i * 40).map((px) => (
-          <g key={px}>
-            <line x1={m.l} x2={m.l + iw} y1={y(px)} y2={y(px)} className={px ? "stroke-rule" : "stroke-guide"} />
-            <text x={m.l - 8} y={y(px)} textAnchor="end" dominantBaseline="central" className="fill-muted">
-              {px}px
-            </text>
-          </g>
-        ))}
-        {ticks.map((vw) => (
-          <g key={vw}>
-            <line
-              x1={x(vw)}
-              x2={x(vw)}
-              y1={m.t}
-              y2={m.t + ih}
-              className={vw === design ? "stroke-pink" : "stroke-rule"}
-              strokeDasharray={vw === design ? "6 4" : undefined}
-              strokeWidth={vw === design ? 1.5 : 1}
-            />
-            <text
-              x={x(vw)}
-              y={m.t + ih + 18}
-              textAnchor="middle"
-              className={vw === design ? "fill-pink-ink" : "fill-muted"}
-            >
-              {vw}
-            </text>
-          </g>
-        ))}
-        <text x={m.l + iw} y={H - 4} textAnchor="end" className="fill-ink">
-          Viewport →
-        </text>
-        <text x={x(design) + 6} y={m.t + 10} className="fill-pink-ink">
-          Design
-        </text>
-        <ViewportMarker d0={d0} d1={d1} x0={m.l} x1={m.l + iw} top={m.t} bottom={m.t + ih} />
-        {sizes.map((t) => {
-          const { uses } = usage(t.name);
-          const title = `text-fl-${t.name}\n${r1(t.min)}px at ${from} · ${t.name}px at ${design} · ${r1(t.max)}px at ${to}\n${uses ? `${uses} uses` : "Unused"}`;
-          return (
-            <g key={t.name}>
-              <path
-                d={line(t)}
-                fill="none"
-                className={uses ? "stroke-ink-2" : "stroke-muted-light"}
-                strokeWidth={uses ? 1.5 : 1}
-                strokeDasharray={uses ? undefined : "4 4"}
-              />
-              <circle cx={x(design)} cy={y(Number(t.name))} r={3} className="fill-pink" />
-              <path d={line(t)} fill="none" stroke="transparent" strokeWidth={10}>
-                <title>{title}</title>
-              </path>
-            </g>
-          );
-        })}
-        {labels.map(({ t, y: ly }) => (
-          <text
-            key={t.name}
-            x={m.l + iw + 8}
-            y={ly}
-            dominantBaseline="central"
-            className={usage(t.name).uses ? "fill-ink-2" : "fill-muted-light"}
-          >
-            {t.name}
-          </text>
-        ))}
-      </svg>
-    </div>
+    <FluidPlot
+      sizes={sizes}
+      design={design}
+      from={from}
+      to={to}
+      uses={(t) => usage(t.name).uses}
+      label={(t) => t.name}
+      ariaLabel={`Font size in px against viewport width for each text-fl token, from ${from} to ${to}px`}
+    />
   );
 }
 

@@ -7,7 +7,7 @@ description: Write or update a design doc for okaypl.us — a reference page in 
 
 Design docs are MDX files in `src/content/docs/`, shown in the dev-only admin at `/admin/docs/<slug>` and listed in its sidebar automatically. They never ship. Every doc shares one look: the site's own type, tokens and components, with no custom styles, colours or dark mode. That consistency is the point, so follow the structure below rather than inventing a layout.
 
-Read an existing doc before writing one: `palette.mdx` (charts and tables), `easing-curves.mdx` (a card per item), `view-transitions.mdx` (a live demo, a timeline, exported data).
+Read an existing doc before writing one: `palette.mdx` (charts and tables), `spacing-and-layout.mdx` (a scale and a source scan), `easing-curves.mdx` (a card per item), `view-transitions.mdx` (a live demo, a timeline, exported data).
 
 ## File and frontmatter
 
@@ -42,6 +42,8 @@ Every colour, curve and timing is read from `src/app/globals.css` by `src/lib/to
 - `viewTransitions()` / `viewTransition(name)`: `--view-transition-*` timings and amounts
 - `fonts()`, `trackings()`: `--font-*` stacks and `--tracking-*` in em
 - `typeScale()` / `sizeAt(token, vw)`: the `--text-fl-*` sizes from `src/app/fluid.css`, with the viewport widths `scripts/fluid.mjs` wrote there
+- `spaceScale()`: the `--spacing-*` steps and the gutter from the same file, as the same kind of token
+- `containerPage()`, `pageGrid()`: the page's max width, and `grid-12`'s column count and gap token
 
 Refer to a token by name: `duration="reveal"`, `ease="out-expo"`. If a doc needs a value that isn't a token yet, add the token to `globals.css`, use it in the site's CSS, then read it here. Plain numbers are fine for things that aren't tokens, like a sample duration or a browser default.
 
@@ -66,6 +68,11 @@ They're available in every doc without importing, registered in `src/components/
 - `<Typeface font="display" name="Gelica" source="Adobe Fonts" weights={[400]} use="…">…</Typeface>`
 - `<TypeScale />`, `<FluidScalePlot />`, `<Trackings />`, `<LeadingPlot />`
 - `<TypeStyles />`: every type style the site sets, scanned from its source (`typeUsage.ts`)
+
+**Spacing & layout**
+- `<FluidSpacePlot />`, `<SpaceScale />`: the spacing steps across viewport widths, and each at its own width
+- `<PageGrid />`, `<PageGridTable />`: the container, gutter and `grid-12` columns at several widths and this window's
+- `<SpacingInUse />`: every spacing value off the scale, scanned from its source (`spaceUsage.ts`)
 
 **Motion**
 - `<Curve ease="out-expo" title="Expo out" duration={500} used="…">…</Curve>` and `<PlayAll />`.

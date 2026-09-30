@@ -7,6 +7,7 @@ import { MaskDiagram } from "./MaskDiagram";
 import { HueWheel, PaletteTable, SaturationPlot, Swatches } from "./Palette";
 import { PlayAll } from "./PlayTrack";
 import { RevealPreview } from "./RevealPreview";
+import { FluidSpacePlot, PageGrid, PageGridTable, SpaceScale, SpacingInUse } from "./Spacing";
 import { KeyframeTable, Timeline } from "./Timeline";
 import { TransitionCurve } from "./TransitionCurve";
 import { FluidScalePlot, LeadingPlot, Trackings, Typeface, TypeScale, TypeStyles } from "./Typography";
@@ -35,6 +36,12 @@ export const docComponents: MDXComponents = {
   Trackings,
   LeadingPlot,
   TypeStyles,
+  // Spacing & layout
+  SpaceScale,
+  FluidSpacePlot,
+  PageGrid,
+  PageGridTable,
+  SpacingInUse,
   // Easing
   Curve,
   PlayAll,
