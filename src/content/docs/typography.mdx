@@ -1,0 +1,69 @@
+---
+title: Typography
+description: Three typefaces and one fluid scale. Gelica carries the headings, Hanken Grotesk the reading and IBM Plex Mono the labels, and every size grows with the window so the 1440 comps render at exactly their specced px.
+order: 2
+size: large
+---
+
+The faces are the `--font-*` variables and the letter spacing the `--tracking-*` variables in the `@theme` block of `src/app/globals.css`. The sizes are the `--text-fl-*` variables in `src/app/fluid.css`, which `scripts/fluid.mjs` generates: edit the script and rerun it, never the CSS. Every value on this page is read from those files. Use them as classes (`display`, `font-mono`, `mono-label`, `text-fl-24`, `tracking-heading`) rather than px or em values inline.
+
+## Typefaces
+
+Hanken Grotesk and IBM Plex Mono come through `next/font` in `src/app/layout.tsx`, so they're self-hosted and preloaded. Gelica comes from an Adobe Fonts kit, and each live domain has to be added to the kit.
+
+<DocGrid cols={3}>
+  <Typeface
+    font="display"
+    name="Gelica"
+    source="Adobe Fonts"
+    weights={[400]}
+    use="display (sets the weight too) or font-display"
+  >
+    Headings, pull quotes, the note lead and titles on cards, always at 400 with negative tracking. It falls back to Georgia while the kit loads.
+  </Typeface>
+  <Typeface
+    font="sans"
+    name="Hanken Grotesk"
+    source="next/font"
+    weights={[400, 500, 600]}
+    use="The body default; font-sans"
+  >
+    Everything you read: intros, body copy, card descriptions, quotes from clients. Semibold picks out a tagline now and then.
+  </Typeface>
+  <Typeface
+    font="mono"
+    name="IBM Plex Mono"
+    source="next/font"
+    weights={[500]}
+    use="mono-label for caps labels; font-mono for numbers and meta"
+  >
+    Labels, the nav, numbers and dates. Only 500 is loaded, so mono renders at 500 whatever weight it asks for. It has no “→”, which falls through to the system monospace.
+  </Typeface>
+</DocGrid>
+
+## Scale
+
+Each size is a straight line through its smallest px at a 320 window and its design px at 1440, carried on to 1920 and clamped at both ends. The comps come out exactly as specced, and phones and wide screens scale in proportion. Resize the window to see where it falls.
+
+<DocFigure
+  title="Size × viewport"
+  caption="Pink dots are the design px at 1440. The shaded ends are where the clamps hold each size still. Dashed lines are sizes nothing on the site uses. Hover a line for its values."
+>
+  <FluidScalePlot />
+</DocFigure>
+
+Each size set at its own width here, in the face the site sets it in most, with its px at 320, 1440 and 1920.
+
+<TypeScale />
+
+## Tracking
+
+Gelica is tightened as it gets bigger, and the mono caps are opened up. Each token is set over the same text without it.
+
+<Trackings />
+
+## Styles in use
+
+Every combination of face, size, weight, leading and tracking set in `src/app`, `src/components` and `globals.css`, found by scanning the source, so this list follows the code. Tracking written inline instead of from a token is marked in pink: a value that turns up in more than one place is a candidate for a new `--tracking-*` token.
+
+<TypeStyles />

@@ -40,6 +40,8 @@ Every colour, curve and timing is read from `src/app/globals.css` by `src/lib/to
 - `colors()`: `--color-*` with hex, HSL and contrast
 - `eases()` / `ease(name)`: `--ease-*` control points (`"ease"` is CSS's default)
 - `viewTransitions()` / `viewTransition(name)`: `--view-transition-*` timings and amounts
+- `fonts()`, `trackings()`: `--font-*` stacks and `--tracking-*` in em
+- `typeScale()` / `sizeAt(token, vw)`: the `--text-fl-*` sizes from `src/app/fluid.css`, with the viewport widths `scripts/fluid.mjs` wrote there
 
 Refer to a token by name: `duration="reveal"`, `ease="out-expo"`. If a doc needs a value that isn't a token yet, add the token to `globals.css`, use it in the site's CSS, then read it here. Plain numbers are fine for things that aren't tokens, like a sample duration or a browser default.
 
@@ -59,6 +61,11 @@ They're available in every doc without importing, registered in `src/components/
 - `<Swatches groups={{ Paper: ["paper", "sand"] }} />`
 - `<SaturationPlot />`, `<HueWheel />`
 - `<PaletteTable />`
+
+**Type**
+- `<Typeface font="display" name="Gelica" source="Adobe Fonts" weights={[400]} use="…">…</Typeface>`
+- `<TypeScale />`, `<FluidScalePlot />`, `<Trackings />`
+- `<TypeStyles />`: every type style the site sets, scanned from its source (`typeUsage.ts`)
 
 **Motion**
 - `<Curve ease="out-expo" title="Expo out" duration={500} used="…">…</Curve>` and `<PlayAll />`.
