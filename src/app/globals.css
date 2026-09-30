@@ -33,6 +33,8 @@
   --leading-mono: 1.6;
   /* Code blocks: looser than the body, for lines of code. */
   --leading-code: 1.5;
+  /* Short copy in cards, lists and descriptions, at 18 and 20. */
+  --leading-copy: 1.6;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0, 0, 0.6, 1);

@@ -65,7 +65,7 @@ export default function NotesPage() {
                 <h2 className="display text-fl-48 leading-[1.02] tracking-heading text-balance">
                   <span className="hover-title">{featured.plainTitle}</span>
                 </h2>
-                <p className="text-fl-18 leading-[1.6] text-pretty text-body">{featured.description}</p>
+                <p className="text-fl-18 leading-copy text-pretty text-body">{featured.description}</p>
                 <span className="mono-label text-pink-ink">
                   Read <span className="nudge">→</span>
                 </span>

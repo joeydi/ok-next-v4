@@ -78,7 +78,7 @@ function Approach() {
           <div key={p.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
             <div className="mono-text text-pink-ink">{p.n}</div>
             <h3 className="display text-fl-30 leading-[1.2] tracking-[-.01em]">{p.t}</h3>
-            <p className="text-fl-18 leading-[1.55] text-pretty text-body">{p.d}</p>
+            <p className="text-fl-18 leading-copy text-pretty text-body">{p.d}</p>
           </div>
         ))}
       </div>
@@ -94,7 +94,7 @@ function Services() {
           <Eyebrow n="02">How I help</Eyebrow>
           <h2 className="display text-fl-60 leading-none tracking-heading">Where I fit in.</h2>
         </div>
-        <p className="max-w-[400px] text-fl-18 leading-[1.55] text-body">
+        <p className="max-w-[400px] text-fl-18 leading-copy text-body">
           Most engagements touch more than one of these. We’ll figure out which one matters first.
         </p>
       </div>
@@ -112,8 +112,8 @@ function Services() {
             <h3 className="display mt-fl-40 text-fl-36 leading-[1.05] tracking-[-.015em]">
               <span className="hover-title">{s.title}</span>
             </h3>
-            <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{s.intro}</p>
-            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.45] font-semibold">{s.tagline}</div>
+            <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{s.intro}</p>
+            <div className="border-t border-rule pt-[18px] text-fl-18 leading-[1.4] font-semibold">{s.tagline}</div>
           </Link>
         ))}
       </div>
@@ -146,7 +146,7 @@ function About() {
               (On the left.)
             </h2>
           </div>
-          <p className="max-w-[400px] text-fl-20 leading-[1.6] text-pretty lg:w-[calc(27.78*var(--pvw))] lg:max-w-none">
+          <p className="max-w-[400px] text-fl-20 leading-copy text-pretty lg:w-[calc(27.78*var(--pvw))] lg:max-w-none">
             I’ve spent my career on the same side of the table as creative directors, marketers, and business owners,
             turning fuzzy goals into things that ship. You work with me directly, from the first call to launch and
             after.
@@ -172,7 +172,7 @@ function Testimonials() {
       <div className="grid gap-x-fl-96 gap-y-fl-64 lg:grid-cols-2">
         {quotes.map((q) => (
           <figure key={q.initials} className="flex flex-col gap-fl-24">
-            <blockquote className="text-fl-20 leading-[1.6] text-pretty">“{q.q}”</blockquote>
+            <blockquote className="text-fl-20 leading-copy text-pretty">“{q.q}”</blockquote>
             <Cite t={q} />
           </figure>
         ))}

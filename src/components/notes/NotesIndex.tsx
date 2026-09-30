@@ -110,7 +110,7 @@ export function NotesList({
                     <span className="hover-title">{n.plainTitle}</span>
                   </span>
                   {n.description && (
-                    <span className="text-fl-18 leading-[1.55] text-pretty text-body">{n.description}</span>
+                    <span className="text-fl-18 leading-copy text-pretty text-body">{n.description}</span>
                   )}
                 </span>
                 <Placeholder

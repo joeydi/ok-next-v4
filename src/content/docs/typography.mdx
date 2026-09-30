@@ -64,7 +64,7 @@ Gelica is tightened as it gets bigger, and the mono caps are opened up. Each tok
 
 ## Styles in use
 
-Line heights are always numbers. Anything that sets none takes `--leading-body` (1.3, Hanken Grotesk's own `normal`), the mono utilities set `--leading-mono` (1.6) and code blocks `--leading-code` (1.5). Note that Tailwind's `leading-normal` is 1.5, not the font's `normal`.
+Line heights are always numbers. Anything that sets none takes `--leading-body` (1.3, Hanken Grotesk's own `normal`), short copy in cards, lists and descriptions uses `--leading-copy` (1.6, as `leading-copy`), the mono utilities set `--leading-mono` (1.6) and code blocks `--leading-code` (1.5). Note that Tailwind's `leading-normal` is 1.5, not the font's `normal`.
 
 Every combination of face, size, weight, leading and tracking set in `src/app`, `src/components` and `globals.css`, found by scanning the source, so this list follows the code. Tracking written inline instead of from a token is marked in pink: a value that turns up in more than one place is a candidate for a new `--tracking-*` token.
 

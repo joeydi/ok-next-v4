@@ -41,7 +41,7 @@ export function ServicePage({ service: s }: { service: Service }) {
         <h2 className="display text-fl-48 leading-[1.02] tracking-heading">
           <span className="hover-title">{s.work.title}</span>
         </h2>
-        <p className="text-fl-18 leading-[1.6] text-pretty text-body">{s.work.d}</p>
+        <p className="text-fl-18 leading-copy text-pretty text-body">{s.work.d}</p>
         <div className="mono-label border-t border-rule pt-fl-16 text-body">{s.work.tags}</div>
         {s.work.href && (
           <span className="mono-label text-pink-ink">
@@ -111,7 +111,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                 >
                   {c.t}
                 </h3>
-                <p className="flex-1 text-fl-18 leading-[1.55] text-pretty text-body">{c.d}</p>
+                <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{c.d}</p>
                 <div className="mono-text border-t border-rule pt-[18px] text-body">{c.ex}</div>
               </div>
             ))}
@@ -146,7 +146,7 @@ export function ServicePage({ service: s }: { service: Service }) {
               <li key={step.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
                 <div className="mono-text text-pink-ink">{step.n}</div>
                 <h3 className="display text-fl-30 leading-[1.2] tracking-[-.01em]">{step.t}</h3>
-                <p className="text-fl-18 leading-[1.55] text-pretty text-body">{step.d}</p>
+                <p className="text-fl-18 leading-copy text-pretty text-body">{step.d}</p>
               </li>
             ))}
           </ol>
