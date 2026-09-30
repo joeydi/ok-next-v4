@@ -147,7 +147,11 @@ function fromCss(src: string, add: (s: Omit<TypeStyle, "uses">, line: number) =>
     const open = src.lastIndexOf("{", m.index);
     const body = src.slice(open, src.indexOf("}", m.index));
     const selector = src.slice(src.lastIndexOf("}", open) + 1, open);
-    const family = /\b(?:pre|code)\b/.test(selector) ? "code" : body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
+    const family = /\b(?:pre|code)\b/.test(selector)
+      ? "code"
+      : /@apply[^;]*(?<![\w-])display\b/.test(body)
+        ? "display"
+        : body.match(/font-family:\s*var\(--font-(\w+)\)/)?.[1];
     const leading = ruleLeading(body);
     const token = body.match(/letter-spacing:\s*var\(--tracking-([a-z-]+)\)/)?.[1];
     const weight = body.match(/font-weight:\s*(\d+)/)?.[1];
