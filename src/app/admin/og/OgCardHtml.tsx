@@ -14,6 +14,12 @@ export type OgCardAssets = {
   backdrop?: string;
 };
 
+const TITLE = {
+  48: "text-[48px] leading-heading-48 tracking-display-48",
+  60: "text-[60px] leading-heading-60 tracking-display-60",
+  96: "text-[96px] leading-heading-96 tracking-display-96",
+};
+
 /**
  * The card as renderOg lays it out, in HTML at 1200×630 so the browser can set the title
  * in Gelica. Fixed over the page (and the nav) at the top left, where the capture route
@@ -39,18 +45,16 @@ export function OgCardHtml({
     };
   }, []);
 
+  // Title sizes are stops on the type scale, each with its heading leading and tracking
+  // (the card is a fixed 1200px image, so px rather than the fluid text-fl-* sizes).
   // Gelica runs wider than Hanken, so it steps down a little sooner than renderOg's sizes.
-  const size = imageSrc
+  const title = imageSrc
     ? card.title.length > 44
-      ? 52
-      : card.title.length > 26
-        ? 62
-        : 76
-    : card.title.length > 56
-      ? 60
-      : card.title.length > 30
-        ? 76
-        : 100;
+      ? TITLE[48]
+      : TITLE[60]
+    : card.title.length > 30
+      ? TITLE[60]
+      : TITLE[96];
 
   return (
     <div
@@ -88,7 +92,7 @@ export function OgCardHtml({
               <span key={i}>{part}</span>
             ))}
           </div>
-          <div className="display leading-[1] tracking-display" style={{ fontSize: size }}>
+          <div className={`display ${title}`}>
             <Accent text={card.title} />
           </div>
         </div>

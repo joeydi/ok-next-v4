@@ -12,7 +12,7 @@ import { formatDate, getAllNotes, getNote } from "./notes";
  * Part of every card's hash: bump it when the card layout changes (og.tsx, OgCardHtml)
  * or a network/illustration poster it draws is re-saved, so every saved card turns stale.
  */
-const CARD_VERSION = 1;
+const CARD_VERSION = 2;
 
 export type OgCard = {
   /** Separate parts with two spaces. */
