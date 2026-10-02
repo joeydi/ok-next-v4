@@ -127,7 +127,7 @@ export function DrawRiver({
         <div
           ref={setBox}
           aria-hidden="true"
-          className="relative flex-1 cursor-crosshair touch-none rounded-[3px] border border-ink/15 bg-paper"
+          className="relative flex-1 cursor-crosshair touch-none rounded-[3px] border border-ink/15 bg-[radial-gradient(color-mix(in_srgb,var(--color-guide)_70%,transparent)_1px,transparent_1.5px)] bg-paper bg-size-[24px_24px]"
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             setStroke([point(e)]);
