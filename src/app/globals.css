@@ -735,10 +735,33 @@
     box-shadow: 0 0 0 0.15em color-mix(in oklab, var(--color-pink) 24%, transparent);
   }
 
+  /* Markdown quotes: Gelica at the Lead's size, ruled in pink, for a poem or a
+     passage quoted at length. A <cite> on its own line (MDX makes it a
+     child of the quote) is its source, in mono below the rule, indented with the text. */
   .note-body > blockquote:not(.note-quote) {
+    @apply display;
+    font-size: var(--text-fl-30);
+    line-height: var(--leading-display-text-30);
+    letter-spacing: var(--tracking-display-30);
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .note-body > blockquote:not(.note-quote) > * {
     padding-left: var(--spacing-fl-24);
     border-left: 2px solid var(--color-pink);
-    color: var(--color-ink);
+  }
+  .note-body > blockquote:not(.note-quote) > cite {
+    border-left-color: transparent;
+  }
+  .note-body > blockquote:not(.note-quote) cite {
+    @apply mono-label;
+    display: block;
+    margin-top: var(--spacing-fl-16);
+    font-style: normal;
+    color: var(--color-muted);
+  }
+  .note-body > blockquote:not(.note-quote) cite::before {
+    content: "— ";
   }
 
   .note-body > hr {

@@ -40,7 +40,7 @@ The sidebar is built from the frontmatter and the headings: "In this post", then
 
 ## Formatting
 
-Plain Markdown, with GFM for strikethrough and autolinks. Paragraphs are set in Hanken at `fl-20`, with `*emphasis*`, `**strong**` in ink and `inline code` on sand. Links are underlined in pink: a relative link (`/notes`, `#figure`) navigates in place, and any other opens in a new tab.
+Plain Markdown, with GFM for strikethrough and autolinks. Paragraphs are set in Hanken at `fl-20`, with `*emphasis*`, `**strong**` in ink and `inline code` on sand. Links are underlined in pink: a relative link (`/notes`, `#figure`) navigates in place, and any other opens in a new tab. A `> quote` is for a poem or a longer passage, in Gelica; end its lines with `\` to keep a poem's breaks, and give its source in a `<cite>` on its own quoted line. For one line that should stand out, use a PullQuote.
 
 <DocFigure
   title="Markdown in a note"
@@ -61,7 +61,10 @@ Paragraphs follow in Hanken. They take *emphasis*, **strong words**, [a link](/n
 
 ### A subheading
 
-> A Markdown quote is a quiet aside, ruled in pink. For a line that should stand out, use a PullQuote.
+> A Markdown quote is set in Gelica at the Lead's size, ruled in pink,\
+> for a poem or a passage quoted at length.
+>
+> <cite>A cite, after a blank quoted line</cite>
 
 ```js showLineNumbers {2}
 const code = "keeps its lines and scrolls sideways";
