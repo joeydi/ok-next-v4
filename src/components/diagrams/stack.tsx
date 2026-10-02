@@ -115,9 +115,13 @@ function toScreen([x, y, z]: [number, number, number]): [number, number] {
  * two lay flat, so a wrap can be read against the shape it wraps.
  */
 export function register(gaps = 1): [number, number] {
+  return fromScreen(toScreen([0, 0, -REGISTER * gaps * GAP]));
+}
+
+/** The move across a plate, [x, y] px, that shows on screen as [x, y] px (ignoring perspective), for fine-tuning a register(). */
+export function fromScreen([wx, wy]: [number, number]): [number, number] {
   const [ux, uy] = toScreen([1, 0, 0]);
   const [vx, vy] = toScreen([0, 1, 0]);
-  const [wx, wy] = toScreen([0, 0, -REGISTER * gaps * GAP]);
   const det = ux * vy - vx * uy;
   return [(wx * vy - vx * wy) / det, (ux * wy - wx * uy) / det];
 }

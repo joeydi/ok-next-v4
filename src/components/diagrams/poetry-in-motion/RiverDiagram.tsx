@@ -3,7 +3,7 @@
 import { useId } from "react";
 import { DiagramFigure } from "../DiagramFigure";
 import { Chip, HatchDef, PlateHeader } from "../parts";
-import { FADE, GAP, Plate, register, Stack, WINDOW, Window } from "../stack";
+import { FADE, fromScreen, GAP, Plate, register, Stack, WINDOW, Window } from "../stack";
 import { useLoop } from "../useLoop";
 import { DrawRiver, useBankMorph } from "./DrawRiver";
 import { bank as river0, shapePath } from "./river";
@@ -32,8 +32,10 @@ const LAYOUT: PoemLayout = {
 // The content reaches past the window by the fade, and by the poem's move across its plate.
 const PAD = FADE + 2 * GAP;
 const { periods: PERIODS } = poemOffsets(0, LAYOUT, PAD);
-// The poem moves over the river it wraps, cancelling the gap between their plates.
-const SHIFT = register();
+// The poem moves over the river it wraps, cancelling the gap between their plates, then a little
+// down and left on screen, by eye, so its lines meet the bank.
+const NUDGE = fromScreen([-12, 12]);
+const SHIFT: [number, number] = [register()[0] + NUDGE[0], register()[1] + NUDGE[1]];
 
 export function RiverDiagram({ caption, time }: { caption: string; time?: number }) {
   const [ref, t] = useLoop<HTMLElement>(LOOP, { time });

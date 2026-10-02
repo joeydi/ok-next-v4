@@ -10,7 +10,7 @@ A technique diagram shows how something in a note works: the page pulled apart i
 ## Where things live
 
 - **The kit**, `src/components/diagrams/`: generic, shared by every diagram. Change it only for something every diagram should get.
-  - `stack.tsx`: `Stack` (the 16:9 surface, iso camera and floor grid), `Plate` (`level`, `look`), `Window` (`overflow`), `register()`, and the sizes (`SIZE`, `PLATE`, `GAP`, `WINDOW`, `FADE`).
+  - `stack.tsx`: `Stack` (the 16:9 surface, iso camera and floor grid), `Plate` (`level`, `look`), `Window` (`overflow`), `register()` (fine-tuned by `fromScreen()`), and the sizes (`SIZE`, `PLATE`, `GAP`, `WINDOW`, `FADE`).
   - `parts.tsx`: `Surface`, `FloorGrid`, `PlateHeader`, `Chip`, `HatchDef`.
   - `DiagramFigure.tsx`: the figure in a note, laid out and captioned like `<Figure>`, in the media frame.
   - `useLoop.ts`: the clock.
