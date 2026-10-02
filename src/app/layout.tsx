@@ -6,6 +6,7 @@ import { Nav } from "@/components/Nav";
 import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
 import { JsonLd, siteGraph } from "@/lib/jsonld";
+import { OPEN_GRAPH } from "@/lib/metadata";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -35,11 +36,7 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   authors: [{ name: SITE.author, url: SITE.url }],
-  openGraph: {
-    type: "website",
-    siteName: SITE.name,
-    locale: "en_US",
-  },
+  openGraph: OPEN_GRAPH,
   twitter: { card: "summary_large_image" },
   alternates: {
     types: { "application/rss+xml": [{ url: "/notes/rss.xml", title: `${SITE.name} Notes` }] },

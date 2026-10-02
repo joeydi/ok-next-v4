@@ -10,6 +10,7 @@ import { Placeholder } from "@/components/Placeholder";
 import { SITE } from "@/data/site";
 import { JsonLd, noteGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
+import { OPEN_GRAPH } from "@/lib/metadata";
 import { formatDate, getAllNotes, getNote } from "@/lib/notes";
 
 const headshot = getMedia("home/headshot.jpg");
@@ -29,8 +30,9 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): 
     description: meta.description,
     alternates: { canonical: `/notes/${meta.slug}` },
     openGraph: {
+      ...OPEN_GRAPH,
       type: "article",
-      siteName: SITE.name,
+      url: `/notes/${meta.slug}`,
       publishedTime: meta.date,
       title: meta.plainTitle,
       description: meta.description,

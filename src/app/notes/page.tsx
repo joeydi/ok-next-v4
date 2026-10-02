@@ -7,12 +7,14 @@ import { Contact, SiteFooter } from "@/components/Footer";
 import { type NoteSummary, NotesIndex, NotesList } from "@/components/notes/NotesIndex";
 import { Placeholder } from "@/components/Placeholder";
 import { JsonLd, notesIndexGraph } from "@/lib/jsonld";
+import { OPEN_GRAPH } from "@/lib/metadata";
 import { formatDate, getAllNotes } from "@/lib/notes";
 
 export const metadata: Metadata = {
   title: "Notes",
   description: "Project write-ups, process notes, and the occasional thing I made for fun.",
   alternates: { canonical: "/notes" },
+  openGraph: { ...OPEN_GRAPH, url: "/notes" },
 };
 
 export default function NotesPage() {

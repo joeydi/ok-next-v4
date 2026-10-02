@@ -10,6 +10,7 @@ import { principles, testimonials } from "@/data/home";
 import { services } from "@/data/services";
 import { SITE } from "@/data/site";
 import { getMedia } from "@/lib/media";
+import { OPEN_GRAPH } from "@/lib/metadata";
 
 const headshot = getMedia("home/headshot.jpg");
 const festival = getMedia("home/festival.jpg");
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
     canonical: "/",
     types: { "application/rss+xml": [{ url: "/notes/rss.xml", title: `${SITE.name} Notes` }] },
   },
+  openGraph: { ...OPEN_GRAPH, url: "/" },
 };
 
 export default function Home() {

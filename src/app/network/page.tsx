@@ -3,6 +3,7 @@ import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { NetworkCanvas } from "@/components/network/NetworkCanvas";
+import { OPEN_GRAPH } from "@/lib/metadata";
 
 /** Her 2003 commencement address at Vassar College. */
 const SOURCE =
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
   title: "Network",
   description: QUOTE.replaceAll("*", ""),
   alternates: { canonical: "/network" },
+  openGraph: { ...OPEN_GRAPH, url: "/network" },
 };
 
 export default function NetworkPage() {
