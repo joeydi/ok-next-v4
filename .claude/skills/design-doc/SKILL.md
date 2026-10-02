@@ -80,6 +80,10 @@ They're available in every doc without importing, registered in `src/components/
 - `<Timeline rows={ROWS} step={100} live />` and `<KeyframeTable rows={ROWS} />`. Export `ROWS` once from the MDX (`export const ROWS = […]`), so the chart and the table share it.
 - `<RevealPreview />` and `<MaskDiagram />`, specific to the page transition.
 
+**Notes**
+- `<NoteSpecimen>…</NoteSpecimen>`: Markdown and the note components (`Lead`, `Figure`, `PullQuote`) rendered in a note's own `.note-body` grid, over its twelve columns. Put it inside a `<DocFigure>`.
+- `<NoteFrontmatter />`, `<NotesInUse />`: the fields `src/lib/notes.ts` reads and how many notes set each, and every note's contents, scanned from `src/content/notes`
+
 Chart colours are the tones in `src/components/docs/tone.ts`: `pink` (the subject), `muted` (what it's compared against), `ink` (supporting) and `guide` (background).
 
 ## New visuals

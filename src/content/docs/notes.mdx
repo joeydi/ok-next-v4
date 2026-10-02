@@ -1,0 +1,154 @@
+---
+title: Notes
+description: How a note is written, from its frontmatter to the Markdown and the four components its body can use. Every specimen here is drawn in a note's own article grid and styles, so it looks exactly as it will on a post.
+order: 6
+---
+
+Notes and case studies are MDX files in `src/content/notes/`, and the filename is the slug (`thinkmd.mdx` is `/notes/thinkmd`). `src/lib/notes.ts` reads and checks the frontmatter, the components are defined in `src/components/mdx.tsx` and registered in `src/mdx-components.tsx`, and the article's layout is the `.note-body` rules in `src/app/globals.css`. The tables on this page are read from those files and from the notes themselves.
+
+## Frontmatter
+
+YAML between `---` lines at the top of the file. Only `title`, `date` and `tag` are required. A missing one, a tag that isn't on the list or an `image` key that isn't in the media manifest fails the build, so a broken note never ships. Everything else is optional and only shows where it's set.
+
+<NoteFrontmatter />
+
+A case study adds `client`, `year` and `link` to the same fields, and they fill the sidebar's project list. A new note can start from this:
+
+```yaml
+---
+title: A *modern industrial* website for Rigorous
+description: One or two sentences for the index, RSS and social cards.
+date: 2026-10-01
+tag: CASE STUDY
+image: notes/rigorous/homepage.png
+imageLabel: image — Rigorous homepage
+client: Rigorous
+year: 2024
+link: https://www.rigorous.co
+tools:
+  - Headless WordPress
+  - Next.js
+draft: true
+---
+```
+
+## The article
+
+The body is one twelve-column grid, the same as `grid-12`. From `lg`, prose sits in columns 4–10 and the sidebar takes columns 1–3 beside the opening paragraphs. Figures break out to columns 2–12, or the full width, and pull quotes to 2–11. Below `lg` everything spans the full width and the sidebar comes first.
+
+The sidebar is built from the frontmatter and the headings: "In this post", then Client, Role and Year with the site link, then Tools. Each group shows only when it has something in it, and a note with none of them has no sidebar.
+
+## Formatting
+
+Plain Markdown, with GFM for strikethrough and autolinks. Paragraphs are set in Hanken at `fl-20`, with `*emphasis*`, `**strong**` in ink and `inline code` on sand. Links are underlined in pink: a relative link (`/notes`, `#figure`) navigates in place, and any other opens in a new tab.
+
+<DocFigure
+  title="Markdown in a note"
+  caption="Drawn by the note's own styles over its twelve columns. Below lg the prose spans them all, as on a phone."
+>
+  <NoteSpecimen>
+<Lead>The opening paragraph goes in a Lead, set in Gelica a size up from the prose.</Lead>
+
+Paragraphs follow in Hanken. They take *emphasis*, **strong words**, [a link](/notes) and `inline code`, and wrap with `text-wrap: pretty` so a line rarely ends on one word.
+
+## A section heading
+
+- Lists take a pink marker
+- with a little space between items
+
+1. Numbered lists count
+2. in decimal
+
+### A subheading
+
+> A Markdown quote is a quiet aside, ruled in pink. For a line that should stand out, use a PullQuote.
+
+```js
+const code = "keeps its lines and scrolls sideways";
+```
+
+---
+
+A rule separates parts of a note without starting a new section.
+  </NoteSpecimen>
+</DocFigure>
+
+<DocTable
+  columns={[{ label: "Markdown" }, { label: "Renders as" }]}
+  rows={[
+    [<code>## Heading</code>, 'Mono label, numbered / 01 in pink, and an entry in the "In this post" list'],
+    [<code>### Heading</code>, "Mono label, unnumbered and not listed"],
+    [<code>- item</code>, "Bullets with a pink marker"],
+    [<code>1. item</code>, "Decimal numbers with a pink marker"],
+    [<code>&gt; quote</code>, "Indented, with a pink rule on the left"],
+    [<code>```lang</code>, "Mono on ink at fl-14, unwrapped, scrolling sideways when long"],
+    [<code>---</code>, "A one-pixel rule"],
+    [<code>![alt](src)</code>, "Unstyled: use a Figure, which takes media keys, captions and layouts"],
+    ["Tables", "Unstyled: GFM parses them, but nothing in .note-body sets them yet"],
+  ]}
+/>
+
+## Components
+
+Four components are available in every note without importing. Each is a block on its own line, with a blank line before the Markdown that follows.
+
+### Lead
+
+`<Lead>…</Lead>` sets the opening paragraph in Gelica at `fl-30`, in ink. Use it once, first, for a sentence or two that sums up the note: it sits beside the sidebar, so a long one pushes the first figure down.
+
+### Figure
+
+`<Figure media="notes/<slug>/hero.jpg" caption="01 / Homepage" />` shows an image or video from the media store. Real media keeps its own aspect ratio. Silent videos loop like animated images, and ones with sound get controls. Until `media` is set, the figure is a striped placeholder showing its `label`, at the layout's ratio.
+
+<DocTable
+  columns={[{ label: "Prop" }, { label: "Takes" }, { label: "Does" }]}
+  rows={[
+    [<code>media</code>, "Media key", "The image or video. An unknown key fails type-checking and the build"],
+    [<code>caption</code>, "Text", <>Mono label below. <code>01 / Name</code> adds it to the "In this post" list, in a note without headings. Without the prop, the manifest's caption shows, never numbered</>],
+    [<code>layout</code>, <><code>wide</code>, <code>full</code>, <code>half</code></>, "Columns 2–12 (the default), 1–12, or six columns. Put two halves in a row"],
+    [<code>alt</code>, "Text", "Overrides the manifest's alt text. Edit that in /admin/media instead where you can"],
+    [<code>label</code>, "Text", "The placeholder's label. Defaults to the caption"],
+    [<code>dark</code>, <code>true</code>, "Dark stripes on the placeholder, for media that will be dark"],
+  ]}
+/>
+
+<DocFigure title="Figure layouts" caption="Placeholders, so each shows its layout's ratio: 1201 × 620 for wide and full, 644 × 520 for a half. Real media sizes to its own.">
+  <NoteSpecimen>
+<Figure label="wide — columns 2–12" caption="01 / Wide, the default" />
+<Figure layout="half" label="half" caption="02 / Half" />
+<Figure layout="half" label="half, dark" caption="03 / Half, dark" dark />
+<Figure layout="full" label="full — columns 1–12" caption="04 / Full" />
+  </NoteSpecimen>
+</DocFigure>
+
+### PullQuote
+
+`<PullQuote>…</PullQuote>` is a line from the note set large in Gelica, across columns 2–11, with `*emphasis*` in pink. Keep it to a sentence, and use one or two in a note at most. A figure just before it gives up its bottom margin to the quote's larger top one.
+
+<DocFigure title="Pull quote">
+  <NoteSpecimen>
+<PullQuote>Projects like this are a balancing act between *experimentation and usability.*</PullQuote>
+  </NoteSpecimen>
+</DocFigure>
+
+### TocAnchor
+
+`<TocAnchor label="04 / Services pathway" />` adds an entry to the "In this post" list where there's no numbered figure to carry one, such as a run of paragraphs about something that has no image yet. It takes no space and is hidden from screen readers. Like numbered captions, it only counts in a note without headings.
+
+## In this post
+
+The sidebar's list is built in one of two ways, never both. A note with `## headings` lists them, and ignores figures. A note without any lists every numbered caption and `TocAnchor` label (`01 / …`) in order, which suits a visual case study. Number captions in the order they appear, starting at `01`, and keep the label short: it's the link text in the sidebar.
+
+## Notes in use
+
+Every note, as `next dev` lists them, drafts included: how its list is built, which components it uses and how many images are still placeholders, its cover included.
+
+<NotesInUse />
+
+## Publishing
+
+A note goes into the index, the sitemap, the RSS feed at `/notes/rss.xml` and the structured data as soon as it's built without `draft: true`. Before taking the flag off:
+
+- Upload its media with `notes/<slug>/` keys in `/admin/media`, and review the alt text there.
+- Save its social card in `/admin/og`. Without it, the card goes out in the Hanken stand-in and the build warns. Re-save it when the title or cover changes.
+- Feature it only if it should replace the current featured note at the top of `/notes`.
