@@ -1,10 +1,11 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
-import { Figure, Lead, PullQuote, TocAnchor } from "@/components/mdx";
+import { Figure, Lead, Profile, PullQuote, TocAnchor } from "@/components/mdx";
 
 const components: MDXComponents = {
   Lead,
   Figure,
+  Profile,
   PullQuote,
   TocAnchor,
   a: ({ href = "", ...props }) =>

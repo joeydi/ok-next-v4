@@ -66,3 +66,43 @@ export function TocAnchor({ label }: { label: string }) {
 export function PullQuote({ children }: { children: ReactNode }) {
   return <blockquote className="note-quote">{children}</blockquote>;
 }
+
+/**
+ * A person the note introduces, as a margin note: a portrait, their name and
+ * dates, and a line or two about them. From xl it sits in the right margin,
+ * level with the heading of the section it opens; below that, it's a small
+ * card in the text. Put it straight after that section's `##` heading:
+ * <Profile media="notes/<slug>/portrait.jpg" name="…" dates="1942–1963">About them.</Profile>
+ */
+export function Profile({
+  media,
+  name,
+  dates,
+  children,
+}: {
+  media?: MediaKey;
+  name: string;
+  dates?: string;
+  children: ReactNode;
+}) {
+  const m = media ? getMedia(media) : undefined;
+  return (
+    <aside className="note-profile">
+      <Placeholder
+        label="portrait"
+        media={m}
+        small
+        sizes="(min-width: 1280px) 20vw, 128px"
+        className="note-profile-photo"
+      />
+      <div className="flex flex-col gap-fl-8">
+        {/* Name and dates read as one heading: no gap between them. */}
+        <div>
+          <p className="display text-fl-24 text-ink leading-display-text-24 tracking-display-24">{name}</p>
+          {dates && <p className="mono-text text-muted">{dates}</p>}
+        </div>
+        <div className="text-body text-fl-14 leading-copy">{children}</div>
+      </div>
+    </aside>
+  );
+}

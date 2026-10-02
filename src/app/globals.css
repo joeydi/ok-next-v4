@@ -767,6 +767,19 @@
     margin-top: 0;
   }
 
+  /* Profile: a margin note on a person (Profile in mdx.tsx). A small card in
+     the text, with the portrait beside the words; from xl, a column in the
+     right margin (see below). */
+  .note-profile {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    align-items: start;
+    gap: var(--spacing-fl-20);
+  }
+  .note-profile-photo {
+    aspect-ratio: 1;
+  }
+
   /* Zero-height scroll target; takes no space in the flow. */
   .note-body > .note-anchor {
     display: block;
@@ -865,6 +878,28 @@
     }
     .note-body > .note-quote {
       grid-column: 2 / span 10;
+    }
+  }
+
+  /* From xl, a profile moves into the right margin (columns 11–12), in the row
+     of the heading it follows, and level with it. It takes no height, so that
+     row doesn't grow to fit it: it hangs down beside the section's text. Keep
+     anything full width (figures, quotes) a few paragraphs below it. Its parts
+     stack as blocks: in a grid with no height, the photo's row collapses and
+     the words land under it. */
+  @media (width >= 80rem) {
+    .note-body > .note-profile {
+      display: block;
+      grid-column: 11 / -1;
+      height: 0;
+      margin-top: var(--spacing-fl-56);
+    }
+    .note-profile-photo {
+      aspect-ratio: 4 / 5;
+      margin-bottom: var(--spacing-fl-12);
+    }
+    .note-body > h2 + .note-profile + * {
+      margin-top: var(--spacing-fl-16);
     }
   }
 }

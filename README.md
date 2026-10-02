@@ -103,6 +103,7 @@ Regular **markdown** paragraphs sit in the centre column.
 
 - `## headings` build the "In this post" list. A note with no headings lists its numbered figure captions (`01 / …`) and `<TocAnchor>` labels instead.
 - `Figure` layouts: `wide` (default, columns 2–12), `full`, `half` (put two in a row). Without `media`, a figure shows a striped placeholder with its `label`.
+- `<Profile media="…" name="…" dates="…">About them.</Profile>`, straight after a `##` heading, is a margin note on a person: from `xl` it hangs in the right margin beside that section, and below `xl` it's a small card in the text.
 - `Figure media` takes the alt text (and, without a `caption` prop, the caption) from the manifest; `alt="…"` overrides it.
 - Fenced code is highlighted at build time by `rehype-pretty-code`. Add `showLineNumbers` after the language for line numbers, `{2-4}` to highlight lines, or `/word/` to highlight each match. The theme is `src/lib/code-theme.json`, based on atomiks' Moonlight. It maps each token to a `--code-*` variable, and the variables' values are set in `globals.css`.
 - Relative links (`/…`, `#…`) use client-side navigation. Other links open in a new tab.

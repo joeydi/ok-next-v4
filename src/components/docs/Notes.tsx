@@ -233,12 +233,16 @@ export function NotesInUse() {
         const toc = getNote(meta.slug)?.toc ?? [];
         const headings = count(body, /^##\s+/gm);
         const figures = [...body.matchAll(/<Figure\b[^>]*>/g)].map((m) => m[0]);
-        const placeholders = figures.filter((f) => !/\bmedia=/.test(f)).length + (meta.image ? 0 : 1);
+        const profiles = [...body.matchAll(/<Profile\b[^>]*>/g)].map((m) => m[0]);
+        const placeholders = [...figures, ...profiles].filter((f) => !/\bmedia=/.test(f)).length + (meta.image ? 0 : 1);
+        const diagrams = count(body, /<\w+Diagram\b/g);
         const parts = [
           count(body, /<Lead\b/g) && "Lead",
           figures.length && plural(figures.length, "Figure"),
           count(body, /<PullQuote\b/g) && plural(count(body, /<PullQuote\b/g), "PullQuote"),
           count(body, /<TocAnchor\b/g) && plural(count(body, /<TocAnchor\b/g), "TocAnchor"),
+          profiles.length && plural(profiles.length, "Profile"),
+          diagrams && plural(diagrams, "diagram"),
         ].filter(Boolean);
         const flags = [meta.draft && "draft", meta.featured && "featured"].filter(Boolean);
 

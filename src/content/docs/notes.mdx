@@ -93,7 +93,7 @@ A rule separates parts of a note without starting a new section.
 
 ## Components
 
-Four components are available in every note without importing. Each is a block on its own line, with a blank line before the Markdown that follows.
+Five components are available in every note without importing. Each is a block on its own line, with a blank line before the Markdown that follows.
 
 ### Lead
 
@@ -137,6 +137,10 @@ Four components are available in every note without importing. Each is a block o
 ### TocAnchor
 
 `<TocAnchor label="04 / Services pathway" />` adds an entry to the "In this post" list where there's no numbered figure to carry one, such as a run of paragraphs about something that has no image yet. It takes no space and is hidden from screen readers. Like numbered captions, it only counts in a note without headings.
+
+### Profile
+
+`<Profile media="notes/<slug>/portrait.jpg" name="Javier Heraud Pérez" dates="1942–1963">…</Profile>` introduces a person the note is about, as a margin note: a portrait, their name in Gelica, their dates in mono and a line or two about them. Put it straight after the heading of the section it belongs to. From `xl` it hangs in the right margin (columns 11–12), level with that heading, and takes no height, so keep figures and pull quotes a few paragraphs below it. Below `xl` it's a small card in the text, with the portrait beside the words. Until `media` is set, the portrait is a striped placeholder.
 
 ### Technique diagrams
 

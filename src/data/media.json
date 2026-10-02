@@ -327,6 +327,20 @@
     "reviewed": true,
     "audio": null
   },
+  "notes/poetry-in-motion/582f82c6-1930-4178-8c47-d42c17877d8b-77362242.png": {
+    "type": "image",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 2743858,
+    "etag": "8d94f4db3f0f3fa050fb2271928940b1",
+    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADwAQCdASoQAAkAA4BaJZQCdAEQyEnx/gAA/vTfbzt2fU9ixh22+3BQ4baY87TbGgn8ZiacvGBC4eBhWX34LTlJY09YPIVvfGxAAA==",
+    "color": "#e8e8d8",
+    "alt": "Sepia photograph of Javier Heraud as a young man in a sweater, sitting on a stone wall with mountains behind him.",
+    "caption": "",
+    "context": "Javier Heraud Pérez 1942–1963\nA poet and guerrilla fighter, Javier Heraud was murdered at the age of 21 in the jungle of Peru in 1963. Despite his young age, Heraud left some of the fundamental works of Peruvian poetry.",
+    "altSource": "ai",
+    "reviewed": true
+  },
   "notes/poetry-in-motion/shape-outside.mp4": {
     "type": "video",
     "width": 1166,
