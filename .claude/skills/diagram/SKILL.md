@@ -24,7 +24,7 @@ A technique diagram shows how something in a note works: the page pulled apart i
   ```
 
   Never register a diagram in `src/mdx-components.tsx`. They're one per note, and a local import keeps each out of every other note's build.
-- **The lab**, `src/app/admin/diagrams/` (dev only): one entry per diagram in `registry.tsx`, each with play/pause, a scrubber and speeds.
+- **The lab**, `src/app/admin/diagrams/` (dev only): one entry per diagram in `registry.tsx`, each with play/pause, a scrubber and speeds. An entry that sets `nudge` (a `fromScreen()` fine-tune, as the diagram's default) also gets x/y sliders, passed to `render`: tune it there, then copy the value into the diagram.
 
 ## House style
 

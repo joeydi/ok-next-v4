@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
-import { RiverDiagram } from "@/components/diagrams/poetry-in-motion/RiverDiagram";
+import { NUDGE as RIVER_NUDGE, RiverDiagram } from "@/components/diagrams/poetry-in-motion/RiverDiagram";
 
 // Every note's technique diagram, for the dev-only lab, in note order. While a
 // diagram is being explored its variants sit here too, one entry each; when one
 // is chosen, its entry stays and the others are deleted, along with their code.
 // See .claude/skills/diagram/SKILL.md.
+
+export type Nudge = [x: number, y: number];
 
 export type DiagramEntry = {
   /** The note's slug, for the link to it. */
@@ -12,8 +14,10 @@ export type DiagramEntry = {
   title: string;
   /** Loop length (s). */
   loop: number;
-  /** The diagram pinned at `time` seconds into its loop. */
-  render: (time: number) => ReactNode;
+  /** For a diagram that fine-tunes a register() by eye: its nudge on screen (px), which the lab can change. */
+  nudge?: Nudge;
+  /** The diagram pinned at `time` seconds into its loop, with the lab's nudge if it takes one. */
+  render: (time: number, nudge?: Nudge) => ReactNode;
 };
 
 export const DIAGRAMS: DiagramEntry[] = [
@@ -21,6 +25,7 @@ export const DIAGRAMS: DiagramEntry[] = [
     note: "poetry-in-motion",
     title: "The River, in motion",
     loop: 8,
-    render: (time) => <RiverDiagram caption="01 / The River, in motion" time={time} />,
+    nudge: RIVER_NUDGE,
+    render: (time, nudge) => <RiverDiagram caption="01 / The River, in motion" time={time} nudge={nudge} />,
   },
 ];

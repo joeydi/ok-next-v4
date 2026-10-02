@@ -33,17 +33,28 @@ const LAYOUT: PoemLayout = {
 const PAD = FADE + 2 * GAP;
 const { periods: PERIODS } = poemOffsets(0, LAYOUT, PAD);
 // The poem moves over the river it wraps, cancelling the gap between their plates, then a little
-// down and left on screen, by eye, so its lines meet the bank.
-const NUDGE = fromScreen([-12, 12]);
-const SHIFT: [number, number] = [register()[0] + NUDGE[0], register()[1] + NUDGE[1]];
+// down and left on screen, by eye, so its lines meet the bank (tune it in /admin/diagrams).
+const REGISTER = register();
+export const NUDGE: [number, number] = [-4, 8];
 
-export function RiverDiagram({ caption, time }: { caption: string; time?: number }) {
+export function RiverDiagram({
+  caption,
+  time,
+  nudge = NUDGE,
+}: {
+  caption: string;
+  time?: number;
+  /** The poem's nudge on screen (px), for the lab. */
+  nudge?: [number, number];
+}) {
   const [ref, t] = useLoop<HTMLElement>(LOOP, { time });
   const hatch = useId();
   const [bank, setBank, target] = useBankMorph(river0);
   const path = shapePath(FW, PERIODS * P, PERIODS, bank);
   const phase = t / LOOP;
   const { river } = poemOffsets(phase, LAYOUT, PAD);
+  const [nx, ny] = fromScreen(nudge);
+  const shift: [number, number] = [REGISTER[0] + nx, REGISTER[1] + ny];
 
   return (
     <DiagramFigure
@@ -93,7 +104,7 @@ export function RiverDiagram({ caption, time }: { caption: string; time?: number
               <Chip pink>white-space: nowrap</Chip>
             </PlateHeader>
             <Window overflow>
-              <ScrollingPoem phase={phase} layout={LAYOUT} pad={PAD} offset={SHIFT} bank={bank} />
+              <ScrollingPoem phase={phase} layout={LAYOUT} pad={PAD} offset={shift} bank={bank} />
             </Window>
           </Plate>
         </Stack>

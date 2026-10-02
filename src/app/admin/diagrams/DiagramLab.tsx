@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { type ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
-import { DIAGRAMS, type DiagramEntry } from "./registry";
+import { DIAGRAMS, type DiagramEntry, type Nudge } from "./registry";
 
 // Every note's technique diagram (see registry.tsx), each on its own clock with
-// play/pause, a scrubber and speeds, at the width a note shows it.
+// play/pause, a scrubber and speeds, at the width a note shows it. A diagram that
+// fine-tunes its registration by eye also gets a nudge, to copy back into its code.
 
 export function DiagramLab() {
   return (
@@ -27,8 +28,11 @@ export function DiagramLab() {
   );
 }
 
-function Entry({ entry: { note, title, loop, render } }: { entry: DiagramEntry }) {
+const NUDGE_RANGE = 40; // px either way
+
+function Entry({ entry: { note, title, loop, nudge: initial, render } }: { entry: DiagramEntry }) {
   const [playing, setPlaying] = useState(true);
+  const [nudge, setNudge] = useState(initial);
   const [time, setTime] = useState(0);
   const [speed, setSpeed] = useState(1);
 
@@ -81,9 +85,37 @@ function Entry({ entry: { note, title, loop, render } }: { entry: DiagramEntry }
             </Toggle>
           ))}
         </Row>
+        {initial && nudge && (
+          <Row label="Nudge">
+            {(["x", "y"] as const).map((axis, i) => (
+              <label key={axis} className="flex items-center gap-2">
+                {axis}
+                <input
+                  type="range"
+                  min={-NUDGE_RANGE}
+                  max={NUDGE_RANGE}
+                  step={1}
+                  value={nudge[i]}
+                  onChange={(e) => {
+                    const next: Nudge = [...nudge];
+                    next[i] = +e.target.value;
+                    setNudge(next);
+                  }}
+                  className="w-32"
+                />
+              </label>
+            ))}
+            <span className="tabular-nums">
+              [{nudge[0]}, {nudge[1]}]
+            </span>
+            <Toggle on={false} onClick={() => setNudge(initial)}>
+              Reset
+            </Toggle>
+          </Row>
+        )}
       </div>
       {/* About a wide note figure's width at 1440. */}
-      <div className="max-w-280">{render(time)}</div>
+      <div className="max-w-280">{render(time, nudge)}</div>
     </section>
   );
 }
