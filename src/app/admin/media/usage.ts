@@ -46,7 +46,8 @@ export function scanUsage(keys: string[]) {
     }
 
     for (const key of keys) if (text.includes(key)) usage[key].push({ file, ...note });
-    for (const key of refs) if (!known.has(key)) broken.push({ key, file });
+    // Examples in docs and comments (notes/<slug>/hero.jpg) aren't references.
+    for (const key of refs) if (!known.has(key) && !key.includes("<")) broken.push({ key, file });
   }
 
   // Saved Open Graph cards (og/<name>-<hash>.png) are keyed in code, so no source
