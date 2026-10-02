@@ -4,6 +4,7 @@ import manifest from "@/data/media.json";
 import { services } from "@/data/services";
 import { getAllNotes } from "@/lib/notes";
 import { isOgKeyFor, ogCard, ogMediaKey } from "@/lib/og-cards";
+import { defaultTitleWidth, maxTitleWidth } from "@/lib/og-title";
 import { readManifest } from "../../../../scripts/media.mjs";
 import { AdminShell } from "../AdminShell";
 import { type CardStatus, OgAdmin, type OgPage } from "./OgAdmin";
@@ -13,15 +14,17 @@ import { type CardStatus, OgAdmin, type OgPage } from "./OgAdmin";
 
 export const metadata: Metadata = { title: "Open Graph", robots: { index: false, follow: false } };
 
+type Listed = Pick<OgPage, "path" | "label" | "draft">;
+
 export default function OgAdminPage() {
-  let notes: OgPage[] = [];
+  let notes: Listed[] = [];
   let notesError: string | null = null;
   try {
     notes = getAllNotes().map((n) => ({ path: `/notes/${n.slug}`, label: n.plainTitle, draft: n.draft }));
   } catch (e) {
     notesError = (e as Error).message;
   }
-  const listed: OgPage[] = [
+  const listed: Listed[] = [
     { path: "/", label: "Home" },
     ...Object.entries(services).map(([slug, s]) => ({ path: `/${slug}`, label: s.title })),
     { path: "/notes", label: "Notes" },
@@ -37,7 +40,17 @@ export default function OgAdminPage() {
     if (keys.includes(ogMediaKey(path, card))) return "saved";
     return keys.some((k) => isOgKeyFor(path, k)) ? "stale" : "missing";
   };
-  const pages = listed.map((p) => ({ ...p, card: status(p.path) }));
+  // Its title width and the slider's range, as og.tsx lays the card out: SVG images are left out.
+  const titleWidths = (path: string): Pick<OgPage, "titleWidth" | "autoWidth" | "maxWidth"> => {
+    const card = ogCard(path);
+    const image = card?.image?.type === "image" || card?.image?.type === "video";
+    return {
+      titleWidth: card?.titleWidth,
+      autoWidth: defaultTitleWidth(image, !image && Boolean(card?.illustration)),
+      maxWidth: maxTitleWidth(image),
+    };
+  };
+  const pages = listed.map((p) => ({ ...p, card: status(p.path), ...titleWidths(p.path) }));
   // Anything satori can draw: images and video posters, not SVGs.
   const mediaKeys = Object.entries(manifest as Record<string, { type: string }>)
     .filter(([, e]) => e.type !== "svg")

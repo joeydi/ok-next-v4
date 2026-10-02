@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { type ServiceSlug, services } from "@/data/services";
 import type { Media } from "./media";
@@ -26,7 +28,26 @@ export type OgCard = {
   illustration?: SceneName;
   /** A still of the /network animation fills the card. */
   network?: boolean;
+  /** The title column's width in px, tuned by eye in /admin/og to set where the title wraps. */
+  titleWidth?: number;
 };
+
+const TITLE_WIDTHS = join(process.cwd(), "src/data/og-title-widths.json");
+
+/**
+ * Each route's tuned title width, read from disk rather than imported: under `next dev`
+ * /admin/og rewrites the file, and an imported copy keeps the version it loaded.
+ */
+const titleWidths = (): Record<string, number> => JSON.parse(readFileSync(TITLE_WIDTHS, "utf8"));
+
+/** Sets a route's title width, or with none, goes back to the default. */
+export function setTitleWidth(path: string, width: number | undefined) {
+  const widths = titleWidths();
+  if (width) widths[path] = Math.round(width);
+  else delete widths[path];
+  const sorted = Object.fromEntries(Object.entries(widths).sort(([a], [b]) => a.localeCompare(b)));
+  writeFileSync(TITLE_WIDTHS, `${JSON.stringify(sorted, null, 2)}\n`);
+}
 
 /** The route as a key-safe name: home, notes, notes-<slug>, network, … */
 const cardName = (path: string) => (path === "/" ? "home" : path.slice(1).replaceAll("/", "-"));
@@ -46,6 +67,13 @@ export function ogPaths() {
 
 /** The card for a route, or null if it has none. */
 export function ogCard(path: string): OgCard | null {
+  const card = content(path);
+  const titleWidth = card && titleWidths()[path];
+  return card && titleWidth ? { ...card, titleWidth } : card;
+}
+
+/** What the route's card says and shows. */
+function content(path: string): OgCard | null {
   if (path === "/")
     return {
       eyebrow: "/ 00  Burlington, Vermont",
@@ -94,6 +122,8 @@ export function ogMediaKey(path: string, card: OgCard) {
         card.image?.key,
         card.illustration,
         Boolean(card.network),
+        // Only when tuned, so the cards saved before widths existed keep their keys.
+        ...(card.titleWidth ? [card.titleWidth] : []),
       ]),
     )
     .digest("hex")

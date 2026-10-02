@@ -3,11 +3,21 @@
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { defaultTitleWidth, MIN_TITLE_WIDTH, maxTitleWidth } from "@/lib/og-title";
 
 /** Whether the Gelica card in the media store matches the card as it is now. */
 export type CardStatus = "saved" | "stale" | "missing";
 
-export type OgPage = { path: string; label: string; draft?: boolean; card?: CardStatus };
+export type OgPage = {
+  path: string;
+  label: string;
+  draft?: boolean;
+  card?: CardStatus;
+  /** The card's tuned title width, if any, and its default and widest. */
+  titleWidth?: number;
+  autoWidth: number;
+  maxWidth: number;
+};
 
 /** Screenshots cards into the media store (/admin/og/capture); resolves to an error message, if any. */
 async function capture(query: string) {
@@ -36,6 +46,16 @@ function CaptureButton({ label, action }: { label: string; action: () => Promise
       {state.error && <span className="text-pink-ink">{state.error}</span>}
     </span>
   );
+}
+
+/** The value once it's held still for a moment: card frames re-render when typing or dragging pauses. */
+function useSettled<T>(value: T, ms = 300) {
+  const [settled, setSettled] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setSettled(value), ms);
+    return () => clearTimeout(t);
+  }, [value, ms]);
+  return settled;
 }
 
 type Meta = Record<string, string>;
@@ -263,6 +283,13 @@ function Card({
   const ogImage = meta.value?.["og:image"];
   const img = useOgImage(ogImage ? localPath(ogImage) : null, version + own);
   const issues = problems(meta.value, img.value);
+  // A width being tried: shown live in Gelica until Save writes it and captures the card.
+  const saved = page.titleWidth ?? null;
+  const [draft, setDraft] = useState(saved);
+  const dirty = draft !== saved;
+  const draftParam = `&titleWidth=${draft ?? "auto"}`;
+  const cardUrl = `/admin/og/card?path=${encodeURIComponent(page.path)}`;
+  const frameSrc = useSettled(cardUrl + draftParam);
 
   return (
     <article className="grid gap-fl-24">
@@ -274,28 +301,22 @@ function Card({
           <span className="text-muted">{page.path}</span>
           {page.draft && <span className="text-pink-ink">draft</span>}
           <span className="ml-auto flex items-baseline gap-3">
+            {page.card && page.card !== "saved" && <span className="text-pink-ink">Gelica {page.card}</span>}
             {page.card && (
-              <>
-                <a
-                  href={`/admin/og/card?path=${encodeURIComponent(page.path)}`}
-                  className={page.card === "saved" ? "text-muted hover:text-ink" : "text-pink-ink hover:text-ink"}
-                >
-                  Gelica {page.card}
-                </a>
-                <CaptureButton
-                  label="Save"
-                  action={async () => {
-                    const error = await capture(`path=${encodeURIComponent(page.path)}`);
-                    router.refresh();
-                    setOwn((n) => n + 1);
-                    return error;
-                  }}
-                />
-              </>
+              <CaptureButton
+                label="Save"
+                action={async () => {
+                  const error = await capture(`path=${encodeURIComponent(page.path)}${dirty ? draftParam : ""}`);
+                  router.refresh();
+                  setOwn((n) => n + 1);
+                  return error;
+                }}
+              />
             )}
             <button type="button" onClick={() => setOwn(own + 1)} className="text-muted hover:text-ink">
               Reload
             </button>
+            {page.card && <OpenCard href={dirty ? cardUrl + draftParam : cardUrl} />}
           </span>
         </div>
       </header>
@@ -325,13 +346,37 @@ function Card({
         </div>
 
         <div style={{ maxWidth: width }} className="flex w-full flex-col gap-2">
-          <Frame
-            img={img.value}
-            alt={meta.value?.["og:image:alt"] ?? ""}
-            guides={guides}
-            busy={meta.loading || img.loading}
-          />
-          <Stats img={img.value} />
+          {dirty ? (
+            <>
+              <CardFrame src={frameSrc} guides={guides} />
+              <p className="text-pink-ink">Unsaved width · Gelica, as Save will draw it</p>
+            </>
+          ) : (
+            <>
+              <Frame
+                img={img.value}
+                alt={meta.value?.["og:image:alt"] ?? ""}
+                guides={guides}
+                busy={meta.loading || img.loading}
+              />
+              <Stats img={img.value} />
+            </>
+          )}
+          {page.card && (
+            <TitleWidth
+              id={`og-width-${page.path}`}
+              value={draft}
+              auto={page.autoWidth}
+              max={page.maxWidth}
+              onChange={setDraft}
+            >
+              {dirty && (
+                <Chip on={false} onClick={() => setDraft(saved)}>
+                  Revert
+                </Chip>
+              )}
+            </TitleWidth>
+          )}
           {preview && meta.value && <LinkPreview meta={meta.value} src={img.value?.src} />}
         </div>
       </div>
@@ -354,19 +399,33 @@ function Playground({
   const [title, setTitle] = useState("Let’s think it through, *together.*");
   const [illustration, setIllustration] = useState("puzzle-cube");
   const [image, setImage] = useState("");
+  const [titleWidth, setTitleWidth] = useState<number | null>(null);
   const [version, setVersion] = useState(0);
 
-  const url = `/admin/og/card?${new URLSearchParams({ eyebrow, title, illustration, image })}`;
-  // Re-render once typing pauses, not on every keystroke.
-  const [settled, setSettled] = useState(url);
-  useEffect(() => {
-    const t = setTimeout(() => setSettled(url), 300);
-    return () => clearTimeout(t);
-  }, [url]);
+  // The card page leaves out unknown keys and scenes, so the default width does too.
+  const hasImage = mediaKeys.includes(image);
+  const autoWidth = defaultTitleWidth(hasImage, !hasImage && scenes.includes(illustration));
+  const maxWidth = maxTitleWidth(hasImage);
+
+  const params = new URLSearchParams({ eyebrow, title, illustration, image });
+  if (titleWidth !== null) params.set("titleWidth", String(Math.min(titleWidth, maxWidth)));
+  const settled = useSettled(`/admin/og/card?${params}`);
 
   return (
     <section className="mb-12 border-y border-rule py-6">
-      <h2 className="mb-4 text-[20px]">Playground</h2>
+      {/* Laid out like a route's card header, with its actions in the same place. */}
+      <header className="mb-fl-24 flex flex-col gap-1">
+        <h2 className="text-[20px]">Playground</h2>
+        <div className="flex items-baseline gap-3">
+          <span className="text-muted">Any card, from the fields below</span>
+          <span className="ml-auto flex items-baseline gap-3">
+            <button type="button" onClick={() => setVersion(version + 1)} className="text-muted hover:text-ink">
+              Reload
+            </button>
+            <OpenCard href={settled} />
+          </span>
+        </div>
+      </header>
       <div className="grid items-start gap-8 lg:grid-cols-[2fr_3fr]">
         <div className="grid min-w-0 content-start gap-3">
           <Field id="og-eyebrow" label="Eyebrow (parts split by two spaces)">
@@ -409,21 +468,62 @@ function Playground({
               ))}
             </datalist>
           </Field>
-          <div className="flex gap-2">
-            <Chip on={false} onClick={() => setVersion(version + 1)}>
-              Re-render
-            </Chip>
-            <a href={settled} target="_blank" rel="noreferrer" className="self-center text-muted hover:text-ink">
-              Open card ↗
-            </a>
-          </div>
         </div>
         <div style={{ maxWidth: width }} className="flex w-full flex-col gap-2">
           <CardFrame key={version} src={settled} guides={guides} />
           <p className="text-muted">Gelica, as the browser draws it for Save</p>
+          <TitleWidth id="og-title-width" value={titleWidth} auto={autoWidth} max={maxWidth} onChange={setTitleWidth} />
         </div>
       </div>
     </section>
+  );
+}
+
+/** The browser-drawn card page, in a new tab. */
+function OpenCard({ href }: { href: string }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className="text-muted hover:text-ink">
+      Open card ↗
+    </a>
+  );
+}
+
+/** A slider for the title column's width; `null` is the card's default, `auto`. */
+function TitleWidth({
+  id,
+  value,
+  auto,
+  max,
+  onChange,
+  children,
+}: {
+  id: string;
+  value: number | null;
+  auto: number;
+  max: number;
+  onChange: (width: number | null) => void;
+  children?: ReactNode;
+}) {
+  const width = Math.min(value ?? auto, max);
+  return (
+    <Field id={id} label={`Title width · ${width}px${value === null ? " (auto)" : ""}`}>
+      <div className="flex items-center gap-3">
+        <input
+          id={id}
+          type="range"
+          min={MIN_TITLE_WIDTH}
+          max={max}
+          step={4}
+          value={width}
+          onChange={(e) => onChange(+e.target.value)}
+          className="min-w-0 flex-1"
+        />
+        <Chip on={value === null} onClick={() => onChange(null)}>
+          Auto
+        </Chip>
+        {children}
+      </div>
+    </Field>
   );
 }
 

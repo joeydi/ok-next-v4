@@ -1,6 +1,6 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { chromium } from "playwright-core";
-import { isOgKeyFor, ogCard, ogMediaKey, ogPaths } from "@/lib/og-cards";
+import { isOgKeyFor, ogCard, ogMediaKey, ogPaths, setTitleWidth } from "@/lib/og-cards";
 import {
   CACHE_CONTROL,
   deleteMedia,
@@ -14,7 +14,8 @@ import {
 // (/admin/og/card, titles in Gelica) with the installed Chrome, uploads it to the
 // media store as og/<name>-<hash>.png, adds it to media.json, and deletes the
 // route's older cards. ?path=/network for one, ?all=stale for every route whose
-// current card isn't saved.
+// current card isn't saved. With a path, &titleWidth=<px>|auto first sets its title
+// width in og-title-widths.json.
 
 export async function POST(request: Request) {
   if (process.env.NODE_ENV !== "development") return new Response("Not found", { status: 404 });
@@ -28,6 +29,8 @@ export async function POST(request: Request) {
         ? [path]
         : null;
   if (!paths) return Response.json({ error: `No card for ${path}` }, { status: 400 });
+  const titleWidth = url.searchParams.get("titleWidth");
+  if (path && titleWidth) setTitleWidth(path, Number(titleWidth) || undefined);
 
   const { s3, Bucket } = r2();
   const written: string[] = [];

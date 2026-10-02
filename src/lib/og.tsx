@@ -9,6 +9,7 @@ import type { Rect } from "@/components/network/simulation";
 import type { Media } from "./media";
 import { mediaImageUrl, mediaUrl } from "./media-url";
 import { type OgCard, ogCard, ogMediaKey } from "./og-cards";
+import { defaultTitleWidth } from "./og-title";
 
 // Shared Open Graph card in the Field Notes style. Gelica can't be embedded
 // server-side (Adobe Fonts licence), so this satori version sets titles in Hanken
@@ -80,7 +81,7 @@ async function backdropData(svg: string) {
  * `illustration` scene's poster sits in the bottom-right corner. `network` fills the card
  * with a still of the /network animation.
  */
-export async function renderOg({ eyebrow, title, image, illustration, network }: Omit<OgCard, "alt">) {
+export async function renderOg({ eyebrow, title, image, illustration, network, titleWidth }: Omit<OgCard, "alt">) {
   const [[hanken, mono], imageSrc, backdropSrc] = await Promise.all([
     fonts,
     image && imageData(image),
@@ -97,6 +98,7 @@ export async function renderOg({ eyebrow, title, image, illustration, network }:
       else if (part) words[words.length - 1].push({ text: part, pink });
     }
   }
+  const column = titleWidth ?? defaultTitleWidth(Boolean(imageSrc), Boolean(poster));
   // Beside an image the title gets a narrower column, so it steps down sooner.
   const size = imageSrc
     ? title.length > 48
@@ -139,7 +141,7 @@ export async function renderOg({ eyebrow, title, image, illustration, network }:
             display: "flex",
             flexDirection: "column",
             gap: imageSrc ? 24 : 28,
-            ...(imageSrc ? { width: 504 } : { maxWidth: poster ? 680 : 860 }),
+            ...(imageSrc ? { width: column } : { maxWidth: column }),
           }}
         >
           <div

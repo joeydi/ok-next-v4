@@ -761,13 +761,13 @@
     "altSource": "ai",
     "reviewed": true
   },
-  "og/business-tools-0103f3d7.png": {
+  "og/business-tools-0f204b2c.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 102237,
-    "etag": "bb31bc0a9c84081c3233635d6d76b0e9",
-    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJZQCdAEOxB2gAAD+9NbRNh5GQVbR1fis//YHyK2fMi/fMdQpnTq7AAA=",
+    "bytes": 99860,
+    "etag": "9a387428512352ab1b785a328ff596bc",
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJQBOgCHeloncwAD+9NbRNh5GQVbR2CUnYa7Y4jPO0RX6ZXb2Agb+QAA=",
     "color": "#f8e8e8",
     "alt": "Business tools — Okayplus",
     "caption": "",
@@ -789,13 +789,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/digital-production-a76e73fb.png": {
+  "og/digital-production-9c475283.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 93143,
-    "etag": "b3722ea42f65279b08520af4087a9ffb",
-    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAACQAQCdASoQAAgAA4BaJZV2ARgAqkAA/vE6iePWdud+nsicN20sncvDyHPdjS59haSdWExK0Qvdv5CLNq8ZAAAA",
+    "bytes": 93585,
+    "etag": "5df9debd0009b88c175fae3a765d7a44",
+    "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADwAQCdASoQAAgAA4BaJYwCdAEPAu1qAUAA/vTXg6B4pT0Q6FZYxh3WE9N8Oq7LvoySQ3ALil0PkAAA",
     "color": "#f8e8e8",
     "alt": "Digital production — Okayplus",
     "caption": "",
@@ -807,8 +807,8 @@
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 117066,
-    "etag": "542c10d07a5afb984a6ff914c2be9882",
+    "bytes": 117547,
+    "etag": "8fa5a920ea69cb63ce169f99dc9fcda2",
     "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADwAQCdASoQAAgAA4BaJZQCdAEPDClymgAA/vTWjBEcEEQsBf+xZdi4D15DIStsp2K71CtfeygAAA==",
     "color": "#f8e8e8",
     "alt": "Okayplus — Joe di Stefano, designer + developer in Burlington, Vermont",
@@ -915,13 +915,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-poetry-in-motion-20c6dc4c.png": {
+  "og/notes-poetry-in-motion-f84d3fad.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 175089,
-    "etag": "2e10e4a3eb3e26d50241569344727109",
-    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADQAQCdASoQAAgAA4BaJZQCdAELMwtAMAD+9NgDO0D/jQU6rAVsKyku0Bn8lFF/ra0J0fznUecrfICyHqNrYceyoAA=",
+    "bytes": 174810,
+    "etag": "447bc43da76daa010209f24fe35e5690",
+    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADwAQCdASoQAAgAA4BaJZQCdAELMxfcpQAA/vTYAztA/40FOqwFbCspLtBPuaTfXKZh67E3LaG7YvrLcloqEAAA",
     "color": "#f8e8e8",
     "alt": "CSS and JavaScript, poetry in motion — Okayplus",
     "caption": "",
@@ -929,13 +929,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-queen-city-development-group-612f5d63.png": {
+  "og/notes-queen-city-development-group-244b4bd0.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 159183,
-    "etag": "2618cea4d03a744f6649f353bb0a8f6d",
-    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADQAQCdASoQAAgAA4BaJYwCdAEPSaU+OAD+9NfjT5YJtEv3v27GKTILogBEmTgiIhgsvSsDcac+VaWwHsFCoAAA",
+    "bytes": 159255,
+    "etag": "4f381ed692e561cfb59fcc19db69f36d",
+    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAgAA4BaJYwCdAEPSabZEAD+9NfjT5YJtEv3v27I0pySOXawI0/FtBVJ32omeRGaWSg5uUTgAA==",
     "color": "#f8e8e8",
     "alt": "A brand and website for Queen City Development Group — Okayplus",
     "caption": "",

@@ -11,10 +11,18 @@ import { OgCardHtml } from "../OgCardHtml";
 // the playground shows it in a frame.
 // ?path=/notes/rigorous — a route's card
 // ?eyebrow=…&title=…&illustration=<scene>&image=<media key> — any card (the playground)
+// &titleWidth=<px>|auto — overrides the card's title width, for /admin/og's sliders
 
 export const metadata: Metadata = { title: "Open Graph card", robots: { index: false, follow: false } };
 
-type Params = { path?: string; eyebrow?: string; title?: string; illustration?: string; image?: string };
+type Params = {
+  path?: string;
+  eyebrow?: string;
+  title?: string;
+  illustration?: string;
+  image?: string;
+  titleWidth?: string;
+};
 
 /** A card from the playground's fields. Unknown scenes and media keys are left out. */
 function adHoc(q: Params): Omit<OgCard, "alt"> {
@@ -46,6 +54,7 @@ export default async function OgCardPage({ searchParams }: { searchParams: Promi
         imageSrc={imageSrc}
         poster={poster}
         backdrop={card.network ? networkBackdrop() : undefined}
+        width={q.titleWidth ? Number(q.titleWidth) || undefined : card.titleWidth}
       />
     </>
   );

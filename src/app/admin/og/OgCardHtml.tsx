@@ -5,6 +5,7 @@ import { Accent } from "@/components/Accent";
 import { Logo } from "@/components/Logo";
 import { SITE } from "@/data/site";
 import type { OgCard } from "@/lib/og-cards";
+import { defaultTitleWidth } from "@/lib/og-title";
 
 export type OgCardAssets = {
   /** Data URIs from og.tsx's imageData / posterData, so both versions draw the same pictures. */
@@ -30,7 +31,12 @@ export function OgCardHtml({
   imageSrc,
   poster,
   backdrop,
-}: { card: Pick<OgCard, "eyebrow" | "title"> } & OgCardAssets) {
+  width,
+}: {
+  card: Pick<OgCard, "eyebrow" | "title">;
+  /** The title column's width (the card's titleWidth, or a slider's in /admin/og); unset, the default. */
+  width?: number;
+} & OgCardAssets) {
   const ref = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -48,6 +54,7 @@ export function OgCardHtml({
   // Title sizes are stops on the type scale, each with its heading leading and tracking
   // (the card is a fixed 1200px image, so px rather than the fluid text-fl-* sizes).
   // Gelica runs wider than Hanken, so it steps down a little sooner than renderOg's sizes.
+  const column = width ?? defaultTitleWidth(Boolean(imageSrc), Boolean(poster));
   const title = imageSrc
     ? card.title.length > 44
       ? TITLE[48]
@@ -84,7 +91,7 @@ export function OgCardHtml({
           className="flex flex-col"
           style={{
             gap: imageSrc ? 24 : 28,
-            ...(imageSrc ? { width: 504 } : { maxWidth: poster ? 680 : 860 }),
+            ...(imageSrc ? { width: column } : { maxWidth: column }),
           }}
         >
           <div className="flex gap-6 font-mono text-[22px] tracking-label text-muted uppercase">
