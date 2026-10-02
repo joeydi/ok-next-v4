@@ -152,13 +152,16 @@ export async function renderOg({ eyebrow, title, image, illustration, network, t
               fontSize: 22,
               letterSpacing: "0.06em",
               color: "#746759",
+              whiteSpace: "nowrap",
             }}
           >
             {eyebrow
               .toUpperCase()
               .split(/\s{2,}/)
               .map((part, i) => (
-                <span key={i}>{part}</span>
+                <span key={i} style={{ flexShrink: 0 }}>
+                  {part}
+                </span>
               ))}
           </div>
           <div

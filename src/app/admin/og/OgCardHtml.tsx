@@ -94,7 +94,7 @@ export function OgCardHtml({
             ...(imageSrc ? { width: column } : { maxWidth: column }),
           }}
         >
-          <div className="flex gap-6 font-mono text-[22px] tracking-label text-muted uppercase">
+          <div className="flex gap-6 font-mono text-[22px] tracking-label whitespace-nowrap text-muted uppercase">
             {card.eyebrow.split(/\s{2,}/).map((part, i) => (
               <span key={i}>{part}</span>
             ))}
