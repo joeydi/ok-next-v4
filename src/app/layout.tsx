@@ -30,7 +30,7 @@ const previewHost = process.env.VERCEL_ENV === "preview" && (process.env.VERCEL_
 export const metadata: Metadata = {
   metadataBase: new URL(previewHost ? `https://${previewHost}` : SITE.url),
   title: {
-    default: `${SITE.name} — ${SITE.author}`,
+    default: `${SITE.name} — Design and development by ${SITE.author}, Burlington, VT`,
     template: `%s — ${SITE.name}`,
   },
   description: SITE.description,

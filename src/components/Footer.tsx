@@ -4,12 +4,25 @@ import { cn } from "@/lib/cn";
 import { BookingLink } from "./BookingLink";
 import { Eyebrow } from "./Eyebrow";
 
-/** Dark footer shell. Pages put their own blocks (about, quotes) before <Contact>. */
+const dark = "bg-ink text-paper";
+
+/** Dark footer shell. Pages put their own blocks before <Contact>. */
 export function SiteFooter({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <footer data-nav-theme="dark" className={cn("bg-ink text-paper", className)}>
+    <footer data-nav-theme="dark" className={cn(dark, className)}>
       {children}
     </footer>
+  );
+}
+
+/** A dark block at the end of <main> that runs on into the footer, for page content (Home's about and quotes) that should still count as the page's main text. */
+export function DarkSection({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    // The shadow runs a pixel under the footer, so the paper behind can't show through
+    // the seam when it lands on a fractional pixel.
+    <div data-nav-theme="dark" className={cn(dark, "shadow-[0_1px_0_var(--color-ink)]", className)}>
+      {children}
+    </div>
   );
 }
 

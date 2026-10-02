@@ -1,16 +1,26 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Eyebrow } from "@/components/Eyebrow";
-import { Contact, SiteFooter } from "@/components/Footer";
+import { Contact, DarkSection, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
 import { MediaImage } from "@/components/MediaImage";
 import { Cite } from "@/components/Testimonial";
 import { principles, testimonials } from "@/data/home";
 import { services } from "@/data/services";
+import { SITE } from "@/data/site";
 import { getMedia } from "@/lib/media";
 
 const headshot = getMedia("home/headshot.jpg");
 const festival = getMedia("home/festival.jpg");
+
+// A page's `alternates` replaces the layout's, so the RSS link is repeated here.
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": [{ url: "/notes/rss.xml", title: `${SITE.name} Notes` }] },
+  },
+};
 
 export default function Home() {
   return (
@@ -19,10 +29,12 @@ export default function Home() {
         <Hero />
         <Approach />
         <Services />
+        <DarkSection>
+          <About />
+          <Testimonials />
+        </DarkSection>
       </main>
       <SiteFooter>
-        <About />
-        <Testimonials />
         <Container>
           <Contact n="05" className="pt-fl-160 pb-fl-40" />
         </Container>
@@ -51,6 +63,7 @@ function Hero() {
               alt={headshot.alt}
               fill
               sizes="200px"
+              loading="eager"
               placeholder="blur"
               blurDataURL={headshot.blurDataURL}
               className="frame object-cover saturate-[.85]"

@@ -103,7 +103,7 @@
     border-radius: 4px;
   }
 
-  footer :focus-visible {
+  [data-nav-theme="dark"] :focus-visible {
     outline-color: color-mix(in srgb, var(--color-pink) 80%, transparent);
   }
 
