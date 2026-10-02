@@ -138,6 +138,10 @@ Four components are available in every note without importing. Each is a block o
 
 `<TocAnchor label="04 / Services pathway" />` adds an entry to the "In this post" list where there's no numbered figure to carry one, such as a run of paragraphs about something that has no image yet. It takes no space and is hidden from screen readers. Like numbered captions, it only counts in a note without headings.
 
+### Technique diagrams
+
+A note can also have an animated diagram of its technique, such as the exploded view of the page in [Poetry in motion](/notes/poetry-in-motion). Each is specific to its note, so it isn't one of the components above: it lives in `src/components/diagrams/<note-slug>/`, and the note imports it under its frontmatter (`import { RiverDiagram } from "@/components/diagrams/poetry-in-motion/RiverDiagram";`). It's placed like a figure, with a numbered `caption`. The diagram skill (`.claude/skills/diagram/SKILL.md`) covers making one.
+
 ## In this post
 
 The sidebar's list is built in one of two ways, never both. A note with `## headings` lists them, and ignores figures. A note without any lists every numbered caption and `TocAnchor` label (`01 / …`) in order, which suits a visual case study. Number captions in the order they appear, starting at `01`, and keep the label short: it's the link text in the sidebar.

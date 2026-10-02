@@ -110,7 +110,7 @@ export function getNote(slugName: string) {
 
 /**
  * "In this post" entries, in document order: every `## Heading`. A note with no
- * headings lists every <Figure> caption or <TocAnchor> label numbered like
+ * headings lists every <Figure> or technique diagram (<…Diagram>) caption, or <TocAnchor> label, numbered like
  * "01 / Client constellation" instead.
  */
 function getToc(content: string): TocItem[] {
@@ -123,10 +123,12 @@ function getToc(content: string): TocItem[] {
   });
   if (headings.length) return headings;
 
-  return [...body.matchAll(/<(?:Figure|TocAnchor)\b[^>]*?\b(?:caption|label)="(\d+ \/ [^"]+)"/g)].map((m) => ({
-    id: figureId(m[1]),
-    label: m[1].replace(" / ", " "),
-  }));
+  return [...body.matchAll(/<(?:Figure|TocAnchor|\w+Diagram)\b[^>]*?\b(?:caption|label)="(\d+ \/ [^"]+)"/g)].map(
+    (m) => ({
+      id: figureId(m[1]),
+      label: m[1].replace(" / ", " "),
+    }),
+  );
 }
 
 export function formatDate(iso: string) {

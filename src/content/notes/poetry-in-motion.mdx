@@ -12,13 +12,13 @@ tools:
   - React + Vite
 ---
 
+import { RiverDiagram } from "@/components/diagrams/poetry-in-motion/RiverDiagram";
+
 <Lead>Andy Clarke’s latest on CSS-Tricks, about shape-outside, got me thinking: what if the text could move too?</Lead>
 
 In [Getting Creative With shape-outside](https://css-tricks.com/getting-creative-with-shape-outside/), Andy shows how a float can carry any shape you like. Text wraps around the outline of an image instead of its rectangular box, so layouts can look like magazine spreads. His examples are all still, though. I wanted to see what happens when the shape moves and the text has to keep finding its way around it.
 
 A pinch of GreenSock magic later: rivers of text that flow like water. **[See the live demo ↗](https://shape-outside-scroll.netlify.app/)** or [browse the source on GitHub](https://github.com/joeydi/shape-outside-scroll).
-
-<Figure label="video — rivers of text" caption="01 / The River, in motion" dark />
 
 ## A river, not a rectangle
 
@@ -54,6 +54,8 @@ Each line of the poem is its own `nowrap` block, so it never breaks. It just sta
 ## Making the water move
 
 There’s no clever geometry in the JavaScript. A ScrollTrigger timeline scrubs the float’s `margin-top` from zero to minus the height of the poem as you scroll. When the float slides up, the browser works out the wrap again, and every line slides sideways to follow the new shoreline.
+
+<RiverDiagram caption="01 / The River, in motion" />
 
 ```js
 gsap.set(river, { height: poem.clientHeight * 2 });
