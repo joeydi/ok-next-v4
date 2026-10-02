@@ -761,12 +761,12 @@
     "altSource": "ai",
     "reviewed": true
   },
-  "og/business-tools-0f204b2c.png": {
+  "og/business-tools-a2a05d8a.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 99860,
-    "etag": "9a387428512352ab1b785a328ff596bc",
+    "bytes": 100094,
+    "etag": "a39f90dfdb709cc733432677e721dc74",
     "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJQBOgCHeloncwAD+9NbRNh5GQVbR2CUnYa7Y4jPO0RX6ZXb2Agb+QAA=",
     "color": "#f8e8e8",
     "alt": "Business tools — Okayplus",
@@ -775,7 +775,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/cms-integrations-f9045337.png": {
+  "og/cms-integrations-5971e0dc.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -789,13 +789,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/digital-production-9c475283.png": {
+  "og/digital-production-14708e9a.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 93585,
-    "etag": "5df9debd0009b88c175fae3a765d7a44",
-    "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADwAQCdASoQAAgAA4BaJYwCdAEPAu1qAUAA/vTXg6B4pT0Q6FZYxh3WE9N8Oq7LvoySQ3ALil0PkAAA",
+    "bytes": 92264,
+    "etag": "5fdc70d24b9e245766c3868f0cea91da",
+    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADwAQCdASoQAAgAA4BaJYwCdAEPAuyCotAA/vTXoyU47lvjHQEnnzPZte3utX2iyh9xFQTxqA8dmkhQAAA=",
     "color": "#f8e8e8",
     "alt": "Digital production — Okayplus",
     "caption": "",
@@ -803,7 +803,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/home-8dfe99ba.png": {
+  "og/home-83a4a873.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -817,7 +817,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/network-87d80513.png": {
+  "og/network-ac49be2e.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -831,7 +831,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-a89dc87c.png": {
+  "og/notes-74fa9b64.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -845,7 +845,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-arizona-education-progress-meter-21074f02.png": {
+  "og/notes-arizona-education-progress-meter-59177c57.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -859,7 +859,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-columbia-capital-fda05936.png": {
+  "og/notes-columbia-capital-fadd2458.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -873,7 +873,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-design-salon-burlington-a010e6ed.png": {
+  "og/notes-design-salon-burlington-2c586e71.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -887,7 +887,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-designing-a-website-that-feels-alive-6fcba54f.png": {
+  "og/notes-designing-a-website-that-feels-alive-eb6a725b.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -901,7 +901,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-frank-lloyd-wright-foundation-c4392f79.png": {
+  "og/notes-frank-lloyd-wright-foundation-7d25c7fa.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -915,7 +915,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-poetry-in-motion-f84d3fad.png": {
+  "og/notes-poetry-in-motion-4d55c92a.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -929,7 +929,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-queen-city-development-group-244b4bd0.png": {
+  "og/notes-queen-city-development-group-0868eb0c.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -943,7 +943,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-rigorous-9528dd92.png": {
+  "og/notes-rigorous-3eec8459.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -957,7 +957,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-thinkmd-643c6e36.png": {
+  "og/notes-thinkmd-9f55bba9.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
@@ -971,7 +971,7 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-vermont-made-ideas-b786ad06.png": {
+  "og/notes-vermont-made-ideas-55101d28.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
