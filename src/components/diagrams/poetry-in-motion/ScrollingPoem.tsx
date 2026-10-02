@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { LINES, lineOpacity, shapePolygon } from "./river";
+import { type Bank, LINES, lineOpacity, shapePolygon } from "./river";
 
 // The demo in miniature, inside a plate's window: the poem scrolls up a block of
 // lines per loop while the float slides up faster, as its margin-top scrubs, so
@@ -47,12 +47,14 @@ type Props = {
   pad: number;
   /** Moves everything by [x, y] px without changing where the lines are in their fade. */
   offset?: [number, number];
+  /** The float's bank, the demo's by default. */
+  bank?: Bank;
   /** Drawn inside the float, at its size. */
   children?: ReactNode;
 };
 
 /** The scrolling content: put it in a positioned viewport `layout.height` tall that fades out within `pad`. */
-export function ScrollingPoem({ phase, layout, pad, offset = [0, 0], children }: Props) {
+export function ScrollingPoem({ phase, layout, pad, offset = [0, 0], bank, children }: Props) {
   const { height: H, lineHeight: LH, block, period, floatWidth, shapeMargin, text } = layout;
   const { scroll, margin, periods, rows } = poemOffsets(phase, layout, pad);
 
@@ -69,7 +71,7 @@ export function ScrollingPoem({ phase, layout, pad, offset = [0, 0], children }:
           marginTop: margin,
           // The wrap is clipped to the margin box: room for the shape margin where the bank reaches the edge.
           marginRight: shapeMargin,
-          shapeOutside: shapePolygon(periods),
+          shapeOutside: shapePolygon(periods, bank),
           shapeMargin,
         }}
       >

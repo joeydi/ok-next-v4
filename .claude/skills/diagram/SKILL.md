@@ -47,6 +47,7 @@ Settled on the first diagram. Keep to it unless the user asks otherwise, and the
 - **Loops are seamless.** Make the geometry periodic (`bank()` in `poetry-in-motion/river.ts` is a sum of whole-period sines), and move things by whole periods, or whole blocks of repeated content, per loop.
 - **Run the real thing** where the technique is CSS: the poetry-in-motion diagram wraps its lines with a live `shape-outside` float, so the browser does the layout, as in the demo.
 - With overflow, **pad the content past the fade** (`FADE` plus any `register()` move), so the loop wraps where nothing is drawn. Fix the padding: if it changes with a control, the loop jumps.
+- **Let the reader drive it** where that shows the technique better than watching: the poetry-in-motion diagram has a "Draw a river" panel (`DrawRiver.tsx`) whose stroke becomes the float's bank. Put a control over the `Stack`, not inside its `Surface` (which is scaled, `aria-hidden` and ignores the pointer), in a positioned `@container` wrapper, framed with `.frame` on `paper-light`. Fold it into an icon button when the diagram is narrow, and make whatever it draws as periodic as the rest, so the loop still has no seam.
 - Keep the motion to what the technique does. Effects the diagram doesn't need to explain (the demo's blur and scale, say) obscure the part it's about.
 
 ## Workflow
