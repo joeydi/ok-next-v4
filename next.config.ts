@@ -1,6 +1,7 @@
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
+import codeTheme from "./src/lib/code-theme.json";
 
 const nextConfig = (phase: string): NextConfig => ({
   // page.dev.tsx / route.dev.ts (the /admin tools) only exist under `next dev`,
@@ -19,11 +20,12 @@ const nextConfig = (phase: string): NextConfig => ({
   ],
 });
 
-// Plugins are passed by name so they work under Turbopack.
+// Plugins are passed by name so they work under Turbopack, which also means their
+// options must be plain data: no functions, so no Shiki transformers.
 const withMDX = createMDX({
   options: {
     remarkPlugins: ["remark-frontmatter", "remark-gfm"],
-    rehypePlugins: ["rehype-slug"],
+    rehypePlugins: ["rehype-slug", ["rehype-pretty-code", { theme: codeTheme, keepBackground: false }]],
   },
 });
 

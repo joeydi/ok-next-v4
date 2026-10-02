@@ -399,8 +399,10 @@
 @layer components {
   /* ---------- Frame ---------- */
 
-  /* Every image, video and card. A component, not a utility, so a hover lift's shadow can replace this one. */
-  .frame {
+  /* Every image, video and card. A component, not a utility, so a hover lift's shadow can replace this one.
+     Note code blocks take it too, by selector, since rehype-pretty-code writes their markup. */
+  .frame,
+  .note-body > figure[data-rehype-pretty-code-figure] > pre {
     border-radius: 4px;
     box-shadow:
       0px 1px 1px color-mix(in srgb, var(--color-body) 4%, transparent),
@@ -659,21 +661,78 @@
     padding: 0.1em 0.3em;
   }
 
-  .note-body > pre {
+  /* Fenced code, highlighted at build time by rehype-pretty-code, which wraps
+     each block in a figure. The theme (src/lib/code-theme.json) is Moonlight's,
+     with each colour read from these variables: its reds on the site's pink and
+     its blue-greys on warm neutrals, so the block sits on ink like the rest. */
+  .note-body > figure[data-rehype-pretty-code-figure] > pre {
+    --code-background: var(--color-ink);
+    --code-text: var(--color-paper);
+    --code-soft: color-mix(in oklab, var(--color-paper) 70%, var(--color-muted-light));
+    --code-comment: color-mix(in oklab, var(--color-muted-light) 70%, var(--color-muted));
+    --code-null: var(--color-muted-light);
+    --code-pink: var(--color-pink);
+    --code-pink-light: color-mix(in oklab, var(--color-pink) 65%, var(--color-paper));
+    --code-magenta: #fca7ea;
+    --code-purple: #af9fff;
+    --code-blue: #7cafff;
+    --code-cyan: #78dbff;
+    --code-aqua: #b4f9f8;
+    --code-teal: #7af8ca;
+    --code-green: #c3e88d;
+    --code-yellow: #ffc777;
+    --code-orange: #ff966c;
+
     overflow-x: auto;
     /* The text-wrap above turns wrapping back on; code keeps its lines. */
     text-wrap: nowrap;
-    padding: var(--spacing-fl-24);
-    background: var(--color-ink);
-    color: var(--color-paper);
+    padding-block: var(--spacing-fl-24);
+    background: var(--code-background);
+    color: var(--code-text);
     font-size: var(--text-fl-14);
     line-height: var(--leading-code);
   }
-  /* Blocks set code at the block's size; inline code stays 0.85em of its text. */
-  .note-body > pre code {
+  /* Blocks set code at the block's size; inline code stays 0.85em of its text.
+     As a grid, every line is as wide as the longest, so a highlight runs the
+     full width even when the block scrolls. */
+  .note-body > figure[data-rehype-pretty-code-figure] > pre > code {
+    display: grid;
+    min-width: max-content;
     font-size: 1em;
     background: none;
     padding: 0;
+  }
+  /* Lines carry the block's side padding, so a highlight reaches its edges. */
+  .note-body [data-line] {
+    padding-inline: var(--spacing-fl-24);
+  }
+  /* ```js showLineNumbers */
+  .note-body code[data-line-numbers] {
+    counter-reset: line;
+  }
+  .note-body code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 2ch;
+    margin-right: var(--spacing-fl-24);
+    text-align: right;
+    color: var(--color-muted);
+  }
+  .note-body code[data-line-numbers-max-digits="3"] > [data-line]::before {
+    width: 3ch;
+  }
+  /* ```js {2-4} highlights lines; /word/ highlights each match. */
+  .note-body [data-highlighted-line] {
+    background: color-mix(in oklab, var(--color-pink) 14%, transparent);
+    box-shadow: inset 2px 0 var(--color-pink);
+  }
+  .note-body [data-highlighted-line]::before {
+    color: var(--color-pink);
+  }
+  .note-body [data-highlighted-chars] {
+    background: color-mix(in oklab, var(--color-pink) 24%, transparent);
+    box-shadow: 0 0 0 0.15em color-mix(in oklab, var(--color-pink) 24%, transparent);
   }
 
   .note-body > blockquote:not(.note-quote) {

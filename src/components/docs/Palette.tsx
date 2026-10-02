@@ -1,9 +1,11 @@
-import { type ColorToken, colors } from "@/lib/tokens";
+import codeTheme from "@/lib/code-theme.json";
+import { type ColorToken, codeColors, colors } from "@/lib/tokens";
 import { CopyValue } from "./CopyValue";
 import { DocTable } from "./DocTable";
 
 // The Palette doc's visuals, drawn from the --color-* tokens in globals.css. Every
-// fill is the token itself (`var(--color-…)`), so nothing here holds a colour.
+// fill is the token itself (`var(--color-…)`), so nothing here holds a colour. The
+// syntax swatches draw in their --code-* values as globals.css writes them.
 
 const f1 = (n: number) => n.toFixed(1);
 const hslText = (t: ColorToken) => `hsl(${Math.round(t.h)} ${Math.round(t.s)}% ${Math.round(t.l)}%)`;
@@ -62,6 +64,80 @@ export function Swatches({ groups }: { groups: Record<string, string[]> }) {
                       paper {f1(t.onPaper)}:1 · ink {f1(t.onInk)}:1
                     </span>
                     {twin && <span className="text-pink-ink">Same value as {twin.name}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/** What each --code-* variable colours, from the names of the theme's rules that read it. */
+function codeUses() {
+  const uses = new Map<string, string[]>();
+  for (const rule of codeTheme.tokenColors) {
+    const name = rule.settings.foreground?.match(/^var\(--code-([a-z-]+)\)$/)?.[1];
+    if (!name || !rule.name) continue;
+    const list = uses.get(name) ?? [];
+    for (const use of rule.name.split(",").map((u) => u.trim())) if (!list.includes(use)) list.push(use);
+    uses.set(name, list);
+  }
+  return uses;
+}
+
+/**
+ * The --code-* colours note code blocks are highlighted in, each on the block's ground,
+ * split into the ones built from the site's tokens and Moonlight's own. Clicking a
+ * swatch copies its hex.
+ */
+export function SyntaxSwatches() {
+  const all = codeColors();
+  const background = all.find((c) => c.name === "background");
+  const inks = all.filter((c) => c.name !== "background");
+  const uses = codeUses();
+  // The ground by its token's name ("ink"), or its hex if it isn't one.
+  const ground = background?.value.match(/^var\(--color-([a-z0-9-]+)\)$/)?.[1] ?? background?.hex;
+  const sections = [
+    ["From the site's tokens", inks.filter((c) => c.site)],
+    ["From Moonlight", inks.filter((c) => !c.site)],
+  ] as const;
+
+  return (
+    <div className="doc-wide flex flex-col gap-fl-40">
+      <p className="mono-label text-muted">
+        {inks.length} colours · drawn on {ground} · src/app/globals.css · src/lib/code-theme.json
+      </p>
+      {sections.map(([title, list]) => (
+        <section key={title} className="flex flex-col gap-fl-16">
+          <h3 className="mono-label text-ink">{title}</h3>
+          <div className="grid grid-cols-2 gap-fl-24 sm:grid-cols-3 xl:grid-cols-5">
+            {list.map((c) => {
+              const used = uses.get(c.name) ?? [];
+              return (
+                <div key={c.name} className="flex min-w-0 flex-col gap-2">
+                  <CopyValue
+                    value={c.hex}
+                    className="flex h-24 items-end rounded-lg border border-ink/10 p-3 font-mono text-fl-14"
+                    style={{ background: background?.value, color: c.value }}
+                  >
+                    Aa {f1(c.onBackground)}
+                  </CopyValue>
+                  <div className="font-mono text-fl-14 text-ink">--code-{c.name}</div>
+                  <div className="flex flex-col font-mono text-fl-12 leading-[1.6] text-muted">
+                    {c.site && <span className="wrap-break-word">{c.value}</span>}
+                    <span>
+                      {c.hex} · on {ground}{" "}
+                      <span className={c.onBackground < 4.5 ? "text-pink-ink" : undefined}>{f1(c.onBackground)}:1</span>
+                    </span>
+                    {used.length > 0 && (
+                      <span className="text-ink-2">
+                        {used.slice(0, 4).join(", ")}
+                        {used.length > 4 && ` +${used.length - 4}`}
+                      </span>
+                    )}
                   </div>
                 </div>
               );

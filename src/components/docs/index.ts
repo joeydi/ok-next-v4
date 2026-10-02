@@ -5,7 +5,7 @@ import { DocFigure, DocGrid } from "./DocFigure";
 import { DocTable } from "./DocTable";
 import { MaskDiagram } from "./MaskDiagram";
 import { NoteFrontmatter, NoteSpecimen, NotesInUse } from "./Notes";
-import { HueWheel, PaletteTable, SaturationPlot, Swatches } from "./Palette";
+import { HueWheel, PaletteTable, SaturationPlot, Swatches, SyntaxSwatches } from "./Palette";
 import { PlayAll } from "./PlayTrack";
 import { RevealPreview } from "./RevealPreview";
 import { FluidSpacePlot, PageGrid, PageGridTable, SpaceScale, SpacingInUse } from "./Spacing";
@@ -30,6 +30,7 @@ export const docComponents: MDXComponents = {
   SaturationPlot,
   HueWheel,
   PaletteTable,
+  SyntaxSwatches,
   // Typography
   Typeface,
   TypeScale,

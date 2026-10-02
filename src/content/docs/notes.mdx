@@ -63,8 +63,9 @@ Paragraphs follow in Hanken. They take *emphasis*, **strong words**, [a link](/n
 
 > A Markdown quote is a quiet aside, ruled in pink. For a line that should stand out, use a PullQuote.
 
-```js
+```js showLineNumbers {2}
 const code = "keeps its lines and scrolls sideways";
+const highlighted = lines.filter((line) => line.marked);
 ```
 
 ---
@@ -81,7 +82,9 @@ A rule separates parts of a note without starting a new section.
     [<code>- item</code>, "Bullets with a pink marker"],
     [<code>1. item</code>, "Decimal numbers with a pink marker"],
     [<code>&gt; quote</code>, "Indented, with a pink rule on the left"],
-    [<code>```lang</code>, "Mono on ink at fl-14, unwrapped, scrolling sideways when long"],
+    [<code>```lang</code>, "Mono on ink at fl-14, highlighted in Moonlight's colours with the site pink, unwrapped and scrolling sideways when long"],
+    [<code>```lang showLineNumbers</code>, "Numbers the lines"],
+    [<code>```lang {2-4}</code>, <>Highlights lines 2 to 4 in pink. <code>{"{1,3}"}</code> picks single lines, and <code>/word/</code> highlights each match</>],
     [<code>---</code>, "A one-pixel rule"],
     [<code>![alt](src)</code>, "Unstyled: use a Figure, which takes media keys, captions and layouts"],
     ["Tables", "Unstyled: GFM parses them, but nothing in .note-body sets them yet"],

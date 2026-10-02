@@ -38,6 +38,7 @@ Write the prose like the rest of the site: plain, specific and short. Say what s
 
 Every colour, curve and timing is read from `src/app/globals.css` by `src/lib/tokens.ts`:
 - `colors()`: `--color-*` with hex, HSL and contrast
+- `codeColors()`: the `--code-*` syntax colours note code blocks use, resolved to hex, with contrast on their ground
 - `eases()` / `ease(name)`: `--ease-*` control points (`"ease"` is CSS's default)
 - `viewTransitions()` / `viewTransition(name)`: `--view-transition-*` timings and amounts
 - `fonts()`, `trackings()`: `--font-*` stacks and `--tracking-*` in em
@@ -63,6 +64,7 @@ They're available in every doc without importing, registered in `src/components/
 - `<Swatches groups={{ Paper: ["paper", "sand"] }} />`
 - `<SaturationPlot />`, `<HueWheel />`
 - `<PaletteTable />`
+- `<SyntaxSwatches />`: the `--code-*` syntax colours on their ground, split into site tokens and Moonlight's own, with what each colours
 
 **Type**
 - `<Typeface font="display" name="Gelica" source="Adobe Fonts" weights={[400]} use="…">…</Typeface>`

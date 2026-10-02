@@ -44,3 +44,20 @@ The neutrals are set from one rule rather than picked by eye, so a new one can b
 Sorted by lightness. Contrast below 4.5:1, the WCAG minimum for body text, is marked in pink.
 
 <PaletteTable />
+
+## Syntax
+
+Code blocks in notes are highlighted in a palette of their own, based on atomiks' Moonlight theme. `src/lib/code-theme.json` maps every kind of token to a `--code-*` variable, and the values are set in `src/app/globals.css`, in the `.note-body` code rules. Moonlight's text colours, comments and reds are replaced by the site's neutrals and pink, so a block sits on ink like the rest of the page. Its other hues are kept as hex values, because nothing else on the site uses them. Contrast is measured against `--code-background`, the only ground they're drawn on, and anything under 4.5:1 is marked in pink.
+
+<SyntaxSwatches />
+
+The same colours in a block, with `showLineNumbers {3}` after the language:
+
+```js showLineNumbers {3}
+// Scrub a line up out of the water as it scrolls by.
+export function surface(line, { depth = 40, ease = "expo.out" } = {}) {
+  const text = line.querySelector("span");
+  if (!text) return null;
+  return gsap.to(text, { y: 0, filter: `blur(${depth}px)`, ease, scrollTrigger: { trigger: line, scrub: true } });
+}
+```

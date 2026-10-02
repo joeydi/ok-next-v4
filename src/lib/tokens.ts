@@ -80,6 +80,90 @@ export function colors(): ColorToken[] {
   });
 }
 
+// ---------- Code colours ----------
+
+export type CodeColor = {
+  name: string;
+  /** The value as globals.css writes it: a --color-* token, a mix of two, or a hex of Moonlight's own. */
+  value: string;
+  hex: string;
+  /** True when the value is built from --color-* tokens rather than taken from Moonlight. */
+  site: boolean;
+  /** WCAG contrast ratio against --code-background, the only ground code is drawn on. */
+  onBackground: number;
+};
+
+// sRGB hex ⇄ OKLab, for resolving color-mix(in oklab, …) as the browser does.
+const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const fromLinear = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
+
+function oklabOf(hex: string) {
+  const [r, g, b] = rgbOf(hex).map(toLinear);
+  const [l, m, s] = [
+    0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b,
+    0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b,
+    0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b,
+  ].map(Math.cbrt);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+
+function hexOfOklab([L, A, B]: number[]) {
+  const [l, m, s] = [
+    L + 0.3963377774 * A + 0.2158037573 * B,
+    L - 0.1055613458 * A - 0.0638541728 * B,
+    L - 0.0894841775 * A - 1.291485548 * B,
+  ].map((v) => v ** 3);
+  const rgb = [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ];
+  return `#${rgb
+    .map((c) =>
+      Math.round(Math.min(1, Math.max(0, fromLinear(c))) * 255)
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+/**
+ * Every --code-* variable: the colours rehype-pretty-code's theme (src/lib/code-theme.json)
+ * reads for note code blocks, in the order globals.css lists them, each resolved to a hex.
+ */
+export function codeColors(): CodeColor[] {
+  const palette = new Map(colors().map((c) => [c.name, c.hex]));
+  const code = declarations("code");
+  const resolve = (value: string, name: string): string => {
+    const token = value.match(/^var\(--color-([a-z0-9-]+)\)$/);
+    if (token) {
+      const hex = palette.get(token[1]);
+      if (!hex) throw new Error(`tokens: --code-${name} reads --color-${token[1]}, which isn't defined`);
+      return hex;
+    }
+    if (/^#[0-9a-f]{6}$/i.test(value)) return value.toLowerCase();
+    const mix = value.match(/^color-mix\(in oklab,\s*(.+?)\s+([\d.]+)%,\s*(.+)\)$/);
+    if (mix) {
+      const p = Number(mix[2]) / 100;
+      const [a, b] = [oklabOf(resolve(mix[1], name)), oklabOf(resolve(mix[3], name))];
+      return hexOfOklab(a.map((v, i) => v * p + b[i] * (1 - p)));
+    }
+    throw new Error(`tokens: --code-${name} isn't a --color-* token, a hex or an oklab color-mix (${value})`);
+  };
+  const resolved = [...code].map(([name, value]) => ({ name, value, hex: resolve(value, name) }));
+  const background = resolved.find((c) => c.name === "background");
+  if (!background) throw new Error("tokens: no --code-background in globals.css");
+  return resolved.map((c) => ({
+    ...c,
+    site: c.value.includes("var(--color-"),
+    onBackground: contrast(c.hex, background.hex),
+  }));
+}
+
 // ---------- Easing ----------
 
 export type EaseToken = { name: string; points: Bezier };
