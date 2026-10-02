@@ -12,7 +12,8 @@ import { formatDate, getAllNotes } from "@/lib/notes";
 
 export const metadata: Metadata = {
   title: "Notes",
-  description: "Project write-ups, process notes, and the occasional thing I made for fun.",
+  description:
+    "Project write-ups, process notes and the occasional thing I made for fun, by Joe di Stefano, a designer and developer in Burlington, Vermont.",
   alternates: { canonical: "/notes" },
   openGraph: { ...OPEN_GRAPH, url: "/notes" },
 };
