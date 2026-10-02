@@ -25,6 +25,8 @@ export type NoteMeta = {
   /** May contain *accent* words, shown in pink on the post page. */
   title: string;
   plainTitle: string;
+  /** The <title> (before " — Okayplus"), for a headline too long for search listings. Defaults to `plainTitle`. */
+  metaTitle: string;
   description: string;
   date: string; // ISO
   tag: Tag;
@@ -71,6 +73,7 @@ function parse(file: string) {
     slug: slugName,
     title: String(data.title),
     plainTitle: stripAccent(String(data.title)),
+    metaTitle: data.metaTitle ?? stripAccent(String(data.title)),
     description: data.description ?? "",
     date: new Date(data.date).toISOString(),
     tag: data.tag,

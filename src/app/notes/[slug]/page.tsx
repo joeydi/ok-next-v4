@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): 
   if (!note) return {};
   const { meta } = note;
   return {
-    title: meta.plainTitle,
+    title: meta.metaTitle,
     description: meta.description,
     alternates: { canonical: `/notes/${meta.slug}` },
     openGraph: {

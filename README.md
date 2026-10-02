@@ -71,6 +71,7 @@ Notes (blog posts and case studies) are MDX files in `src/content/notes/`. The f
 ```mdx
 ---
 title: Designing a Website That Feels Alive While Keeping Content Front and *Center* # *words* render pink on the post page
+metaTitle: Designing the Simple Creature site to feel alive # optional — shorter <title> for search when the headline runs past ~49 characters
 description: One or two sentences for the index, RSS and social cards.
 date: 2026-05-19
 tag: PROCESS # CASE STUDY | PROCESS | VERMONT | COMMUNITY
