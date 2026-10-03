@@ -816,7 +816,8 @@
   .note-fig {
     margin-block: var(--spacing-fl-48) var(--spacing-fl-48);
   }
-  .note-fig + * {
+  /* Scoped to .note-body so it outranks a heading's top margin too. */
+  .note-body > .note-fig + * {
     margin-top: 0;
   }
   .note-fig-half + .note-fig-half {
@@ -844,7 +845,8 @@
     font-style: normal;
     color: var(--color-pink);
   }
-  .note-quote + * {
+  /* Scoped to .note-body so it outranks a heading's top margin too. */
+  .note-body > .note-quote + * {
     margin-top: 0;
   }
   /* Grid items don't collapse margins, so a figure right before a quote gives
