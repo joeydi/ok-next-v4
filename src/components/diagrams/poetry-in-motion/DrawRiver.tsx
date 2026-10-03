@@ -9,8 +9,9 @@ import { type Bank, bankPath, fitBank, mixBanks } from "./river";
 // float's bank, dotted. Draw a line down it and, on release (or where it crosses
 // the bottom edge), the line is smoothed into whole-period sines with its ends
 // matched (see fitBank), and the river morphs to it. Narrow, it folds into a
-// pencil button that opens it over the diagram. It sits over the diagram's
-// surface, not in it, so it stays at its own size and reachable by keyboard.
+// pencil button that opens it over the diagram, and stays open after a draw so
+// the next one is a stroke away. It sits over the diagram's surface, not in it,
+// so it stays at its own size and reachable by keyboard.
 
 const MORPH = 800; // ms
 const EASE = "--ease-out-expo";
@@ -79,10 +80,7 @@ export function DrawRiver({
 
   const finish = (points: Point[]) => {
     const b = fitBank(points);
-    if (b) {
-      onDraw(b);
-      setOpen(false);
-    }
+    if (b) onDraw(b);
     setStroke(null);
   };
   /** The pointer as [x, y] shares of the box, y unclamped so a cut at the bottom can be seen. */
