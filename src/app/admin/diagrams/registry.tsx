@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 import { NUDGE as RIVER_NUDGE, RiverDiagram } from "@/components/diagrams/poetry-in-motion/RiverDiagram";
+import { RerenderDiagram } from "@/components/diagrams/video-as-code/RerenderDiagram";
+import {
+  LOOP as STRIP_LOOP,
+  NUDGE as STRIP_NUDGE,
+  StripDiagram,
+} from "@/components/diagrams/video-as-code/StripDiagram";
 
 // Every note's technique diagram, for the dev-only lab, in note order. While a
 // diagram is being explored its variants sit here too, one entry each; when one
@@ -27,5 +33,18 @@ export const DIAGRAMS: DiagramEntry[] = [
     loop: 8,
     nudge: RIVER_NUDGE,
     render: (time, nudge) => <RiverDiagram caption="01 / The River, in motion" time={time} nudge={nudge} />,
+  },
+  {
+    note: "video-as-code",
+    title: "Every frame, a function of time",
+    loop: STRIP_LOOP,
+    nudge: STRIP_NUDGE,
+    render: (time, nudge) => <StripDiagram caption="01 / Every frame, a function of time" time={time} nudge={nudge} />,
+  },
+  {
+    note: "video-as-code",
+    title: "Fixing one shot",
+    loop: 12,
+    render: (time) => <RerenderDiagram caption="02 / Fixing one shot" time={time} />,
   },
 ];

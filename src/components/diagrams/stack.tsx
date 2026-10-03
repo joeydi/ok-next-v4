@@ -12,8 +12,8 @@ export const PLATE = [380, 440] as const; // plate (px)
 export const GAP = 70; // between plates (px)
 const HEADER = 48; // window top, under the header (px)
 const INSET = 16; // window inset (px)
-/** The window under a plate's header (px). */
-export const WINDOW = { w: PLATE[0] - 2 * INSET, h: PLATE[1] - HEADER - INSET } as const;
+/** The window under a plate's header (px): where it sits on the plate, and its size. */
+export const WINDOW = { x: INSET, y: HEADER, w: PLATE[0] - 2 * INSET, h: PLATE[1] - HEADER - INSET } as const;
 export const FADE = 260; // with overflow: how far past the window content fades out (px)
 const RUN = 600; // with overflow: room to the right, for long lines (px)
 const SIDE = 160; // with overflow: room to the left, for content moved by register() (px)

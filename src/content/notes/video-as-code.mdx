@@ -1,0 +1,236 @@
+---
+title: AI video, but *made of code*
+description: Most AI video means generated pixels. Coding agents make another way practical, where AI writes a program and the program renders the video.
+date: 2026-10-03
+tag: PROCESS
+topic: Creative coding
+draft: true
+imageLabel: video — a promo rendered from code
+tools:
+  - Remotion
+  - HyperFrames
+---
+
+import { StripDiagram } from "@/components/diagrams/video-as-code/StripDiagram";
+
+<Lead>
+  When most people say “AI video” right now, they mean one thing: you type a prompt, a model thinks for a while, and a
+  clip comes back.
+</Lead>
+
+It’s genuinely impressive. A few sentences in, a few seconds of footage out.
+
+But there’s another way to use AI to make video, and it looks a lot more like web development than filmmaking. Instead of asking AI to generate the frames, you ask it to write the code that generates the frames.
+
+The two pipelines look like this:
+
+```text
+Generative video:   prompt → model → pixels
+Code-based video:   prompt → code → frames → video
+```
+
+That extra step in the middle changes almost everything about what you can do with the result. A clip is a finished artifact. Code is something you can re-run, edit, tune and reuse. The rest of this post is about why that difference matters, and why AI coding tools suddenly make it practical.
+
+## What if a video were just a website with a timeline?
+
+This idea isn’t new. [Remotion](https://www.remotion.dev) has been doing it for years: it brought React’s component model to video. You write components, Remotion gives you the current frame number, and it renders each frame in a headless browser before stitching them into an MP4.
+
+More recently, HeyGen open-sourced [HyperFrames](https://github.com/heygen-com/hyperframes), which applies the same idea more directly to the web platform itself. A HyperFrames composition is plain HTML with data attributes for timing, animated with CSS or seekable animation libraries like GSAP, and captured to MP4 with Puppeteer and FFmpeg. No React and no bundler; the `index.html` plays as-is.
+
+I don’t think the interesting question is which library wins. The interesting part is the idea underneath both of them:
+
+**The browser is already an extremely capable graphics engine.**
+
+It renders typography, SVG, CSS, Canvas, WebGL, Three.js, images, video and sophisticated animation, and it does so on every device we own. All it’s missing to become a video renderer is a deterministic clock. Give it one, step through time a frame at a time, and capture what’s on screen.
+
+<StripDiagram caption="01 / Every frame, a function of time" />
+
+## UI = f(state) → frame = f(time)
+
+React popularized a way of thinking about interfaces that most of us now take for granted:
+
+```text
+UI = f(state)
+```
+
+You don’t reach into the DOM and change things. You describe what the interface should look like for a given state, and the framework works out the rest.
+
+Video fits the same mental model with one substitution:
+
+```text
+frame = f(time)
+```
+
+At frame 0, render one state. At frame 30, another. At frame 60, another. You don’t tell an object to move. You describe where it should be at a particular moment, and the renderer asks you that question once per frame.
+
+In Remotion, that looks like this:
+
+```tsx
+import { useCurrentFrame, interpolate } from "remotion";
+
+export const Title = () => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 30], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const y = interpolate(frame, [0, 30], [40, 0], {
+    extrapolateRight: "clamp",
+  });
+
+  return <h1 style={{ opacity, transform: `translateY(${y}px)` }}>Poetry in Motion</h1>;
+};
+```
+
+There’s no animation timeline in there, no keyframes panel, no play button. There’s a function that takes a frame number and returns markup. Ask it about frame 15 and it tells you: half faded in, 20px below its resting spot.
+
+That’s the whole trick. Then extend it slightly:
+
+```text
+frame = f(time, props)
+```
+
+Now things get interesting.
+
+## The difference between generating and rendering
+
+Back to generative video for a moment, because this is where the two approaches really split.
+
+If I ask a generative model for the same clip twice, I get two interpretations. Similar, maybe. Not the same. If I render the same code with the same inputs twice, I get the same frames, down to the pixel.
+
+That one property drags along a whole set of others we normally associate with software:
+
+- **Repeatable:** run it again, get the same thing.
+- **Editable:** change one part without disturbing the rest.
+- **Tunable:** nudge a number until it feels right.
+- **Versionable:** it lives in Git, with diffs and history.
+- **Debuggable:** when frame 212 looks wrong, you can find out why.
+
+Think about the revisions you actually get on a motion piece. They tend to be deliberately mundane:
+
+- Make the logo 20% smaller.
+- Hold this frame for another second.
+- Change the easing curve.
+- Replace this headline.
+- Make a vertical version.
+
+<PullQuote>
+  With a generative model, *each request is a new roll of the dice*, and there’s a real chance the thing you liked
+  doesn’t survive.
+</PullQuote>
+
+With code, they’re not requests to reinterpret the video. They’re changes to its implementation. A scale value, a duration, an easing function, a string, an aspect ratio.
+
+## One video becomes a video template
+
+Once a video is a function, the obvious next move is to give that function more arguments:
+
+```text
+frame = f(time, props, theme, data)
+```
+
+In practice that’s just a component with props:
+
+```tsx
+<Promo title="Poetry in Motion" theme="blue" format="vertical" duration={12} />
+```
+
+Change the props and render again. Change them a hundred times in a loop and render a hundred videos.
+
+This is the point where programmatic video stops being a neat animation technique and becomes a way to build systems that make videos. A few places that pays off:
+
+- **Campaign variations:** one design, a dozen headlines and offers.
+- **Social formats:** the same piece at 16:9, 1:1 and 9:16, laid out properly for each rather than cropped.
+- **Personalized video:** a name, a city, a stat from someone’s account.
+- **Localization:** swap the copy, keep the timing and design.
+- **Product catalogs:** one template, every SKU.
+- **Event graphics:** speaker cards and session bumpers from a schedule.
+- **Data-driven reports:** this month’s numbers, animated, every month.
+
+Nobody is hand-editing 400 timelines. A design system for video turns out to look a lot like a design system for the web.
+
+## This is where AI changes the equation
+
+Everything above has been true for a while. Remotion has existed for years. So why does it feel different now?
+
+Because without AI, programmatic video is powerful but expensive. Somebody still has to build the program. You need a developer who also has decent motion instincts, and that’s a small group of people with not a lot of spare time.
+
+With a coding agent, you can describe the animation you want and have it write or modify the implementation. “Stagger the three cards in from the left, 6 frames apart, with a slight overshoot.” That’s a sentence for you and a few lines of code for the model.
+
+And critically, the technologies involved are ones coding models already understand extremely well:
+
+```text
+HTML + CSS + JavaScript + React + SVG + Canvas + Three.js
+```
+
+The model isn’t learning to operate an animation application, clicking through panels it’s never seen. It’s writing software, in the languages it has seen more of than almost anything else. HyperFrames leans into this directly: it ships agent skills that teach models its composition rules, and its README pitches the choice of plain HTML on exactly this basis.
+
+Which leads to the line I keep coming back to: Instead of generating the video, AI generates _a program whose output is the video._
+
+## This isn’t a replacement for generative video
+
+I want to be careful here, because it would be easy to turn this into a “code good, generative bad” post. That’s not the argument.
+
+Code excels at things with structure: typography, UI, diagrams, charts, data visualization, logos, geometric animation, explainers, product graphics, and anything that has to be exactly the same every time.
+
+Generative video excels at things that are incredibly hard to describe procedurally: people, environments, cinematic imagery, organic movement, realistic camera shots. Nobody wants to write the function that returns a golden-hour shot of a coastline.
+
+The more interesting move is to stop treating them as competitors and stack them:
+
+```text
+generative assets / footage
+          ↓
+deterministic composition
+          ↓
+typography + graphics + data
+          ↓
+        video
+```
+
+Let a model generate the footage it’s good at generating. Then bring that footage into a coded composition, where the titles, lower thirds, charts, branding and timing are all exact, editable and templated. The generative part supplies the texture; the code supplies the structure.
+
+## A small experiment
+
+Arguments are cheap, so I tried it. I gave a coding agent a brief for a short motion piece and built it with [Remotion / HyperFrames], one prompt at a time.
+
+**The brief:** a 12-second promo for a fictional poetry reading series called “Poetry in Motion.” A title card, three lines of verse that animate in, the date and venue, and a closing logo. 1920×1080 to start.
+
+Here’s how the five rounds went:
+
+1. **Create it:** “Build the promo from this brief.” [Placeholder: the components and scenes it created. Clip 1.]
+2. **Adjust timing:** “Hold the title a second longer and stagger the verse lines 8 frames apart.” [Placeholder: e.g. two numbers changed. Clip 2.]
+3. **Change the look:** “Make it feel like a letterpress print: off-white paper, ink texture, a serif face.” [Placeholder: what changed in the code. Clip 3.]
+4. **Make it a template:** “Turn the title, lines, date, venue and colors into props.” [Placeholder: the props interface it wrote. Clip 4.]
+5. **Generate variations:** “Render three versions: a different event, a vertical cut, and a dark theme.” [Placeholder: the render script. Clips 5a–5c.]
+
+<Figure
+  label="video — the five outputs side by side, or the three round-5 variations in a grid"
+  caption="02 / Five rounds, one program"
+/>
+
+[Placeholder: two or three paragraphs on what actually happened. Worth covering: which prompts landed first try, where the agent needed correcting, how long each round took, and whether any round changed something you didn’t ask it to. Round 2 is the one to dwell on: in a generative tool that request means regenerating the whole clip, while here it should be a diff of a couple of lines.]
+
+The experiment is the evidence for everything above. Each round is a small, specific change to a program, and the program keeps everything you didn’t ask to change.
+
+## The interesting part isn’t AI video
+
+Zoom back out and the two approaches are asking different questions.
+
+Generative video asks: _what should these pixels look like?_
+
+Programmatic video asks: _what system produces these pixels?_
+
+The second question has always had better answers for a lot of work: anything branded, anything data-driven, anything that needs fifty versions or a revision next Tuesday. It just required someone who could write the system. Coding agents make that second question dramatically more accessible.
+
+Which brings the whole thing back to a progression that should feel familiar to anyone who builds for the web:
+
+```text
+UI = f(state)
+
+frame = f(time)
+
+frame = f(time, data, theme, props)
+
+AI → f()
+```
+
+That last line is the point. The model isn’t necessarily generating the frames anymore. It’s generating the function.
