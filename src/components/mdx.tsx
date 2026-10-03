@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 import { figureId } from "@/lib/figure-id";
 import { getMedia, type MediaKey } from "@/lib/media";
 import { Placeholder } from "./Placeholder";
@@ -8,7 +8,11 @@ import { Placeholder } from "./Placeholder";
 
 /** Opening paragraph, set in Gelica. */
 export function Lead({ children }: { children: ReactNode }) {
-  return <p className="note-lead">{children}</p>;
+  // Written over several lines, a lead reaches here wrapped in a paragraph of MDX's own, which
+  // can't sit in this one: unwrap it.
+  const text =
+    isValidElement<{ children?: ReactNode }>(children) && children.type === "p" ? children.props.children : children;
+  return <p className="note-lead">{text}</p>;
 }
 
 /**
