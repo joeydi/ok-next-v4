@@ -1,13 +1,14 @@
 ---
-title: AI video, but *made of code*
+title: Video, *made of code*
 description: Most AI video means generated pixels. Coding agents make another way practical, where AI writes a program and the program renders the video.
 date: 2026-10-03
 tag: PROCESS
 topic: Creative coding
 draft: true
-image: notes/video-as-code/every-frame-a-function-of-time.mp4
+image: notes/video-as-code/video-as-code-event-loop-v3.mp4
 imageLabel: video — a promo rendered from code
 ogBackdrop: true
+ogDarkMode: true
 tools:
   - Remotion
   - HyperFrames
@@ -192,24 +193,34 @@ Let a model generate the footage it’s good at generating. Then bring that foot
 
 ## A small experiment
 
-Arguments are cheap, so I tried it. I gave a coding agent a brief for a short motion piece and built it with [Remotion / HyperFrames], one prompt at a time.
+Arguments are cheap, so I tried it. I gave a coding agent a brief and a folder of assets and had it build the piece in plain HTML and CSS. There was no video framework: headless Chrome captured the frames and ffmpeg encoded them.
 
-**The brief:** a 12-second promo for a fictional poetry reading series called “Poetry in Motion.” A title card, three lines of verse that animate in, the date and venue, and a closing logo. 1920×1080 to start.
+The brief: three event promos (a disco night, a data science talk and a game jam), each already designed as a 16:9 cover and a 4:5 Instagram post. I wanted one seamless loop of about 6 seconds that cycles through all six. Each graphic floats as a card over a blurred copy of its own background video, and at every change each element moves and scales to its place in the next layout. The inputs were:
 
-Here’s how the five rounds went:
+- the six layouts, as PNG exports and as HTML source from the design tool
+- three AI-generated 5-second background loops
+- one screenshot of the floating-card look
 
-1. **Create it:** “Build the promo from this brief.” [Placeholder: the components and scenes it created. Clip 1.]
-2. **Adjust timing:** “Hold the title a second longer and stagger the verse lines 8 frames apart.” [Placeholder: e.g. two numbers changed. Clip 2.]
-3. **Change the look:** “Make it feel like a letterpress print: off-white paper, ink texture, a serif face.” [Placeholder: what changed in the code. Clip 3.]
-4. **Make it a template:** “Turn the title, lines, date, venue and colors into props.” [Placeholder: the props interface it wrote. Clip 4.]
-5. **Generate variations:** “Render three versions: a different event, a vertical cut, and a dark theme.” [Placeholder: the render script. Clips 5a–5c.]
+<Figure media="notes/video-as-code/event-variations-iso.png" caption="02 / Three events, two formats" />
+
+Here’s how it went:
+
+1. **Plan it:** “Here are the assets. Build this loop, plus an admin view to review it.” Before writing any code it asked three questions: the output aspect ratio, where the project should live, and whether to rebuild the layouts from the PNGs. I pointed it at the design source instead. It ported all six layouts with their original styles intact, and each one matched its PNG export on the first render.
+2. **Make it move:** The first render held every layout perfectly and fell apart in between. “Disco Night” sits on one line in 16:9 and two in 4:5, so the title cross-dissolved into a smeared double image. Text also ran ahead of the card as it resized and got clipped at its edge. The fixes changed the structure: each title became individual words that fly to their new positions, and every element is now positioned relative to the morphing card.
+3. **Swap the footage:** Partway through, the final background renders arrived, including a real video for the data science talk, which had been a still with a slow Ken Burns move until then. Swapping each one meant changing one file path per event and re-rendering.
+4. **Adjust the timing:** “Hold each layout longer, and morph slower.” I did this one myself in the admin view: hold from 0.4 to 1 second, morph from 0.6 to 2. Then I hit render. No code changed, just two numbers in a config file.
+5. **Generate variations:** The loop already is the variations: one set of templates, three sets of event data, two aspect ratios. A fourth event would be a new entry in the events file.
+
+The static layouts worked on the first try because the agent ported real source instead of eyeballing screenshots. The footage handling did too. It checked where each clip loops by comparing its first and last frames, then slowed every clip to 0.84× so one cycle of the video spans exactly one cycle of the piece. As a result, the seam where the video wraps back to frame one is invisible.
+
+The motion needed work. The agent found those problems itself: it rendered still frames from mid-transition and checked them on contact sheets. Even so, it took two rounds of fixes before the transitions held together. It needed me twice, both times for things it had no way of knowing: that the design source existed, and that the final footage lived in a different folder from the draft clip it had picked up. It made one change I didn’t ask for, lightening the background haze to match the reference screenshot. That was a reasonable call, and it showed up in the diff.
+
+Round 4 is the one that matters. In a generative tool, “hold it longer” means regenerating the clip and hoping everything else survives. Here every property of every frame is a function of time, so the change was two numbers. Everything I didn’t touch rendered exactly as before, only spread over 18 seconds instead of 6. A full render is headless Chrome stepping through the frames one by one, about 90 seconds for the 6-second version.
 
 <Figure
-  label="video — the five outputs side by side, or the three round-5 variations in a grid"
-  caption="02 / Five rounds, one program"
+  media="notes/video-as-code/video-as-code-event-admin.mp4"
+  caption="03 / The admin view: variations, timing, render"
 />
-
-[Placeholder: two or three paragraphs on what actually happened. Worth covering: which prompts landed first try, where the agent needed correcting, how long each round took, and whether any round changed something you didn’t ask it to. Round 2 is the one to dwell on: in a generative tool that request means regenerating the whole clip, while here it should be a diff of a couple of lines.]
 
 The experiment is the evidence for everything above. Each round is a small, specific change to a program, and the program keeps everything you didn’t ask to change.
 
