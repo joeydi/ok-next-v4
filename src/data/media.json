@@ -761,6 +761,27 @@
     "altSource": "ai",
     "reviewed": true
   },
+  "notes/video-as-code/every-frame-a-function-of-time.mp4": {
+    "type": "video",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 2688183,
+    "etag": "853ecb97437ab076f9c30e0b6721348e",
+    "duration": 24,
+    "hasAudio": false,
+    "poster": "_posters/notes/video-as-code/every-frame-a-function-of-time-21064ms.jpg",
+    "blurDataURL": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAABQAQCdASoQAAkAA4BaJZwABDOAAP7y1Asz7oFMlCzMYu8XAAA=",
+    "color": "#f8f8e8",
+    "encode": "1",
+    "original": "_originals/notes/video-as-code/every-frame-a-function-of-time.mp4",
+    "alt": "Angled diagram of a rendering pipeline: scene.html is seeked to a time t = frame / 8, screenshotted to frame_0004.png, and stacked into a series of bar-chart frames labeled 0.125s, 0.250s, 0.375s and on.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true,
+    "audio": null,
+    "posterAt": 21.064
+  },
   "og/business-tools-a2a05d8a.png": {
     "type": "image",
     "width": 1200,
@@ -982,6 +1003,20 @@
     "alt": "Here’s to more Vermont-made ideas — Okayplus",
     "caption": "",
     "context": "Open Graph card for /notes/vermont-made-ideas",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "og/notes-video-as-code-10ec0678.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 543762,
+    "etag": "e59f3b52d4eccecb98552ff03a527530",
+    "blurDataURL": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAACwAQCdASoQAAgAA4BaJQBOgCHR2X0AAP72CYJh0C1E+gDbjNfr7Ez+2gAAAA==",
+    "color": "#f8f8e8",
+    "alt": "AI video, but made of code — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /notes/video-as-code",
     "altSource": "human",
     "reviewed": true
   }
