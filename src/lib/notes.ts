@@ -38,6 +38,8 @@ export type NoteMeta = {
   imageLabel: string;
   /** The social card shows `image` behind the title, filling the card, instead of framed beside it. */
   ogBackdrop: boolean;
+  /** The social card's text is light, for a dark `ogBackdrop` image. */
+  ogDarkMode: boolean;
   featured: boolean;
   draft: boolean;
   byline: string;
@@ -83,6 +85,7 @@ function parse(file: string) {
     image,
     imageLabel: data.imageLabel ?? `image — ${stripAccent(String(data.title))}`,
     ogBackdrop: Boolean(data.ogBackdrop),
+    ogDarkMode: Boolean(data.ogDarkMode),
     featured: Boolean(data.featured),
     draft: Boolean(data.draft),
     byline: data.byline ?? "Designer + developer",
@@ -93,6 +96,28 @@ function parse(file: string) {
     link: data.link,
   };
   return { meta, content };
+}
+
+/**
+ * Sets one of a note's social card flags in its frontmatter, or with `false`, removes it.
+ * Edits the line rather than re-serializing, so the rest of the frontmatter keeps its
+ * formatting. Used by /admin/og's checkboxes.
+ */
+export function setNoteFlag(slugName: string, key: "ogBackdrop" | "ogDarkMode", on: boolean) {
+  const file = path.join(DIR, `${slugName}.mdx`);
+  const raw = fs.readFileSync(file, "utf8");
+  const end = raw.indexOf("\n---", 3);
+  if (!raw.startsWith("---") || end < 0) throw new Error(`notes/${slugName}.mdx: no frontmatter`);
+  const lines = raw
+    .slice(0, end)
+    .split("\n")
+    .filter((l) => !l.startsWith(`${key}:`));
+  if (on) {
+    // With the image fields it styles, or at the end.
+    const at = lines.findLastIndex((l) => /^(image|imageLabel|ogBackdrop|ogDarkMode):/.test(l));
+    lines.splice(at < 0 ? lines.length : at + 1, 0, `${key}: true`);
+  }
+  fs.writeFileSync(file, lines.join("\n") + raw.slice(end));
 }
 
 const showDrafts = process.env.NODE_ENV !== "production";

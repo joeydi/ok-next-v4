@@ -4,7 +4,6 @@ import manifest from "@/data/media.json";
 import { services } from "@/data/services";
 import { getAllNotes } from "@/lib/notes";
 import { isOgKeyFor, ogCard, ogMediaKey } from "@/lib/og-cards";
-import { defaultTitleWidth, maxTitleWidth } from "@/lib/og-title";
 import { readManifest } from "../../../../scripts/media.mjs";
 import { AdminShell } from "../AdminShell";
 import { type CardStatus, OgAdmin, type OgPage } from "./OgAdmin";
@@ -40,17 +39,18 @@ export default function OgAdminPage() {
     if (keys.includes(ogMediaKey(path, card))) return "saved";
     return keys.some((k) => isOgKeyFor(path, k)) ? "stale" : "missing";
   };
-  // Its title width and the slider's range, as og.tsx lays the card out: SVG images and backdrops are left out.
-  const titleWidths = (path: string): Pick<OgPage, "titleWidth" | "autoWidth" | "maxWidth"> => {
+  // What sets its title width's default and range (as og.tsx lays the card out: SVG images
+  // are left out), and for a note, the flags its checkboxes set.
+  const layout = (path: string): Omit<OgPage, keyof Listed | "card"> => {
     const card = ogCard(path);
-    const image = !card?.backdrop && (card?.image?.type === "image" || card?.image?.type === "video");
     return {
       titleWidth: card?.titleWidth,
-      autoWidth: defaultTitleWidth(image, !image && Boolean(card?.illustration)),
-      maxWidth: maxTitleWidth(image),
+      image: card?.image?.type === "image" || card?.image?.type === "video",
+      illustration: Boolean(card?.illustration),
+      flags: path.startsWith("/notes/") ? { backdrop: Boolean(card?.backdrop), dark: Boolean(card?.dark) } : undefined,
     };
   };
-  const pages = listed.map((p) => ({ ...p, card: status(p.path), ...titleWidths(p.path) }));
+  const pages = listed.map((p) => ({ ...p, card: status(p.path), ...layout(p.path) }));
   // Anything satori can draw: images and video posters, not SVGs.
   const mediaKeys = Object.entries(manifest as Record<string, { type: string }>)
     .filter(([, e]) => e.type !== "svg")

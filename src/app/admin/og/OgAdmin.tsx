@@ -13,11 +13,20 @@ export type OgPage = {
   label: string;
   draft?: boolean;
   card?: CardStatus;
-  /** The card's tuned title width, if any, and its default and widest. */
+  /** The card's tuned title width, if any. */
   titleWidth?: number;
-  autoWidth: number;
-  maxWidth: number;
+  /** Whether it has an image it can frame or fill with, and an illustration: they set the title width's default and range. */
+  image: boolean;
+  illustration: boolean;
+  /** A note's backdrop and dark mode, set in its frontmatter. Other routes have none. */
+  flags?: { backdrop: boolean; dark: boolean };
 };
+
+/** The title width's default and widest, as og.tsx lays the card out: an image beside the title narrows it. */
+function widths(image: boolean, illustration: boolean, backdrop: boolean) {
+  const framed = image && !backdrop;
+  return { auto: defaultTitleWidth(framed, !framed && illustration), max: maxTitleWidth(framed) };
+}
 
 /** Screenshots cards into the media store (/admin/og/capture); resolves to an error message, if any. */
 async function capture(query: string) {
@@ -283,11 +292,14 @@ function Card({
   const ogImage = meta.value?.["og:image"];
   const img = useOgImage(ogImage ? localPath(ogImage) : null, version + own);
   const issues = problems(meta.value, img.value);
-  // A width being tried: shown live in Gelica until Save writes it and captures the card.
+  // A width or flags being tried: shown live in Gelica until Save writes them and captures the card.
   const saved = page.titleWidth ?? null;
   const [draft, setDraft] = useState(saved);
-  const dirty = draft !== saved;
-  const draftParam = `&titleWidth=${draft ?? "auto"}`;
+  const [backdrop, setBackdrop] = useState(Boolean(page.flags?.backdrop));
+  const [dark, setDark] = useState(Boolean(page.flags?.dark));
+  const dirty = draft !== saved || backdrop !== Boolean(page.flags?.backdrop) || dark !== Boolean(page.flags?.dark);
+  const draftParam = `&titleWidth=${draft ?? "auto"}${page.flags ? `&backdrop=${+backdrop}&dark=${+dark}` : ""}`;
+  const { auto, max } = widths(page.image, page.illustration, backdrop);
   const cardUrl = `/admin/og/card?path=${encodeURIComponent(page.path)}`;
   const frameSrc = useSettled(cardUrl + draftParam);
 
@@ -349,7 +361,7 @@ function Card({
           {dirty ? (
             <>
               <CardFrame src={frameSrc} guides={guides} />
-              <p className="text-pink-ink">Unsaved width · Gelica, as Save will draw it</p>
+              <p className="text-pink-ink">Unsaved changes · Gelica, as Save will draw it</p>
             </>
           ) : (
             <>
@@ -363,19 +375,30 @@ function Card({
             </>
           )}
           {page.card && (
-            <TitleWidth
-              id={`og-width-${page.path}`}
-              value={draft}
-              auto={page.autoWidth}
-              max={page.maxWidth}
-              onChange={setDraft}
-            >
+            <TitleWidth id={`og-width-${page.path}`} value={draft} auto={auto} max={max} onChange={setDraft}>
               {dirty && (
-                <Chip on={false} onClick={() => setDraft(saved)}>
+                <Chip
+                  on={false}
+                  onClick={() => {
+                    setDraft(saved);
+                    setBackdrop(Boolean(page.flags?.backdrop));
+                    setDark(Boolean(page.flags?.dark));
+                  }}
+                >
                   Revert
                 </Chip>
               )}
             </TitleWidth>
+          )}
+          {page.card && page.flags && (
+            <Flags
+              id={`og-flags-${page.path}`}
+              image={page.image}
+              backdrop={backdrop}
+              dark={dark}
+              onBackdrop={setBackdrop}
+              onDark={setDark}
+            />
           )}
           {preview && meta.value && <LinkPreview meta={meta.value} src={img.value?.src} />}
         </div>
@@ -400,15 +423,18 @@ function Playground({
   const [illustration, setIllustration] = useState("puzzle-cube");
   const [image, setImage] = useState("");
   const [titleWidth, setTitleWidth] = useState<number | null>(null);
+  const [backdrop, setBackdrop] = useState(false);
+  const [dark, setDark] = useState(false);
   const [version, setVersion] = useState(0);
 
   // The card page leaves out unknown keys and scenes, so the default width does too.
   const hasImage = mediaKeys.includes(image);
-  const autoWidth = defaultTitleWidth(hasImage, !hasImage && scenes.includes(illustration));
-  const maxWidth = maxTitleWidth(hasImage);
+  const { auto: autoWidth, max: maxWidth } = widths(hasImage, scenes.includes(illustration), backdrop);
 
   const params = new URLSearchParams({ eyebrow, title, illustration, image });
   if (titleWidth !== null) params.set("titleWidth", String(Math.min(titleWidth, maxWidth)));
+  if (backdrop) params.set("backdrop", "1");
+  if (dark) params.set("dark", "1");
   const settled = useSettled(`/admin/og/card?${params}`);
 
   return (
@@ -468,6 +494,14 @@ function Playground({
               ))}
             </datalist>
           </Field>
+          <Flags
+            id="og-flags"
+            image={hasImage}
+            backdrop={backdrop}
+            dark={dark}
+            onBackdrop={setBackdrop}
+            onDark={setDark}
+          />
         </div>
         <div style={{ maxWidth: width }} className="flex w-full flex-col gap-2">
           <CardFrame key={version} src={settled} guides={guides} />
@@ -485,6 +519,64 @@ function OpenCard({ href }: { href: string }) {
     <a href={href} target="_blank" rel="noreferrer" className="text-muted hover:text-ink">
       Open card ↗
     </a>
+  );
+}
+
+/** Checkboxes for a card's backdrop (its image behind the title, so only with one) and dark mode (light text). */
+function Flags({
+  id,
+  image,
+  backdrop,
+  dark,
+  onBackdrop,
+  onDark,
+}: {
+  id: string;
+  image: boolean;
+  backdrop: boolean;
+  dark: boolean;
+  onBackdrop: (on: boolean) => void;
+  onDark: (on: boolean) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <Checkbox
+        id={`${id}-backdrop`}
+        label="Backdrop"
+        checked={backdrop && image}
+        disabled={!image}
+        onChange={onBackdrop}
+      />
+      <Checkbox id={`${id}-dark`} label="Dark mode" checked={dark} onChange={onDark} />
+    </div>
+  );
+}
+
+function Checkbox({
+  id,
+  label,
+  checked,
+  disabled = false,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  disabled?: boolean;
+  onChange: (on: boolean) => void;
+}) {
+  return (
+    <label htmlFor={id} className={cn("flex items-center gap-2", disabled ? "text-muted" : "cursor-pointer")}>
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className="accent-ink"
+      />
+      {label}
+    </label>
   );
 }
 

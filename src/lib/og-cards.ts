@@ -26,6 +26,8 @@ export type OgCard = {
   image?: Media;
   /** The image fills the card behind the text, as the network still does, instead of framed beside the title. */
   backdrop?: boolean;
+  /** Light text, for a dark backdrop. */
+  dark?: boolean;
   /** Its poster sits in the bottom-right corner (when there's no image). */
   illustration?: SceneName;
   /** A still of the /network animation fills the card. */
@@ -106,6 +108,7 @@ function content(path: string): OgCard | null {
       alt: `${note.meta.plainTitle} — Okayplus`,
       image: note.meta.image,
       backdrop: note.meta.ogBackdrop || undefined,
+      dark: note.meta.ogDarkMode || undefined,
     };
   return null;
 }
@@ -129,6 +132,7 @@ export function ogMediaKey(path: string, card: OgCard) {
         ...(card.image?.posterAt != null ? [card.image.poster] : []),
         // Only when set, so the cards saved before backdrops existed keep their keys.
         ...(card.backdrop ? ["backdrop"] : []),
+        ...(card.dark ? ["dark"] : []),
         // Only when tuned, so the cards saved before widths existed keep their keys.
         ...(card.titleWidth ? [card.titleWidth] : []),
       ]),

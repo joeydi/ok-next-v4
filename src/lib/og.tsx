@@ -85,6 +85,7 @@ export function backdropData({ image, network, backdrop }: Pick<OgCard, "image" 
  * An `image` (a video's poster) sits framed beside the title, or with `backdrop`, fills the
  * card behind it; SVGs are skipped. Without one, an `illustration` scene's poster sits in the
  * bottom-right corner. `network` fills the card with a still of the /network animation.
+ * `dark` sets the text light, for a dark backdrop.
  */
 export async function renderOg({
   eyebrow,
@@ -93,6 +94,7 @@ export async function renderOg({
   illustration,
   network,
   backdrop,
+  dark,
   titleWidth,
 }: Omit<OgCard, "alt">) {
   const [[hanken, mono], imageSrc, backdropSrc] = await Promise.all([
@@ -112,6 +114,9 @@ export async function renderOg({
     }
   }
   const column = titleWidth ?? defaultTitleWidth(Boolean(imageSrc), Boolean(poster));
+  // `dark` sets the text light: paper, with the labels a little dimmer (as OgCardHtml does).
+  const ink = dark ? "#F2ECE6" : "#1D1A17";
+  const muted = dark ? "rgba(242, 236, 230, 0.8)" : "#746759";
   // Beside an image the title gets a narrower column, so it steps down sooner.
   const size = imageSrc
     ? title.length > 48
@@ -135,8 +140,8 @@ export async function renderOg({
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 64,
-        background: "#F2ECE6",
-        color: "#1D1A17",
+        background: dark ? "#1D1A17" : "#F2ECE6",
+        color: ink,
         fontFamily: "Hanken",
       }}
     >
@@ -150,7 +155,7 @@ export async function renderOg({
       )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Logo width={150} height={35} style={{ color: "#FF4D6A" }} />
-        <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>
+        <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: muted }}>
           JOE DI STEFANO / DESIGNER + DEVELOPER
         </div>
       </div>
@@ -171,7 +176,7 @@ export async function renderOg({
               fontFamily: "Plex Mono",
               fontSize: 22,
               letterSpacing: "0.06em",
-              color: "#746759",
+              color: muted,
               whiteSpace: "nowrap",
             }}
           >
@@ -198,7 +203,7 @@ export async function renderOg({
               .map((pieces, i) => (
                 <div key={i} style={{ display: "flex", marginRight: size * 0.24 }}>
                   {pieces.map(({ text, pink }, j) => (
-                    <span key={j} style={{ color: pink ? "#FF4D6A" : "#1D1A17" }}>
+                    <span key={j} style={{ color: pink ? "#FF4D6A" : ink }}>
                       {text}
                     </span>
                   ))}

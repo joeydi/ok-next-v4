@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Accent } from "@/components/Accent";
 import { Logo } from "@/components/Logo";
 import { SITE } from "@/data/site";
+import { cn } from "@/lib/cn";
 import type { OgCard } from "@/lib/og-cards";
 import { defaultTitleWidth } from "@/lib/og-title";
 
@@ -33,7 +34,7 @@ export function OgCardHtml({
   backdropSrc,
   width,
 }: {
-  card: Pick<OgCard, "eyebrow" | "title">;
+  card: Pick<OgCard, "eyebrow" | "title" | "dark">;
   /** The title column's width (the card's titleWidth, or a slider's in /admin/og); unset, the default. */
   width?: number;
 } & OgCardAssets) {
@@ -54,6 +55,8 @@ export function OgCardHtml({
   // Title sizes are stops on the type scale, each with its heading leading and tracking
   // (the card is a fixed 1200px image, so px rather than the fluid text-fl-* sizes).
   // Gelica runs wider than Hanken, so it steps down a little sooner than renderOg's sizes.
+  // `dark` sets the text light: paper, with the labels a little dimmer (muted-light is too dark on a busy backdrop).
+  const muted = card.dark ? "text-sand" : "text-muted";
   const column = width ?? defaultTitleWidth(Boolean(imageSrc), Boolean(poster));
   const title = imageSrc
     ? card.title.length > 44
@@ -67,7 +70,10 @@ export function OgCardHtml({
     <div
       ref={ref}
       data-ready={ready || undefined}
-      className="fixed top-0 left-0 z-[100] flex h-[630px] w-[1200px] flex-col justify-between overflow-hidden bg-paper p-16 text-ink"
+      className={cn(
+        "fixed top-0 left-0 z-[100] flex h-[630px] w-[1200px] flex-col justify-between overflow-hidden p-16",
+        card.dark ? "bg-ink text-paper" : "bg-paper text-ink",
+      )}
     >
       {backdropSrc && (
         <img src={backdropSrc} width={1200} height={630} alt="" className="absolute inset-0 size-full object-cover" />
@@ -75,7 +81,7 @@ export function OgCardHtml({
 
       <div className="relative flex items-center justify-between">
         <Logo width={150} height={35} className="h-[35px] w-[150px] text-pink lg:h-[35px]" />
-        <div className="font-mono text-[20px] tracking-label text-muted uppercase">
+        <div className={cn("font-mono text-[20px] tracking-label uppercase", muted)}>
           {SITE.author} / {SITE.tagline}
         </div>
       </div>
@@ -88,7 +94,7 @@ export function OgCardHtml({
             ...(imageSrc ? { width: column } : { maxWidth: column }),
           }}
         >
-          <div className="flex gap-6 font-mono text-[22px] tracking-label whitespace-nowrap text-muted uppercase">
+          <div className={cn("flex gap-6 font-mono text-[22px] tracking-label whitespace-nowrap uppercase", muted)}>
             {card.eyebrow.split(/\s{2,}/).map((part, i) => (
               <span key={i}>{part}</span>
             ))}

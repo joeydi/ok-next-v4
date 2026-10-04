@@ -80,6 +80,7 @@ featured: true # optional — the one post shown large on /notes
 image: notes/foo/hero.jpg # optional — media key (see Media); striped placeholder until set
 imageLabel: image — Simple Creature homepage
 ogBackdrop: true # optional — the social card shows the image behind the title instead of framed beside it
+ogDarkMode: true # optional — light text on the social card, for a dark ogBackdrop image
 byline: Co-Founder, Simple Creature # optional (default "Designer + developer")
 tools: [CSS 3D transforms, GSAP ScrollTrigger]
 # Case studies can also set:

@@ -12,6 +12,7 @@ import { OgCardHtml } from "../OgCardHtml";
 // ?path=/notes/rigorous — a route's card
 // ?eyebrow=…&title=…&illustration=<scene>&image=<media key> — any card (the playground)
 // &titleWidth=<px>|auto — overrides the card's title width, for /admin/og's sliders
+// &backdrop=1|0&dark=1|0 — override the card's backdrop and dark mode, for its checkboxes
 
 export const metadata: Metadata = { title: "Open Graph card", robots: { index: false, follow: false } };
 
@@ -22,6 +23,8 @@ type Params = {
   illustration?: string;
   image?: string;
   titleWidth?: string;
+  backdrop?: string;
+  dark?: string;
 };
 
 /** A card from the playground's fields. Unknown scenes and media keys are left out. */
@@ -40,8 +43,13 @@ function adHoc(q: Params): Omit<OgCard, "alt"> {
 
 export default async function OgCardPage({ searchParams }: { searchParams: Promise<Params> }) {
   const q = await searchParams;
-  const card = q.path ? ogCard(q.path) : adHoc(q);
-  if (!card) notFound();
+  const base = q.path ? ogCard(q.path) : adHoc(q);
+  if (!base) notFound();
+  const card = {
+    ...base,
+    backdrop: q.backdrop ? q.backdrop === "1" : base.backdrop,
+    dark: q.dark ? q.dark === "1" : base.dark,
+  };
 
   const [imageSrc, backdropSrc] = await Promise.all([
     card.image && !card.backdrop ? imageData(card.image) : undefined,
@@ -53,7 +61,7 @@ export default async function OgCardPage({ searchParams }: { searchParams: Promi
       {/* The dev tools' badge would land in the screenshot and the playground's frame. */}
       <style>{"nextjs-portal { display: none; }"}</style>
       <OgCardHtml
-        card={{ eyebrow: card.eyebrow, title: card.title }}
+        card={{ eyebrow: card.eyebrow, title: card.title, dark: card.dark }}
         imageSrc={imageSrc}
         poster={poster}
         backdropSrc={backdropSrc}

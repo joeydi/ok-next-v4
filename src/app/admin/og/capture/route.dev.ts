@@ -1,5 +1,6 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { chromium } from "playwright-core";
+import { setNoteFlag } from "@/lib/notes";
 import { isOgKeyFor, ogCard, ogMediaKey, ogPaths, setTitleWidth } from "@/lib/og-cards";
 import {
   CACHE_CONTROL,
@@ -15,7 +16,8 @@ import {
 // media store as og/<name>-<hash>.png, adds it to media.json, and deletes the
 // route's older cards. ?path=/network for one, ?all=stale for every route whose
 // current card isn't saved. With a path, &titleWidth=<px>|auto first sets its title
-// width in og-title-widths.json.
+// width in og-title-widths.json, and for a note, &backdrop=1|0 and &dark=1|0 its
+// ogBackdrop and ogDarkMode frontmatter.
 
 export async function POST(request: Request) {
   if (process.env.NODE_ENV !== "development") return new Response("Not found", { status: 404 });
@@ -31,6 +33,14 @@ export async function POST(request: Request) {
   if (!paths) return Response.json({ error: `No card for ${path}` }, { status: 400 });
   const titleWidth = url.searchParams.get("titleWidth");
   if (path && titleWidth) setTitleWidth(path, Number(titleWidth) || undefined);
+  const slug = path?.startsWith("/notes/") ? path.slice("/notes/".length) : null;
+  for (const [param, key] of [
+    ["backdrop", "ogBackdrop"],
+    ["dark", "ogDarkMode"],
+  ] as const) {
+    const value = url.searchParams.get(param);
+    if (slug && value) setNoteFlag(slug, key, value === "1");
+  }
 
   const { s3, Bucket } = r2();
   const written: string[] = [];
