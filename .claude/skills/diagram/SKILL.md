@@ -14,6 +14,7 @@ A technique diagram shows how something in a note works: the page pulled apart i
   - `parts.tsx`: `Surface`, `FloorGrid`, `PlateHeader`, `Chip`, `HatchDef`.
   - `DiagramFigure.tsx`: the figure in a note, laid out and captioned like `<Figure>`, in the media frame.
   - `useLoop.ts`: the clock.
+  - `Jog.tsx`: the jog wheel along the bottom of the frame, which scrubs and throws the clock.
 - **The note's diagram**, `src/components/diagrams/<note-slug>/`: everything specific to it: the model (shapes, data, maths), any content components, and one `"use client"` component that composes the kit, `<Name>Diagram({ caption, time })`. Only that component is exported to the note.
 - **The note** imports it locally, under the frontmatter, and places it like a figure:
 
@@ -44,10 +45,11 @@ Settled on the first diagram. Keep to it unless the user asks otherwise, and the
 ## Motion
 
 - `useLoop(duration, { time })` runs the clock only near the viewport. Under reduced motion it holds the server-rendered frame (`still`, 0 by default), so make sure that frame explains the diagram. The lab passes `time` to pin it.
+- **Every diagram has a jog wheel**: pass `useLoop`'s third value, `jog`, to `DiagramFigure`. Along the bottom of the frame, the loop's time turns on a drum under a pink playhead. A drag scrubs it 1:1, a throw carries on and eases back to normal playback, a sideways touchpad swipe scrubs it with the system's momentum, and arrow keys step it. Under reduced motion it still scrubs, but a throw does nothing. It's centred at `@2xl`, with `14.5rem` either side, and nearly full width below that. So keep that strip free of anything the reader has to see. The lab pins the clock, so the wheel doesn't show there: try it on the note.
 - **Loops are seamless.** Make the geometry periodic (`bank()` in `poetry-in-motion/river.ts` is a sum of whole-period sines), and move things by whole periods, or whole blocks of repeated content, per loop.
 - **Run the real thing** where the technique is CSS: the poetry-in-motion diagram wraps its lines with a live `shape-outside` float, so the browser does the layout, as in the demo.
 - With overflow, **pad the content past the fade** (`FADE` plus any `register()` move), so the loop wraps where nothing is drawn. Fix the padding: if it changes with a control, the loop jumps.
-- **Let the reader drive it** where that shows the technique better than watching: the poetry-in-motion diagram has a "Draw a river" panel (`DrawRiver.tsx`) whose stroke becomes the float's bank. Put a control over the `Stack`, not inside its `Surface` (which is scaled, `aria-hidden` and ignores the pointer), in a positioned `@container` wrapper, framed with `.frame` on `paper-light`. Fold it into an icon button when the diagram is narrow, and make whatever it draws as periodic as the rest, so the loop still has no seam.
+- **Let the reader drive it** where that shows the technique better than watching: the poetry-in-motion diagram has a "Draw a river" panel (`DrawRiver.tsx`) whose stroke becomes the float's bank. Put a control over the `Stack`, not inside its `Surface` (which is scaled, `aria-hidden` and ignores the pointer), in a positioned `@container` wrapper, framed with `.frame` on `paper-light`. At `@2xl`, keep a side panel within the jog wheel's `14.5rem` inset. Fold it into an icon button when the diagram is narrow, and make whatever it draws as periodic as the rest, so the loop still has no seam.
 - Keep the motion to what the technique does. Effects the diagram doesn't need to explain (the demo's blur and scale, say) obscure the part it's about.
 
 ## Workflow

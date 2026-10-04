@@ -46,7 +46,7 @@ function fixed(j: number, t: number) {
 }
 
 export function RerenderDiagram({ caption, time }: { caption: string; time?: number }) {
-  const [ref, t] = useLoop<HTMLElement>(LOOP, { still: STILL, time });
+  const [ref, t, jog] = useLoop<HTMLElement>(LOOP, { still: STILL, time });
   const { fixing, cursor } = edit(t);
   const playing = Math.floor(t * FPS) % FRAMES;
   const done = Math.min(FPS, Math.max(0, Math.floor(cursor + 0.5)));
@@ -54,6 +54,7 @@ export function RerenderDiagram({ caption, time }: { caption: string; time?: num
   return (
     <DiagramFigure
       ref={ref}
+      jog={jog}
       caption={caption}
       description="The ball shot's code changes, and only that shot's eight frames are drawn again, one by one; the title and chart frames are left as they were. The preview beside it plays the frames on disk, so the fix appears in it frame by frame."
     >

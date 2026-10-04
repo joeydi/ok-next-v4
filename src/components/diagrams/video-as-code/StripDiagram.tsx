@@ -47,7 +47,7 @@ export function StripDiagram({
   /** The strip's nudge on screen (px), for the lab. */
   nudge?: [number, number];
 }) {
-  const [ref, t] = useLoop<HTMLElement>(LOOP, { still: STILL, time });
+  const [ref, t, jog] = useLoop<HTMLElement>(LOOP, { still: STILL, time });
   const hatch = useId();
   const { i, s } = capture(t, STEP, MOVE);
   const u = t / STEP; // steps into the loop
@@ -60,6 +60,7 @@ export function StripDiagram({
   return (
     <DiagramFigure
       ref={ref}
+      jog={jog}
       caption={caption}
       description="An exploded view of the capture: a clock and the scene the browser draws for it, both running steadily, and a film strip of empty frames stepping across the scene. Each frame stops over the scene, takes a screenshot of it as the scene reaches that frame's time, and slides on as the next empty frame arrives."
     >

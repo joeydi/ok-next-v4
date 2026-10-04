@@ -47,7 +47,7 @@ export function RiverDiagram({
   /** The poem's nudge on screen (px), for the lab. */
   nudge?: [number, number];
 }) {
-  const [ref, t] = useLoop<HTMLElement>(LOOP, { time });
+  const [ref, t, jog] = useLoop<HTMLElement>(LOOP, { time });
   const hatch = useId();
   const [bank, setBank, target] = useBankMorph(river0);
   const path = shapePath(FW, PERIODS * P, PERIODS, bank);
@@ -59,6 +59,7 @@ export function RiverDiagram({
   return (
     <DiagramFigure
       ref={ref}
+      jog={jog}
       caption={caption}
       description="An exploded view of the page: a background layer, the invisible river-shaped float above it, and the poem's lines above that. As the float slides up, every line shifts sideways to follow the river's bank. A panel beside it lets you draw a new bank, and the lines follow that instead."
     >
