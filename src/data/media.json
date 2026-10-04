@@ -1146,14 +1146,14 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-video-as-code-a8c7bd90.png": {
+  "og/notes-video-as-code-a933f813.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 392970,
-    "etag": "d0504a1b0a35116684323468310476f9",
-    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADQAQCdASoQAAgAA4BaJbACdAEDDv/AOAD7HVU5qIOl3avXq3EjTC0lC6eqWbTbT0Mix+D+d20/CppPdR3flbFWYix0jdgHeQAAAA==",
-    "color": "#383868",
+    "bytes": 490153,
+    "etag": "d18dc8a8635dd47c5d3755f338cf9fa0",
+    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAwAgCdASoQAAgAA4BaJbACdAYs3a1sPd9DQAD2b9Ik42uxdjaXGs5CEf02EMZsvNUicbI2m6PIfU4dgB1uFAh8yBlrSd/Z5enNmB2TaHPGuy86wwY1+iBAAAA=",
+    "color": "#281848",
     "alt": "Video, made of code — Okayplus",
     "caption": "",
     "context": "Open Graph card for /notes/video-as-code",
