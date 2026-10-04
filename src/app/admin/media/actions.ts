@@ -14,6 +14,7 @@ import {
   moveMedia,
   r2,
   readManifest,
+  setPosterTime,
   syncMedia,
   updateManifest,
 } from "../../../../scripts/media.mjs";
@@ -54,6 +55,12 @@ export async function setVideoAudio(key: string, audio: "keep" | "remove") {
     const { errors } = await syncMedia({ keys: [key], reencode: true, log: () => {} });
     if (errors.length) throw new Error(errors[0].error);
   }
+}
+
+/** Makes the frame `at` seconds into a video its poster, or with null, the default frame. */
+export async function setVideoPoster(key: string, at: number | null) {
+  assertDev();
+  await setPosterTime(key, at);
 }
 
 const slugName = (name: string) =>
@@ -235,7 +242,7 @@ export async function generateAlt(key: string, context: string) {
   const usedIn = scanUsage([key]).usage[key];
   const notes = usedIn.filter((u) => u.title).map((u) => `- "${u.title}"${u.description ? ` — ${u.description}` : ""}`);
   const prompt = [
-    entry.type === "video" ? "This is the first frame of a short video; describe the video." : null,
+    entry.type === "video" ? "This is the poster frame of a short video; describe the video." : null,
     context.trim() ? `Context from the author:\n${context.trim()}` : null,
     notes.length ? `It appears in:\n${notes.join("\n")}` : null,
     `File: ${key}`,

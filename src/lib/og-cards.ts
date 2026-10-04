@@ -125,6 +125,8 @@ export function ogMediaKey(path: string, card: OgCard) {
         card.image?.key,
         card.illustration,
         Boolean(card.network),
+        // A video's poster, only when its frame was chosen in the admin, so other cards keep their keys.
+        ...(card.image?.posterAt != null ? [card.image.poster] : []),
         // Only when set, so the cards saved before backdrops existed keep their keys.
         ...(card.backdrop ? ["backdrop"] : []),
         // Only when tuned, so the cards saved before widths existed keep their keys.

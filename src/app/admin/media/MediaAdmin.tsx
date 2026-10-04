@@ -14,6 +14,7 @@ import {
   replaceEntry,
   saveEntry,
   setVideoAudio,
+  setVideoPoster,
   syncBucket,
 } from "./actions";
 import type { BrokenRef, Usage } from "./usage";
@@ -27,6 +28,7 @@ export type AdminItem = {
   duration?: number;
   hasAudio?: boolean;
   poster?: string;
+  posterAt?: number | null;
   encode?: string;
   original?: string;
   audio?: "keep" | "remove" | null;
@@ -100,6 +102,7 @@ const btn =
   "mono-label border border-ink px-3 py-2 text-fl-12 transition-colors hover:bg-ink hover:text-paper disabled:pointer-events-none disabled:opacity-40";
 const field = "w-full border border-rule bg-paper-light px-3 py-2 text-fl-14 focus:border-ink focus:outline-none";
 
+const secs = (t: number) => `${Number(t.toFixed(2))}s`;
 const kb = (n: number) => (n > 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.round(n / 1e3)} KB`);
 const inUse = (n: number) => `${n} file${n > 1 ? "s" : ""}`;
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
@@ -957,6 +960,8 @@ function Detail({
   const [context, setContext] = useState(item.context);
   const [status, setStatus] = useState(notice);
   const [busy, startTransition] = useTransition();
+  // Where the preview video is, for choosing the poster frame.
+  const [frame, setFrame] = useState(0);
 
   const act = (fn: () => Promise<string>) =>
     startTransition(async () => {
@@ -974,6 +979,13 @@ function Detail({
       setStatus(reencode ? "Re-encoding from the original…" : "Saving…");
       await setVideoAudio(item.key, audio);
       return audio === "remove" ? "Sound removed. It now loops silently." : "Sound kept. It plays with controls.";
+    });
+
+  const choosePoster = (at: number | null) =>
+    act(async () => {
+      setStatus("Making the poster…");
+      await setVideoPoster(item.key, at);
+      return at == null ? "Poster back to the default frame." : `Poster set to the frame at ${secs(at)}.`;
     });
 
   const move = async () => {
@@ -1128,6 +1140,8 @@ function Detail({
                 <video
                   src={mediaUrl(item.key)}
                   poster={item.poster ? mediaUrl(item.poster) : undefined}
+                  onTimeUpdate={(e) => setFrame(e.currentTarget.currentTime)}
+                  onSeeked={(e) => setFrame(e.currentTarget.currentTime)}
                   controls
                   playsInline
                   preload="none"
@@ -1209,6 +1223,38 @@ function Detail({
               ) : (
                 <button type="button" className={btn} disabled={busy} onClick={() => chooseAudio("keep")}>
                   Restore sound
+                </button>
+              )}
+            </div>
+          </Section>
+        )}
+
+        {item.type === "video" && (
+          <Section title="Poster">
+            <div className="flex items-start gap-fl-16">
+              <span
+                className="relative block aspect-video w-40 shrink-0 overflow-hidden bg-sand"
+                style={{ backgroundColor: item.color }}
+              >
+                {host && item.poster && (
+                  <MediaImage src={item.poster} alt="" fill sizes="160px" className="object-cover" />
+                )}
+              </span>
+              <p className="text-fl-14 text-body">
+                {item.posterAt != null
+                  ? `The frame at ${secs(item.posterAt)}, chosen here.`
+                  : `The frame at ${secs((item.duration ?? 0) > 1 ? 0.5 : 0)}, the default.`}{" "}
+                Shown before the video plays, and on social cards. To change it, play or scrub the video above to the
+                frame you want.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className={btn} disabled={busy} onClick={() => choosePoster(frame)}>
+                Use the frame at {secs(frame)}
+              </button>
+              {item.posterAt != null && (
+                <button type="button" className={btn} disabled={busy} onClick={() => choosePoster(null)}>
+                  Back to the default
                 </button>
               )}
             </div>

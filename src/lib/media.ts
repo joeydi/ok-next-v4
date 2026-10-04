@@ -16,6 +16,8 @@ type Entry = {
   duration?: number;
   hasAudio?: boolean;
   poster?: string;
+  /** Video only: the poster frame's time (s), chosen in the admin; null for the default, half a second in. */
+  posterAt?: number | null;
   /** Video only: VIDEO_PRESET version it was encoded with, and where the upload is kept. */
   encode?: string;
   original?: string;
@@ -33,7 +35,7 @@ type Entry = {
 /** What a component needs to render one asset. */
 export type Media = Pick<
   Entry,
-  "type" | "width" | "height" | "alt" | "caption" | "blurDataURL" | "color" | "poster" | "hasAudio"
+  "type" | "width" | "height" | "alt" | "caption" | "blurDataURL" | "color" | "poster" | "posterAt" | "hasAudio"
 > & {
   key: string;
 };
@@ -44,6 +46,6 @@ const entries = manifest as unknown as Record<string, Entry>;
 export function getMedia(key: string): Media {
   const e = entries[key];
   if (!e) throw new Error(`media: unknown key "${key}" — upload it to R2 and run \`npm run media\``);
-  const { type, width, height, alt, caption, blurDataURL, color, poster, hasAudio } = e;
-  return { key, type, width, height, alt, caption, blurDataURL, color, poster, hasAudio };
+  const { type, width, height, alt, caption, blurDataURL, color, poster, posterAt, hasAudio } = e;
+  return { key, type, width, height, alt, caption, blurDataURL, color, poster, posterAt, hasAudio };
 }

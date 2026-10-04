@@ -8,7 +8,8 @@
 // New videos are re-encoded to VIDEO_PRESET with ffmpeg: the upload is kept at
 // _originals/<key>, and the encode replaces it as <key>.mp4. A real audio track is
 // kept until someone chooses to remove it in the admin; silent tracks are dropped.
-// Video posters are extracted from the encode and uploaded to _posters/<key>.jpg.
+// Video posters are extracted from the encode (half a second in, or at a time chosen
+// in the admin) and uploaded to _posters/<key>.jpg.
 //
 // A replacement is uploaded under a new key and synced with `inherit`, so it takes
 // over the old entry's hand-written fields (flagged for review); the admin then
@@ -71,7 +72,12 @@ export function mediaType(key) {
   return Object.keys(TYPES).find((t) => TYPES[t].includes(ext));
 }
 
-export const posterKey = (key) => `${POSTERS}${key.replace(/\.[^.]+$/, "")}.jpg`;
+/**
+ * Where a video's poster is kept. A frame chosen in the admin (`at`, seconds) gets a
+ * key of its own, `<key>-<ms>ms.jpg`, since posters are cached for a year.
+ */
+export const posterKey = (key, at) =>
+  `${POSTERS}${key.replace(/\.[^.]+$/, "")}${at == null ? "" : `-${Math.round(at * 1000)}ms`}.jpg`;
 
 // ── R2 ────────────────────────────────────────────────────────────────────────
 
@@ -140,9 +146,10 @@ export function updateManifest(fn) {
 }
 
 // Written by people (or drafted by Claude in the admin); sync carries them over.
-// `audio` is the keep/remove choice for a video's sound (null until someone decides).
+// `audio` is the keep/remove choice for a video's sound (null until someone decides), and
+// `posterAt` the time of its poster frame (null for the default, half a second in).
 const HUMAN = { alt: "", caption: "", context: "", altSource: null, reviewed: false };
-const HUMAN_VIDEO = { ...HUMAN, audio: null };
+const HUMAN_VIDEO = { ...HUMAN, audio: null, posterAt: null };
 
 function merge(prev, facts, { reencoded = false } = {}) {
   const defaults = facts.type === "video" ? HUMAN_VIDEO : HUMAN;
@@ -246,8 +253,31 @@ async function encodeVideo(src, out, { removeAudio }) {
   return keepAudio;
 }
 
-/** Dimensions, duration and a poster (uploaded to _posters/) for an encoded video file. */
-async function readVideo(file, key) {
+/**
+ * Makes the frame `at` seconds into an encoded video file its poster (half a second in when
+ * `at` is null), uploads it to _posters/, and returns its key and the facts read from it.
+ */
+async function makePoster(file, key, at, duration) {
+  const poster = `${file}.poster.jpg`;
+  const t = at ?? (duration > 1 ? 0.5 : 0);
+  await execFile("ffmpeg", ["-v", "error", "-ss", String(t), "-i", file, "-frames:v", "1", "-q:v", "3", "-y", poster]);
+  const posterBuf = readFileSync(poster);
+  const { s3, Bucket } = r2();
+  await s3.send(
+    new PutObjectCommand({
+      Bucket,
+      Key: posterKey(key, at),
+      Body: posterBuf,
+      ContentType: "image/jpeg",
+      CacheControl: CACHE_CONTROL,
+    }),
+  );
+  const { blurDataURL, color } = await imageFacts(posterBuf);
+  return { poster: posterKey(key, at), blurDataURL, color };
+}
+
+/** Dimensions, duration and a poster (uploaded to _posters/, at `posterAt` if chosen) for an encoded video file. */
+async function readVideo(file, key, posterAt) {
   const probe = await ffprobe(file);
   const video = probe.streams.find((s) => s.codec_type === "video");
   if (!video) throw new Error("no video stream");
@@ -256,29 +286,14 @@ async function readVideo(file, key) {
   );
   const sideways = rotation === 90 || rotation === 270;
   const duration = Math.round(Number(probe.format.duration) * 10) / 10;
-
-  const poster = `${file}.poster.jpg`;
-  const at = duration > 1 ? "0.5" : "0";
-  await execFile("ffmpeg", ["-v", "error", "-ss", at, "-i", file, "-frames:v", "1", "-q:v", "3", "-y", poster]);
-  const posterBuf = readFileSync(poster);
-  const { s3, Bucket } = r2();
-  await s3.send(
-    new PutObjectCommand({
-      Bucket,
-      Key: posterKey(key),
-      Body: posterBuf,
-      ContentType: "image/jpeg",
-      CacheControl: CACHE_CONTROL,
-    }),
-  );
-  const { blurDataURL, color } = await imageFacts(posterBuf);
+  const { poster, blurDataURL, color } = await makePoster(file, key, posterAt, duration);
 
   return {
     width: sideways ? video.height : video.width,
     height: sideways ? video.width : video.height,
     duration,
     hasAudio: probe.streams.some((s) => s.codec_type === "audio"),
-    poster: posterKey(key),
+    poster,
     blurDataURL,
     color,
   };
@@ -301,7 +316,7 @@ async function processVideo(o, prev, { reencode, log }) {
     if (meta["okay-encode"] === VIDEO_PRESET.version && !reencode) {
       const file = path.join(dir, "video.mp4");
       await downloadTo(o.key, file);
-      const facts = await readVideo(file, o.key);
+      const facts = await readVideo(file, o.key, prev?.posterAt);
       return { key: o.key, facts: { ...facts, encode: VIDEO_PRESET.version, original: meta["okay-original"] } };
     }
 
@@ -334,7 +349,7 @@ async function processVideo(o, prev, { reencode, log }) {
     if (key !== o.key) await s3.send(new DeleteObjectCommand({ Bucket, Key: o.key }));
     log(`  encoded ${o.key}${key !== o.key ? ` → ${key}` : ""} (${mb(o.bytes)} → ${mb(body.length)})`);
 
-    const facts = await readVideo(out, key);
+    const facts = await readVideo(out, key, prev?.posterAt);
     return {
       key,
       facts: {
@@ -394,7 +409,7 @@ export async function moveMedia(from, to) {
   const del = (key) => s3.send(new DeleteObjectCommand({ Bucket, Key: key }));
 
   const original = e.original && `${ORIGINALS}${to.replace(/\.[^.]+$/, "")}${path.extname(e.original)}`;
-  const poster = e.poster && posterKey(to);
+  const poster = e.poster && posterKey(to, e.posterAt);
   if (original) await copy(e.original, original);
   if (poster) await copy(e.poster, poster);
   // Replace the metadata so a video's okay-original points at the moved original.
@@ -419,6 +434,35 @@ export async function moveMedia(from, to) {
     };
     delete m[from];
   });
+}
+
+// ── Poster ────────────────────────────────────────────────────────────────────
+
+/**
+ * Makes the frame `at` seconds into a video its poster, or with null, goes back to the
+ * default (half a second in). The old poster is deleted once the manifest points at the new one.
+ */
+export async function setPosterTime(key, at) {
+  const e = readManifest()[key];
+  if (e?.type !== "video") throw new Error(`media: ${key} isn't a video`);
+  // To the millisecond (the poster's key is in ms), and inside the video.
+  const t = at == null ? null : Math.round(Math.min(Math.max(0, at), Math.max(0, e.duration - 0.05)) * 1000) / 1000;
+  await checkFfmpeg();
+  const dir = mkdtempSync(path.join(tmpdir(), "okay-media-"));
+  try {
+    const file = path.join(dir, "video.mp4");
+    await downloadTo(key, file);
+    const facts = await makePoster(file, key, t, e.duration);
+    updateManifest((m) => {
+      Object.assign(m[key], facts, { posterAt: t });
+    });
+    if (e.poster && e.poster !== facts.poster) {
+      const { s3, Bucket } = r2();
+      await s3.send(new DeleteObjectCommand({ Bucket, Key: e.poster }));
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 // ── Delete ────────────────────────────────────────────────────────────────────
