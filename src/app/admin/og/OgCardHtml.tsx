@@ -11,8 +11,8 @@ export type OgCardAssets = {
   /** Data URIs from og.tsx's imageData / posterData, so both versions draw the same pictures. */
   imageSrc?: string;
   poster?: { src: string; width: number; height: number };
-  /** The network still, an SVG document at the card's size. */
-  backdrop?: string;
+  /** What fills the card behind its text (og.tsx's backdropData): the network still or the image. */
+  backdropSrc?: string;
 };
 
 const TITLE = {
@@ -30,7 +30,7 @@ export function OgCardHtml({
   card,
   imageSrc,
   poster,
-  backdrop,
+  backdropSrc,
   width,
 }: {
   card: Pick<OgCard, "eyebrow" | "title">;
@@ -69,14 +69,8 @@ export function OgCardHtml({
       data-ready={ready || undefined}
       className="fixed top-0 left-0 z-[100] flex h-[630px] w-[1200px] flex-col justify-between overflow-hidden bg-paper p-16 text-ink"
     >
-      {backdrop && (
-        <img
-          src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(backdrop)}`}
-          width={1200}
-          height={630}
-          alt=""
-          className="absolute inset-0"
-        />
+      {backdropSrc && (
+        <img src={backdropSrc} width={1200} height={630} alt="" className="absolute inset-0 size-full object-cover" />
       )}
 
       <div className="relative flex items-center justify-between">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SCENES, type SceneName } from "@/components/illustrations/gl/scenes";
 import { getMedia } from "@/lib/media";
-import { imageData, networkBackdrop, posterData } from "@/lib/og";
+import { backdropData, imageData, posterData } from "@/lib/og";
 import { type OgCard, ogCard } from "@/lib/og-cards";
 import { OgCardHtml } from "../OgCardHtml";
 
@@ -43,7 +43,10 @@ export default async function OgCardPage({ searchParams }: { searchParams: Promi
   const card = q.path ? ogCard(q.path) : adHoc(q);
   if (!card) notFound();
 
-  const imageSrc = card.image && (await imageData(card.image));
+  const [imageSrc, backdropSrc] = await Promise.all([
+    card.image && !card.backdrop ? imageData(card.image) : undefined,
+    backdropData(card),
+  ]);
   const poster = !imageSrc && card.illustration ? await posterData(card.illustration) : undefined;
   return (
     <>
@@ -53,7 +56,7 @@ export default async function OgCardPage({ searchParams }: { searchParams: Promi
         card={{ eyebrow: card.eyebrow, title: card.title }}
         imageSrc={imageSrc}
         poster={poster}
-        backdrop={card.network ? networkBackdrop() : undefined}
+        backdropSrc={backdropSrc}
         width={q.titleWidth ? Number(q.titleWidth) || undefined : card.titleWidth}
       />
     </>

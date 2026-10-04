@@ -40,10 +40,10 @@ export default function OgAdminPage() {
     if (keys.includes(ogMediaKey(path, card))) return "saved";
     return keys.some((k) => isOgKeyFor(path, k)) ? "stale" : "missing";
   };
-  // Its title width and the slider's range, as og.tsx lays the card out: SVG images are left out.
+  // Its title width and the slider's range, as og.tsx lays the card out: SVG images and backdrops are left out.
   const titleWidths = (path: string): Pick<OgPage, "titleWidth" | "autoWidth" | "maxWidth"> => {
     const card = ogCard(path);
-    const image = card?.image?.type === "image" || card?.image?.type === "video";
+    const image = !card?.backdrop && (card?.image?.type === "image" || card?.image?.type === "video");
     return {
       titleWidth: card?.titleWidth,
       autoWidth: defaultTitleWidth(image, !image && Boolean(card?.illustration)),

@@ -26,14 +26,12 @@ const fonts = Promise.all([
 // The framed image beside the title, at 16:9.
 const FRAME = { width: 520, height: 293 };
 
-/** The asset (a video's poster) as a JPEG data URI, since satori can't read AVIF/WebP or SVG. */
-export async function imageData(media: Media) {
+/** The asset (a video's poster) as a JPEG data URI `width` px wide, since satori can't read AVIF/WebP or SVG. */
+export async function imageData(media: Media, width = FRAME.width * 2) {
   const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
   if (!key) return undefined;
   // A network hiccup at build time costs the image, not the deploy: the card goes without it.
-  const res = await fetch(mediaImageUrl(key, { width: FRAME.width * 2, quality: 85, format: "jpeg" })).catch(
-    () => null,
-  );
+  const res = await fetch(mediaImageUrl(key, { width, quality: 85, format: "jpeg" })).catch(() => null);
   if (!res?.ok) {
     console.warn(`og: couldn't fetch ${key} (${res?.status ?? "network error"}); leaving it out`);
     return undefined;
@@ -70,22 +68,37 @@ const NETWORK_AVOID: Rect[] = [
 export const networkBackdrop = () => networkSvg({ ...OG_SIZE, avoid: NETWORK_AVOID, color: "#FF4D6A" });
 
 /** An SVG drawing as a PNG data URI at the card's size, since satori can't read SVG. */
-async function backdropData(svg: string) {
+async function svgData(svg: string) {
   const data = await sharp(Buffer.from(svg)).resize(OG_SIZE.width, OG_SIZE.height).png().toBuffer();
   return `data:image/png;base64,${data.toString("base64")}`;
 }
 
+/** What fills the card behind its text, if anything: the network still, or with `backdrop`, the image. */
+export function backdropData({ image, network, backdrop }: Pick<OgCard, "image" | "network" | "backdrop">) {
+  if (network) return svgData(networkBackdrop());
+  if (backdrop && image) return imageData(image, OG_SIZE.width * 2);
+  return undefined;
+}
+
 /**
  * `title` may contain *starred* words, rendered in pink. Separate eyebrow parts with two spaces.
- * An `image` (a video's poster) sits framed beside the title; SVGs are skipped. Without one, an
- * `illustration` scene's poster sits in the bottom-right corner. `network` fills the card
- * with a still of the /network animation.
+ * An `image` (a video's poster) sits framed beside the title, or with `backdrop`, fills the
+ * card behind it; SVGs are skipped. Without one, an `illustration` scene's poster sits in the
+ * bottom-right corner. `network` fills the card with a still of the /network animation.
  */
-export async function renderOg({ eyebrow, title, image, illustration, network, titleWidth }: Omit<OgCard, "alt">) {
+export async function renderOg({
+  eyebrow,
+  title,
+  image,
+  illustration,
+  network,
+  backdrop,
+  titleWidth,
+}: Omit<OgCard, "alt">) {
   const [[hanken, mono], imageSrc, backdropSrc] = await Promise.all([
     fonts,
-    image && imageData(image),
-    network && backdropData(networkBackdrop()),
+    image && !backdrop ? imageData(image) : undefined,
+    backdropData({ image, network, backdrop }),
   ]);
   const poster = !imageSrc && illustration ? await posterData(illustration) : undefined;
   // Words break only at spaces, so a star mid-word ("Notes*.*") colours part of it
@@ -127,7 +140,14 @@ export async function renderOg({ eyebrow, title, image, illustration, network, t
         fontFamily: "Hanken",
       }}
     >
-      {backdropSrc && <img src={backdropSrc} {...OG_SIZE} alt="" style={{ position: "absolute", left: 0, top: 0 }} />}
+      {backdropSrc && (
+        <img
+          src={backdropSrc}
+          {...OG_SIZE}
+          alt=""
+          style={{ position: "absolute", left: 0, top: 0, objectFit: "cover" }}
+        />
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Logo width={150} height={35} style={{ color: "#FF4D6A" }} />
         <div style={{ fontFamily: "Plex Mono", fontSize: 20, letterSpacing: "0.06em", color: "#746759" }}>

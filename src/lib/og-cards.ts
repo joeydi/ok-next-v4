@@ -22,8 +22,10 @@ export type OgCard = {
   /** *Starred* words render pink. */
   title: string;
   alt: string;
-  /** Framed beside the title. */
+  /** Framed beside the title, or with `backdrop`, filling the card behind it. */
   image?: Media;
+  /** The image fills the card behind the text, as the network still does, instead of framed beside the title. */
+  backdrop?: boolean;
   /** Its poster sits in the bottom-right corner (when there's no image). */
   illustration?: SceneName;
   /** A still of the /network animation fills the card. */
@@ -103,6 +105,7 @@ function content(path: string): OgCard | null {
       title: note.meta.title,
       alt: `${note.meta.plainTitle} — Okayplus`,
       image: note.meta.image,
+      backdrop: note.meta.ogBackdrop || undefined,
     };
   return null;
 }
@@ -122,6 +125,8 @@ export function ogMediaKey(path: string, card: OgCard) {
         card.image?.key,
         card.illustration,
         Boolean(card.network),
+        // Only when set, so the cards saved before backdrops existed keep their keys.
+        ...(card.backdrop ? ["backdrop"] : []),
         // Only when tuned, so the cards saved before widths existed keep their keys.
         ...(card.titleWidth ? [card.titleWidth] : []),
       ]),

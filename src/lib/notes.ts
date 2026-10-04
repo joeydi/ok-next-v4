@@ -36,6 +36,8 @@ export type NoteMeta = {
   image?: Media;
   /** Placeholder label shown until `image` exists. */
   imageLabel: string;
+  /** The social card shows `image` behind the title, filling the card, instead of framed beside it. */
+  ogBackdrop: boolean;
   featured: boolean;
   draft: boolean;
   byline: string;
@@ -80,6 +82,7 @@ function parse(file: string) {
     topic: data.topic,
     image,
     imageLabel: data.imageLabel ?? `image — ${stripAccent(String(data.title))}`,
+    ogBackdrop: Boolean(data.ogBackdrop),
     featured: Boolean(data.featured),
     draft: Boolean(data.draft),
     byline: data.byline ?? "Designer + developer",
