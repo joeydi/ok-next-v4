@@ -785,7 +785,7 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
       // React passes `close` up the component tree, so ignore the confirm dialogs inside.
       onClose={(e) => e.target === e.currentTarget && !unmounting.current && onClose()}
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-full max-w-[min(34rem,100vw)] border-0 border-l border-rule bg-paper p-0 text-ink shadow-[-24px_0_48px_rgb(28_25_22/0.12)] transition-transform duration-300 ease-out backdrop:bg-ink/40 starting:translate-x-full motion-reduce:transition-none"
+      className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-full max-w-[min(34rem,100vw)] border-0 border-l border-rule bg-paper p-0 text-ink shadow-[-24px_0_48px_color-mix(in_srgb,var(--color-ink)_12%,transparent)] transition-transform duration-300 ease-out backdrop:bg-ink/40 starting:translate-x-full motion-reduce:transition-none"
     >
       <div className="flex h-full flex-col">
         <header className="flex items-center justify-between border-b border-rule bg-paper-raised px-fl-24 py-fl-16">
@@ -862,7 +862,7 @@ function ConfirmDialog({
       aria-labelledby={titleId}
       onClose={(e) => e.target === e.currentTarget && onAnswer(e.currentTarget.returnValue === "ok")}
       onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}
-      className="m-auto w-full max-w-[min(30rem,calc(100vw-2rem))] border border-rule bg-paper p-0 text-ink shadow-[0_24px_48px_rgb(28_25_22/0.18)] transition-[opacity,translate] duration-200 ease-out backdrop:bg-ink/40 starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none"
+      className="m-auto w-full max-w-[min(30rem,calc(100vw-2rem))] border border-rule bg-paper p-0 text-ink shadow-[0_24px_48px_color-mix(in_srgb,var(--color-ink)_18%,transparent)] transition-[opacity,translate] duration-200 ease-out backdrop:bg-ink/40 starting:translate-y-2 starting:opacity-0 motion-reduce:transition-none"
     >
       <form method="dialog">
         <div className="flex flex-col gap-fl-16 px-fl-24 py-fl-24">

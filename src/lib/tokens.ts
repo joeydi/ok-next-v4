@@ -25,8 +25,11 @@ function declarations(prefix: string, file = CSS): Map<string, string> {
 
 export type ColorToken = {
   name: string;
+  /** Where its hue comes from: "neutral", the ramp from --hue-neutral-cool to -warm, or a --hue-* token's name. */
+  family: string;
+  /** Its value in sRGB, rounded to a hex, for copying and contrast. */
   hex: string;
-  /** HSL: hue in degrees, saturation and lightness in percent. */
+  /** HSL as globals.css sets it: hue in degrees, saturation and lightness in percent. */
   h: number;
   s: number;
   l: number;
@@ -37,20 +40,46 @@ export type ColorToken = {
 
 const rgbOf = (hex: string) => [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255);
 
-function hslOf(hex: string) {
-  const [r, g, b] = rgbOf(hex);
-  const mx = Math.max(r, g, b);
-  const mn = Math.min(r, g, b);
-  const d = mx - mn;
-  const l = (mx + mn) / 2;
-  const s = d ? d / (1 - Math.abs(2 * l - 1)) : 0;
-  let h = 0;
-  if (d) {
-    h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
-    h *= 60;
-    if (h < 0) h += 360;
-  }
-  return { h, s: s * 100, l: l * 100 };
+/** CSS's hsl() to sRGB, as a hex. */
+function hexOfHsl(h: number, s: number, l: number) {
+  const a = (s / 100) * Math.min(l / 100, 1 - l / 100);
+  const channel = (n: number) => {
+    const k = (n + h / 30) % 12;
+    return l / 100 - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+  return `#${[0, 8, 4]
+    .map((n) =>
+      Math.round(channel(n) * 255)
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+/** Every --hue-* token, in degrees: the hues the palette is built on. */
+export function hues(): Record<string, number> {
+  return Object.fromEntries(
+    [...declarations("hue")].map(([name, value]) => {
+      const n = Number(value);
+      if (Number.isNaN(n)) throw new Error(`tokens: --hue-${name} isn't a plain number of degrees (${value})`);
+      return [name, n];
+    }),
+  );
+}
+
+/** A hue in [0, 360). */
+const wrap = (h: number) => ((h % 360) + 360) % 360;
+
+/**
+ * The neutrals' hue ramp: --hue-neutral-cool at lightness 0, turning by --neutral-hue-span
+ * (the shorter way to --hue-neutral-warm, as globals.css works it out) to reach warm at 100.
+ */
+export function neutralRamp() {
+  const { "neutral-cool": cool, "neutral-warm": warm } = hues();
+  if (cool === undefined || warm === undefined)
+    throw new Error("tokens: --hue-neutral-cool and --hue-neutral-warm must both be defined");
+  const span = wrap(warm - cool + 180) - 180;
+  return { cool, warm, span, at: (l: number) => wrap(cool + (span * l) / 100) };
 }
 
 const luminance = (hex: string) => {
@@ -66,18 +95,36 @@ export function contrast(a: string, b: string) {
 
 /** Every --color-* token, in the order globals.css lists them. */
 export function colors(): ColorToken[] {
-  const all = declarations("color");
-  const hex = (name: string) => {
-    const v = all.get(name);
-    if (!v || !/^#[0-9a-f]{6}$/i.test(v)) throw new Error(`tokens: --color-${name} isn't a 6-digit hex (${v})`);
-    return v.toLowerCase();
-  };
-  const paper = hex("paper");
-  const ink = hex("ink");
-  return [...all.keys()].map((name) => {
-    const h = hex(name);
-    return { name, hex: h, ...hslOf(h), onPaper: contrast(h, paper), onInk: contrast(h, ink) };
+  const degrees = hues();
+  const ramp = neutralRamp();
+  const all = [...declarations("color")].map(([name, value]) => {
+    // A neutral: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * L/100) S% L%).
+    const neutral = value.match(
+      /^hsl\(calc\(var\(--hue-neutral-cool\) \+ var\(--neutral-hue-span\) \* ([\d.]+)\)\s+([\d.]+)%\s+([\d.]+)%\)$/,
+    );
+    if (neutral) {
+      const [t, s, l] = neutral.slice(1).map(Number);
+      if (Math.abs(t * 100 - l) > 1e-9)
+        throw new Error(`tokens: --color-${name} turns the hue by ${t} of the span, but its lightness is ${l}%`);
+      const h = ramp.at(l);
+      return { name, family: "neutral", hex: hexOfHsl(h, s, l), h, s, l };
+    }
+    // Anything else: hsl(var(--hue-…) S% L%).
+    const m = value.match(/^hsl\(var\(--hue-([a-z0-9-]+)\)\s+([\d.]+)%\s+([\d.]+)%\)$/);
+    if (!m)
+      throw new Error(`tokens: --color-${name} isn't a neutral on the ramp or hsl(var(--hue-…) S% L%) (${value})`);
+    const h = degrees[m[1]];
+    if (h === undefined) throw new Error(`tokens: --color-${name} reads --hue-${m[1]}, which isn't defined`);
+    const [s, l] = [Number(m[2]), Number(m[3])];
+    return { name, family: m[1], hex: hexOfHsl(wrap(h), s, l), h: wrap(h), s, l };
   });
+  const hex = (name: string) => {
+    const found = all.find((t) => t.name === name);
+    if (!found) throw new Error(`tokens: no --color-${name} in globals.css`);
+    return found.hex;
+  };
+  const [paper, ink] = [hex("paper"), hex("ink")];
+  return all.map((t) => ({ ...t, onPaper: contrast(t.hex, paper), onInk: contrast(t.hex, ink) }));
 }
 
 // ---------- Code colours ----------

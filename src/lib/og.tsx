@@ -115,8 +115,8 @@ export async function renderOg({
   }
   const column = titleWidth ?? defaultTitleWidth(Boolean(imageSrc), Boolean(poster));
   // `dark` sets the text light: paper, with the labels a little dimmer (as OgCardHtml does).
-  const ink = dark ? "#F2ECE6" : "#1D1A17";
-  const muted = dark ? "rgba(242, 236, 230, 0.8)" : "#746759";
+  const ink = dark ? "#F1E8E4" : "#28252D";
+  const muted = dark ? "rgba(241, 232, 228, 0.8)" : "#8C6985";
   // Beside an image the title gets a narrower column, so it steps down sooner.
   const size = imageSrc
     ? title.length > 48
@@ -140,7 +140,7 @@ export async function renderOg({
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 64,
-        background: dark ? "#1D1A17" : "#F2ECE6",
+        background: dark ? "#28252D" : "#F1E8E4",
         color: ink,
         fontFamily: "Hanken",
       }}
@@ -216,7 +216,7 @@ export async function renderOg({
             src={imageSrc}
             {...FRAME}
             alt=""
-            style={{ objectFit: "cover", border: "1px solid #D8CCBF", borderRadius: 2 }}
+            style={{ objectFit: "cover", border: "1px solid #D8C0C0", borderRadius: 2 }}
           />
         )}
       </div>

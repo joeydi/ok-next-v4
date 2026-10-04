@@ -3,19 +3,35 @@
 @import "../components/illustrations/illustrations.css";
 
 @theme {
-  --color-paper: #f2ece6;
-  --color-paper-raised: #f7f3ef;
-  --color-paper-light: #faf7f4;
-  --color-sand: #ede6de;
-  --color-rule: #d8ccbf;
-  --color-guide: #cdc0b2;
-  --color-ink: #1d1a17;
-  --color-ink-2: #322d28;
-  --color-body: #4e463e;
-  --color-muted: #746759;
-  --color-muted-light: #b0a08f;
-  --color-pink: #ff4d6a;
-  --color-pink-ink: #d01f3e;
+  /* The palette's hues. The neutrals run from the cool hue at black to the warm hue
+     at white, and the pinks take the accent hue, so turning one turns its family. */
+  --hue-neutral-warm: 30;
+  --hue-neutral-cool: 240;
+  --hue-accent: 350;
+
+  /* The turn from cool to warm, the shorter way round the wheel (−180 to 180), as CSS
+     interpolates hues. A neutral's hue is cool + span × its lightness. */
+  --neutral-hue-span: calc(mod(var(--hue-neutral-warm) - var(--hue-neutral-cool) + 180, 360) - 180);
+
+  /* Neutrals: each sets a lightness, and its saturation follows from it by one rule,
+     10% + 35% × (1 − √(1 − L²)) rounded to a tenth, so they get more saturated as
+     they get lighter. The factor on the span is the lightness again, as a fraction.
+     The Palette doc plots them against both. */
+  --color-paper-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.96) 35.2% 96%);
+  --color-paper-raised: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.94) 33.1% 94%);
+  --color-paper: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.92) 31.3% 92%);
+  --color-sand: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.9) 29.7% 90%);
+  --color-rule: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.8) 24% 80%);
+  --color-guide: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.75) 21.8% 75%);
+  --color-muted-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.64) 18.1% 64%);
+  --color-muted: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.48) 14.3% 48%);
+  --color-body: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.32) 11.8% 32%);
+  --color-ink-2: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.24) 11% 24%);
+  --color-ink: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.16) 10.5% 16%);
+
+  /* Accent: pink, and a darker pink-ink that holds 4.5:1 on paper for text. */
+  --color-pink: hsl(var(--hue-accent) 100% 65%);
+  --color-pink-ink: hsl(var(--hue-accent) 74% 46%);
 
   --font-display: gelica, Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
@@ -153,12 +169,20 @@
 /* Striped image placeholder. */
 @utility stripes {
   background-color: var(--color-sand);
-  background-image: repeating-linear-gradient(135deg, rgb(29 26 23 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-ink) 6%, transparent) 0 2px,
+    transparent 2px 12px
+  );
 }
 
 @utility stripes-dark {
   background-color: var(--color-ink);
-  background-image: repeating-linear-gradient(135deg, rgb(242 236 230 / 0.06) 0 2px, transparent 2px 12px);
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-paper) 6%, transparent) 0 2px,
+    transparent 2px 12px
+  );
 }
 
 /* Arrow that nudges right when its parent link is hovered or focused. */

@@ -1,15 +1,19 @@
 import codeTheme from "@/lib/code-theme.json";
-import { type ColorToken, codeColors, colors } from "@/lib/tokens";
+import { type ColorToken, codeColors, colors, hues, neutralRamp } from "@/lib/tokens";
 import { CopyValue } from "./CopyValue";
 import { DocTable } from "./DocTable";
 
-// The Palette doc's visuals, drawn from the --color-* tokens in globals.css. Every
+// The Palette doc's visuals, drawn from the --hue-* and --color-* tokens in globals.css. Every
 // fill is the token itself (`var(--color-…)`), so nothing here holds a colour. The
 // syntax swatches draw in their --code-* values as globals.css writes them.
 
 const f1 = (n: number) => n.toFixed(1);
-const hslText = (t: ColorToken) => `hsl(${Math.round(t.h)} ${Math.round(t.s)}% ${Math.round(t.l)}%)`;
+// Up to one decimal, as globals.css writes them.
+const n1 = (n: number) => String(Math.round(n * 10) / 10);
+const hslText = (t: ColorToken) => `hsl(${n1(t.h)} ${n1(t.s)}% ${n1(t.l)}%)`;
 const fill = (name: string) => ({ fill: `var(--color-${name})` });
+/** The saturation every neutral is set from, for a lightness in percent. */
+const rule = (l: number) => 10 + 35 * (1 - Math.sqrt(1 - (l / 100) ** 2));
 
 /** One point per distinct value: tokens with the same hex share a dot. */
 function points() {
@@ -258,7 +262,6 @@ export function SaturationPlot() {
   const ih = H - m.t - m.b;
   const x = (s: number) => m.l + (s / 100) * iw;
   const y = (l: number) => m.t + (1 - l / 100) * ih;
-  const rule = (l: number) => 10 + 35 * (1 - Math.sqrt(1 - (l / 100) ** 2));
   const curve = Array.from({ length: 101 }, (_, l) => `${l ? "L" : "M"}${x(rule(l)).toFixed(1)} ${y(l).toFixed(1)}`);
   const items = points().map((p) => ({ p, x: x(p.s), y: y(p.l), text: p.names.join(" = ") }));
 
@@ -296,7 +299,11 @@ export function SaturationPlot() {
   );
 }
 
-/** Hue as angle and saturation as distance from the centre, with the neutrals' wedge shaded. */
+/**
+ * Hue as angle and saturation as distance from the centre, with a ray along each --hue-*
+ * token and the neutrals' path between the cool and warm ones: hue from the ramp,
+ * saturation from the rule.
+ */
 export function HueWheel() {
   const W = 460;
   const pad = 34;
@@ -307,15 +314,18 @@ export function HueWheel() {
     c - r * Math.cos((hue * Math.PI) / 180),
   ];
   const all = points();
-  const neutrals = all.filter((p) => !p.names[0].startsWith("pink"));
-  const h0 = Math.min(...neutrals.map((p) => p.h));
-  const h1 = Math.max(...neutrals.map((p) => p.h));
-  const rw = (Math.max(...neutrals.map((p) => p.s)) / 100) * R + 12;
-  const [ax, ay] = polar(h0 - 1.5, rw);
-  const [bx, by] = polar(h1 + 1.5, rw);
+  const rays = Object.entries(hues()).map(([name, h]) => {
+    const [x, y] = polar(h, R);
+    return { name, h, x, y };
+  });
   const items = all.map((p) => {
     const [x, y] = polar(p.h, (p.s / 100) * R);
     return { p, x, y, text: p.names.join(" = ") };
+  });
+  const ramp = neutralRamp();
+  const path = Array.from({ length: 101 }, (_, l) => {
+    const [x, y] = polar(ramp.at(l), (rule(l) / 100) * R);
+    return `${l ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`;
   });
 
   return (
@@ -357,14 +367,20 @@ export function HueWheel() {
           </text>
         );
       })}
-      <path d={`M${c} ${c} L${ax} ${ay} A${rw} ${rw} 0 0 1 ${bx} ${by}Z`} className="fill-pink/10 stroke-pink/40" />
+      {rays.map((r) => (
+        <line key={r.name} x1={c} y1={c} x2={r.x} y2={r.y} className="stroke-ink-2" />
+      ))}
+      <path d={path.join("")} fill="none" className="stroke-pink" strokeWidth={2} strokeDasharray="6 4" />
       {items.map((it) => (
         <Dot key={it.p.hex} p={it.p} x={it.x} y={it.y} />
       ))}
-      {/* The neutrals sit too close together to label here; the pinks get labels. */}
+      {/* Each ray gets its token. The neutrals sit too close together to label; the rest get labels. */}
       <Labels
         items={placeLabels(
-          items.filter((it) => it.p.names[0].startsWith("pink")),
+          [
+            ...rays.map((r) => ({ x: r.x, y: r.y, r: 9, text: `--hue-${r.name} ${r.h}°` })),
+            ...items.filter((it) => it.p.family !== "neutral"),
+          ],
           { x: 0, y: 0, w: W, h: W },
         )}
       />

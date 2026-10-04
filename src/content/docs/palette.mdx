@@ -1,11 +1,13 @@
 ---
 title: Palette
-description: Every colour token in the theme, with its place in HSL. The neutrals share one warm hue and take their saturation from their lightness, so they get more saturated as they get lighter.
+description: Every colour token in the theme, with its place in HSL. The neutrals take both their hue and their saturation from their lightness, turning from a cool hue at black to a warm one at white and getting more saturated as they get lighter.
 order: 1
 size: large
 ---
 
 The tokens are the `--color-*` variables in the `@theme` block of `src/app/globals.css`, and every value on this page is read from there. Use them as Tailwind classes (`bg-paper`, `text-muted`) or as `var(--color-…)`, never as a hex.
+
+Their hues come from three tokens above them. The pinks are `hsl(var(--hue-accent) S% L%)`. The papers, rules and inks run from `--hue-neutral-cool` at black to `--hue-neutral-warm` at white: `--neutral-hue-span` is the turn between the two, the shorter way round the wheel as CSS interpolates hues, and each neutral's hue is the cool one plus that span times its lightness, written as `hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.925) S% 92.5%)`. Change a hue and its family follows, keeping its saturation and lightness. A new neutral needs only a lightness: its saturation is the rule below, and its hue the ramp.
 
 ## Swatches
 
@@ -22,18 +24,18 @@ Each swatch shows its best contrast, against paper or ink, and copies its hex wh
 
 ## HSL
 
-The neutrals are set from one rule rather than picked by eye, so a new one can be placed by its lightness alone. Hover a dot for its token and value.
+The neutrals are set from their lightness rather than picked by eye. Hover a dot for its token and value.
 
 <DocGrid>
   <DocFigure
     title="Saturation × lightness"
-    caption="The dashed line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)). It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. Lightness sits on 2.5% steps, except paper-light at 97% to stay clear of white, and hex rounding leaves each dot within about a point of both."
+    caption="The dashed line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)), rounded to a tenth. It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. The pinks are set by eye and sit off the rule."
   >
     <SaturationPlot />
   </DocFigure>
   <DocFigure
     title="Hue wheel"
-    caption="Angle is hue and distance from the centre is saturation. The shaded wedge holds all 11 neutral tokens, set at 31° and within a few degrees of it after hex rounding. The pinks sit at 350°, about 41° away."
+    caption="Angle is hue and distance from the centre is saturation. The lines are the hue tokens. The dashed path is every neutral the ramp and the rule allow, from black on the cool line, near the centre, to white on the warm one, and the neutrals sit along it. The pinks sit on --hue-accent."
   >
     <HueWheel />
   </DocFigure>

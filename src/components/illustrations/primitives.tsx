@@ -7,9 +7,9 @@ import { cn } from "@/lib/cn";
 
 export type Palette = readonly [top: string, side1: string, side2: string];
 
-export const W: Palette = ["#FAF7F4", "#D8CCBF", "#C8BAAB"];
+export const W: Palette = ["#F8F4F1", "#D8C0C0", "#C9ACB1"];
 export const P: Palette = ["#FF4D6A", "#D62A4A", "#E63757"];
-export const N: Palette = ["#E8DFD6", "#D3C6B8", "#C2B3A3"];
+export const N: Palette = ["#E8DAD6", "#D3B8BA", "#C3A5AC"];
 
 /** 620×660 frame with dashed guides and the three mono labels. */
 export function Stage({
@@ -26,12 +26,12 @@ export function Stage({
   return (
     <div aria-hidden="true" className={cn("ok-illo", className)}>
       <div className="ok-illo-canvas">
-        <Guide x={116} y1={60} y2={guideEnd} color="#CDC0B2" />
-        <Guide x={484} y1={60} y2={guideEnd} color="#CDC0B2" />
-        <Guide x={300} y1={20} y2={guideEnd + 40} color="#FF4D6A" />
+        <Guide x={116} y1={60} y2={guideEnd} color="var(--color-guide)" />
+        <Guide x={484} y1={60} y2={guideEnd} color="var(--color-guide)" />
+        <Guide x={300} y1={20} y2={guideEnd + 40} color="var(--color-pink)" />
         {children}
         <Label y={110} n="01" text={labels[0]} />
-        <Label y={205} n="02" text={labels[1]} color="#D01F3E" />
+        <Label y={205} n="02" text={labels[1]} color="var(--color-pink-ink)" />
         <Label y={300} n="03" text={labels[2]} />
       </div>
     </div>
@@ -47,11 +47,11 @@ function Guide({ x, y1, y2, color }: { x: number; y1: number; y2: number; color:
   );
 }
 
-function Label({ y, n, text, color = "#746759" }: { y: number; n: string; text: string; color?: string }) {
+function Label({ y, n, text, color = "var(--color-muted)" }: { y: number; n: string; text: string; color?: string }) {
   return (
     <div className="ok-illo-label" style={{ top: y, color }}>
       <span>/ {n}</span>
-      <span style={{ color: "#1D1A17" }}>{text}</span>
+      <span style={{ color: "var(--color-ink)" }}>{text}</span>
     </div>
   );
 }
