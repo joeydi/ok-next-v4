@@ -922,13 +922,13 @@
     "audio": null,
     "posterAt": null
   },
-  "og/business-tools-a2a05d8a.png": {
+  "og/business-tools-70db592e.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 100094,
-    "etag": "a39f90dfdb709cc733432677e721dc74",
-    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJQBOgCHeloncwAD+9NbRNh5GQVbR2CUnYa7Y4jPO0RX6ZXb2Agb+QAA=",
+    "bytes": 99428,
+    "etag": "3db24ab0984fd69a1ace6a669056ae33",
+    "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADQAQCdASoQAAgAA4BaJQBOgCHHh/57gAD+9NEJsPIyCraOwVS7Imd27fH5ZKrjNwBWj6pDigAAAA==",
     "color": "#f8e8e8",
     "alt": "Business tools — Okayplus",
     "caption": "",
@@ -936,13 +936,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/cms-integrations-5971e0dc.png": {
+  "og/cms-integrations-80034094.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 106560,
-    "etag": "336c1f16de38b9b54d68567d95bd2a88",
-    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJQBOgCHE1NJGwAD+9NaaYFzMQxq7YOhztk/nGc41InwT2jtwsesAAAA=",
+    "bytes": 105558,
+    "etag": "7b03c1d90b511e6bba3c3d0341f592a9",
+    "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADwAQCdASoQAAgAA4BaJQBOgCHEyG+0pQAA/vTPUwLmYqPJvOzbKJIE4FuuZFggIpeYmFR7PnoAAA==",
     "color": "#f8e8e8",
     "alt": "CMS & integrations — Okayplus",
     "caption": "",
@@ -950,13 +950,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/digital-production-14708e9a.png": {
+  "og/digital-production-9e20cc83.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 92264,
-    "etag": "5fdc70d24b9e245766c3868f0cea91da",
-    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADwAQCdASoQAAgAA4BaJYwCdAEPAuyCotAA/vTXoyU47lvjHQEnnzPZte3utX2iyh9xFQTxqA8dmkhQAAA=",
+    "bytes": 93017,
+    "etag": "54da7d05f7fc7dd48a99aeaa817cf67f",
+    "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADQAQCdASoQAAgAA4BaJQBOgCHYLoRhwAD+9M9LRYYjD3HPS/NWco7zJmH7RZQ+3G6THp7FLDBCtwAA",
     "color": "#f8e8e8",
     "alt": "Digital production — Okayplus",
     "caption": "",
@@ -964,13 +964,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/home-83a4a873.png": {
+  "og/home-c0a33321.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 117547,
-    "etag": "8fa5a920ea69cb63ce169f99dc9fcda2",
-    "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADwAQCdASoQAAgAA4BaJZQCdAEPDClymgAA/vTWjBEcEEQsBf+xZdi4D15DIStsp2K71CtfeygAAA==",
+    "bytes": 116588,
+    "etag": "b68416e76c57855bd14760c74574c4da",
+    "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADwAQCdASoQAAgAA4BaJYwCdAEO/y52uIAA/vTOTREEb6KKGNewcEGm3pOStSV420i2xm9z2UAAAA==",
     "color": "#f8e8e8",
     "alt": "Okayplus — Joe di Stefano, designer + developer in Burlington, Vermont",
     "caption": "",
@@ -978,13 +978,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/network-ac49be2e.png": {
+  "og/network-68365d5c.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 212852,
-    "etag": "ecd2c773336271cfc51d87730b1bccd9",
-    "blurDataURL": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAQCdASoQAAgAA4BaJZwCdAEO+mBgAP70ziCPn5LpcnaNMSI5xqgA",
+    "bytes": 219922,
+    "etag": "715c05e6f382614a3dfef8b1f5ea7245",
+    "blurDataURL": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAQCdASoQAAgAA4BaJZwCdAEO+ka4AP7zeC/tSrvlEyu9y/0/7bAA",
     "color": "#f8e8e8",
     "alt": "Network — Okayplus",
     "caption": "",
@@ -992,27 +992,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-74fa9b64.png": {
+  "og/notes-arizona-education-progress-meter-f64a416d.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 21956,
-    "etag": "649521817370b63be269c3a98c356ec4",
-    "blurDataURL": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAACwAQCdASoQAAgAA4BaJZwCdAEO9qbgAP701not8C0xIQoQAAA=",
-    "color": "#f8e8e8",
-    "alt": "Notes — Okayplus",
-    "caption": "",
-    "context": "Open Graph card for /notes",
-    "altSource": "human",
-    "reviewed": true
-  },
-  "og/notes-arizona-education-progress-meter-59177c57.png": {
-    "type": "image",
-    "width": 1200,
-    "height": 630,
-    "bytes": 166995,
-    "etag": "59d189847216295b459bfd29d8f8ad3c",
-    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoQAAgAA4BaJZQCdAEOfp6ep4AA/vTX/OUQXSXeO/IpvdXUjze3sdWnXoKRl1HfnsS+f2wnoyItzPBYAAA=",
+    "bytes": 167019,
+    "etag": "d52676d5a819cb30e3d13786c2ab6451",
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoQAAgAA4BaJYwCdAEO+Y/FfTQA/vTTy5ubp6t7fvYA+9rjS+mto+4p8korYVx14FPJRBn6MwIH0UoAAAA=",
     "color": "#f8e8e8",
     "alt": "The Arizona Education Progress Meter — Okayplus",
     "caption": "",
@@ -1020,13 +1006,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-columbia-capital-fadd2458.png": {
+  "og/notes-columbia-capital-f2c20abd.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 224278,
-    "etag": "ea8ba43acde673b8dcea419ed2dd25af",
-    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAgAA4BaJQBOgCIZrskRYwAA/vTX2JR6qwel3jx/0Gwpxu4/Sh30ZNNuCbbEUB+RgL0O8OHf9qMQhLkPZH5B7sHjN6YCAAA=",
+    "bytes": 223885,
+    "etag": "8eb481f7af02c0a7071d3406d3b91735",
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADwAQCdASoQAAgAA4BaJQBdgCIZrskRdsAA/vTTlj9ChJzfOCdZSDEaAzkIlG9SPESf/w9RX+tyzqZ92at6dtL9l0SBzfZlX/jYQAAA",
     "color": "#f8e8e8",
     "alt": "A new look for Columbia Capital — Okayplus",
     "caption": "",
@@ -1034,13 +1020,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-design-salon-burlington-2c586e71.png": {
+  "og/notes-design-salon-burlington-02b7527d.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 85436,
-    "etag": "986461f66a7bba063200905b89c993f4",
-    "blurDataURL": "data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAABQAQCdASoQAAgAA4BaJQBOgDQAAP7xQg1UdGyjUd2/i6QH8Xi/lvYESwcDTyejTbeVlIAA",
+    "bytes": 85092,
+    "etag": "349b6d50d3ce42e50b4b8287de0ecda6",
+    "blurDataURL": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADQAQCdASoQAAgAA4BaJQBOgCHgAL4AcAD+9M7giIgUB215bOyAJfv5rKcLkrmcvAAAAA==",
     "color": "#f8e8e8",
     "alt": "A digital design salon in Burlington — Okayplus",
     "caption": "",
@@ -1048,13 +1034,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-designing-a-website-that-feels-alive-eb6a725b.png": {
+  "og/notes-designing-a-website-that-feels-alive-018e0c4f.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 215664,
-    "etag": "ea09ff0831cf90bd55debb927c3f9d96",
-    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoQAAgAA4BaJZQCdAEQ0pKADPgA/vTX2JR60D1mxGzANtdBqpN/4bEWkgisVE4Zet2ol2p62nWHGuVkgAA=",
+    "bytes": 215286,
+    "etag": "2f405e34e5fff7134dafac76061e8df9",
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAAAQAgCdASoQAAgAA4BaJZQCdAEQ0TKc/EgAAP7005qjB0xhvbQTdHvtXBghj4m0FoDNPNnxtZDoMo5vwZN0uuGgAAA=",
     "color": "#f8e8e8",
     "alt": "Designing a website that feels alive while keeping content front and center — Okayplus",
     "caption": "",
@@ -1062,13 +1048,27 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-frank-lloyd-wright-foundation-7d25c7fa.png": {
+  "og/notes-f51740ad.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 321343,
-    "etag": "954129fc03d4a7bd73a3710427b5514f",
-    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADQAQCdASoQAAgAA4BaJYwCdAEO/hPsYAD+9NfjT4/yHOok5lFmn3tioFeKv2DXYIqbms/3I51xrtVQKYd85AAA",
+    "bytes": 21845,
+    "etag": "b3f52ca81fd99882369ba08dd6d87de1",
+    "blurDataURL": "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAADQAQCdASoQAAgAA4BaJZwC7AEPAKVSgAD+9M7gakmkCpxwQAA=",
+    "color": "#f8e8e8",
+    "alt": "Notes — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /notes",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "og/notes-frank-lloyd-wright-foundation-e376ec22.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 320792,
+    "etag": "84f0a4feede735877c0fc2badfde93dc",
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAAAQAgCdASoQAAgAA4BaJYwC7AEPAwYLOy6AAP7000hUEMhGRhCYs3Uw6au0iGo4G9sECGTCglghIAuD43jOEQVMAAA=",
     "color": "#f8e8e8",
     "alt": "A members-only portal for the Frank Lloyd Wright Foundation — Okayplus",
     "caption": "",
@@ -1076,13 +1076,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-poetry-in-motion-4d55c92a.png": {
+  "og/notes-poetry-in-motion-3830c196.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 174810,
-    "etag": "447bc43da76daa010209f24fe35e5690",
-    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADwAQCdASoQAAgAA4BaJZQCdAELMxfcpQAA/vTYAztA/40FOqwFbCspLtBPuaTfXKZh67E3LaG7YvrLcloqEAAA",
+    "bytes": 174513,
+    "etag": "fbb8944e4bbb9ad7a1e39f12a5005faf",
+    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADwAQCdASoQAAgAA4BaJYwCdAEOfwenFwAA/vTT1ZtA/4z9IvxPZsvDrzVcT/3jNNtUb5axiO+RuVv3mK8gAAAA",
     "color": "#f8e8e8",
     "alt": "CSS and JavaScript, poetry in motion — Okayplus",
     "caption": "",
@@ -1090,13 +1090,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-queen-city-development-group-0868eb0c.png": {
+  "og/notes-queen-city-development-group-fb23914b.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 159255,
-    "etag": "4f381ed692e561cfb59fcc19db69f36d",
-    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAgAA4BaJYwCdAEPSabZEAD+9NfjT5YJtEv3v27I0pySOXawI0/FtBVJ32omeRGaWSg5uUTgAA==",
+    "bytes": 159234,
+    "etag": "5ec23dbaa55c824384fda3fe9a2cc4d1",
+    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADwAQCdASoQAAgAA4BaJYwC7AEN0lyuyyAA/vTTqlqFH/YmtWRzXbl6jXMiLZx9ddPFTFKVJgcwME2duAA=",
     "color": "#f8e8e8",
     "alt": "A brand and website for Queen City Development Group — Okayplus",
     "caption": "",
@@ -1104,13 +1104,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-rigorous-3eec8459.png": {
+  "og/notes-rigorous-7bf131f1.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 251635,
-    "etag": "7d9c90bf2ab1961dc70348ea43225088",
-    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAgAA4BaJZQCdAEO/iv1cAD+9NfjUNMBkwmV9TVbM6QJcI4gcHci8R2y0tkZwLgi5m/PFX3IAA==",
+    "bytes": 250980,
+    "etag": "d6a04a4437890e83dbf94a1db0445031",
+    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADQAQCdASoQAAgAA4BaJZQCdAEOaBSemAD+9NOqXF+k6zuB1XFoNZN7/lkPPB/o53d828LMMmieUU0gQAA=",
     "color": "#f8e8e8",
     "alt": "A modern industrial website for Rigorous — Okayplus",
     "caption": "",
@@ -1118,13 +1118,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-thinkmd-9f55bba9.png": {
+  "og/notes-thinkmd-645aaa3e.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 230586,
-    "etag": "1ec149be3c1e7130235144d67597ac42",
-    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoQAAgAA4BaJZQCdAEPAA/HMsAA/vTX56t64V6icMyqX8Heia1vGD75W6PN9WfLICaasbdn1Cc7kWASAAA=",
+    "bytes": 230327,
+    "etag": "8ed38ee6b746d041cbd05d4461647914",
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAAAwAgCdASoQAAgAA4BaJZQCdAEPSms5u78kAAD+9NOwylL1jl30POo4qeD3+68elggEyrPyASzvZ7/RrtdCf85ALAA=",
     "color": "#f8e8e8",
     "alt": "Redesigning ThinkMD’s digital health platform — Okayplus",
     "caption": "",
@@ -1132,13 +1132,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-vermont-made-ideas-55101d28.png": {
+  "og/notes-vermont-made-ideas-4afa8b13.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 212156,
-    "etag": "69b1ac8bfe98f8543603c79979af052d",
-    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJZQCdAEPAujgoAD+9NeqbXRJwvU9B3viocZ84Rl6GJlak3cY/yaAAAA=",
+    "bytes": 211542,
+    "etag": "53dbd5af1f2b9e83e6cbde7defb3b7f4",
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJZQCdAEOuyQckAD+9NM6FS0Z6QBX1fR1bHl4R6kyrSwyhfbhx7BAAAA=",
     "color": "#f8e8e8",
     "alt": "Here’s to more Vermont-made ideas — Okayplus",
     "caption": "",
@@ -1146,13 +1146,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-video-as-code-a933f813.png": {
+  "og/notes-video-as-code-7dd14a83.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 490153,
-    "etag": "d18dc8a8635dd47c5d3755f338cf9fa0",
-    "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAwAgCdASoQAAgAA4BaJbACdAYs3a1sPd9DQAD2b9Ik42uxdjaXGs5CEf02EMZsvNUicbI2m6PIfU4dgB1uFAh8yBlrSd/Z5enNmB2TaHPGuy86wwY1+iBAAAA=",
+    "bytes": 492034,
+    "etag": "ef21e61d8f1801c02e4c45cc39f8f2b1",
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAgAA4BaJbACdAYrTDlGOszAAPZvzcliKisRVuclmxXVN9ycBLs52AYedMDeAv9zAp9JEQPucgb2GMUFjgk/kbKg/NpyA3mGnN+CCFmbXRBbwFoAAA==",
     "color": "#281848",
     "alt": "Video, made of code — Okayplus",
     "caption": "",
