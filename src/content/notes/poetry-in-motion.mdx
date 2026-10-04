@@ -39,7 +39,7 @@ The poem is “The River” by the Peruvian poet Javier Heraud, which was about 
 
 Beside the poem sits a single invisible image: a tall PNG of a winding river, floated left, with `shape-outside` pointing at the same file. The browser reads the image’s alpha channel and uses the painted pixels as the float’s outline. The image is set to `opacity: 0`, so you never see the river itself. You only see the text being pushed around it.
 
-```css
+```css showLineNumbers
 .river {
   float: left;
   width: 30vw;
@@ -62,7 +62,7 @@ There’s no clever geometry in the JavaScript. A ScrollTrigger timeline scrubs 
 
 <RiverDiagram caption="01 / The River, in motion" />
 
-```js
+```js showLineNumbers
 gsap.set(river, { height: poem.clientHeight * 2 });
 
 gsap.timeline({
@@ -76,7 +76,7 @@ The float is twice the height of the poem so there is always some river left bes
 
 The sideways drift comes from layout. Each line also gets its own scrubbed timeline for the up-and-down motion. It rises from half a screen below, sharpens out of a heavy blur and shrinks from 1.5× to 0.5× scale on the way through. On the way out it drops back into the blur and fades away. With expo easing on both ends, each line seems to come up from under the water, hang there for a moment and sink again.
 
-```js
+```js showLineNumbers
 lines.forEach((line) => {
   const text = line.querySelector("span");
   gsap.set(text, { y: innerHeight / 2, scale: 1.5, filter: "blur(40px)", transformOrigin: "0% 50%" });

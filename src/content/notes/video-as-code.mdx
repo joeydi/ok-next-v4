@@ -54,7 +54,7 @@ frame = f(time)
 
 You don’t tell an object to move. You describe where it should be at a given moment, and the renderer asks you once per frame. In Remotion:
 
-```tsx
+```tsx showLineNumbers
 import { useCurrentFrame, interpolate } from "remotion";
 
 export const Title = () => {
@@ -101,7 +101,7 @@ frame = f(time, props, theme, data)
 
 In practice that’s just a component with props:
 
-```tsx
+```tsx showLineNumbers
 <Promo title="Poetry in Motion" theme="blue" format="vertical" duration={12} />
 ```
 
