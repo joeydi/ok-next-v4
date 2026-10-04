@@ -8,7 +8,6 @@ draft: true
 image: notes/video-as-code/video-as-code-event-loop-v3.mp4
 imageLabel: video — a promo rendered from code
 ogBackdrop: true
-ogDarkMode: true
 tools:
   - Remotion
   - HyperFrames
@@ -18,55 +17,41 @@ import { StripDiagram } from "@/components/diagrams/video-as-code/StripDiagram";
 
 <Lead>
   When most people say “AI video” right now, they mean one thing: you type a prompt, a model thinks for a while, and a
-  clip comes back.
+  clip comes back. It’s impressive. A few sentences in, a few seconds of footage out.
 </Lead>
 
-It’s genuinely impressive. A few sentences in, a few seconds of footage out.
-
-But there’s another way to use AI to make video, and it looks a lot more like web development than filmmaking. Instead of asking AI to generate the frames, you ask it to write the code that generates the frames.
-
-The two pipelines look like this:
+But there’s another way to use AI to make video, and it looks more like web development than filmmaking. Instead of asking AI to generate the frames, you ask it to write the code that generates them.
 
 ```text
 Generative video:   prompt → model → pixels
 Code-based video:   prompt → code → frames → video
 ```
 
-That extra step in the middle changes almost everything about what you can do with the result. A clip is a finished artifact. Code is something you can re-run, edit, tune and reuse. The rest of this post is about why that difference matters, and why AI coding tools suddenly make it practical.
+That extra step changes almost everything about what you can do with the result. A clip is a finished artifact; code is something you can keep working on. The rest of this post is about why that matters, and why AI coding tools suddenly make it practical.
 
 ## What if a video were just a website with a timeline?
 
-This idea isn’t new. [Remotion](https://www.remotion.dev) has been doing it for years: it brought React’s component model to video. You write components, Remotion gives you the current frame number, and it renders each frame in a headless browser before stitching them into an MP4.
+[Remotion](https://www.remotion.dev) has been doing this for years, bringing React’s component model to video: you write components, Remotion gives you the current frame number, and it renders each frame in a headless browser before stitching them into an MP4. More recently, HeyGen open-sourced [HyperFrames](https://github.com/heygen-com/hyperframes), which drops React and the bundler entirely. A composition is plain HTML with data attributes for timing, animated with CSS or seekable libraries like GSAP, and captured to MP4 with Puppeteer and FFmpeg. The `index.html` plays as-is.
 
-More recently, HeyGen open-sourced [HyperFrames](https://github.com/heygen-com/hyperframes), which applies the same idea more directly to the web platform itself. A HyperFrames composition is plain HTML with data attributes for timing, animated with CSS or seekable animation libraries like GSAP, and captured to MP4 with Puppeteer and FFmpeg. No React and no bundler; the `index.html` plays as-is.
+Both rest on the same idea: **The browser is already an extremely capable graphics engine.**
 
-I don’t think the interesting question is which library wins. The interesting part is the idea underneath both of them:
-
-**The browser is already an extremely capable graphics engine.**
-
-It renders typography, SVG, CSS, Canvas, WebGL, Three.js, images, video and sophisticated animation, and it does so on every device we own. All it’s missing to become a video renderer is a deterministic clock. Give it one, step through time a frame at a time, and capture what’s on screen.
+It renders typography, SVG, CSS, Canvas, WebGL, Three.js, images, video and sophisticated animation, on every device we own. All it’s missing to become a video renderer is a deterministic clock. Give it one, step through time a frame at a time, and capture what’s on screen.
 
 <StripDiagram caption="01 / Every frame, a function of time" />
 
-## UI = f(state) → frame = f(time)
-
-React popularized a way of thinking about interfaces that most of us now take for granted:
+If you’ve written React, you already know the model:
 
 ```text
 UI = f(state)
 ```
 
-You don’t reach into the DOM and change things. You describe what the interface should look like for a given state, and the framework works out the rest.
-
-Video fits the same mental model with one substitution:
+You don’t reach into the DOM and change things; you describe what the interface should look like for a given state. Video is the same with one substitution:
 
 ```text
 frame = f(time)
 ```
 
-At frame 0, render one state. At frame 30, another. At frame 60, another. You don’t tell an object to move. You describe where it should be at a particular moment, and the renderer asks you that question once per frame.
-
-In Remotion, that looks like this:
+You don’t tell an object to move. You describe where it should be at a given moment, and the renderer asks you once per frame. In Remotion:
 
 ```tsx
 import { useCurrentFrame, interpolate } from "remotion";
@@ -84,31 +69,13 @@ export const Title = () => {
 };
 ```
 
-There’s no animation timeline in there, no keyframes panel, no play button. There’s a function that takes a frame number and returns markup. Ask it about frame 15 and it tells you: half faded in, 20px below its resting spot.
-
-That’s the whole trick. Then extend it slightly:
-
-```text
-frame = f(time, props)
-```
-
-Now things get interesting.
+No timeline, no keyframes panel, no play button, just a function from frame number to markup. Ask it about frame 15 and it tells you: half faded in, 20px below its resting spot. That’s the whole trick.
 
 ## The difference between generating and rendering
 
-Back to generative video for a moment, because this is where the two approaches really split.
+Ask a generative model for the same clip twice and you get two interpretations. Render the same code with the same inputs twice and you get the same frames, down to the pixel. It lives in Git, it diffs, and when frame 212 looks wrong you can find out why.
 
-If I ask a generative model for the same clip twice, I get two interpretations. Similar, maybe. Not the same. If I render the same code with the same inputs twice, I get the same frames, down to the pixel.
-
-That one property drags along a whole set of others we normally associate with software:
-
-- **Repeatable:** run it again, get the same thing.
-- **Editable:** change one part without disturbing the rest.
-- **Tunable:** nudge a number until it feels right.
-- **Versionable:** it lives in Git, with diffs and history.
-- **Debuggable:** when frame 212 looks wrong, you can find out why.
-
-Think about the revisions you actually get on a motion piece. They tend to be deliberately mundane:
+That matters most in revisions, which on a motion piece tend to be deliberately mundane:
 
 - Make the logo 20% smaller.
 - Hold this frame for another second.
@@ -121,11 +88,11 @@ Think about the revisions you actually get on a motion piece. They tend to be de
   doesn’t survive.
 </PullQuote>
 
-With code, they’re not requests to reinterpret the video. They’re changes to its implementation. A scale value, a duration, an easing function, a string, an aspect ratio.
+With code, each one changes a specific part of the implementation: a scale value, a duration, an easing function, a string, an aspect ratio. Everything else stays exactly where it was.
 
 ## One video becomes a video template
 
-Once a video is a function, the obvious next move is to give that function more arguments:
+Give the function more arguments:
 
 ```text
 frame = f(time, props, theme, data)
@@ -137,47 +104,37 @@ In practice that’s just a component with props:
 <Promo title="Poetry in Motion" theme="blue" format="vertical" duration={12} />
 ```
 
-Change the props and render again. Change them a hundred times in a loop and render a hundred videos.
-
-This is the point where programmatic video stops being a neat animation technique and becomes a way to build systems that make videos. A few places that pays off:
-
-- **Campaign variations:** one design, a dozen headlines and offers.
-- **Social formats:** the same piece at 16:9, 1:1 and 9:16, laid out properly for each rather than cropped.
-- **Personalized video:** a name, a city, a stat from someone’s account.
-- **Localization:** swap the copy, keep the timing and design.
-- **Product catalogs:** one template, every SKU.
-- **Event graphics:** speaker cards and session bumpers from a schedule.
-- **Data-driven reports:** this month’s numbers, animated, every month.
+Change the props and render again. Change them in a loop and you get a campaign with a dozen headlines, the same piece laid out properly at 16:9, 1:1 and 9:16, a card for every speaker on the schedule, or this month’s numbers, animated, every month.
 
 Nobody is hand-editing 400 timelines. A design system for video turns out to look a lot like a design system for the web.
 
 ## This is where AI changes the equation
 
-Everything above has been true for a while. Remotion has existed for years. So why does it feel different now?
+If all of this has been possible for years, why does it matter now?
 
-Because without AI, programmatic video is powerful but expensive. Somebody still has to build the program. You need a developer who also has decent motion instincts, and that’s a small group of people with not a lot of spare time.
+Because the renderer was never the bottleneck. Writing the program was. Programmatic video needed a developer with decent motion instincts, and that’s a small group of people without much spare time.
 
-With a coding agent, you can describe the animation you want and have it write or modify the implementation. “Stagger the three cards in from the left, 6 frames apart, with a slight overshoot.” That’s a sentence for you and a few lines of code for the model.
+**Programmatic video isn’t new. What’s new is that writing the program has gotten cheap.**
 
-And critically, the technologies involved are ones coding models already understand extremely well:
+With a coding agent, you describe the animation and it writes or changes the implementation. “Stagger the three cards in from the left, 6 frames apart, with a slight overshoot” is a sentence for you and a few lines of code for the model.
+
+And the code involved is code models already know well:
 
 ```text
 HTML + CSS + JavaScript + React + SVG + Canvas + Three.js
 ```
 
-The model isn’t learning to operate an animation application, clicking through panels it’s never seen. It’s writing software, in the languages it has seen more of than almost anything else. HyperFrames leans into this directly: it ships agent skills that teach models its composition rules, and its README pitches the choice of plain HTML on exactly this basis.
-
-Which leads to the line I keep coming back to: Instead of generating the video, AI generates _a program whose output is the video._
+The model isn’t learning to operate an animation application, clicking through panels it’s never seen. It’s writing software in the languages it has seen more of than almost anything else. HyperFrames leans into this: it ships agent skills that teach models its composition rules, and its README makes the case for plain HTML on exactly this basis.
 
 ## This isn’t a replacement for generative video
 
-I want to be careful here, because it would be easy to turn this into a “code good, generative bad” post. That’s not the argument.
+To be clear, this isn’t a “code good, generative bad” argument. The two are good at different things.
 
 Code excels at things with structure: typography, UI, diagrams, charts, data visualization, logos, geometric animation, explainers, product graphics, and anything that has to be exactly the same every time.
 
-Generative video excels at things that are incredibly hard to describe procedurally: people, environments, cinematic imagery, organic movement, realistic camera shots. Nobody wants to write the function that returns a golden-hour shot of a coastline.
+Generative video excels at what’s hard to describe procedurally: people, environments, cinematic imagery, organic movement, realistic camera work. That’s the ground [Runway](https://runwayml.com), Google’s [Veo](https://deepmind.google/models/veo/), OpenAI’s [Sora](https://openai.com/sora/), [Kling](https://klingai.com) and [Luma](https://lumalabs.ai) cover, and what they can do is impressive and getting better fast. But I see what they make as an input to the system, not its source of truth.
 
-The more interesting move is to stop treating them as competitors and stack them:
+So stop treating them as competitors and stack them:
 
 ```text
 generative assets / footage
@@ -189,11 +146,11 @@ typography + graphics + data
         video
 ```
 
-Let a model generate the footage it’s good at generating. Then bring that footage into a coded composition, where the titles, lower thirds, charts, branding and timing are all exact, editable and templated. The generative part supplies the texture; the code supplies the structure.
+Let a model generate the footage it’s good at, then bring that footage into a coded composition where the titles, lower thirds, charts, branding and timing are exact, editable and templated. The generative part supplies the texture; the code supplies the structure.
 
 ## A small experiment
 
-Arguments are cheap, so I tried it. I gave a coding agent a brief and a folder of assets and had it build the piece in plain HTML and CSS. There was no video framework: headless Chrome captured the frames and ffmpeg encoded them.
+Arguments are cheap, so I tried it: the stack above in miniature, with AI-generated footage under coded layouts. I gave a coding agent a brief and a folder of assets and had it build the piece in plain HTML and CSS. There was no video framework: headless Chrome stepped through the frames and ffmpeg encoded them, taking about 90 seconds for a 6-second render.
 
 The brief: three event promos (a disco night, a data science talk and a game jam), each already designed as a 16:9 cover and a 4:5 Instagram post. I wanted one seamless loop of about 6 seconds that cycles through all six. Each graphic floats as a card over a blurred copy of its own background video, and at every change each element moves and scales to its place in the next layout. The inputs were:
 
@@ -205,36 +162,34 @@ The brief: three event promos (a disco night, a data science talk and a game jam
 
 Here’s how it went:
 
-1. **Plan it:** “Here are the assets. Build this loop, plus an admin view to review it.” Before writing any code it asked three questions: the output aspect ratio, where the project should live, and whether to rebuild the layouts from the PNGs. I pointed it at the design source instead. It ported all six layouts with their original styles intact, and each one matched its PNG export on the first render.
-2. **Make it move:** The first render held every layout perfectly and fell apart in between. “Disco Night” sits on one line in 16:9 and two in 4:5, so the title cross-dissolved into a smeared double image. Text also ran ahead of the card as it resized and got clipped at its edge. The fixes changed the structure: each title became individual words that fly to their new positions, and every element is now positioned relative to the morphing card.
-3. **Swap the footage:** Partway through, the final background renders arrived, including a real video for the data science talk, which had been a still with a slow Ken Burns move until then. Swapping each one meant changing one file path per event and re-rendering.
-4. **Adjust the timing:** “Hold each layout longer, and morph slower.” I did this one myself in the admin view: hold from 0.4 to 1 second, morph from 0.6 to 2. Then I hit render. No code changed, just two numbers in a config file.
-5. **Generate variations:** The loop already is the variations: one set of templates, three sets of event data, two aspect ratios. A fourth event would be a new entry in the events file.
+1. **Plan it:** “Here are the assets. Build this loop, plus an admin view to review it.” Before writing any code it asked three questions: the output aspect ratio, where the project should live, and whether to rebuild the layouts from the PNGs. I pointed it at the design source instead. It ported all six layouts with their original styles intact, and each matched its PNG export on the first render. [Clip 1: the six layouts, each overlaid on its design export.]
+2. **Make it move:** The first render held every layout perfectly and fell apart in between. “Disco Night” sits on one line in 16:9 and two in 4:5, so the title cross-dissolved into a smeared double image. Text also ran ahead of the card as it resized and got clipped at its edge. The fixes changed the structure: each title became individual words that fly to their new positions, and every element is now positioned relative to the morphing card. [Clip 2: the same transition, before and after.]
+3. **Swap the footage:** Partway through, the final background renders arrived, including a real video for the data science talk, which had been a still with a slow Ken Burns move until then. Swapping each one meant changing one file path per event and re-rendering. [Clip 3.]
+4. **Adjust the timing:** I wanted each layout held longer and the morphs slower, so I did this one myself in the admin view: hold from 0.4 to 1 second, morph from 0.6 to 2, then render. No code changed, just two numbers in a config file. [Clip 4: the 6-second and 18-second cuts side by side.]
+5. **Generate variations:** The loop already is the variations: one set of templates, three sets of event data, two aspect ratios. A fourth event would be a new entry in the events file. [Clip 5: all six variations in a grid.]
 
-The static layouts worked on the first try because the agent ported real source instead of eyeballing screenshots. The footage handling did too. It checked where each clip loops by comparing its first and last frames, then slowed every clip to 0.84× so one cycle of the video spans exactly one cycle of the piece. As a result, the seam where the video wraps back to frame one is invisible.
+Two things worked on the first try. The layouts did because the agent ported real source instead of eyeballing screenshots. The footage did because the agent checked where each clip loops by comparing its first and last frames, then slowed every clip to 0.84× so one cycle of the video spans exactly one cycle of the piece. The seam where the video wraps back to frame one is invisible.
 
-The motion needed work. The agent found those problems itself: it rendered still frames from mid-transition and checked them on contact sheets. Even so, it took two rounds of fixes before the transitions held together. It needed me twice, both times for things it had no way of knowing: that the design source existed, and that the final footage lived in a different folder from the draft clip it had picked up. It made one change I didn’t ask for, lightening the background haze to match the reference screenshot. That was a reasonable call, and it showed up in the diff.
+The motion took two rounds of fixes, though the agent found those problems itself by rendering stills from mid-transition onto contact sheets. It needed me twice: once to point it at the design source sitting alongside the PNGs, and once to tell it the final footage lived in a different folder from the draft clip it had picked up. It also made one change I didn’t ask for, lightening the background haze to match the reference screenshot. That was a reasonable call, and it showed up in the diff.
 
-Round 4 is the one that matters. In a generative tool, “hold it longer” means regenerating the clip and hoping everything else survives. Here every property of every frame is a function of time, so the change was two numbers. Everything I didn’t touch rendered exactly as before, only spread over 18 seconds instead of 6. A full render is headless Chrome stepping through the frames one by one, about 90 seconds for the 6-second version.
+The timing change is the one that matters. In a generative tool, “hold it longer” means regenerating the clip and hoping everything else survives. Here every property of every frame is a function of time, so the change was two numbers. Everything I didn’t touch rendered exactly as before, just spread over 18 seconds instead of 6.
 
 <Figure
   media="notes/video-as-code/video-as-code-event-admin.mp4"
   caption="03 / The admin view: variations, timing, render"
 />
 
-The experiment is the evidence for everything above. Each round is a small, specific change to a program, and the program keeps everything you didn’t ask to change.
-
 ## The interesting part isn’t AI video
 
-Zoom back out and the two approaches are asking different questions.
+Zoom back out, and the two approaches are asking different questions.
 
 Generative video asks: _what should these pixels look like?_
 
 Programmatic video asks: _what system produces these pixels?_
 
-The second question has always had better answers for a lot of work: anything branded, anything data-driven, anything that needs fifty versions or a revision next Tuesday. It just required someone who could write the system. Coding agents make that second question dramatically more accessible.
+The second question has always had better answers for a lot of work: anything branded, anything data-driven, anything that needs fifty versions or a revision next Tuesday. Answering it used to mean writing the system yourself. Now you can describe it.
 
-Which brings the whole thing back to a progression that should feel familiar to anyone who builds for the web:
+Which brings it back to a progression that should feel familiar to anyone who builds for the web:
 
 ```text
 UI = f(state)
