@@ -1,4 +1,4 @@
-// The film in the video-as-code note's diagram: three one-second shots (a title,
+// The film in the programmable-video note's diagram: three one-second shots (a title,
 // a bouncing ball, a bar chart), written as the note describes, as one function of
 // time. `seek(t)` returns the frame at `t` and nothing else, so any frame can be
 // drawn on its own, in any order, and the same `t` always gives the same frame.

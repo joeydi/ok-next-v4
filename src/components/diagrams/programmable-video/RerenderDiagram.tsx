@@ -8,7 +8,7 @@ import { useLoop } from "../useLoop";
 import { FPS, FRAMES, frameTime, SHOTS } from "./film";
 import { Scene } from "./Scene";
 
-// The video-as-code note's second diagram: a flat schematic of fixing one shot.
+// The programmable-video note's second diagram: a flat schematic of fixing one shot.
 // The ball shot's code changes,
 // and only its frames are drawn again, one at a time, while the other shots' are
 // kept as they were. The preview plays the frames on disk, so the fix shows up in

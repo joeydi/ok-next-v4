@@ -8,7 +8,7 @@ import { useLoop } from "../useLoop";
 import { capture, clamp, easeOut, FPS, FRAMES, filmTime, frameTime } from "./film";
 import { Scene } from "./Scene";
 
-// The video-as-code note's diagram (src/content/notes/video-as-code.mdx): the
+// The programmable-video note's diagram (src/content/notes/programmable-video.mdx): the
 // capture pulled apart into plates. Back to front: the clock, a frame counter;
 // the scene, as seek(t) draws it (in pink, as the browser has it before the
 // screenshot); and a film strip of frames. The clock and the scene run in steady
