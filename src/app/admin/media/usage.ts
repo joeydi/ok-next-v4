@@ -37,12 +37,13 @@ export function scanUsage(keys: string[]) {
     const text = fs.readFileSync(abs, "utf8");
     const refs = REFS.flatMap((re) => [...text.matchAll(re)].map((m) => m[1]));
 
-    // Notes: the title/description give Claude context, and `image:` is a reference.
+    // Notes: the title/description give Claude context, and `image:` and `ogImage:` are references.
     let note: Omit<Usage, "file"> = {};
     if (file.endsWith(".mdx")) {
       const { data } = matter(text);
       note = { title: data.title && String(data.title).replace(/\*(.+?)\*/g, "$1"), description: data.description };
       if (data.image) refs.push(String(data.image));
+      if (data.ogImage) refs.push(String(data.ogImage));
     }
 
     for (const key of keys) if (text.includes(key)) usage[key].push({ file, ...note });

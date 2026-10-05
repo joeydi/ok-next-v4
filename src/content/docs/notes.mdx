@@ -164,5 +164,5 @@ Every note, as `next dev` lists them, drafts included: how its list is built, wh
 A note goes into the index, the sitemap, the RSS feed at `/notes/rss.xml` and the structured data as soon as it's built without `draft: true`. Before taking the flag off:
 
 - Upload its media with `notes/<slug>/` keys in `/admin/media`, and review the alt text there.
-- Save its social card in `/admin/og`. Without it, the card goes out in the Hanken stand-in and the build warns. Re-save it when the title or cover changes.
+- Save its social card in `/admin/og`. Without it, the card goes out in the Hanken stand-in and the build warns. Re-save it when the title or its image changes: the cover, or `ogImage` when the card should show something else.
 - Feature it only if it should replace the current featured note at the top of `/notes`.

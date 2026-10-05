@@ -106,7 +106,7 @@ function content(path: string): OgCard | null {
       eyebrow: `/ Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`,
       title: note.meta.title,
       alt: `${note.meta.plainTitle} — Okayplus`,
-      image: note.meta.image,
+      image: note.meta.ogImage ?? note.meta.image,
       backdrop: note.meta.ogBackdrop || undefined,
       dark: note.meta.ogDarkMode || undefined,
     };

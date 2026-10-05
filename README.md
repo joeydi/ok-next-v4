@@ -79,6 +79,7 @@ topic: Interaction design # optional label beside the date (defaults to tag)
 featured: true # optional — the one post shown large on /notes
 image: notes/foo/hero.jpg # optional — media key (see Media); striped placeholder until set
 imageLabel: image — Simple Creature homepage
+ogImage: notes/foo/card.jpg # optional — media key for the social card's image, when it should differ from image
 ogBackdrop: true # optional — the social card shows the image behind the title instead of framed beside it
 ogDarkMode: true # optional — light text on the social card, for a dark ogBackdrop image
 byline: Co-Founder, Simple Creature # optional (default "Designer + developer")

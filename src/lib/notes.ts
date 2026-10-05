@@ -36,6 +36,8 @@ export type NoteMeta = {
   image?: Media;
   /** Placeholder label shown until `image` exists. */
   imageLabel: string;
+  /** Resolved from the `ogImage:` frontmatter key: the social card's image, when it differs from `image`. */
+  ogImage?: Media;
   /** The social card shows `image` behind the title, filling the card, instead of framed beside it. */
   ogBackdrop: boolean;
   /** The social card's text is light, for a dark `ogBackdrop` image. */
@@ -67,8 +69,10 @@ function parse(file: string) {
     throw new Error(`notes/${file}: tag must be one of ${TAGS.join(", ")} (got "${data.tag}")`);
   }
   let image: Media | undefined;
+  let ogImage: Media | undefined;
   try {
     image = data.image ? getMedia(String(data.image)) : undefined;
+    ogImage = data.ogImage ? getMedia(String(data.ogImage)) : undefined;
   } catch (err) {
     throw new Error(`notes/${file}: ${(err as Error).message}`);
   }
@@ -84,6 +88,7 @@ function parse(file: string) {
     topic: data.topic,
     image,
     imageLabel: data.imageLabel ?? `image — ${stripAccent(String(data.title))}`,
+    ogImage,
     ogBackdrop: Boolean(data.ogBackdrop),
     ogDarkMode: Boolean(data.ogDarkMode),
     featured: Boolean(data.featured),
@@ -114,7 +119,7 @@ export function setNoteFlag(slugName: string, key: "ogBackdrop" | "ogDarkMode", 
     .filter((l) => !l.startsWith(`${key}:`));
   if (on) {
     // With the image fields it styles, or at the end.
-    const at = lines.findLastIndex((l) => /^(image|imageLabel|ogBackdrop|ogDarkMode):/.test(l));
+    const at = lines.findLastIndex((l) => /^(image|imageLabel|ogImage|ogBackdrop|ogDarkMode):/.test(l));
     lines.splice(at < 0 ? lines.length : at + 1, 0, `${key}: true`);
   }
   fs.writeFileSync(file, lines.join("\n") + raw.slice(end));
