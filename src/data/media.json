@@ -1146,15 +1146,15 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/notes-video-as-code-7dd14a83.png": {
+  "og/notes-video-as-code-d6afcf32.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 492034,
-    "etag": "ef21e61d8f1801c02e4c45cc39f8f2b1",
-    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAgAA4BaJbACdAYrTDlGOszAAPZvzcliKisRVuclmxXVN9ycBLs52AYedMDeAv9zAp9JEQPucgb2GMUFjgk/kbKg/NpyA3mGnN+CCFmbXRBbwFoAAA==",
-    "color": "#281848",
-    "alt": "Video, made of code — Okayplus",
+    "bytes": 404188,
+    "etag": "ba307b4cba4aff4313d839bbb1d02400",
+    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADQAQCdASoQAAgAA4BaJbACdAEDDvQmQAD7HVU5qIOl3avXq3ErR/eBqG9UuQ50FARzq0Z5/wio/9B+8KW5eYKVAP+BH0bjmLnAAA==",
+    "color": "#383868",
+    "alt": "From generative video to programmable video — Okayplus",
     "caption": "",
     "context": "Open Graph card for /notes/video-as-code",
     "altSource": "human",
