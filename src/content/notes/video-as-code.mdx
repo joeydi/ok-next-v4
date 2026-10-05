@@ -1,6 +1,6 @@
 ---
 title: From generative video to *programmable video*
-description: Most AI video means generated pixels. Coding agents make another way practical, where AI writes a program and the program renders the same video every time, until you decide to change it.
+description: Instead of asking AI to generate the finished frames, ask it to build the system that produces them—repeatably, precisely, and at scale.
 date: 2026-10-03
 tag: PROCESS
 topic: Creative coding
@@ -28,19 +28,19 @@ Generative video:   prompt → model → pixels
 Code-based video:   prompt → code → frames → video
 ```
 
-That extra step changes what you end up with. A generated clip is a finished artifact: if it’s not quite right, you ask again and get something different. Code renders the same frames every time, so you can keep working on it, nudging it until it’s exactly right and changing only what needs to change. That predictability is what makes this approach useful for professional work, and AI coding tools are what suddenly make it practical.
+A generated clip is a finished artifact: if it’s not quite right, you ask again and get something different. Code renders the same frames every time, so you can keep working on it, nudging it until it’s exactly right and changing only what needs to change. That predictability is what makes this approach useful for professional work, and AI coding tools are what suddenly make it practical.
 
 ## What if a video were just a website with a timeline?
 
 [Remotion](https://www.remotion.dev) has been doing this for years, letting developers build videos out of the same React components they use for websites. More recently, HeyGen open-sourced [HyperFrames](https://github.com/heygen-com/hyperframes), which does the same thing with plain HTML and CSS. Either way, a browser draws each frame, and the frames are stitched together into a video.
 
-Both rest on the same idea: **the browser is already an extremely capable graphics engine.**
+Both rest on the same idea: **the browser is an extremely capable graphics engine.**
 
-It renders typography, illustration, animation, 3D, images and video, on every device we own. All it’s missing to become a video renderer is a clock it can step through one frame at a time. Give it one, capture what’s on screen at each step, and you have a video.
+It already renders typography, illustration, animation, 3D, images and video. All it’s missing to become a video renderer is a clock it can step through one frame at a time. Give it one, capture what’s on screen at each step, and you have a video.
 
 <StripDiagram caption="01 / Every frame, a function of time" />
 
-If you’ve written React, you already know the mental model. You don’t reach in and change an interface; you describe what it should look like for a given state:
+If you’ve written React, you know the mental model. You don’t reach in and change an interface; you describe what it should look like for a given state:
 
 ```text
 UI = f(state)
@@ -52,7 +52,7 @@ Video works the same way, with time in place of state:
 frame = f(time)
 ```
 
-You don’t tell a title to fade in. You describe where it is at any given moment: invisible at frame 0, fully in place by frame 30, halfway there at frame 15. The renderer asks that question once per frame, and it gets the same answer every time.
+You don’t tell a title to fade in. You describe where it should be at any moment: invisible at frame 0, halfway there at frame 15, fully in place by frame 30. Ask twice and you get the same answer.
 
 ## Rendering, not rolling the dice
 
@@ -60,7 +60,7 @@ That last part is the real benefit. Ask a generative model for the same clip twi
 
 It sounds like a technical footnote, but it changes how the work goes. You can tune a coded piece the way you’d tune a layout: try something, look, adjust, look again. Every round builds on the last, and nothing you’ve already gotten right drifts while you work on something else. You stop when it’s right, not when you get lucky.
 
-It matters even more once a client is involved, because revisions on a motion piece tend to be deliberately mundane:
+It matters even more once a client is involved, because revisions on a motion piece tend to be mundane:
 
 - Make the logo 20% smaller.
 - Hold this frame for another second.
@@ -83,11 +83,11 @@ The second benefit follows from the first. If a video is a function, you can giv
 <Promo title="Poetry in Motion" theme="blue" format="vertical" duration={12} />
 ```
 
-Change the title and render again. Swap the theme, the format or the data, and render again.
+Change the title, theme, format or data and render again.
 
 That’s where a lot of tedious production work lives: a campaign with a dozen headlines, the same piece laid out properly at 16:9, 1:1 and 9:16, a card for every speaker on the schedule, this month’s numbers animated in the same style as last month’s. None of it is creative work, but someone usually does it by hand. Here it becomes a list of inputs.
 
-Nobody is hand-editing 400 timelines. A design system for video turns out to look a lot like a design system for the web.
+Nobody wants to hand-edit 400 timelines. A design system for video turns out to look a lot like a design system for the web.
 
 ## Why this matters now
 
@@ -97,19 +97,17 @@ Because the renderer was never the bottleneck. Writing the program was. Programm
 
 **Programmatic video isn’t new. What’s new is that writing the program has gotten cheap.**
 
-With a coding agent, you describe the animation and it writes or changes the code. “Stagger the three cards in from the left, a beat apart, with a slight overshoot” is a sentence for you and a few lines of code for the model.
-
-And it’s code these models already know well. They aren’t learning to operate an animation application, clicking through panels they’ve never seen. They’re writing HTML, CSS and JavaScript, which they’ve seen more of than almost anything else. HyperFrames leans into this: it ships instructions that teach AI agents its rules, and its README makes the case for plain HTML on exactly this basis.
+With a coding agent, you describe the animation and it writes or changes the code. “Stagger the three cards in from the left, a beat apart, with a slight overshoot” is a sentence for you and a few lines of code for the model. And the medium is familiar territory for these models: HTML, CSS and JavaScript.
 
 ## This isn’t a replacement for generative video
 
-To be clear, this isn’t a “code good, generative bad” argument. The two are good at different things.
+This isn’t a “code good, generative bad” argument. The two are good at different things.
 
-Code excels at things with structure: typography, UI, diagrams, charts, data visualization, logos, geometric animation, explainers, product graphics, and anything that has to be exactly the same every time.
+Code excels at things with structure: typography, UI, diagrams, charts, logos, geometric animation, product graphics, and anything that has to be exactly the same every time.
 
-Generative video excels at what’s hard to describe procedurally: people, environments, cinematic imagery, organic movement, realistic camera work. That’s the ground [Runway](https://runwayml.com), Google’s [Veo](https://deepmind.google/models/veo/), OpenAI’s [Sora](https://openai.com/sora/), [Kling](https://klingai.com) and [Luma](https://lumalabs.ai) cover, and what they can do is impressive and getting better fast. But I see what they make as an input to the system, not its source of truth.
+Generative video excels at what’s hard to describe procedurally: people, environments, cinematic imagery, organic movement, realistic camera work. I see what it makes as an input to the system, not its source of truth.
 
-So stop treating them as competitors and stack them:
+So stack them:
 
 ```text
 generative assets / footage
@@ -121,7 +119,9 @@ typography + graphics + data
         video
 ```
 
-Let a model generate the footage it’s good at, then bring that footage into a coded composition where the titles, lower thirds, charts, branding and timing are exact and editable. The generative part supplies the texture; the code supplies the structure, and the control.
+Let a model generate the footage, then bring it into a coded composition where the titles, graphics, branding and timing are exact and editable.
+
+**The generative part supplies the texture; the code supplies the structure and control.**
 
 ## A small experiment
 
@@ -137,17 +137,15 @@ The brief: three event promos (a disco night, a data science talk and a game jam
 
 Here’s how it went:
 
-1. **Plan it:** “Here are the assets. Build this loop, plus an admin view to review it.” Before writing anything it asked three questions: the output aspect ratio, where the project should live, and whether to rebuild the layouts from the PNGs. I pointed it at the design source instead. It ported all six layouts with their original styles intact, and each matched its PNG export on the first render.
+1. **Plan it:** “Here are the assets. Build this loop, plus an admin view to review it.” It initially offered to rebuild the layouts from the PNGs, but I pointed it at the original design source instead. It ported all six with their styles intact, and each matched its PNG export on the first render.
 2. **Make it move:** The first render held every layout perfectly and fell apart in between. “Disco Night” sits on one line in 16:9 and two in 4:5, so the title cross-dissolved into a smeared double image. Text also ran ahead of the card as it resized and got clipped at its edge. The fix was structural: each title became individual words that fly to their new positions, and every element now moves with the card.
-3. **Swap the footage:** Partway through, the final background renders arrived, including a real video for the data science talk, which had been a still with a slow Ken Burns move until then. Swapping each one meant changing one file path per event and rendering again.
+3. **Swap the footage:** When the final background renders arrived, swapping them in meant changing one file path per event and rendering again.
 4. **Adjust the timing:** I wanted each layout held longer and the transitions slower, so I did this one myself in the admin view: hold from 0.4 to 1 second, transition from 0.6 to 2, then render. No code changed, just two numbers in a settings file.
-5. **Generate variations:** The loop already is the variations: one set of templates, three sets of event details, two aspect ratios. A fourth event would be one more entry in a list.
+5. **Generate variations:** The variations were already built in: one set of templates, three sets of event details, two aspect ratios. A fourth event would be one more entry in a list.
 
-Two things worked on the first try. The layouts did because the agent ported the real design source instead of eyeballing screenshots. The footage did because the agent found where each clip loops by comparing its first and last frames, then slowed every clip slightly so one pass of the video spans exactly one cycle of the piece. The seam where the video wraps back to the start is invisible.
+The layouts worked on the first try because the agent had real design source instead of screenshots. The motion took two rounds of fixes. The agent found those problems by rendering and checking still frames from the middle of each transition. The fixes changed the motion without disturbing the layouts that were already right.
 
-The motion took two rounds of fixes, though the agent found those problems itself by rendering still frames from the middle of each transition and checking them. It needed me twice: once to point it at the design source sitting alongside the PNGs, and once to tell it the final footage lived in a different folder from the draft clip it had picked up. It also made one change I didn’t ask for, lightening the background haze to match the reference screenshot. That was a reasonable call, and because it was a change to code, I could see exactly what it did.
-
-The timing change is the one that matters. In a generative tool, “hold it longer” means regenerating the clip and hoping everything else survives. Here it was two numbers. Everything I didn’t touch rendered exactly as before, just spread over 18 seconds instead of 6.
+The timing change is the one that matters. In a generative tool, “hold it longer” means regenerating the clip and hoping everything else survives. Here it was two numbers. Everything else rendered exactly as before, just spread over 18 seconds instead of 6.
 
 <Figure
   media="notes/video-as-code/video-as-code-event-admin.mp4"
@@ -164,8 +162,4 @@ Programmatic video asks: _what system produces these pixels?_
 
 For professional work, the second question is the one that matters. Client video is rarely a single shot at something impressive. It’s a brief, a first cut, feedback, a second cut, a client who loves it except for the logo, and a vertical version due Friday. That process depends on getting something right and keeping it right.
 
-That’s what determinism buys you. You’re not rolling the dice and hoping for a good take; you’re building a system and tuning it until it’s exactly what you want. When the edits come back, you make them surgically, and everything already approved stays approved. And once the system exists, the low-value production work, the resizes and variations and next month’s version, comes down to changing inputs.
-
-None of that is new. What’s new is that you don’t have to build the system by hand anymore. You can describe it, and AI will write it.
-
-The model isn’t generating the video. It’s generating something you can keep working on until it’s right.
+That’s what determinism buys you. You’re not rolling the dice and hoping for a good take; you’re building a system and tuning it until it’s exactly what you want. When the edits come back, you make them surgically, and everything already approved stays approved. And once the system exists, the low-value production work—resizes, variations, next month’s version—is just a different set of inputs.
