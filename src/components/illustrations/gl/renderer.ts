@@ -66,9 +66,16 @@ export type Player = {
   down(x: number, y: number, t: number): boolean;
   move(x: number, y: number, t: number): void;
   up(t: number): void;
-  /** Whether something draggable is under the pointer. */
+  /** The pointer is at (x, y), a mouse between drags: whether something draggable is under it. */
   hover(x: number, y: number): boolean;
+  /** The pointer left the scene. */
+  leave(): void;
+  /** Outlines drawn with the latest frame, half under the canvas and half over it. */
+  strokes?(): Stroke[];
 };
+
+/** SVG path data in canvas px: the part behind the scene, the part in front, and how solid it is (0–1). */
+export type Stroke = { back: string; front: string; opacity: number };
 
 export type Settings = {
   /** Light direction: compass angle on the plane (deg) and height above it (deg). */

@@ -3,13 +3,38 @@
 import { useEffect, useId, useRef } from "react";
 import { Stage } from "../primitives";
 import { posterPath, posterSrcSet } from "./poster";
-import { DEFAULT_SETTINGS, type Player, planeToCanvas, Renderer, type SceneDef, type Settings } from "./renderer";
+import {
+  DEFAULT_SETTINGS,
+  type Player,
+  planeToCanvas,
+  Renderer,
+  type SceneDef,
+  type Settings,
+  type Stroke,
+} from "./renderer";
 import { SCENES, type SceneName } from "./scenes";
 
 /** Drawing-buffer budget: up to 2× density, less for very large illustrations. */
 const MAX_PIXELS = 2.5e6;
 /** Matches the hero layouts: about half the viewport on desktop, full width below. */
 const DEFAULT_SIZES = "(min-width: 1024px) 50vw, 100vw";
+
+/** Draws a player's strokes into the SVGs under and over the canvas, reusing their paths. */
+function paintStrokes(back: SVGSVGElement, front: SVGSVGElement, strokes: Stroke[]) {
+  for (const [svg, side] of [
+    [back, "back"],
+    [front, "front"],
+  ] as const) {
+    strokes.forEach((s, i) => {
+      const path =
+        (svg.children[i] as SVGPathElement | undefined) ??
+        svg.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "path"));
+      path.setAttribute("d", s[side]);
+      path.setAttribute("opacity", s.opacity.toFixed(3));
+    });
+    while (svg.children.length > strokes.length) svg.lastChild!.remove();
+  }
+}
 
 /**
  * The floor plane as an SVG matrix(): the camera is orthographic, so the iso
@@ -46,6 +71,8 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
   const gridId = useId();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hitRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<SVGSVGElement>(null);
+  const frontRef = useRef<SVGSVGElement>(null);
   const props = useRef({ time, settings });
   const redraw = useRef<() => void>(() => {});
 
@@ -59,6 +86,8 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     const box = canvas.closest<HTMLElement>(".ok-illo")!;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)");
     const hit = hitRef.current;
+    const back = backRef.current,
+      front = frontRef.current;
     let r: Renderer | null = null;
     let player: Player | null = null;
     let loading = false,
@@ -81,6 +110,7 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
           ? (player ??= scene.play()).frame(now / 1000)
           : scene.frame(time ?? (scene.posterTime + (now - origin) / 1000) % scene.duration);
       r.render(scene, items, settings);
+      if (player?.strokes && back && front) paintStrokes(back, front, player.strokes());
       if (!("live" in box.dataset)) box.dataset.live = "";
     };
     const tick = (now: number) => {
@@ -181,13 +211,19 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       if (e.pointerId !== held) return;
       held = null;
       player?.up(e.timeStamp / 1000);
+      // Only a mouse hovers: a finger's done once it lifts.
+      if (e.pointerType !== "mouse") player?.leave();
       cursor(e);
+    };
+    const leave = () => {
+      if (held === null) player?.leave();
     };
     hit?.addEventListener("pointerdown", down);
     hit?.addEventListener("pointermove", move);
     hit?.addEventListener("pointerup", up);
     hit?.addEventListener("pointercancel", up);
     hit?.addEventListener("lostpointercapture", up);
+    hit?.addEventListener("pointerleave", leave);
 
     return () => {
       if (held !== null && hit?.hasPointerCapture(held)) hit.releasePointerCapture(held);
@@ -196,6 +232,7 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       hit?.removeEventListener("pointerup", up);
       hit?.removeEventListener("pointercancel", up);
       hit?.removeEventListener("lostpointercapture", up);
+      hit?.removeEventListener("pointerleave", leave);
       disposed = true;
       cancelAnimationFrame(raf);
       cancelStart();
@@ -244,7 +281,14 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
           decoding="async"
         />
       </picture>
+      {/* A player's strokes go half under the canvas, where the scene hides them, and half over it. */}
+      {scene.play && (
+        <svg ref={backRef} className="ok-illo-gl ok-illo-strokes" viewBox="0 0 620 660" aria-hidden="true" />
+      )}
       <canvas ref={canvasRef} className="ok-illo-gl" />
+      {scene.play && (
+        <svg ref={frontRef} className="ok-illo-gl ok-illo-strokes" viewBox="0 0 620 660" aria-hidden="true" />
+      )}
       {scene.hitArea && (
         <div
           ref={hitRef}

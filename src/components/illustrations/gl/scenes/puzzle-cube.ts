@@ -15,6 +15,9 @@ import { bezier } from "../timeline";
 // with the pointer round its axis, like a dial, so the cube stays under it),
 // and let go to have the slice coast into the nearest quarter turn. Left alone for a few
 // seconds, it undoes the turns until the pink layer is whole, then loops again.
+// Hovering a cube rings the slices a drag could turn (strokes()): dashed
+// circles round each axis that glide from cube to cube, narrow to one once a
+// drag picks its slice, and turn with it.
 
 type Axis = 0 | 1 | 2;
 type Move = [axis: Axis, layer: number, dir: number];
@@ -56,8 +59,57 @@ const LOCK = 6; // pointer travel before a drag picks its slice (canvas px)
 const NEAR = HALF; // the pointer this close to the turning axis holds the slice still (plane px)
 const UNDO = 6; // most time the undoing takes (s), however many turns there are
 
+const RING = 180; // axis ring radius (plane px): just clear of a turning slice's corners (172.5)
+const DASHES = 48; // per ring; a multiple of 4, so a landed quarter turn leaves the dashes where they were
+const GLIDE = 14; // rings ease to a new cube at this rate (1/s)
+const FADE = 10; // and fade in or out at this one (1/s)
+
 /** Plane → canvas, for picking and dragging. */
 const VIEW = planeToCanvas({});
+
+/** A plane point on the canvas. */
+function toCanvas(p: Vec): [number, number] {
+  const [x, y] = projectVec(VIEW, p);
+  return [x + VIEW[12], y + VIEW[13]];
+}
+
+/**
+ * The dashed ring round `axis`, `at` along it from the cube's middle and turned
+ * by `a` (rad), as SVG paths: the dashes facing away from the viewer, which the
+ * cube hides, and those facing it, which pass in front. Every cube stays inside
+ * the ring's cylinder, so that split is all the depth sorting it needs.
+ */
+function ring(axis: Axis, at: number, a: number) {
+  const u = AXES[(axis + 1) % 3],
+    v = AXES[(axis + 2) % 3];
+  const c: Vec = [...CENTER];
+  c[axis] += at;
+  const point = (th: number): Vec => {
+    const cs = Math.cos(th) * RING,
+      sn = Math.sin(th) * RING;
+    return [c[0] + u[0] * cs + v[0] * sn, c[1] + u[1] * cs + v[1] * sn, c[2] + u[2] * cs + v[2] * sn];
+  };
+  let back = "",
+    front = "";
+  for (let k = 0; k < DASHES; k++) {
+    const th0 = a + (k * 2 * Math.PI) / DASHES,
+      len = Math.PI / DASHES;
+    const mid = point(th0 + len / 2);
+    const d = [0, 1, 2, 3]
+      .map((i) => toCanvas(point(th0 + (i * len) / 3)))
+      .map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`)
+      .join("");
+    if (VIEW[2] * (mid[0] - c[0]) + VIEW[6] * (mid[1] - c[1]) + VIEW[10] * (mid[2] - c[2]) > 0) front += d;
+    else back += d;
+  }
+  return { back, front };
+}
+
+/** The axes a drag from this face can turn: sideways the horizontal layer, up or down a vertical slice. */
+const faceAxes = (face: Axis): Axis[] => (face === 0 ? [2, 1] : face === 1 ? [2, 0] : [0, 1, 2]);
+
+/** Eases `x` toward `to` at `rate` (1/s) over `dt` (s). */
+const approach = (x: number, to: number, rate: number, dt: number) => to + (x - to) * Math.exp(-rate * dt);
 
 /** Quarter turn of cube (x, y, z) about `axis`, in lattice units. */
 function turn([x, y, z]: Vec, axis: number, d: number): Vec {
@@ -218,6 +270,43 @@ function play(): Player {
     undoDur = 0.5;
   let drag: Drag | null = null;
   let items = draw(cube, turns);
+  /** The hovering mouse (canvas px), and the cube it was last over, kept while it crosses the gaps between cubes. */
+  let pointer: [number, number] | null = null;
+  let hovered: { i: number; axes: Axis[] } | null = null;
+  /** Each axis's ring: how far along the axis it sits (plane px) and how solid it is. */
+  const rings = AXES.map(() => ({ at: 0, alpha: 0 }));
+
+  /** Where each axis's ring should be (plane px along it), or null where it shouldn't show. */
+  function ringTargets(): (number | null)[] {
+    const want: (number | null)[] = [null, null, null];
+    if (drag?.axis !== undefined) {
+      want[drag.axis] = cube[drag.cubie].pos[drag.axis] * PITCH;
+      return want;
+    }
+    if (drag) hovered = { i: drag.cubie, axes: faceAxes(drag.face) };
+    else if (pointer) {
+      const p = pick(...pointer);
+      if (p) hovered = { i: p.i, axes: faceAxes(p.face) };
+    }
+    if (!hovered) return want;
+    // From the cube as drawn, so the rings follow it through a turn.
+    for (const a of hovered.axes) want[a] = items[hovered.i].center[a] - CENTER[a];
+    return want;
+  }
+
+  function moveRings(dt: number) {
+    const want = ringTargets();
+    rings.forEach((r, a) => {
+      const to = want[a];
+      if (to === null) {
+        r.alpha = approach(r.alpha, 0, FADE, dt);
+        return;
+      }
+      // A ring that had gone starts where it's wanted, rather than gliding over from where it was.
+      r.at = r.alpha < 0.01 ? to : approach(r.at, to, GLIDE, dt);
+      r.alpha = approach(r.alpha, 1, FADE, dt);
+    });
+  }
 
   function push(axis: Axis, layer: number, n: number) {
     n = mod4(n);
@@ -369,7 +458,9 @@ function play(): Player {
         }
       }
       if (mode === "restore" && !turns.length) undoNext();
-      return (items = draw(cube, turns));
+      items = draw(cube, turns);
+      moveRings(dt);
+      return items;
     },
 
     down(x, y) {
@@ -433,7 +524,24 @@ function play(): Player {
       release(d.turn, dt > 0 ? (s[s.length - 1][1] - s[0][1]) / dt : 0);
     },
 
-    hover: (x, y) => pick(x, y) !== null,
+    hover(x, y) {
+      pointer = [x, y];
+      return pick(x, y) !== null;
+    },
+
+    leave() {
+      pointer = hovered = null;
+    },
+
+    strokes() {
+      return rings.flatMap((r, a) => {
+        if (r.alpha < 0.01) return [];
+        const axis = a as Axis,
+          layer = Math.round(r.at / PITCH);
+        const t = turns.find((t) => t.axis === axis && t.layer === layer);
+        return [{ ...ring(axis, r.at, t?.a ?? 0), opacity: r.alpha }];
+      });
+    },
   };
 }
 
@@ -442,12 +550,7 @@ function outline(): [number, number][] {
   const R = PITCH + HALF,
     PAD = 12;
   const corners = [-1, 1].flatMap((x) =>
-    [-1, 1].flatMap((y) =>
-      [-1, 1].map((z): [number, number] => {
-        const [cx, cy] = projectVec(VIEW, [CENTER[0] + x * R, CENTER[1] + y * R, CENTER[2] + z * R]);
-        return [cx + VIEW[12], cy + VIEW[13]];
-      }),
-    ),
+    [-1, 1].flatMap((y) => [-1, 1].map((z) => toCanvas([CENTER[0] + x * R, CENTER[1] + y * R, CENTER[2] + z * R]))),
   );
   const h = hull(corners);
   const mx = h.reduce((s, p) => s + p[0], 0) / h.length,
