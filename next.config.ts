@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
@@ -54,11 +55,16 @@ const nextConfig = (phase: string): NextConfig => ({
 });
 
 // Plugins are passed by name so they work under Turbopack, which also means their
-// options must be plain data: no functions, so no Shiki transformers.
+// options must be plain data: no functions, so no Shiki transformers. A local
+// plugin goes in by absolute path, since names resolve from each MDX file's folder.
 const withMDX = createMDX({
   options: {
     remarkPlugins: ["remark-frontmatter", "remark-gfm"],
-    rehypePlugins: ["rehype-slug", ["rehype-pretty-code", { theme: codeTheme, keepBackground: false }]],
+    rehypePlugins: [
+      "rehype-slug",
+      ["rehype-pretty-code", { theme: codeTheme, keepBackground: false }],
+      fileURLToPath(new URL("./src/lib/rehype-terminal.mjs", import.meta.url)),
+    ],
   },
 });
 

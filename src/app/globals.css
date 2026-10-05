@@ -759,6 +759,52 @@
     box-shadow: 0 0 0 0.15em color-mix(in oklab, var(--color-pink) 24%, transparent);
   }
 
+  /* ```text blocks are terminal output: diagrams and tables laid out in spaces.
+     src/lib/rehype-terminal.mjs marks their comments, headings, rules and
+     tokens; the scaffolding recedes so the content reads. */
+  .note-body
+    pre[data-language="text"]
+    :is([data-comment], [data-heading], [data-token="label"], [data-token="arrow"], [data-token="step"]) {
+    color: var(--color-muted-light);
+  }
+  .note-body pre[data-language="text"] [data-token="leader"] {
+    color: var(--color-body);
+  }
+  .note-body pre[data-language="text"] [data-token="check"] {
+    color: var(--code-green);
+  }
+  /* Column headings: small tracked capitals, spaced to the block's character
+     width so the columns below still line up, on the same line height. */
+  .note-body pre[data-language="text"] [data-heading] {
+    font-size: calc(1em * 6 / 7);
+    letter-spacing: calc(1ch / 6);
+    line-height: calc(var(--leading-code) * 7 / 6);
+  }
+  /* A line of hyphens is a dashed rule across the block. */
+  .note-body pre[data-language="text"] [data-rule] {
+    color: transparent;
+    background:
+      repeating-linear-gradient(to right, var(--color-body) 0 3px, transparent 3px 6px) center / 100% 1px no-repeat
+      content-box;
+  }
+  /* ```text /model/#yellow /code/#pink: an accent for a word, not a highlight. */
+  .note-body pre[data-language="text"] [data-chars-id] {
+    background: none;
+    box-shadow: none;
+  }
+  .note-body pre[data-language="text"] [data-chars-id="pink"] {
+    color: var(--code-pink);
+  }
+  .note-body pre[data-language="text"] [data-chars-id="yellow"] {
+    color: var(--code-yellow);
+  }
+  .note-body pre[data-language="text"] [data-chars-id="green"] {
+    color: var(--code-green);
+  }
+  .note-body pre[data-language="text"] [data-comment] [data-chars-id] {
+    color: inherit;
+  }
+
   /* Markdown quotes: Gelica at the Lead's size, ruled in pink, for a poem or a
      passage quoted at length. A <cite> on its own line (MDX makes it a
      child of the quote) is its source, in mono below the rule, indented with the text. */

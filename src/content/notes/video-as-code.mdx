@@ -24,9 +24,15 @@ import { StripDiagram } from "@/components/diagrams/video-as-code/StripDiagram";
 
 But there’s another way to use AI to make video, and it looks more like web development than filmmaking. Instead of asking AI to generate the frames, you ask it to write the code that generates them.
 
-```text
-Generative video:   prompt → model → pixels
-Code-based video:   prompt → code → frames → video
+```text /model/#yellow /code/2#pink /≠/#yellow /=/#green
+# two ways to make a video
+
+              INPUT       STEP        STEP        OUTPUT
+generative    prompt  →   model ············  →   pixels
+code-based    prompt  →   code    →   frames  →   video
+--------------------------------------------------------
+generative    ≠ run it again, get something different
+code-based    = run it again, get the same frames
 ```
 
 A generated clip is a finished artifact: if it’s not quite right, you ask again and get something different. Code renders the same frames every time, so you can keep working on it, nudging it until it’s exactly right and changing only what needs to change. That predictability is what makes this approach useful for professional work, and AI coding tools are what suddenly make it practical.
@@ -43,14 +49,16 @@ It already renders typography, illustration, animation, 3D, images and video. Al
 
 If you’ve written React, you know the mental model. You don’t reach in and change an interface; you describe what it should look like for a given state:
 
-```text
-UI = f(state)
+```bash
+# UI is a function of state
+UI = f(state);
 ```
 
 Video works the same way, with time in place of state:
 
-```text
-frame = f(time)
+```bash
+# frame is a function of time
+frame = f(time);
 ```
 
 You don’t tell a title to fade in. You describe where it should be at any moment: invisible at frame 0, halfway there at frame 15, fully in place by frame 30. Ask twice and you get the same answer.
@@ -110,14 +118,15 @@ Generative video excels at what’s hard to describe procedurally: people, envir
 
 So stack them:
 
-```text
-generative assets / footage
-          ↓
-deterministic composition
-          ↓
-typography + graphics + data
-          ↓
-        video
+```text /model/#yellow /code/#pink /rendered/#green
+# the model supplies texture; code supplies structure + control
+
+STEP   LAYER                         BY      SUPPLIES
+[1/3]  generative assets / footage   model   texture
+[2/3]  deterministic composition     code    structure
+[3/3]  typography + graphics + data  code    control
+-------------------------------------------------------
+  ✓    video                                 rendered
 ```
 
 Let a model generate the footage, then bring it into a coded composition where the titles, graphics, branding and timing are exact and editable.
