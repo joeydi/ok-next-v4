@@ -63,6 +63,8 @@ const RING = 180; // axis ring radius (plane px): just clear of a turning slice'
 const DASHES = 48; // per ring; a multiple of 4, so a landed quarter turn leaves the dashes where they were
 const GLIDE = 14; // rings ease to a new cube at this rate (1/s)
 const FADE = 10; // and fade in or out at this one (1/s)
+const HOVER = 1.1; // the hovered cube's size, eased to at the GLIDE rate
+const GRAB = 1; // and a held one's
 
 /** Plane → canvas, for picking and dragging. */
 const VIEW = planeToCanvas({});
@@ -148,15 +150,17 @@ function commit(cube: Cubie[], axis: Axis, layer: number, n: number) {
 /** A slice part way through a turn of `a` (rad). */
 type Slice = { axis: Axis; layer: number; a: number };
 
-function draw(cube: Cubie[], slices: Slice[]): BoxItem[] {
-  return cube.map((c) => {
+/** The cubes as boxes; `size` scales each one about its middle. */
+function draw(cube: Cubie[], slices: Slice[], size?: number[]): BoxItem[] {
+  return cube.map((c, i) => {
     const s = slices.find((s) => c.pos[s.axis] === s.layer);
     const r = s ? quat(AXES[s.axis], s.a) : Q0;
-    const off = qrot(r, [c.pos[0] * PITCH, c.pos[1] * PITCH, c.pos[2] * PITCH]);
+    const off = qrot(r, [c.pos[0] * PITCH, c.pos[1] * PITCH, c.pos[2] * PITCH]),
+      h = HALF * (size?.[i] ?? 1);
     return {
       kind: "box",
       center: [CENTER[0] + off[0], CENTER[1] + off[1], CENTER[2] + off[2]],
-      half: [HALF, HALF, HALF],
+      half: [h, h, h],
       q: qmul(r, c.q),
       pal: c.pink ? P : W,
       edges: [1, 1, 1],
@@ -275,6 +279,8 @@ function play(): Player {
   let hovered: { i: number; axes: Axis[] } | null = null;
   /** Each axis's ring: how far along the axis it sits (plane px) and how solid it is. */
   const rings = AXES.map(() => ({ at: 0, alpha: 0 }));
+  /** Each cube's size: the hovered one swells to HOVER, a held one eases to GRAB. */
+  const size = cube.map(() => 1);
 
   /** Where each axis's ring should be (plane px along it), or null where it shouldn't show. */
   function ringTargets(): (number | null)[] {
@@ -458,7 +464,11 @@ function play(): Player {
         }
       }
       if (mode === "restore" && !turns.length) undoNext();
-      items = draw(cube, turns);
+      size.forEach((s, i) => {
+        const to = drag ? (drag.cubie === i ? GRAB : 1) : hovered?.i === i ? HOVER : 1;
+        size[i] = approach(s, to, GLIDE, dt);
+      });
+      items = draw(cube, turns, size);
       moveRings(dt);
       return items;
     },
