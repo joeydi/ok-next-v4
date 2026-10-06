@@ -6,8 +6,11 @@ import {
   NUDGE as STRIP_NUDGE,
   StripDiagram,
 } from "@/components/diagrams/programmable-video/StripDiagram";
+import { LOOP as REPORT_LOOP } from "@/components/diagrams/website-care/Pages";
+import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram";
 
-// Every note's technique diagram, for the dev-only lab, in note order. While a
+// Every diagram, for the dev-only lab: the notes' technique diagrams in note order,
+// then those on other pages. While a
 // diagram is being explored its variants sit here too, one entry each; when one
 // is chosen, its entry stays and the others are deleted, along with their code.
 // See .claude/skills/diagram/SKILL.md.
@@ -15,8 +18,8 @@ import {
 export type Nudge = [x: number, y: number];
 
 export type DiagramEntry = {
-  /** The note's slug, for the link to it. */
-  note: string;
+  /** The page it's on, for the link to it. */
+  href: string;
   title: string;
   /** Loop length (s). */
   loop: number;
@@ -28,23 +31,29 @@ export type DiagramEntry = {
 
 export const DIAGRAMS: DiagramEntry[] = [
   {
-    note: "poetry-in-motion",
+    href: "/notes/poetry-in-motion",
     title: "The River, in motion",
     loop: 8,
     nudge: RIVER_NUDGE,
     render: (time, nudge) => <RiverDiagram caption="01 / The River, in motion" time={time} nudge={nudge} />,
   },
   {
-    note: "programmable-video",
+    href: "/notes/programmable-video",
     title: "Every frame, a function of time",
     loop: STRIP_LOOP,
     nudge: STRIP_NUDGE,
     render: (time, nudge) => <StripDiagram caption="01 / Every frame, a function of time" time={time} nudge={nudge} />,
   },
   {
-    note: "programmable-video",
+    href: "/notes/programmable-video",
     title: "Fixing one shot",
     loop: 12,
     render: (time) => <RerenderDiagram caption="02 / Fixing one shot" time={time} />,
+  },
+  {
+    href: "/website-care",
+    title: "The monthly report",
+    loop: REPORT_LOOP,
+    render: (time) => <ReportDiagram time={time} />,
   },
 ];

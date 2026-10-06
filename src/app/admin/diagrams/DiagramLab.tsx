@@ -5,7 +5,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { DIAGRAMS, type DiagramEntry, type Nudge } from "./registry";
 
-// Every note's technique diagram (see registry.tsx), each on its own clock with
+// Every diagram (see registry.tsx), each on its own clock with
 // play/pause, a scrubber and speeds, at the width a note shows it. A diagram that
 // fine-tunes its registration by eye also gets a nudge, to copy back into its code.
 
@@ -21,7 +21,7 @@ export function DiagramLab() {
       </header>
       <div className="flex flex-col gap-fl-56">
         {DIAGRAMS.map((d) => (
-          <Entry key={`${d.note}/${d.title}`} entry={d} />
+          <Entry key={`${d.href}/${d.title}`} entry={d} />
         ))}
       </div>
     </div>
@@ -30,7 +30,7 @@ export function DiagramLab() {
 
 const NUDGE_RANGE = 40; // px either way
 
-function Entry({ entry: { note, title, loop, nudge: initial, render } }: { entry: DiagramEntry }) {
+function Entry({ entry: { href, title, loop, nudge: initial, render } }: { entry: DiagramEntry }) {
   const [playing, setPlaying] = useState(true);
   const [nudge, setNudge] = useState(initial);
   const [time, setTime] = useState(0);
@@ -55,8 +55,8 @@ function Entry({ entry: { note, title, loop, nudge: initial, render } }: { entry
     <section className="flex flex-col gap-4">
       <h2 className="mono-label text-ink">
         {title} ·{" "}
-        <Link href={`/notes/${note}`} className="text-pink-ink">
-          {note}
+        <Link href={href} className="text-pink-ink">
+          {href}
         </Link>
       </h2>
       <div className="flex flex-col gap-2">

@@ -1,4 +1,3 @@
-import type { MediaKey } from "@/lib/media";
 import { type Testimonial, testimonials } from "./home";
 
 /**
@@ -174,8 +173,6 @@ export const care = {
       "What deserves attention next",
     ],
     closing: "No dashboard to remember to check. Just a clear record of how your site is doing.",
-    image: "services/website-care/monthly-report-graphic-selection-v2.png" satisfies MediaKey,
-    imageLabel: "image — sample monthly report",
   },
 
   plans: {

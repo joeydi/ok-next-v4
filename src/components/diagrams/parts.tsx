@@ -4,11 +4,25 @@ import type { ReactNode } from "react";
 // container), the floor grid, a plate's header row and its code chips, and the
 // hatch the hidden shapes are drawn in. See .claude/skills/diagram/SKILL.md.
 
-/** A fixed `size` px drawing surface, scaled to its container's width (the illustrations' frame, any size). */
-export function Surface({ size: [w, h], children }: { size: readonly [w: number, h: number]; children: ReactNode }) {
+/**
+ * A fixed `size` px drawing surface, scaled to its container's width (the illustrations' frame, any size).
+ * It clips to its edges, unless `open`, for a diagram set straight on the page whose shadows can run past them.
+ */
+export function Surface({
+  size: [w, h],
+  open = false,
+  children,
+}: {
+  size: readonly [w: number, h: number];
+  open?: boolean;
+  children: ReactNode;
+}) {
   return (
     <div aria-hidden="true" className="ok-illo" style={{ aspectRatio: `${w} / ${h}` }}>
-      <div className="ok-illo-canvas" style={{ width: w, height: h, scale: `tan(atan2(100cqw, ${w}px))` }}>
+      <div
+        className="ok-illo-canvas"
+        style={{ width: w, height: h, scale: `tan(atan2(100cqw, ${w}px))`, overflow: open ? "visible" : undefined }}
+      >
         {children}
       </div>
     </div>

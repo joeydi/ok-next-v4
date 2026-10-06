@@ -24,6 +24,8 @@ A technique diagram shows how something in a note works: the page pulled apart i
   <RiverDiagram caption="01 / The River, in motion" />
   ```
 
+  A diagram can sit on a page that isn't a note (the website care page's report, `src/components/diagrams/website-care/`): leave out the caption and pass `DiagramFigure` a `className` to place it in that page's grid. Its lab entry's `href` is that page. A decorative one like the report can also be `bare` (no frame, set straight on the page, with an `open` `Surface` so its shadows aren't clipped at the edges) and go without the jog wheel: it's an illustration of the thing, not an explainer to scrub through.
+
   Never register a diagram in `src/mdx-components.tsx`. They're one per note, and a local import keeps each out of every other note's build.
 - **The lab**, `src/app/admin/diagrams/` (dev only): one entry per diagram in `registry.tsx`, each with play/pause, a scrubber and speeds. An entry that sets `nudge` (a `fromScreen()` fine-tune, as the diagram's default) also gets x/y sliders, passed to `render`: tune it there, then copy the value into the diagram.
 
@@ -45,7 +47,7 @@ Settled on the first diagram. Keep to it unless the user asks otherwise, and the
 ## Motion
 
 - `useLoop(duration, { time })` runs the clock only near the viewport. Under reduced motion it holds the server-rendered frame (`still`, 0 by default), so make sure that frame explains the diagram. The lab passes `time` to pin it.
-- **Every diagram has a jog wheel**: pass `useLoop`'s third value, `jog`, to `DiagramFigure`. Along the bottom of the frame, the loop's time turns on a drum under a pink playhead. A drag scrubs it 1:1, a throw carries on and eases back to normal playback, a sideways touchpad swipe scrubs it with the system's momentum, and arrow keys step it. Under reduced motion it still scrubs, but a throw does nothing. It's centred at `@2xl`, with `14.5rem` either side, and nearly full width below that. So keep that strip free of anything the reader has to see. The lab pins the clock, so the wheel doesn't show there: try it on the note.
+- **Every technique diagram has a jog wheel** (a decorative one off a note may skip it, as above): pass `useLoop`'s third value, `jog`, to `DiagramFigure`. Along the bottom of the frame, the loop's time turns on a drum under a pink playhead. A drag scrubs it 1:1, a throw carries on and eases back to normal playback, a sideways touchpad swipe scrubs it with the system's momentum, and arrow keys step it. Under reduced motion it still scrubs, but a throw does nothing. It's centred at `@2xl`, with `14.5rem` either side, and nearly full width below that. So keep that strip free of anything the reader has to see. The lab pins the clock, so the wheel doesn't show there: try it on the note.
 - **Loops are seamless.** Make the geometry periodic (`bank()` in `poetry-in-motion/river.ts` is a sum of whole-period sines), and move things by whole periods, or whole blocks of repeated content, per loop.
 - **Run the real thing** where the technique is CSS: the poetry-in-motion diagram wraps its lines with a live `shape-outside` float, so the browser does the layout, as in the demo.
 - With overflow, **pad the content past the fade** (`FADE` plus any `register()` move), so the loop wraps where nothing is drawn. Fix the padding: if it changes with a control, the loop jumps.

@@ -3,15 +3,14 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
+import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram";
 import { Eyebrow, Plus } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
-import { Placeholder } from "@/components/Placeholder";
 import { SectionHead } from "@/components/ServicePage";
 import { Cite } from "@/components/Testimonial";
 import { care as c } from "@/data/care";
 import { cn } from "@/lib/cn";
-import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
 // Dev-only (see pageExtensions in next.config.ts) until it launches: then rename to
@@ -226,12 +225,7 @@ function Report() {
         <List items={r.items} />
         <p className="border-t border-rule pt-fl-20 text-fl-18 leading-copy text-pretty text-body">{r.closing}</p>
       </div>
-      <Placeholder
-        label={r.imageLabel}
-        media={getMedia(r.image)}
-        sizes="(min-width: 1024px) 48vw, 100vw"
-        className="col-span-12 aspect-4/3 lg:col-span-6 lg:col-start-7"
-      />
+      <ReportDiagram className="col-span-12 lg:col-span-7 lg:col-start-6" />
     </Container>
   );
 }
