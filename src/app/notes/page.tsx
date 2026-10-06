@@ -11,9 +11,9 @@ import { OPEN_GRAPH } from "@/lib/metadata";
 import { formatDate, getAllNotes } from "@/lib/notes";
 
 export const metadata: Metadata = {
-  title: "Notes",
+  title: "Case studies and website guides for non-profits",
   description:
-    "Project write-ups, process notes and the occasional thing I made for fun, by Joe di Stefano, a designer and developer in Burlington, Vermont.",
+    "Practical guides to looking after your website, plus case studies from non-profits, foundations and agencies I’ve worked with in Vermont and Arizona.",
   alternates: { canonical: "/notes" },
   openGraph: { ...OPEN_GRAPH, url: "/notes" },
 };
