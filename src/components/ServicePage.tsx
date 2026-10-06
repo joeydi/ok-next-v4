@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/cn";
 import { JsonLd, serviceGraph } from "@/lib/jsonld";
@@ -181,7 +181,8 @@ export function ServicePage({ service: s }: { service: Service }) {
   );
 }
 
-function SectionHead({
+/** Eyebrow over a Gelica heading, opening a section. Also used by the website care page. */
+export function SectionHead({
   n,
   eyebrow,
   children,
@@ -190,7 +191,7 @@ function SectionHead({
 }: {
   n: string;
   eyebrow: string;
-  children: string;
+  children: ReactNode;
   className?: string;
   balance?: boolean;
 }) {

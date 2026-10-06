@@ -1075,5 +1075,19 @@
     "context": "Open Graph card for /notes/vermont-made-ideas",
     "altSource": "human",
     "reviewed": true
+  },
+  "services/website-care/monthly-report-graphic-selection-v2.png": {
+    "type": "image",
+    "width": 2400,
+    "height": 1800,
+    "bytes": 319874,
+    "etag": "cfcd74b13f2b334bbbfbae3d7dd6d2f1",
+    "blurDataURL": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAQCdASoQAAwAA4BaJaQAAxe6OZql1QAA/u0PdxCtIX2ZmUlk6QJJ+m1Zebg9791ROVLPjGrtgZXRw0QqRw+BZoLcQJjZQxWmjgOLrAUGdl4BQlggAAAA",
+    "color": "#f8f8f8",
+    "alt": "Three overlapping pages of a website maintenance report for Columbia Capital, showing uptime, response time, Lighthouse scores, plugin updates, and performance test tables.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true
   }
 }
