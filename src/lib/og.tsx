@@ -187,7 +187,7 @@ export async function renderOg({
               .map((part, i) => (
                 <span key={i} style={{ display: "flex", alignItems: "center", gap: 22, flexShrink: 0 }}>
                   {i === 0 && (
-                    <svg width={15} height={15} viewBox="0 0 10 10">
+                    <svg width={15} height={15} viewBox="0 0 10 10" aria-hidden="true">
                       <path fill="#FF4D6A" d={PLUS_PATH} />
                     </svg>
                   )}
