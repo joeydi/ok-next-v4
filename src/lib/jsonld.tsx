@@ -76,6 +76,7 @@ export function siteGraph(): Graph {
         founder: ref(ids.person),
         address,
         areaServed: "US",
+        sameAs: [...SITE.orgSameAs],
       },
       {
         "@type": "WebSite",

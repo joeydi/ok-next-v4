@@ -12,6 +12,8 @@ export const SITE = {
     "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams and non-profits figure out what's worth building, then build it well.",
   /** Joe's own profiles, listed on the Person in the JSON-LD. */
   sameAs: ["https://www.linkedin.com/in/joeydi/", "https://x.com/joeydi", "https://github.com/joeydi"],
+  /** Okayplus's own profiles, listed on the ProfessionalService in the JSON-LD. */
+  orgSameAs: ["https://www.facebook.com/okayplusdesign/"],
   bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
 } as const;
 
