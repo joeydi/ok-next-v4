@@ -14,10 +14,10 @@ import { formatDate, getAllNotes, getNote } from "./notes";
  * Part of every card's hash: bump it when the card layout changes (og.tsx, OgCardHtml)
  * or a network/illustration poster it draws is re-saved, so every saved card turns stale.
  */
-const CARD_VERSION = 4;
+const CARD_VERSION = 5;
 
 export type OgCard = {
-  /** Separate parts with two spaces. */
+  /** Separate parts with two spaces. The first is drawn after a pink plus. */
   eyebrow: string;
   /** *Starred* words render pink. */
   title: string;
@@ -80,20 +80,20 @@ export function ogCard(path: string): OgCard | null {
 function content(path: string): OgCard | null {
   if (path === "/")
     return {
-      eyebrow: "/ 00  Burlington, Vermont",
+      eyebrow: "Burlington, Vermont",
       title: "Let’s think it through, *together.*",
       alt: "Okayplus — Joe di Stefano, designer + developer in Burlington, Vermont",
       illustration: "puzzle-cube",
     };
-  if (path === "/notes") return { eyebrow: "/ Notes", title: "Notes*.*", alt: "Notes — Okayplus" };
+  if (path === "/notes") return { eyebrow: "Notes", title: "Notes*.*", alt: "Notes — Okayplus" };
   if (path === "/network")
-    return { eyebrow: "/ Network", title: "Stay eager*.*", alt: "Network — Okayplus", network: true };
+    return { eyebrow: "Network", title: "Stay eager*.*", alt: "Network — Okayplus", network: true };
 
   const slug = path.slice(1);
   if (slug in services) {
     const s = services[slug as ServiceSlug];
     return {
-      eyebrow: `/ Services  ${s.n}  ${s.audience}`,
+      eyebrow: `Services  ${s.n}  ${s.audience}`,
       title: s.h1.join(" "),
       alt: `${s.title} — Okayplus`,
       illustration: s.illustration,
@@ -103,7 +103,7 @@ function content(path: string): OgCard | null {
   const note = path.startsWith("/notes/") ? getNote(path.slice("/notes/".length)) : null;
   if (note)
     return {
-      eyebrow: `/ Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`,
+      eyebrow: `Notes  ${formatDate(note.meta.date)}  ${note.meta.tag}`,
       title: note.meta.title,
       alt: `${note.meta.plainTitle} — Okayplus`,
       image: note.meta.ogImage ?? note.meta.image,

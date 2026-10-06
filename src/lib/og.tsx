@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { PLUS_PATH } from "@/components/Eyebrow";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { Logo } from "@/components/Logo";
 import { networkSvg } from "@/components/network/frame";
@@ -184,7 +185,12 @@ export async function renderOg({
               .toUpperCase()
               .split(/\s{2,}/)
               .map((part, i) => (
-                <span key={i} style={{ flexShrink: 0 }}>
+                <span key={i} style={{ display: "flex", alignItems: "center", gap: 22, flexShrink: 0 }}>
+                  {i === 0 && (
+                    <svg width={15} height={15} viewBox="0 0 10 10">
+                      <path fill="#FF4D6A" d={PLUS_PATH} />
+                    </svg>
+                  )}
                   {part}
                 </span>
               ))}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Accent } from "@/components/Accent";
+import { Plus } from "@/components/Eyebrow";
 import { Logo } from "@/components/Logo";
 import { SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
@@ -95,9 +96,16 @@ export function OgCardHtml({
           }}
         >
           <div className={cn("flex gap-6 font-mono text-[22px] tracking-label whitespace-nowrap uppercase", muted)}>
-            {card.eyebrow.split(/\s{2,}/).map((part, i) => (
-              <span key={i}>{part}</span>
-            ))}
+            {card.eyebrow.split(/\s{2,}/).map((part, i) =>
+              i ? (
+                <span key={i}>{part}</span>
+              ) : (
+                <span key={i} className="flex items-center gap-[1em]">
+                  <Plus />
+                  {part}
+                </span>
+              ),
+            )}
           </div>
           <div className={`display ${title}`}>
             <Accent text={card.title} />

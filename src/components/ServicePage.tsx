@@ -97,10 +97,7 @@ export function ServicePage({ service: s }: { service: Service }) {
                   three ? "px-fl-32 lg:min-h-[calc(29.17*var(--pvw))]" : "px-fl-28 xl:min-h-[calc(30.56*var(--pvw))]",
                 )}
               >
-                <div className="mono-label flex justify-between gap-4 text-muted">
-                  <span>{c.k}</span>
-                  <span className="shrink-0 whitespace-nowrap">/ {c.n}</span>
-                </div>
+                <div className="mono-label text-muted">{c.k}</div>
                 <h3
                   className={cn(
                     "display mt-fl-40",

@@ -418,7 +418,7 @@ function Playground({
   scenes: string[];
   mediaKeys: string[];
 }) {
-  const [eyebrow, setEyebrow] = useState("/ 00  Burlington, Vermont");
+  const [eyebrow, setEyebrow] = useState("Burlington, Vermont");
   const [title, setTitle] = useState("Let’s think it through, *together.*");
   const [illustration, setIllustration] = useState("puzzle-cube");
   const [image, setImage] = useState("");
