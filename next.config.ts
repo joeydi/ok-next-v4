@@ -41,6 +41,16 @@ const nextConfig = (phase: string): NextConfig => ({
   // so they never ship in a production build.
   pageExtensions: [...(phase === PHASE_DEVELOPMENT_SERVER ? ["dev.tsx", "dev.ts"] : []), "ts", "tsx", "md", "mdx"],
   headers: async () => (phase === PHASE_DEVELOPMENT_SERVER ? [] : [{ source: "/:path*", headers: securityHeaders }]),
+  // Next ships polyfills for Array.prototype.at, Object.hasOwn and the like to every
+  // browser, though its own targets (Chrome/Edge/Firefox 111, Safari 16.4) have them
+  // all, bar URL.canParse on Safari 16, which only its dev client calls. Swap the
+  // module for an empty one; both specifiers are how Next's client imports it.
+  turbopack: {
+    resolveAlias: {
+      "../build/polyfills/polyfill-module": "./src/lib/no-polyfills.js",
+      "next/dist/build/polyfills/polyfill-module": "./src/lib/no-polyfills.js",
+    },
+  },
   // URLs from the previous site. Its old blog posts lived at the root and weren't
   // carried over, so they're left to 404. `:path*` also matches the bare path,
   // and the first matching rule wins, so specific case studies come first.
