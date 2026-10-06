@@ -31,6 +31,8 @@ export const care = {
   metaDescription:
     "WordPress maintenance and monthly update hours for organizations without a web team: updates, security, monitoring, a monthly report, and someone who already knows your site.",
   audience: "WordPress sites",
+  /** Who it's for, in the JSON-LD; `audience` above is the hero's label. */
+  audienceType: "Non-profits, foundations and other organizations without a web team",
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: ["Keep it running.", "*Keep it moving.*"],
   intro:

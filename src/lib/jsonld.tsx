@@ -1,4 +1,5 @@
-import type { BlogPosting, BreadcrumbList, Graph, Thing } from "schema-dts";
+import type { BlogPosting, BreadcrumbList, Graph, Offer, Thing } from "schema-dts";
+import { care } from "@/data/care";
 import type { Service } from "@/data/services";
 import { SITE } from "@/data/site";
 import { getMedia, type Media } from "./media";
@@ -104,6 +105,50 @@ export function serviceGraph(s: Service): Graph {
         areaServed: "US",
       },
       breadcrumbs([[s.title, `/${s.slug}`]]),
+    ],
+  };
+}
+
+/** Website care: a Service like the others, with each priced plan as a monthly offer. */
+export function careGraph(): Graph {
+  const url = abs("/website-care");
+  // Plans without a price yet are left out rather than listed without one.
+  const offers = care.plans.tiers.flatMap((t): Offer[] => {
+    if (!t.price) return [];
+    const price = Number(t.price.replace(/[^\d.]/g, ""));
+    return [
+      {
+        "@type": "Offer",
+        name: `${care.title}: ${t.name}`,
+        description: `${t.hours} ${t.hours === 1 ? "hour" : "hours"} a month for changes, plus maintenance, monitoring and a monthly report. ${t.d}`,
+        url: `${url}#plans`,
+        price,
+        priceCurrency: "USD",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price,
+          priceCurrency: "USD",
+          referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+        },
+      },
+    ];
+  });
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: care.title,
+        serviceType: "WordPress maintenance",
+        description: care.metaDescription,
+        url,
+        audience: { "@type": "Audience", audienceType: care.audienceType },
+        provider: ref(ids.org),
+        areaServed: "US",
+        offers,
+      },
+      breadcrumbs([[care.title, "/website-care"]]),
     ],
   };
 }

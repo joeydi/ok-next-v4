@@ -12,6 +12,7 @@ import { SectionHead } from "@/components/ServicePage";
 import { Cite } from "@/components/Testimonial";
 import { care as c } from "@/data/care";
 import { cn } from "@/lib/cn";
+import { careGraph, JsonLd } from "@/lib/jsonld";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
 // Dev-only (see pageExtensions in next.config.ts) until it launches: then rename to
@@ -30,6 +31,7 @@ const card = "frame bg-clip-padding border border-rule/50 bg-linear-to-b from-pa
 export default function WebsiteCarePage() {
   return (
     <>
+      <JsonLd data={careGraph()} />
       <main id="main">
         <Hero />
         <Overview />
