@@ -1,7 +1,7 @@
 import { getAllNotes } from "@/lib/notes";
 import { OG_SIZE, ogImage } from "@/lib/og";
 
-export const alt = "Okayplus note";
+// Its alt is per note, so the note page lists this image with it (see its generateMetadata).
 export const size = OG_SIZE;
 export const contentType = "image/png";
 

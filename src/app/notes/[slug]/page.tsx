@@ -12,6 +12,8 @@ import { JsonLd, noteGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
 import { formatDate, getAllNotes, getNote } from "@/lib/notes";
+import { OG_SIZE } from "@/lib/og";
+import { ogCard } from "@/lib/og-cards";
 
 const headshot = getMedia("home/headshot.jpg");
 
@@ -25,17 +27,22 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">): 
   const note = getNote((await params).slug);
   if (!note) return {};
   const { meta } = note;
+  const path = `/notes/${meta.slug}`;
   return {
     title: meta.metaTitle,
     description: meta.description,
-    alternates: { canonical: `/notes/${meta.slug}` },
+    alternates: { canonical: path },
     openGraph: {
       ...OPEN_GRAPH,
       type: "article",
-      url: `/notes/${meta.slug}`,
+      url: path,
       publishedTime: meta.date,
       title: meta.plainTitle,
       description: meta.description,
+      // The card from opengraph-image.tsx, listed here for its alt: that file's `alt` export
+      // can't vary by note, and generateImageMetadata would stop the cards prerendering.
+      // Twitter takes these images too.
+      images: [{ url: `${path}/opengraph-image`, alt: ogCard(path)?.alt, type: "image/png", ...OG_SIZE }],
     },
   };
 }
