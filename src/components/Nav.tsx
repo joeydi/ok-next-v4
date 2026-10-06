@@ -216,7 +216,7 @@ export function Nav() {
                   href={l.href}
                   onClick={services.clickLink}
                   aria-current={l.current}
-                  className={cn("services-trigger", l.current && accent)}
+                  className={cn("services-trigger block", l.current && accent)}
                 >
                   {l.label}{" "}
                   <span
@@ -252,14 +252,14 @@ export function Nav() {
               </li>
             ) : (
               <li key={l.href}>
-                <Link href={l.href} aria-current={l.current} className={l.current ? accent : undefined}>
+                <Link href={l.href} aria-current={l.current} className={cn("block", l.current && accent)}>
                   {l.label}
                 </Link>
               </li>
             ),
           )}
           <li>
-            <Link href={CONTACT_HREF} aria-current={contactCurrent} className={accent}>
+            <Link href={CONTACT_HREF} aria-current={contactCurrent} className={cn("block", accent)}>
               Say hello <span className="nudge">→</span>
             </Link>
           </li>
