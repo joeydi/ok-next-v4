@@ -1,4 +1,5 @@
 import { type Testimonial, testimonials } from "./home";
+import { SITE } from "./site";
 
 /**
  * Copy for the website care page, `/website-care` (dev-only until it launches).
@@ -214,6 +215,30 @@ export const care = {
     ],
     notIncluded:
       "New site builds and redesigns, large new features, content writing, SEO campaigns, advertising and email marketing aren’t part of the plan, but any of them can be quoted separately.",
+  },
+
+  /** The free, no-commitment first step for visitors not ready to pick a plan. Linked as `/website-care#site-check`. */
+  siteCheck: {
+    eyebrow: "Free site check",
+    heading: "Not sure where your site stands?",
+    intro:
+      "Send me your URL and I’ll review your site the same way I would for a new care client, from the outside, with no logins needed. You’ll get a one-page report: what’s healthy, what’s at risk, and what I’d fix first. No cost and no obligation.",
+    hero: "Not sure yet? Start with a free site check",
+    listLabel: "What I look at",
+    // Only what can be checked from outside, without admin access.
+    items: [
+      "WordPress, plugin and theme versions, and anything outdated or abandoned",
+      "SSL certificate and domain expiry",
+      "Speed and Lighthouse scores on key pages",
+      "Accessibility errors and contrast issues",
+      "Broken links and 404s",
+      "Basic SEO: titles, descriptions, indexing",
+    ],
+    closing: "If it turns out your site is in good shape, I’ll tell you that too.",
+    cta: "Request a free site check",
+    // TODO: point this at /site-check once that page and its form exist.
+    href: `mailto:${SITE.email}?subject=Free%20site%20check&body=Website%20URL%3A%20`,
+    booking: "or book a 20-min call",
   },
 
   start: {

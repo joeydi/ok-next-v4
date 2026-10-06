@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
 import { Accent } from "@/components/Accent";
+import { BookingLink } from "@/components/BookingLink";
 import { Container } from "@/components/Container";
 import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram";
 import { Eyebrow, Plus } from "@/components/Eyebrow";
@@ -37,6 +38,7 @@ export default function WebsiteCarePage() {
         <Ready />
         <Report />
         <Plans />
+        <SiteCheck />
         <Start />
         <Clients />
       </main>
@@ -84,6 +86,9 @@ function Hero() {
         <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-display-text-24 tracking-display-24 text-pink-ink">
           {c.tagline}
         </p>
+        <Link href="#site-check" className="mono-label text-pink-ink">
+          {c.siteCheck.hero} <span className="nudge">↓</span>
+        </Link>
       </div>
     </Container>
   );
@@ -272,11 +277,49 @@ function Plans() {
   );
 }
 
+/**
+ * The free first step for visitors not ready to pick a plan. Set as a heading and a
+ * single card rather than in the plans' three-up grid, so it reads as an offer and
+ * not a fourth tier.
+ */
+function SiteCheck() {
+  const s = c.siteCheck;
+  return (
+    <Container as="section" id="site-check" className="grid-12 gap-y-fl-48 py-fl-96">
+      <div className="col-span-12 flex flex-col gap-fl-24 lg:col-span-5">
+        <SectionHead n="07" eyebrow={s.eyebrow} balance>
+          {s.heading}
+        </SectionHead>
+        <p className="text-fl-20 leading-copy text-pretty text-body">{s.intro}</p>
+      </div>
+      <div
+        className={cn(
+          card,
+          "col-span-12 flex flex-col gap-fl-28 px-fl-32 pt-fl-28 pb-fl-32 lg:col-span-6 lg:col-start-7",
+        )}
+      >
+        <div className="mono-label text-muted">{s.listLabel}</div>
+        <List items={s.items} />
+        <p className="text-fl-18 leading-copy text-pretty text-muted">{s.closing}</p>
+        <div className="flex flex-wrap items-baseline gap-x-fl-32 gap-y-fl-16 border-t border-rule pt-fl-28">
+          {/* The underline is on an inner span, cloned per line, so it follows the text where narrow screens wrap it. */}
+          <a href={s.href} className="text-fl-30 leading-intro text-ink">
+            <span className="border-b-2 border-pink pb-fl-4 box-decoration-clone">
+              {s.cta} <span className="nudge">→</span>
+            </span>
+          </a>
+          <BookingLink className="text-fl-18 text-body">{s.booking}</BookingLink>
+        </div>
+      </div>
+    </Container>
+  );
+}
+
 function Start() {
   const s = c.start;
   return (
     <Container as="section" className="py-fl-96">
-      <SectionHead n="07" eyebrow={s.eyebrow} className="mb-fl-56">
+      <SectionHead n="08" eyebrow={s.eyebrow} className="mb-fl-56">
         {s.heading}
       </SectionHead>
       <ol className="grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2 lg:grid-cols-4">
@@ -296,7 +339,7 @@ function Clients() {
   const cl = c.clients;
   return (
     <Container as="section" className="pt-fl-96 pb-fl-120">
-      <SectionHead n="08" eyebrow={cl.eyebrow} className="mb-fl-48" balance>
+      <SectionHead n="09" eyebrow={cl.eyebrow} className="mb-fl-48" balance>
         {cl.heading}
       </SectionHead>
       <ul className="grid gap-fl-24 lg:grid-cols-3">
