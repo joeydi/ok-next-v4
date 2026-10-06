@@ -18,7 +18,7 @@ import { OPEN_GRAPH } from "@/lib/metadata";
 // home page's services and the sitemap.
 
 export const metadata: Metadata = {
-  title: c.title,
+  title: c.metaTitle,
   description: c.metaDescription,
   alternates: { canonical: "/website-care" },
   openGraph: { ...OPEN_GRAPH, url: "/website-care" },

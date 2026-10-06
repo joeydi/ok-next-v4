@@ -25,6 +25,8 @@ export type CareClient = {
 
 export const care = {
   title: "Website care",
+  /** The `<title>`, before the layout's " — Okayplus": what people search for, not the page's name. */
+  metaTitle: "WordPress maintenance & care plans for non-profits",
   metaDescription:
     "WordPress maintenance and monthly update hours for organizations without a web team: updates, security, monitoring, a monthly report, and someone who already knows your site.",
   audience: "WordPress sites",
