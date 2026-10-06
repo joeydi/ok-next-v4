@@ -2,6 +2,20 @@
 @import "./fluid.css";
 @import "../components/illustrations/illustrations.css";
 
+/* Gelica loads async, so headings paint in this first: local Georgia scaled to Gelica's
+   metrics so the swap doesn't reflow. Measured in a browser: Gelica's text across the
+   site sets 3.2% wider than Georgia's, its ascent is 0.933em and its descent 0.247em
+   with no line gap (the overrides are divided by size-adjust, which scales them too).
+   Where Georgia isn't installed this fails to load and the stack carries on. */
+@font-face {
+  font-family: "Gelica Fallback";
+  src: local("Georgia");
+  size-adjust: 103.2%;
+  ascent-override: 90.4%;
+  descent-override: 23.9%;
+  line-gap-override: 0%;
+}
+
 @theme {
   /* The palette's hues. The neutrals run from the cool hue at black to the warm hue
      at white, and the pinks take the accent hue, so turning one turns its family. */
@@ -33,10 +47,7 @@
   --color-pink: hsl(var(--hue-accent) 100% 65%);
   --color-pink-ink: hsl(var(--hue-accent) 74% 46%);
 
-  /* TODO: Gelica loads async, so headings paint in Georgia first. Add a metric-matched
-     fallback (@font-face on local Georgia with size-adjust/ascent-/descent-override
-     tuned to Gelica in a browser) ahead of Georgia here, so the swap doesn't reflow. */
-  --font-display: gelica, Georgia, serif;
+  --font-display: gelica, "Gelica Fallback", Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
