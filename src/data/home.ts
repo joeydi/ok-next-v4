@@ -33,7 +33,7 @@ export const testimonials = {
     initials: "KO",
   },
   tom: {
-    q: "Working with Okay Plus has been a pleasure and the results are fantastic. Joe created our website 10 years ago, and when it came time to update it, he was who we turned to. He listened to what we wanted and worked with us to refine the design. In the end he was able to produce a custom designed website that looks great and is easy to manage.",
+    q: "Working with Okayplus has been a pleasure and the results are fantastic. Joe created our website 10 years ago, and when it came time to update it, he was who we turned to. He listened to what we wanted and worked with us to refine the design. In the end he was able to produce a custom designed website that looks great and is easy to manage.",
     name: "Tom Bachman, AIA",
     role: "Principal Architect",
     initials: "TB",
