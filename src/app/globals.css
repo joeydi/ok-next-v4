@@ -38,7 +38,7 @@
   --color-rule: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.8) 24% 80%);
   --color-guide: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.75) 21.8% 75%);
   --color-muted-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.64) 18.1% 64%);
-  --color-muted: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.48) 14.3% 48%);
+  --color-muted: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.435) 13.5% 43.5%);
   --color-body: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.32) 11.8% 32%);
   --color-ink-2: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.24) 11% 24%);
   --color-ink: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.16) 10.5% 16%);
