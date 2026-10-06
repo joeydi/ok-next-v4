@@ -34,7 +34,7 @@ export const care = {
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: ["Keep it running.", "*Keep it moving.*"],
   intro:
-    "Ongoing WordPress maintenance, monitoring, and hands-on support for organizations that rely on their website but don’t need a full-time web team.",
+    "Ongoing WordPress maintenance, monitoring, and hands-on support for non-profits, foundations, and other organizations that rely on their website but don’t need a full-time web team.",
   tagline: "For the website that’s nobody’s full-time job.",
 
   overview: {
