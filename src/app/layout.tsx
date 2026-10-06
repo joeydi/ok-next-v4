@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { preload } from "react-dom";
 import { Nav } from "@/components/Nav";
 import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
@@ -24,6 +25,8 @@ const plexMono = IBM_Plex_Mono({
   adjustFontFallback: false,
   fallback: ["ui-monospace", "Menlo", "monospace"],
 });
+
+const TYPEKIT_CSS = "https://use.typekit.net/llb6krb.css";
 
 // Preview builds resolve OG images against their own deployment; production (and local) use the real domain.
 const previewHost = process.env.VERCEL_ENV === "preview" && (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL);
@@ -48,12 +51,23 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  preload(TYPEKIT_CSS, { as: "style" });
   return (
     <html lang="en" className={`${hanken.variable} ${plexMono.variable}`}>
       <head>
-        {/* Gelica (display) — Adobe Fonts kit. Add each live domain to the kit. */}
+        {/* Gelica (display) — Adobe Fonts kit. Add each live domain to the kit. The kit's
+            CSS is fetched early by the preload but attached by script, so it never blocks
+            first paint; headings show in the Georgia fallback until it arrives. */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://use.typekit.net/llb6krb.css" />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static string, no user input
+          dangerouslySetInnerHTML={{
+            __html: `{const l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(TYPEKIT_CSS)};document.head.appendChild(l)}`,
+          }}
+        />
+        <noscript>
+          <link rel="stylesheet" href={TYPEKIT_CSS} />
+        </noscript>
       </head>
       <body>
         <a
