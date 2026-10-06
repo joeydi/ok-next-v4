@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentProps, type PointerEvent, useEffect, useRef } from "react";
+import { type ComponentProps, type PointerEvent, useEffect, useEffectEvent, useRef } from "react";
 import { cn } from "@/lib/cn";
 import { DEFAULT_DOCK, type DockSettings, dockTargets, dockTransforms, stepSpring } from "./dock";
 import { LOGO_LETTERS, LOGO_VIEWBOX } from "./letters";
@@ -18,6 +18,7 @@ export function DockLogo({
   className,
   ...props
 }: ComponentProps<"svg"> & { settings?: DockSettings }) {
+  const svg = useRef<SVGSVGElement>(null);
   const paths = useRef<(SVGPathElement | null)[]>([]);
   const settingsRef = useRef(settings);
   const anim = useRef<Anim>({ px: null, lastPx: 0, s: [], v: [], raf: 0, last: 0 });
@@ -27,6 +28,33 @@ export function DockLogo({
   }, [settings]);
 
   useEffect(() => () => cancelAnimationFrame(anim.current.raf), []);
+
+  // The logo can miss its pointerleave: a page transition covers the page with its
+  // snapshots, so moving off the logo mid-transition never reaches it. While it's
+  // swollen, any move outside its box (or leaving the window) lets it go too.
+  const watch = useEffectEvent((e: globalThis.PointerEvent | FocusEvent) => {
+    if (anim.current.px === null) return;
+    const r = svg.current?.getBoundingClientRect();
+    if (
+      !r ||
+      !("clientX" in e) ||
+      e.clientX < r.left ||
+      e.clientX > r.right ||
+      e.clientY < r.top ||
+      e.clientY > r.bottom
+    ) {
+      leave();
+    }
+  });
+
+  useEffect(() => {
+    window.addEventListener("pointermove", watch, { passive: true });
+    window.addEventListener("blur", watch);
+    return () => {
+      window.removeEventListener("pointermove", watch);
+      window.removeEventListener("blur", watch);
+    };
+  }, []);
 
   function tick(now: number) {
     const a = anim.current;
@@ -79,6 +107,7 @@ export function DockLogo({
 
   return (
     <svg
+      ref={svg}
       viewBox={`0 0 ${LOGO_VIEWBOX.w} ${LOGO_VIEWBOX.h}`}
       role="img"
       aria-label="okayplus"
