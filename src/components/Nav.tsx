@@ -13,7 +13,7 @@ import {
 import { ADMIN_NAV, CONTACT_HREF, NAV, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { Container } from "./Container";
-import { Logo } from "./Logo";
+import { DockLogo } from "./logo/DockLogo";
 
 /** Home sections the nav links to, in page order. */
 const SECTIONS = ["approach", "services", "about", "contact"];
@@ -195,7 +195,7 @@ export function Nav() {
         )}
       >
         <Link href="/" className="flex shrink-0" aria-label="Okayplus home">
-          <Logo />
+          <DockLogo />
         </Link>
 
         <div

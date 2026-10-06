@@ -39,4 +39,5 @@ export const ADMIN_NAV: readonly NavLink[] = [
   { label: "Open Graph", href: "/admin/og" },
   { label: "Illustrations", href: "/admin/illustrations" },
   { label: "Diagrams", href: "/admin/diagrams" },
+  { label: "Logo", href: "/admin/logo" },
 ];
