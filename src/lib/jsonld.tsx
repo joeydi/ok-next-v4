@@ -27,6 +27,12 @@ const address = {
   addressCountry: "US",
 } as const;
 
+const areaServed = [
+  { "@type": "State", name: "Vermont" },
+  { "@type": "State", name: "Arizona" },
+  { "@type": "Country", name: "United States" },
+] as const;
+
 /** A JPEG URL for an image, or a video's poster frame; SVGs are skipped. */
 function imageUrl(media: Media) {
   const key = media.type === "video" ? media.poster : media.type === "image" ? media.key : undefined;
@@ -75,7 +81,7 @@ export function siteGraph(): Graph {
         telephone: SITE.phone,
         founder: ref(ids.person),
         address,
-        areaServed: "US",
+        areaServed: [...areaServed],
         sameAs: [...SITE.orgSameAs],
       },
       {
@@ -105,7 +111,7 @@ export function serviceGraph(s: Service): Graph {
         url,
         audience: { "@type": "Audience", audienceType: s.audience },
         provider: ref(ids.org),
-        areaServed: "US",
+        areaServed: [...areaServed],
       },
       breadcrumbs([[s.title, `/${s.slug}`]]),
     ],
@@ -148,7 +154,7 @@ export function careGraph(): Graph {
         url,
         audience: { "@type": "Audience", audienceType: care.audienceType },
         provider: ref(ids.org),
-        areaServed: "US",
+        areaServed: [...areaServed],
         offers,
       },
       breadcrumbs([[care.title, "/website-care"]]),
