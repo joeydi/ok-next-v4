@@ -33,6 +33,9 @@
   --color-pink: hsl(var(--hue-accent) 100% 65%);
   --color-pink-ink: hsl(var(--hue-accent) 74% 46%);
 
+  /* TODO: Gelica loads async, so headings paint in Georgia first. Add a metric-matched
+     fallback (@font-face on local Georgia with size-adjust/ascent-/descent-override
+     tuned to Gelica in a browser) ahead of Georgia here, so the swap doesn't reflow. */
   --font-display: gelica, Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
