@@ -1,5 +1,7 @@
 export const SITE = {
   name: "Okayplus",
+  /** How people may spell the name when they search for it; in the JSON-LD only. */
+  alternateName: "Okay Plus",
   url: "https://okaypl.us",
   author: "Joe di Stefano",
   tagline: "Designer + developer",
