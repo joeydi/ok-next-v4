@@ -15,8 +15,10 @@ import { OPEN_GRAPH } from "@/lib/metadata";
 const headshot = getMedia("home/headshot.jpg");
 const festival = getMedia("home/festival.jpg");
 
-// A page's `alternates` replaces the layout's, so the RSS link is repeated here.
+// A page's `alternates` replaces the layout's, so the RSS link is repeated here. The layout's
+// title template only reaches child segments, so the name is added to the title by hand.
 export const metadata: Metadata = {
+  title: `Website for Vermont non-profits and businesses — ${SITE.name}`,
   alternates: {
     canonical: "/",
     types: { "application/rss+xml": [{ url: "/notes/rss.xml", title: `${SITE.name} Notes` }] },

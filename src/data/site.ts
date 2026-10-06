@@ -9,7 +9,7 @@ export const SITE = {
   email: "joeydi@okaypl.us",
   phone: "+1-480-459-6720",
   description:
-    "Joe di Stefano is a designer and developer in Burlington, Vermont, helping small teams and non-profits figure out what's worth building, then build it well.",
+    "Okayplus helps Vermont non-profits, foundations and small teams plan, build and care for their websites. I’m Joe di Stefano, a web designer in Burlington.",
   /** Joe's own profiles, listed on the Person in the JSON-LD. */
   sameAs: ["https://www.linkedin.com/in/joeydi/", "https://x.com/joeydi", "https://github.com/joeydi"],
   /** Okayplus's own profiles, listed on the ProfessionalService in the JSON-LD. */
