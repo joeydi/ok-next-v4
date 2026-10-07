@@ -5,7 +5,7 @@ import { Accent } from "@/components/Accent";
 import { BookingLink } from "@/components/BookingLink";
 import { Container } from "@/components/Container";
 import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram";
-import { Eyebrow, Plus } from "@/components/Eyebrow";
+import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
 import { SectionHead } from "@/components/ServicePage";
@@ -166,7 +166,9 @@ function Hours() {
         <SectionHead n="03" eyebrow={h.eyebrow} balance>
           {h.heading}
         </SectionHead>
-        <p className="text-fl-20 leading-copy text-pretty text-body">{h.intro}</p>
+        <p className="text-fl-20 leading-copy text-pretty text-body">
+          {h.intro} {h.body} <strong className="font-semibold text-ink">{h.kicker}</strong>
+        </p>
       </div>
       <div className="col-span-12 lg:col-span-7 lg:col-start-6">
         <ul className="flex flex-col">
@@ -180,21 +182,20 @@ function Hours() {
             </li>
           ))}
         </ul>
-        <p className="border-t border-rule pt-fl-32 text-fl-20 leading-copy text-pretty text-body">
-          {h.body} <strong className="font-semibold text-ink">{h.kicker}</strong>
-        </p>
       </div>
       <div className={cn(card, "col-span-12 flex flex-col gap-fl-28 px-fl-32 pt-fl-28 pb-fl-32")}>
         <div className="mono-label text-muted">{h.usesLabel}</div>
         <ul className="grid gap-x-fl-24 gap-y-fl-12 sm:grid-cols-2 xl:grid-cols-4">
           {h.uses.map((u) => (
-            <li key={u} className="flex items-baseline gap-fl-12 text-fl-18 leading-copy text-ink">
-              <Plus />
+            <li
+              key={u}
+              className="relative pl-fl-20 text-fl-18 leading-copy text-ink before:absolute before:top-[calc((1lh-0.3em)/2)] before:left-0 before:size-[0.3em] before:bg-pink"
+            >
               {u}
             </li>
           ))}
         </ul>
-        <p className="border-t border-rule pt-fl-18 text-fl-18 leading-copy text-pretty text-body">{h.note}</p>
+        <p className="text-fl-18 leading-copy text-pretty text-muted">{h.note}</p>
       </div>
     </Container>
   );
