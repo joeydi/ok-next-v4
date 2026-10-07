@@ -162,6 +162,7 @@ export const care = {
       {
         t: "Bigger work starts at full speed",
         d: "When a request goes beyond the included hours, the setup and orientation are already done, so the time goes into the work itself.",
+        link: { label: "CMS & integrations", href: "/cms-integrations" },
       },
     ],
   },

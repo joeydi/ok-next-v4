@@ -212,8 +212,13 @@ function Ready() {
       <ul className="grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2 lg:grid-cols-4">
         {r.items.map((item) => (
           <li key={item.t} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
-            <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">{item.t}</h3>
+            <h3 className="display text-fl-30 leading-heading-30 tracking-display-30 text-balance">{item.t}</h3>
             <p className="text-fl-18 leading-copy text-pretty text-body">{item.d}</p>
+            {item.link && (
+              <Link href={item.link.href} className="mono-label text-pink-ink">
+                {item.link.label} <span className="nudge">→</span>
+              </Link>
+            )}
           </li>
         ))}
       </ul>
