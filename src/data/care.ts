@@ -31,7 +31,7 @@ export const care = {
   /** The `<title>`, before the layout's " — Okayplus": what people search for, not the page's name. */
   metaTitle: "WordPress maintenance & care plans for non-profits",
   metaDescription:
-    "WordPress maintenance and monthly update hours for organizations without a web team: updates, security, monitoring, a monthly report, and someone who already knows your site.",
+    "WordPress maintenance for non-profits and teams that rely on their website: updates, security, monitoring, a monthly report, and someone who knows your site.",
   audience: "WordPress sites",
   /** Who it's for, in the JSON-LD; `audience` above is the hero's label. */
   audienceType: "Non-profits, foundations and other organizations without a web team",
