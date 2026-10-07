@@ -47,6 +47,10 @@
   --color-pink: hsl(var(--hue-accent) 100% 65%);
   --color-pink-ink: hsl(var(--hue-accent) 74% 46%);
 
+  /* Terminal marks on ink: Moonlight's green and yellow, shared with the code blocks. */
+  --color-term-green: #c3e88d;
+  --color-term-yellow: #ffc777;
+
   --font-display: gelica, "Gelica Fallback", Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
@@ -199,12 +203,12 @@
   );
 }
 
-/* Arrow that nudges right when its parent link is hovered or focused. */
+/* Arrow that nudges right when its parent link or button is hovered or focused. */
 @utility nudge {
   display: inline-block;
   transition: transform 0.2s ease;
 
-  :where(a:hover, a:focus-visible) & {
+  :where(a:hover, a:focus-visible, button:enabled:hover, button:focus-visible) & {
     transform: translateX(4px);
   }
 }
@@ -620,6 +624,57 @@
     }
   }
 
+  /* ---------- Site check (see components/site-check) ---------- */
+
+  /* Log lines and cards rise in as they arrive; the caret blinks on the running
+     check, the status dot pulses while it runs, and score bars grow as they land. */
+  @keyframes site-check-rise {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  @keyframes site-check-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes site-check-pulse {
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .site-check-rise {
+    animation: site-check-rise 0.6s var(--ease-out-expo) both;
+  }
+
+  .site-check-caret {
+    animation: site-check-blink 1s steps(1) infinite;
+  }
+
+  .site-check-pulse {
+    animation: site-check-pulse 1.2s var(--ease-in-out-cubic) infinite;
+  }
+
+  .site-check-bar {
+    transition: width 0.9s var(--ease-out-expo);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-check-rise,
+    .site-check-caret,
+    .site-check-pulse {
+      animation: none;
+    }
+
+    .site-check-bar {
+      transition: none;
+    }
+  }
+
   /* ---------- Note body (MDX) ---------- */
 
   /*
@@ -717,8 +772,8 @@
     --code-cyan: #78dbff;
     --code-aqua: #b4f9f8;
     --code-teal: #7af8ca;
-    --code-green: #c3e88d;
-    --code-yellow: #ffc777;
+    --code-green: var(--color-term-green);
+    --code-yellow: var(--color-term-yellow);
     --code-orange: #ff966c;
 
     overflow-x: auto;

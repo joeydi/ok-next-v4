@@ -309,11 +309,11 @@ function SiteCheck() {
         <p className="text-fl-18 leading-copy text-pretty text-muted">{s.closing}</p>
         <div className="flex flex-wrap items-baseline gap-x-fl-32 gap-y-fl-16 border-t border-rule pt-fl-28">
           {/* The underline is on an inner span, cloned per line, so it follows the text where narrow screens wrap it. */}
-          <a href={s.href} className="text-fl-30 leading-intro text-ink">
+          <Link href={s.href} className="text-fl-30 leading-intro text-ink">
             <span className="border-b-2 border-pink pb-fl-4 box-decoration-clone">
               {s.cta} <span className="nudge">→</span>
             </span>
-          </a>
+          </Link>
           <BookingLink className="text-fl-18 text-body">{s.booking}</BookingLink>
         </div>
       </div>

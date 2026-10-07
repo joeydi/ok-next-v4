@@ -1,5 +1,4 @@
 import { type Testimonial, testimonials } from "./home";
-import { SITE } from "./site";
 
 /**
  * Copy for the website care page, `/website-care` (dev-only until it launches).
@@ -241,8 +240,7 @@ export const care = {
     ],
     closing: "If it turns out your site is in good shape, I’ll tell you that too.",
     cta: "Request a free site check",
-    // TODO: point this at /site-check once that page and its form exist.
-    href: `mailto:${SITE.email}?subject=Free%20site%20check&body=Website%20URL%3A%20`,
+    href: "/site-check",
     booking: "or book a 20-min call",
   },
 
