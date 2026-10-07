@@ -10,7 +10,9 @@ import { SITE } from "./site";
 export type CareTier = {
   name: string;
   hours: number;
-  /** Monthly price; `null` while it's undecided. */
+  /** `hours` is a floor: the plan is sized to the work. */
+  more?: boolean;
+  /** Monthly price; `null` for a plan that's quoted. */
   price: string | null;
   d: string;
   featured?: boolean;
@@ -204,6 +206,7 @@ export const care = {
       {
         name: "Partner",
         hours: 16,
+        more: true,
         price: null,
         d: "For organizations whose website is central to the work, with room for ongoing improvements.",
       },

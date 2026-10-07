@@ -255,11 +255,14 @@ function Plans() {
               {t.featured && " · Most teams"}
             </div>
             <div className="mt-fl-40 flex items-baseline gap-fl-12">
-              <span className="display text-fl-60 leading-heading-60 tracking-display-60">{t.price ?? "TBD"}</span>
-              <span className="mono-text text-muted">/ month</span>
+              <span className="display text-fl-60 leading-heading-60 tracking-display-60">
+                {t.price ?? "Let’s talk."}
+              </span>
+              {t.price && <span className="mono-text text-muted">/ month</span>}
             </div>
             <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">
-              {t.hours} {t.hours === 1 ? "hour" : "hours"} of updates
+              {t.hours}
+              {t.more && "+"} {t.hours === 1 ? "hour" : "hours"} of updates
             </h3>
             <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{t.d}</p>
             <div className="mono-text border-t border-rule pt-fl-18 text-body">{p.includes}</div>
