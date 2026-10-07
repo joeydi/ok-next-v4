@@ -268,6 +268,8 @@ export const care = {
   clients: {
     eyebrow: "Long-term clients",
     heading: "Organizations that have stayed for years.",
+    intro:
+      "I work from Burlington, Vermont, with organizations across the country. Some of them have been with me for more than a decade.",
     items: [
       { name: "Education Forward Arizona", place: "Phoenix, Arizona", since: 2012 },
       {

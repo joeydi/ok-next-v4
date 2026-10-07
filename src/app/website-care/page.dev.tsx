@@ -345,9 +345,12 @@ function Clients() {
   const cl = c.clients;
   return (
     <Container as="section" className="pt-fl-96 pb-fl-120">
-      <SectionHead n="09" eyebrow={cl.eyebrow} className="mb-fl-48" balance>
-        {cl.heading}
-      </SectionHead>
+      <div className="grid-12 mb-fl-48 gap-y-fl-24">
+        <SectionHead n="09" eyebrow={cl.eyebrow} className="col-span-12" balance>
+          {cl.heading}
+        </SectionHead>
+        <p className="col-span-12 text-fl-20 leading-copy text-pretty text-body lg:col-span-6">{cl.intro}</p>
+      </div>
       <ul className="grid gap-fl-24 lg:grid-cols-3">
         {cl.items.map((client) => {
           const body = (
