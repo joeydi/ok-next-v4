@@ -13,7 +13,7 @@ export type LoopJog = {
   grab: () => void;
   /** Move the clock by `ds` seconds, either way. */
   scrub: (ds: number) => void;
-  /** Let go at `rate` (loop seconds per second, negative to run back), which eases back to 1. */
+  /** Let go at `rate` (loop seconds per second, negative to run back), which eases back to playback speed. */
   release: (rate: number) => void;
 };
 
@@ -23,20 +23,21 @@ const wrap = (t: number, d: number) => ((t % d) + d) % d;
  * A diagram's clock: seconds into a `duration`-second loop, running only while
  * the element on `ref` is near the viewport. Under prefers-reduced-motion it
  * holds at `still`, which is also the server-rendered frame. A `time` pins it
- * there instead, for the diagram lab's scrubber. The third value hands the clock
+ * there instead, for the diagram lab's scrubber. `rate` is the playback speed, in
+ * loop seconds per second. The third value hands the clock
  * to a jog wheel, which can hold it, scrub it and throw it; it's undefined when
  * the clock is pinned.
  */
 export function useLoop<T extends Element>(
   duration: number,
-  { still = 0, time }: { still?: number; time?: number } = {},
+  { still = 0, time, rate = 1 }: { still?: number; time?: number; rate?: number } = {},
 ) {
   const pinned = time !== undefined;
   const ref = useRef<T>(null);
   const [clock, setTime] = useState(still);
   // The wheel's hold on the clock, read by the frame loop. Under reduced motion there's no frame
   // loop, so a scrub moves the clock and a throw does nothing.
-  const hand = useRef({ held: false, rate: 1 });
+  const hand = useRef({ held: false, rate });
 
   useEffect(() => {
     const el = ref.current;
@@ -52,11 +53,11 @@ export function useLoop<T extends Element>(
       const h = hand.current;
       let step = 0;
       if (!h.held) {
-        // Ease the speed back to 1 and step by the average across the frame, so a throw's
+        // Ease the speed back to `rate` and step by the average across the frame, so a throw's
         // distance doesn't depend on the frame rate.
         const k = Math.exp(-dt / SETTLE);
-        step = dt + (h.rate - 1) * SETTLE * (1 - k);
-        h.rate = 1 + (h.rate - 1) * k;
+        step = dt * rate + (h.rate - rate) * SETTLE * (1 - k);
+        h.rate = rate + (h.rate - rate) * k;
       }
       setTime((t) => wrap(t + step, duration));
       raf = requestAnimationFrame(tick);
@@ -81,7 +82,7 @@ export function useLoop<T extends Element>(
       io.disconnect();
       reduce.removeEventListener("change", update);
     };
-  }, [duration, still, pinned]);
+  }, [duration, still, pinned, rate]);
 
   const jog: LoopJog | undefined = pinned
     ? undefined

@@ -14,6 +14,7 @@ import { LOOP, PAGE, Page, PerformancePage, SummaryPage, UptimePage } from "./Pa
 
 const SIZE = [1120, 840] as const; // 4:3, close to the stack's own shape, so it fills both ways
 const STILL = 2.4; // s: the sweep mid-month, the second audit running (the reduced-motion frame)
+const RATE = 1.5; // playback speed
 const BOB = 4; // px: how far a page floats, up and down
 const STEP = [230, -64, -110]; // px from a page to the one behind it: across, up, and away
 const MARGIN = [70, 20]; // px: the least room left either side, and above and below
@@ -30,7 +31,7 @@ const DESCRIPTION =
 const bob = (i: number, t: number) => BOB * Math.sin(2 * Math.PI * (t / LOOP - i / 6));
 
 export function ReportDiagram({ className, time }: { className?: string; time?: number }) {
-  const [ref, t] = useLoop<HTMLElement>(LOOP, { still: STILL, time });
+  const [ref, t] = useLoop<HTMLElement>(LOOP, { still: STILL, time, rate: RATE });
   // Back to front: page 3, page 5, page 1.
   const pages = [
     <Page key={3} n={3}>
