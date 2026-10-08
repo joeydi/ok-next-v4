@@ -4,7 +4,7 @@ import { Accent } from "@/components/Accent";
 import { Eyebrow } from "@/components/Eyebrow";
 import { posterPath } from "@/components/illustrations/gl/poster";
 import { Logo } from "@/components/Logo";
-import { services } from "@/data/services";
+import { servicePages } from "@/data/services";
 import { NAV } from "@/data/site";
 import { viewTransition } from "@/lib/tokens";
 import { RevealPlayer } from "./RevealPlayer";
@@ -36,17 +36,14 @@ function Home() {
         <h2 className="display text-[60px] leading-heading-60 tracking-display-60">Where I fit in.</h2>
       </div>
       <div className="grid grid-cols-3 gap-6">
-        {Object.values(services).map((s) => (
+        {Object.values(servicePages).map((s) => (
           <button
             key={s.slug}
             type="button"
             data-reveal-card
             className="frame flex flex-col gap-[18px] border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-8 pt-7 pb-8 text-left"
           >
-            <span className="mono-label flex justify-between gap-4 text-muted">
-              <span>{s.audience}</span>
-              <span>/ {s.n}</span>
-            </span>
+            <span className="mono-label text-muted">{s.audience}</span>
             <span className="display mt-10 text-[36px] leading-heading-36 tracking-display-36">{s.title}</span>
             <span className="text-[18px] leading-[1.55] text-body">{s.intro}</span>
           </button>
@@ -58,10 +55,10 @@ function Home() {
 }
 
 function Service() {
-  const s = services["digital-production"];
+  const s = servicePages["design-development"];
   return (
     <div className="relative h-full px-18 pt-36">
-      <Eyebrow details={[s.n, s.audience]}>Services</Eyebrow>
+      <Eyebrow details={[s.audience]}>Services</Eyebrow>
       <h1 className="display relative z-10 mt-12 text-[144px] leading-heading-144 tracking-display-144">
         {s.h1.map((line, i) => (
           <Fragment key={line}>

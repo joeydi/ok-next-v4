@@ -1,4 +1,4 @@
-import { services } from "@/data/services";
+import { audiences, services } from "@/data/catalog";
 import { SITE } from "@/data/site";
 import { getAllNotes } from "@/lib/notes";
 
@@ -19,6 +19,12 @@ ${SITE.author} works directly with each client, from the first call to launch an
 
 ${Object.values(services)
   .map((s) => link(s.title, `/${s.slug}`, s.metaDescription))
+  .join("\n")}
+
+## Who I work with
+
+${Object.values(audiences)
+  .map((a) => link(a.title, `/${a.slug}`, a.metaDescription))
   .join("\n")}
 
 ## Notes

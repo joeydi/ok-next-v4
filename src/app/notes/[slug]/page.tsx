@@ -107,7 +107,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           </Container>
 
           <Container className="note-body pt-fl-96 pb-fl-64">
-            {(toc.length > 0 || meta.tools?.length || project.length > 0) && (
+            {(toc.length > 0 || meta.tools?.length || project.length > 0 || meta.service) && (
               <aside className="note-aside">
                 {toc.length > 0 && (
                   <nav aria-label="In this post" className="flex flex-col gap-fl-8">
@@ -138,6 +138,14 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
                       </a>
                     )}
                   </dl>
+                )}
+                {meta.service && (
+                  <div className="flex flex-col gap-fl-8">
+                    <span className="mono-label text-ink">SERVICE</span>
+                    <Link href={meta.service.href} className="mono-label text-pink-ink">
+                      {meta.service.label} <span className="nudge">→</span>
+                    </Link>
+                  </div>
                 )}
                 {meta.tools && meta.tools.length > 0 && (
                   <div className="flex flex-col gap-fl-8">

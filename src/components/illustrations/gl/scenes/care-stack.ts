@@ -2,7 +2,7 @@ import { P, W } from "../../primitives";
 import type { Item, SceneDef } from "../renderer";
 import { bezier, track, wrap } from "../timeline";
 
-// Website care, concept — a tower of five slabs, the layers of a site. One
+// Agencies — a tower of five slabs, the layers of a site. One
 // layer at a time, a fresh pink slab slides in and pushes the old one out the
 // far side; the layers above lift to let it through, settle, and the new slab
 // cools from pink to paper once it's in. 11s loop.
@@ -71,7 +71,7 @@ function frame(t: number): Item[] {
 }
 
 export const careStack: SceneDef = {
-  labels: ["CORE", "PLUGINS", "CONTENT"],
+  labels: ["OVERFLOW", "SPECIAL BUILDS", "AFTER LAUNCH"],
   duration: T,
   // Mid-swap: both slabs half in, the layers above lifted.
   posterTime: 0.85,

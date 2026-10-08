@@ -55,6 +55,8 @@ const nextConfig = (phase: string): NextConfig => ({
   // carried over, so they're left to 404. `:path*` also matches the bare path,
   // and the first matching rule wins, so specific case studies come first.
   redirects: async () => [
+    // /digital-production was split in two; the old URL now leads to the agency half.
+    { source: "/digital-production", destination: "/agencies", permanent: true },
     { source: "/services", destination: "/#services", permanent: true },
     { source: "/contact", destination: "/#contact", permanent: true },
     { source: "/blog/:path*", destination: "/notes", permanent: true },

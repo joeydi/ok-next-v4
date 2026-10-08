@@ -400,18 +400,23 @@
   }
 }
 
-/* The services caret turns back as a click closes its menu. Named, it drops out of
-   the frozen nav snapshot and only the live, still-turning caret shows. */
-::view-transition-group(nav-caret) {
+/* A dropdown caret turns back as a click closes its menu. Named, it drops out of
+   the frozen nav snapshot and only the live, still-turning caret shows. Each caret has
+   its own name (names must be unique); .nav-caret gives them one class to style by. */
+.nav-caret {
+  view-transition-class: nav-caret;
+}
+
+::view-transition-group(*.nav-caret) {
   z-index: 101;
   animation: none;
 }
 
-::view-transition-old(nav-caret) {
+::view-transition-old(*.nav-caret) {
   display: none;
 }
 
-::view-transition-new(nav-caret) {
+::view-transition-new(*.nav-caret) {
   animation: none;
 }
 
@@ -520,8 +525,9 @@
     anchor-name: --site-menu;
   }
 
-  .services-trigger {
-    anchor-name: --services-trigger;
+  /* Each dropdown's <li> sets --nav-anchor, so its trigger and menu share a unique anchor. */
+  .nav-trigger {
+    anchor-name: var(--nav-anchor);
   }
 
   .nav-menu {
@@ -554,13 +560,16 @@
     position-anchor: --site-menu;
     top: anchor(bottom);
     right: anchor(right);
+    /* The grouped list can outgrow short screens. */
+    max-height: calc(100dvh - var(--nav-h) - 1rem);
+    overflow-y: auto;
   }
 
   /* Items bleed 10px into the 20px padding, so the text lines up with the trigger's. */
-  .services-menu {
+  .nav-dropdown {
     position-anchor: --site-menu;
     top: anchor(bottom);
-    left: calc(anchor(--services-trigger left) - 20px);
+    left: calc(anchor(var(--nav-anchor) left) - 20px);
     overflow: visible;
   }
 
@@ -574,7 +583,7 @@
 
   /* An invisible bridge up to the trigger, so the pointer stays over the menu's <li>
      while it crosses the bar's padding. */
-  .services-menu::before,
+  .nav-dropdown::before,
   .admin-menu::before {
     content: "";
     position: absolute;
@@ -608,7 +617,7 @@
     }
 
     /* Nav.tsx sets --trigger-left as the dropdown opens. */
-    .services-menu {
+    .nav-dropdown {
       position: fixed;
       top: calc(var(--nav-h) - 0.75rem);
       left: calc(var(--trigger-left, 0px) - 20px);
