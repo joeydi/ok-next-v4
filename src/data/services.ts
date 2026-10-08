@@ -1,14 +1,22 @@
 import type { MediaKey } from "@/lib/media";
 import { type Testimonial, testimonials } from "./home";
 
-export type ServiceSlug = "digital-production" | "cms-integrations" | "business-tools";
+export type ServiceSlug = "design-development" | "cms-integrations" | "business-tools";
+
+/** `imageLabel` labels the placeholder until there's media: `image` (an R2 key), or else the image of the note `href` links to. */
+export type Work = { title: string; d: string; tags: string; image?: MediaKey; imageLabel: string; href?: string };
 
 export type Service = {
   slug: ServiceSlug;
-  n: string;
   title: string;
+  /** The <title> (before " — Okayplus"), when the page title would read better as what people search for. Defaults to `title`. */
+  metaTitle?: string;
   metaDescription: string;
   audience: string;
+  /** Who the service is for, in the JSON-LD (defaults to `audience`). */
+  audienceType?: string;
+  /** What the service is, in the JSON-LD (defaults to `title`). */
+  serviceType?: string;
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: string[];
   illustration: "bounce-row" | "conveyor" | "ring";
@@ -20,69 +28,70 @@ export type Service = {
     items: { n: string; k: string; t: string; d: string; ex: string }[];
   };
   situations: { heading: string; items: { n: string; t: string }[] };
-  process: { heading: string; items: { n: string; t: string; d: string }[] };
-  /** `imageLabel` labels the placeholder until there's media: `image` (an R2 key), or else the image of the note `href` links to. */
-  work: { title: string; d: string; tags: string; image?: MediaKey; imageLabel: string; href?: string };
+  process: { heading: string; items: { n: string; t: string; d: string; link?: { label: string; href: string } }[] };
+  /** One item shows large; two or more show as a row of cards under `heading`. */
+  work: { heading?: string; items: Work[] };
   quote: Testimonial;
   contactNote: string;
 };
 
 export const services: Record<ServiceSlug, Service> = {
-  "digital-production": {
-    slug: "digital-production",
-    n: "01",
-    title: "Digital production",
+  "design-development": {
+    slug: "design-development",
+    title: "Design & development",
+    metaTitle: "Website design, development & redesigns",
     metaDescription:
-      "A development partner for agencies and marketing teams: fast, on-brand sites, campaigns, and the 3D and motion work a template can’t do.",
-    audience: "Agencies + marketing teams",
+      "New websites, redesigns and campaign builds for non-profits, foundations and marketing teams, designed and built by one person from first call to launch.",
+    audience: "New sites + redesigns",
+    audienceType: "Non-profits, foundations and marketing teams",
+    serviceType: "Website design and development",
     h1: ["Build the", "*big idea.*"],
     illustration: "bounce-row",
     intro:
-      "Agencies call me when they need extra development firepower or something their in-house team can’t handle. Marketing teams bring me in to turn campaign ideas into digital work that ships quickly and stays on brand.",
-    tagline: "For getting your ambitious projects over the line.",
+      "Marketing teams and non-profits bring me in to turn a plan, a brand or a campaign idea into a website that ships on time and stays easy to run. I design it, build it, and stick around after launch.",
+    tagline: "For when the launch date is already on the calendar.",
     capabilities: {
-      eyebrow: "What I do",
-      heading: "An extra pair of hands.",
+      eyebrow: "What I build",
+      heading: "Everything the launch needs.",
       items: [
         {
           n: "01",
-          k: "Partnership",
-          t: "A development partner for agencies",
-          d: "I plug into your team when you need extra development capacity, specialized expertise, or simply another experienced developer to get the work out the door.",
-          ex: "Marketing sites · Microsites · Overflow builds",
+          k: "Websites",
+          t: "New sites and redesigns",
+          d: "A site designed around what your visitors need to do, built in WordPress or headless, and set up so your team can edit it without calling me.",
+          ex: "WordPress · Headless · Redesigns",
         },
         {
           n: "02",
           k: "Campaigns",
           t: "From campaign to launch",
-          d: "I work with your marketing team to turn campaign strategy into landing pages, microsites, and emails that ship on time and stay on brand.",
+          d: "Landing pages, microsites and emails that carry a campaign from the strategy deck to the live link, on brand and on deadline.",
           ex: "Landing pages · Microsites · Email",
         },
         {
           n: "03",
           k: "Special builds",
           t: "The hard stuff",
-          d: "I build the 3D, motion, and interactive pieces that go beyond what a template can do, from product tours to scroll-driven stories.",
-          ex: "3D product tours · Motion · Interactive",
+          d: "3D, motion and interactive work that templates can’t do: product tours, data maps, scroll-driven stories.",
+          ex: "3D · Motion · Data visualization",
         },
         {
           n: "04",
-          k: "Reporting",
-          t: "Analytics and reporting",
-          d: "I set up tracking and reporting from the start, so you can see what worked, what didn’t, and what to try next.",
-          ex: "Tracking · Dashboards · Reporting",
+          k: "Measurement",
+          t: "Measured from day one",
+          d: "Tracking and reporting set up before launch, so you can see what the work is doing instead of guessing.",
+          ex: "Analytics · Dashboards · Reporting",
         },
       ],
     },
     situations: {
-      heading: "When to call.",
+      heading: "Sound familiar?",
       items: [
-        { n: "01", t: "The launch date is set and the site isn’t built yet." },
-        { n: "02", t: "Your in-house developers are booked through next quarter." },
-        { n: "03", t: "The concept calls for 3D, motion, or something a template can’t do." },
-        { n: "04", t: "The campaign went out, but nobody can say how it performed." },
-        { n: "05", t: "You need someone who can read a brand guide and a codebase." },
-        { n: "06", t: "You vibe-coded a new sales dashboard last weekend, now you want to make it real." },
+        { n: "01", t: "The launch date is set and the site isn’t built." },
+        { n: "02", t: "Your current site was built for how you worked five years ago." },
+        { n: "03", t: "The concept needs 3D, motion or a map, and the template can’t do it." },
+        { n: "04", t: "The last campaign ran and nobody knows how it did." },
+        { n: "05", t: "Every edit means emailing a developer." },
       ],
     },
     process: {
@@ -104,25 +113,46 @@ export const services: Record<ServiceSlug, Service> = {
           t: "Launch and measure",
           d: "Tracking in place at launch, and a clear read on how it’s performing.",
         },
+        {
+          n: "05",
+          t: "Keep it running",
+          d: "After launch, Website care keeps the site updated and gives you hours for changes.",
+          link: { label: "Website care", href: "/website-care" },
+        },
       ],
     },
     work: {
-      title: "Queen City Development Group",
-      d: "A new logo, brand guidelines and website for a Burlington, Vermont firm that works across construction, design & development, investment and property management.",
-      tags: "Branding · WordPress · Front + back end",
-      imageLabel: "image — QCDG brand guidelines",
-      href: "/notes/queen-city-development-group",
+      heading: "Recently shipped.",
+      items: [
+        {
+          title: "Queen City Development Group",
+          d: "A new logo, brand guidelines and website for a Burlington, Vermont firm that works across construction, design & development, investment and property management.",
+          tags: "Branding · WordPress · Front + back end",
+          imageLabel: "image — QCDG brand guidelines",
+          href: "/notes/queen-city-development-group",
+        },
+        {
+          title: "Rigorous",
+          d: "A headless WordPress and Next.js site for a robotics company, with more than 40 custom components, an animated safety path and a customer control panel.",
+          tags: "Headless WordPress · Next.js · Design system",
+          imageLabel: "image — Rigorous homepage",
+          href: "/notes/rigorous",
+        },
+        {
+          title: "ThinkMD",
+          d: "A new interface and a library of 3D clinical illustrations for an app that helps health workers of every skill level assess and treat patients, even offline.",
+          tags: "UX/UI design · 3D illustration · Animation",
+          imageLabel: "image — ThinkMD app",
+          href: "/notes/thinkmd",
+        },
+      ],
     },
-    quote: {
-      ...testimonials.kathleen,
-      q: "Joe is an extremely skilled web designer, developer and digital problem solver. For many of our online projects, he’s been an instrumental part of our process including planning, assessing and developing.",
-    },
-    contactNote: "Tell me what you’re trying to pull off. I love a good challenge.",
+    quote: testimonials.tom,
+    contactNote: "Tell me about the launch date.",
   },
 
   "cms-integrations": {
     slug: "cms-integrations",
-    n: "02",
     title: "CMS & integrations",
     metaDescription:
       "Large CMS projects, content migrations, and backend integrations for non-profits and other large organizations.",
@@ -202,12 +232,16 @@ export const services: Record<ServiceSlug, Service> = {
       ],
     },
     work: {
-      title: "Frank Lloyd Wright Foundation",
-      d: "A custom WordPress portal with passwordless, Salesforce-verified sign-in, giving Foundation members access to Quarterly back issues, members-only events and partner benefits.",
-      tags: "WordPress · Salesforce · GSAP",
-      image: "notes/frank-lloyd-wright-foundation/flw-members-quarterly-archive-v2.png",
-      imageLabel: "image — FLW members portal",
-      href: "/notes/frank-lloyd-wright-foundation",
+      items: [
+        {
+          title: "Frank Lloyd Wright Foundation",
+          d: "A custom WordPress portal with passwordless, Salesforce-verified sign-in, giving Foundation members access to Quarterly back issues, members-only events and partner benefits.",
+          tags: "WordPress · Salesforce · GSAP",
+          image: "notes/frank-lloyd-wright-foundation/flw-members-quarterly-archive-v2.png",
+          imageLabel: "image — FLW members portal",
+          href: "/notes/frank-lloyd-wright-foundation",
+        },
+      ],
     },
     quote: testimonials.tom,
     contactNote: "Tell me about the system. Let’s Marie Kondo that Rube Goldberg machine.",
@@ -215,7 +249,6 @@ export const services: Record<ServiceSlug, Service> = {
 
   "business-tools": {
     slug: "business-tools",
-    n: "03",
     title: "Business tools",
     metaDescription:
       "Internal tools that help teams work better: visibility into your data and knowledge, automation that clears bottlenecks, and monitoring for critical processes.",
@@ -260,6 +293,7 @@ export const services: Record<ServiceSlug, Service> = {
         { n: "03", t: "Two systems hold the same data, and they don’t agree." },
         { n: "04", t: "You find out something broke when a customer tells you." },
         { n: "05", t: "There’s a spreadsheet everyone’s afraid to touch." },
+        { n: "06", t: "You vibe-coded a new sales dashboard last weekend, now you want to make it real." },
       ],
     },
     process: {
@@ -288,11 +322,15 @@ export const services: Record<ServiceSlug, Service> = {
       ],
     },
     work: {
-      title: "Arizona Education Progress Meter",
-      d: "A data tool measuring the state’s progress toward its Achieve60 AZ goal, used by policy makers, educators, civic leaders, and business leaders across Arizona.",
-      tags: "Headless CMS · React · Custom API · Mapbox GL",
-      imageLabel: "screenshot — Education Progress Meter map + indicator chart",
-      href: "/notes/arizona-education-progress-meter",
+      items: [
+        {
+          title: "Arizona Education Progress Meter",
+          d: "A data tool measuring the state’s progress toward its Achieve60 AZ goal, used by policy makers, educators, civic leaders, and business leaders across Arizona.",
+          tags: "Headless CMS · React · Custom API · Mapbox GL",
+          imageLabel: "screenshot — Education Progress Meter map + indicator chart",
+          href: "/notes/arizona-education-progress-meter",
+        },
+      ],
     },
     quote: {
       ...testimonials.jeremy,

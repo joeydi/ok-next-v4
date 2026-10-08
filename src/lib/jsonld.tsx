@@ -1,4 +1,5 @@
 import type { BlogPosting, BreadcrumbList, Graph, Offer, Thing } from "schema-dts";
+import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
 import type { Service } from "@/data/services";
 import { SITE } from "@/data/site";
@@ -107,14 +108,41 @@ export function serviceGraph(s: Service): Graph {
         "@type": "Service",
         "@id": `${url}#service`,
         name: s.title,
-        serviceType: s.title,
+        serviceType: s.serviceType ?? s.title,
         description: s.metaDescription,
         url,
-        audience: { "@type": "Audience", audienceType: s.audience },
+        audience: { "@type": "Audience", audienceType: s.audienceType ?? s.audience },
         provider: ref(ids.org),
         areaServed: [...areaServed],
       },
       breadcrumbs([[s.title, `/${s.slug}`]]),
+    ],
+  };
+}
+
+/** Agencies: a Service for agencies, related to the services they hire me for. */
+export function agenciesGraph(): Graph {
+  const url = abs("/agencies");
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: agencies.title,
+        serviceType: "White-label web development",
+        description: agencies.metaDescription,
+        url,
+        audience: { "@type": "Audience", audienceType: "Creative, marketing and digital agencies" },
+        provider: ref(ids.org),
+        areaServed: [...areaServed],
+        isRelatedTo: [
+          ref(`${abs("/design-development")}#service`),
+          ref(`${abs("/cms-integrations")}#service`),
+          ref(`${abs("/website-care")}#service`),
+        ],
+      },
+      breadcrumbs([[agencies.title, "/agencies"]]),
     ],
   };
 }

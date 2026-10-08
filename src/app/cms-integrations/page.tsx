@@ -6,7 +6,7 @@ import { OPEN_GRAPH } from "@/lib/metadata";
 const service = services["cms-integrations"];
 
 export const metadata: Metadata = {
-  title: service.title,
+  title: service.metaTitle ?? service.title,
   description: service.metaDescription,
   alternates: { canonical: "/cms-integrations" },
   openGraph: { ...OPEN_GRAPH, url: "/cms-integrations" },

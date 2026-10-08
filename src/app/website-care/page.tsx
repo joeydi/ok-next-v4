@@ -8,7 +8,7 @@ import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram"
 import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
-import { SectionHead } from "@/components/ServicePage";
+import { List, SectionHead } from "@/components/ServicePage";
 import { Cite } from "@/components/Testimonial";
 import { care as c } from "@/data/care";
 import { cn } from "@/lib/cn";
@@ -384,21 +384,5 @@ function Clients() {
         })}
       </ul>
     </Container>
-  );
-}
-
-function List({ items, className }: { items: readonly string[]; className?: string }) {
-  return (
-    <ul className={cn("flex flex-col gap-fl-8", className)}>
-      {items.map((item) => (
-        // A drawn square rather than a ::marker, whose distance from the text can't be set.
-        <li
-          key={item}
-          className="relative pl-fl-20 text-fl-18 leading-copy text-pretty text-body before:absolute before:top-[calc((1lh-0.3em)/2)] before:left-0 before:size-[0.3em] before:bg-pink"
-        >
-          {item}
-        </li>
-      ))}
-    </ul>
   );
 }

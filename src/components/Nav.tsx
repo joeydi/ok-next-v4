@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  type CSSProperties,
   type FocusEvent,
   type MouseEvent,
   type PointerEvent,
@@ -10,7 +11,7 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { ADMIN_NAV, CONTACT_HREF, NAV, SITE } from "@/data/site";
+import { ADMIN_NAV, CONTACT_HREF, NAV, type NavLink, SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
 import { Container } from "./Container";
 import { DockLogo } from "./logo/DockLogo";
@@ -154,7 +155,6 @@ export function Nav() {
   }));
   const contactCurrent = current(CONTACT_HREF, pathname, section);
   const dark = state === "dark";
-  const services = useHoverMenu();
   const accent = dark ? "text-pink" : "text-pink-ink";
   // Menu items bleed into the menu's padding so the hover fill sits around the text, which stays put.
   const menuItem = cn(
@@ -165,15 +165,6 @@ export function Nav() {
     "mt-2 border-t pt-2 transition-colors duration-500 ease-in-out-quart motion-reduce:transition-none",
     dark ? "border-paper/10" : "border-rule/50",
   );
-
-  // "Services" stays a link to the home section; its menu of service pages opens on
-  // mouse hover or keyboard focus (see useHoverMenu).
-  // Positions the menu where anchor positioning isn't supported (see globals.css).
-  function toggleServices(e: ToggleEvent<HTMLDivElement>) {
-    if (e.newState === "closed") return;
-    const trigger = e.currentTarget.previousElementSibling;
-    if (trigger) e.currentTarget.style.setProperty("--trigger-left", `${trigger.getBoundingClientRect().left}px`);
-  }
 
   // Sticky rather than fixed: as a direct child of <body> it stays put for the whole
   // page but keeps its space in the flow. The bar reaches half a gutter past the
@@ -209,47 +200,18 @@ export function Nav() {
 
         {/* Desktop links */}
         <ul className="hidden shrink-0 gap-fl-32 whitespace-nowrap lg:flex">
-          {links.map((l) =>
+          {links.map((l, i) =>
             l.children ? (
-              <li key={l.href} className="group" {...services.item}>
-                <Link
-                  href={l.href}
-                  onClick={services.clickLink}
-                  aria-current={l.current}
-                  className={cn("services-trigger block", l.current && accent)}
-                >
-                  {l.label}{" "}
-                  <span
-                    aria-hidden
-                    className="inline-block [view-transition-name:nav-caret] transition-transform duration-350 ease-in-out-quart group-has-[:popover-open]:rotate-180 motion-reduce:transition-none"
-                  >
-                    ↓
-                  </span>
-                </Link>
-                <div
-                  ref={services.ref}
-                  id="services-menu"
-                  popover="auto"
-                  data-theme={dark ? "dark" : undefined}
-                  className="nav-menu services-menu"
-                  onBeforeToggle={toggleServices}
-                >
-                  <ul className="flex flex-col">
-                    {l.children.map((s) => (
-                      <li key={s.href}>
-                        <Link
-                          href={s.href}
-                          onClick={services.close}
-                          aria-current={pathname === s.href ? "page" : undefined}
-                          className={cn(menuItem, pathname === s.href && accent)}
-                        >
-                          {s.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
+              <NavDropdown
+                key={l.href}
+                link={{ ...l, children: l.children }}
+                index={i}
+                pathname={pathname}
+                dark={dark}
+                accent={accent}
+                menuItem={menuItem}
+                current={l.current}
+              />
             ) : (
               <li key={l.href}>
                 <Link href={l.href} aria-current={l.current} className={cn("block", l.current && accent)}>
@@ -273,18 +235,38 @@ export function Nav() {
           </button>
           <div id="site-menu" popover="auto" data-theme={dark ? "dark" : undefined} className="nav-menu site-menu">
             <ul className="flex flex-col">
-              {links.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    onClick={closeMenu}
-                    aria-current={l.current}
-                    className={cn(menuItem, l.current && accent)}
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
+              {links.map((l) =>
+                l.children ? (
+                  <li key={l.href} className="pt-2 first:pt-0">
+                    <div className={cn("py-1.5", dark ? "text-muted-light" : "text-muted")}>{l.label}</div>
+                    <ul className="flex flex-col pl-4">
+                      {l.children.map((c) => (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            onClick={closeMenu}
+                            aria-current={pathname === c.href ? "page" : undefined}
+                            className={cn(menuItem, pathname === c.href && accent)}
+                          >
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      onClick={closeMenu}
+                      aria-current={l.current}
+                      className={cn(menuItem, l.current && accent)}
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ),
+              )}
               <li className={divider}>
                 <Link
                   href={CONTACT_HREF}
@@ -313,6 +295,82 @@ export function Nav() {
         </div>
       </nav>
     </Container>
+  );
+}
+
+/**
+ * A desktop link with a dropdown of its children, opened on mouse hover or keyboard focus
+ * (see useHoverMenu). The link still goes to its own page. Each dropdown has its own
+ * popover id, caret transition name and anchor (`--nav-anchor`, read by the nav CSS).
+ */
+function NavDropdown({
+  link,
+  index,
+  pathname,
+  dark,
+  accent,
+  menuItem,
+  current,
+}: {
+  link: NavLink & { children: readonly NavLink[] };
+  index: number;
+  pathname: string;
+  dark: boolean;
+  accent: string;
+  menuItem: string;
+  current: "page" | "location" | undefined;
+}) {
+  const { ref, close, clickLink, item } = useHoverMenu();
+
+  // Positions the menu where anchor positioning isn't supported (see globals.css).
+  function onBeforeToggle(e: ToggleEvent<HTMLDivElement>) {
+    if (e.newState === "closed") return;
+    const trigger = e.currentTarget.previousElementSibling;
+    if (trigger) e.currentTarget.style.setProperty("--trigger-left", `${trigger.getBoundingClientRect().left}px`);
+  }
+
+  return (
+    <li className="group" style={{ "--nav-anchor": `--nav-trigger-${index}` } as CSSProperties} {...item}>
+      <Link
+        href={link.href}
+        onClick={clickLink}
+        aria-current={current}
+        className={cn("nav-trigger block", current && accent)}
+      >
+        {link.label}{" "}
+        <span
+          aria-hidden
+          // Each caret needs its own transition name; the shared class styles them all.
+          style={{ viewTransitionName: `nav-caret-${index}` }}
+          className="nav-caret inline-block transition-transform duration-350 ease-in-out-quart group-has-[:popover-open]:rotate-180 motion-reduce:transition-none"
+        >
+          ↓
+        </span>
+      </Link>
+      <div
+        ref={ref}
+        id={`nav-menu-${index}`}
+        popover="auto"
+        data-theme={dark ? "dark" : undefined}
+        className="nav-menu nav-dropdown"
+        onBeforeToggle={onBeforeToggle}
+      >
+        <ul className="flex flex-col">
+          {link.children.map((c) => (
+            <li key={c.href}>
+              <Link
+                href={c.href}
+                onClick={close}
+                aria-current={pathname === c.href ? "page" : undefined}
+                className={cn(menuItem, pathname === c.href && accent)}
+              >
+                {c.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
   );
 }
 

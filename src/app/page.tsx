@@ -6,6 +6,7 @@ import { Contact, DarkSection, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
 import { MediaImage } from "@/components/MediaImage";
 import { Cite } from "@/components/Testimonial";
+import { care } from "@/data/care";
 import { principles, testimonials } from "@/data/home";
 import { services } from "@/data/services";
 import { SITE } from "@/data/site";
@@ -106,6 +107,11 @@ function Approach() {
 }
 
 function Services() {
+  // In the nav's order: website care first, then the services.
+  const cards = [
+    { href: "/website-care", ...care },
+    ...Object.values(services).map((s) => ({ href: `/${s.slug}`, ...s })),
+  ];
   return (
     <Container as="section" id="services" className="py-fl-96">
       <div className="mb-fl-48 flex flex-col justify-between gap-fl-24 md:flex-row md:items-end">
@@ -117,15 +123,15 @@ function Services() {
           Most engagements touch more than one of these. We’ll figure out which one matters first.
         </p>
       </div>
-      <div className="grid gap-fl-24 lg:grid-cols-3">
-        {Object.values(services).map((s) => (
+      <div className="grid gap-fl-24 md:grid-cols-2 xl:grid-cols-4">
+        {cards.map((s) => (
           <Link
-            key={s.slug}
-            href={`/${s.slug}`}
-            className="frame hover-card hover-lift flex flex-col gap-fl-18 bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-32 pt-fl-28 pb-fl-32 lg:min-h-[calc(25*var(--pvw))]"
+            key={s.href}
+            href={s.href}
+            className="frame hover-card hover-lift flex flex-col gap-fl-18 bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-28 pt-fl-28 pb-fl-32 xl:min-h-[calc(30.56*var(--pvw))]"
           >
             <div className="mono-label text-muted">{s.audience}</div>
-            <h3 className="display mt-fl-40 text-fl-36 leading-heading-36 tracking-display-36">
+            <h3 className="display mt-fl-40 text-fl-30 leading-heading-30 tracking-display-30 text-balance">
               <span className="hover-title">{s.title}</span>
             </h3>
             <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{s.intro}</p>

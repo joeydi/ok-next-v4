@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
+import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
 import { type ServiceSlug, services } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
@@ -84,6 +85,13 @@ function content(path: string): OgCard | null {
       alt: `${care.title} — Okayplus`,
       illustration: "care-catch",
     };
+  if (path === "/agencies")
+    return {
+      eyebrow: `Who I work with  ${agencies.audience}`,
+      title: agencies.h1.join(" "),
+      alt: `${agencies.title} — Okayplus`,
+      illustration: "care-stack",
+    };
   if (path === "/site-check")
     return {
       eyebrow: siteCheck.eyebrow,
@@ -98,7 +106,7 @@ function content(path: string): OgCard | null {
   if (slug in services) {
     const s = services[slug as ServiceSlug];
     return {
-      eyebrow: `Services  ${s.n}  ${s.audience}`,
+      eyebrow: `Services  ${s.audience}`,
       title: s.h1.join(" "),
       alt: `${s.title} — Okayplus`,
       illustration: s.illustration,

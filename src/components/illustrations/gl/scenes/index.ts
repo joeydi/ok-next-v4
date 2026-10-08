@@ -13,11 +13,11 @@ export const SCENES = {
   "bounce-row": bounceRow,
   conveyor,
   ring,
-  // Website care concepts, exploring; keep the one chosen and drop the rest.
-  "care-patch": carePatch,
   "care-stack": careStack,
+  "care-catch": careCatch,
+  // Website care concepts, exploring; the page uses care-catch, so drop the rest once settled.
+  "care-patch": carePatch,
   "care-ping": carePing,
   "care-seesaw": careSeesaw,
-  "care-catch": careCatch,
 };
 export type SceneName = keyof typeof SCENES;

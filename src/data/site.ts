@@ -21,18 +21,23 @@ export type NavLink = { label: string; href: string; children?: readonly NavLink
 
 /** `children` show in a dropdown under their parent on desktop. Service titles match `src/data/services.ts`, kept apart so the client nav doesn't bundle the page copy. */
 export const NAV: readonly NavLink[] = [
-  { label: "Approach", href: "/#approach" },
   {
     label: "Services",
     href: "/#services",
     children: [
-      { label: "Digital production", href: "/digital-production" },
+      { label: "Website care", href: "/website-care" },
+      { label: "Design & development", href: "/design-development" },
       { label: "CMS & integrations", href: "/cms-integrations" },
       { label: "Business tools", href: "/business-tools" },
     ],
   },
-  { label: "About", href: "/#about" },
+  {
+    label: "Who I work with",
+    href: "/agencies",
+    children: [{ label: "Agencies", href: "/agencies" }],
+  },
   { label: "Notes", href: "/notes" },
+  { label: "About", href: "/#about" },
 ];
 
 export const CONTACT_HREF = "/#contact";

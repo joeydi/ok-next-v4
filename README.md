@@ -39,9 +39,11 @@ There is no test suite. `npm run check` and `npm run build` are the gates.
 src/
   app/                    routes, globals.css (tokens), fluid.css (generated)
     page.tsx              home
-    digital-production/   service pages, one folder each, rendered by ServicePage
+    design-development/   service pages, one folder each, rendered by ServicePage
     cms-integrations/
     business-tools/
+    website-care/         website care and agencies: pages with their own layouts (data in care.ts, agencies.ts)
+    agencies/
     notes/                index, [slug] post page, rss.xml
     admin/                dev-only tools (media, Open Graph, illustrations) and docs viewer (*.dev.tsx)
     */opengraph-image.tsx social cards, built on src/lib/og.tsx
@@ -61,7 +63,7 @@ design_handoff_okayplus_site/   the original design handoff and 1440px comps
 ## Editing copy
 
 - **Site constants** (`src/data/site.ts`): name, email, booking link, description and the nav.
-- **Service pages** (`src/data/services.ts`): all copy for the three service pages, plus the homepage service cards built from them. Words wrapped in `*asterisks*` in an `h1` line render pink.
+- **Service pages** (`src/data/services.ts`): all copy for the three service pages, plus the homepage service cards built from them (website care’s card comes from `src/data/care.ts`; the agencies page copy is in `src/data/agencies.ts`). Words wrapped in `*asterisks*` in an `h1` line render pink.
 - **Home** (`src/data/home.ts`): the approach principles and testimonials, which the service pages also quote. The hero and about copy is inline in `src/app/page.tsx`. The contact block shared by every page is in `src/components/Footer.tsx`, and each service page adds its own `contactNote`.
 
 ## Writing notes
@@ -154,7 +156,7 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
 
 ## Illustrations
 
-The isometric block illustrations in each hero are small WebGL2 scenes in `src/components/illustrations/gl/`: the puzzle cube on the home page, bounce-row, conveyor and ring on the service pages. Each scene (`scenes/*.ts`) is a `frame(t)` function that returns the boxes and balls at time `t`. A small renderer draws them with soft shadows and ambient occlusion.
+The isometric block illustrations in each hero are small WebGL2 scenes in `src/components/illustrations/gl/`: the puzzle cube on the home page, bounce-row, conveyor and ring on the service pages, care-catch on website care and care-stack on agencies. Each scene (`scenes/*.ts`) is a `frame(t)` function that returns the boxes and balls at time `t`. A small renderer draws them with soft shadows and ambient occlusion.
 
 - The server renders a **poster** (the scene's `posterTime` frame, from `public/illustrations/`) so something shows at once. WebGL starts once the page is idle and the illustration is near the viewport, and stops off screen. Under `prefers-reduced-motion`, or without WebGL2, the poster stays.
 - The puzzle cube is interactive: it defines `play()` and a `hitArea`, so on the page you can drag its slices. Posters and the lab still use `frame(t)`.
@@ -202,7 +204,7 @@ SITE_CHECK_TO=…            # optional: where review requests go, else the site
 
 ## Design references
 
-The original design handoff is in `design_handoff_okayplus_site/`, with 1440px comps in `screenshots/`. Two service pages have been renamed since the handoff: `creative-production` is now `digital-production`, and `tools-for-better-work` is now `business-tools`.
+The original design handoff is in `design_handoff_okayplus_site/`, with 1440px comps in `screenshots/`. Two service pages have been renamed since the handoff: `creative-production` is now `design-development` (it was `digital-production` for a while, which now redirects to `/agencies`), and `tools-for-better-work` is now `business-tools`.
 
 Design docs explain parts of the design system. They're MDX files in `src/content/docs/`, shown in the dev-only admin at `/admin/docs/<slug>` and listed in its sidebar:
 

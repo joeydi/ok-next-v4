@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
-import type { Service } from "@/data/services";
+import type { Service, Work } from "@/data/services";
 import { cn } from "@/lib/cn";
 import { JsonLd, serviceGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
@@ -23,27 +23,29 @@ function caseStudy(href?: string) {
   return note.meta;
 }
 
-export function ServicePage({ service: s }: { service: Service }) {
-  const three = s.capabilities.items.length === 3;
-  const workMedia = s.work.image ? getMedia(s.work.image) : caseStudy(s.work.href)?.image;
+/** The note a work item's `href` points at, and the image to show for it. */
+function workImage(w: Work) {
+  return w.image ? getMedia(w.image) : caseStudy(w.href)?.image;
+}
 
-  // With a case study the whole block is the link, so it takes the hover-card treatment.
-  const work = (
+/** A single work item, large: the whole block is the link when it has a case study. */
+function FeaturedWork({ work: w }: { work: Work }) {
+  const body = (
     <>
       <Placeholder
-        label={s.work.imageLabel}
-        media={workMedia}
+        label={w.imageLabel}
+        media={workImage(w)}
         sizes="(min-width: 1024px) 55vw, 100vw"
-        className={cn("col-span-12 aspect-4/3 lg:col-span-7", s.work.href && "hover-lift")}
+        className={cn("col-span-12 aspect-4/3 lg:col-span-7", w.href && "hover-lift")}
       />
       <div className="col-span-12 flex flex-col gap-fl-20 lg:col-span-4 lg:col-start-9">
         <Eyebrow n="04">Recent work</Eyebrow>
         <h2 className="display text-fl-48 leading-heading-48 tracking-display-48">
-          <span className="hover-title">{s.work.title}</span>
+          <span className="hover-title">{w.title}</span>
         </h2>
-        <p className="text-fl-18 leading-copy text-pretty text-body">{s.work.d}</p>
-        <div className="mono-label border-t border-rule pt-fl-16 text-body">{s.work.tags}</div>
-        {s.work.href && (
+        <p className="text-fl-18 leading-copy text-pretty text-body">{w.d}</p>
+        <div className="mono-label border-t border-rule pt-fl-16 text-body">{w.tags}</div>
+        {w.href && (
           <span className="mono-label text-pink-ink">
             Read the case study <span className="nudge">→</span>
           </span>
@@ -51,6 +53,65 @@ export function ServicePage({ service: s }: { service: Service }) {
       </div>
     </>
   );
+  return w.href ? (
+    <Link href={w.href} className="hover-card grid-12 items-end gap-y-fl-40">
+      {body}
+    </Link>
+  ) : (
+    <div className="grid-12 items-end gap-y-fl-40">{body}</div>
+  );
+}
+
+/** Two or more work items: a heading over a row of linked cards. */
+function WorkCards({ heading, items }: { heading?: string; items: Work[] }) {
+  return (
+    <>
+      <SectionHead n="04" eyebrow="Recent work" className="mb-fl-48">
+        {heading ?? "Recent work."}
+      </SectionHead>
+      <ul className="grid gap-fl-24 lg:grid-cols-3">
+        {items.map((w) => {
+          const body = (
+            <>
+              <Placeholder
+                label={w.imageLabel}
+                media={workImage(w)}
+                sizes="(min-width: 1024px) 33vw, 100vw"
+                className={cn("aspect-4/3", w.href && "hover-lift")}
+              />
+              <h3 className="display mt-fl-8 text-fl-36 leading-heading-36 tracking-display-36">
+                <span className="hover-title">{w.title}</span>
+              </h3>
+              <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{w.d}</p>
+              <div className="mono-label border-t border-rule pt-fl-16 text-body">{w.tags}</div>
+              {w.href && (
+                <span className="mono-label text-pink-ink">
+                  Read the case study <span className="nudge">→</span>
+                </span>
+              )}
+            </>
+          );
+          const className = "flex h-full flex-col gap-fl-18";
+          return (
+            <li key={w.title}>
+              {w.href ? (
+                <Link href={w.href} className={cn(className, "hover-card")}>
+                  {body}
+                </Link>
+              ) : (
+                <div className={className}>{body}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  );
+}
+
+export function ServicePage({ service: s }: { service: Service }) {
+  const three = s.capabilities.items.length === 3;
+  const steps = s.process.items.length;
 
   return (
     <>
@@ -58,7 +119,7 @@ export function ServicePage({ service: s }: { service: Service }) {
       <main id="main">
         {/* Hero */}
         <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
-          <Eyebrow href="/#services" details={[s.n, s.audience]}>
+          <Eyebrow href="/#services" details={[s.audience]}>
             Services
           </Eyebrow>
           <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display-144">
@@ -121,19 +182,7 @@ export function ServicePage({ service: s }: { service: Service }) {
           <SectionHead n="02" eyebrow="Sound familiar?" className="col-span-12 lg:col-span-4" balance>
             {s.situations.heading}
           </SectionHead>
-          <ul className="col-span-12 flex flex-col lg:col-span-7 lg:col-start-6">
-            {s.situations.items.map((item) => (
-              <li
-                key={item.n}
-                className="grid grid-cols-[2.5rem_1fr] items-baseline gap-fl-16 border-t border-rule py-fl-22 sm:grid-cols-[56px_1fr]"
-              >
-                <span className="mono-text text-pink-ink">{item.n}</span>
-                <p className="font-display text-fl-30 leading-display-text-30 tracking-display-30 text-pretty">
-                  {item.t}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <SituationList items={s.situations.items} className="col-span-12 lg:col-span-7 lg:col-start-6" />
         </Container>
 
         {/* Process */}
@@ -141,12 +190,22 @@ export function ServicePage({ service: s }: { service: Service }) {
           <SectionHead n="03" eyebrow="How a project goes" className="mb-fl-56">
             {s.process.heading}
           </SectionHead>
-          <ol className="grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2 lg:grid-cols-4">
+          <ol
+            className={cn(
+              "grid gap-x-fl-24 gap-y-fl-40 sm:grid-cols-2",
+              steps === 5 ? "lg:grid-cols-3 xl:grid-cols-5" : "lg:grid-cols-4",
+            )}
+          >
             {s.process.items.map((step) => (
               <li key={step.n} className="flex flex-col gap-fl-12 border-t border-rule pt-fl-20">
                 <div className="mono-text text-pink-ink">{step.n}</div>
                 <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">{step.t}</h3>
                 <p className="text-fl-18 leading-copy text-pretty text-body">{step.d}</p>
+                {step.link && (
+                  <Link href={step.link.href} className="mono-label text-pink-ink">
+                    {step.link.label} <span className="nudge">→</span>
+                  </Link>
+                )}
               </li>
             ))}
           </ol>
@@ -154,12 +213,10 @@ export function ServicePage({ service: s }: { service: Service }) {
 
         {/* Recent work */}
         <Container as="section" className="pt-fl-96 pb-fl-120">
-          {s.work.href ? (
-            <Link href={s.work.href} className="hover-card grid-12 items-end gap-y-fl-40">
-              {work}
-            </Link>
+          {s.work.items.length > 1 ? (
+            <WorkCards heading={s.work.heading} items={s.work.items} />
           ) : (
-            <div className="grid-12 items-end gap-y-fl-40">{work}</div>
+            <FeaturedWork work={s.work.items[0]} />
           )}
         </Container>
       </main>
@@ -202,5 +259,45 @@ export function SectionHead({
         {children}
       </h2>
     </div>
+  );
+}
+
+/** Numbered statements, each under a rule. Used for "Sound familiar?" on the service pages. */
+export function SituationList({
+  items,
+  className,
+}: {
+  items: readonly { n: string; t: string }[];
+  className?: string;
+}) {
+  return (
+    <ul className={cn("flex flex-col", className)}>
+      {items.map((item) => (
+        <li
+          key={item.n}
+          className="grid grid-cols-[2.5rem_1fr] items-baseline gap-fl-16 border-t border-rule py-fl-22 sm:grid-cols-[56px_1fr]"
+        >
+          <span className="mono-text text-pink-ink">{item.n}</span>
+          <p className="font-display text-fl-30 leading-display-text-30 tracking-display-30 text-pretty">{item.t}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** A bulleted list with pink-square markers. Also used by the website care and agencies pages. */
+export function List({ items, className }: { items: readonly string[]; className?: string }) {
+  return (
+    <ul className={cn("flex flex-col gap-fl-8", className)}>
+      {items.map((item) => (
+        // A drawn square rather than a ::marker, whose distance from the text can't be set.
+        <li
+          key={item}
+          className="relative pl-fl-20 text-fl-18 leading-copy text-pretty text-body before:absolute before:top-[calc((1lh-0.3em)/2)] before:left-0 before:size-[0.3em] before:bg-pink"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
   );
 }

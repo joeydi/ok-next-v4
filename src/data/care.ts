@@ -2,8 +2,8 @@ import { type Testimonial, testimonials } from "./home";
 
 /**
  * Copy for the website care page, `/website-care`.
- * Its sections don't fit the `Service` shape, so it isn't in `services` yet, which
- * also keeps it off the home page's service cards and llms.txt.
+ * Its sections don't fit the `Service` shape, so it isn't in `services`; the home page's
+ * service cards and llms.txt list it by hand.
  */
 
 export type CareTier = {

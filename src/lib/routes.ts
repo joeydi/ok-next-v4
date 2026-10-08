@@ -13,8 +13,9 @@ import { getAllNotes } from "./notes";
 export function sitePaths(notes: { slug: string }[] = getAllNotes()) {
   return [
     "/",
-    ...(Object.keys(services) as ServiceSlug[]).map((s) => `/${s}`),
     "/website-care",
+    ...(Object.keys(services) as ServiceSlug[]).map((s) => `/${s}`),
+    "/agencies",
     "/notes",
     ...notes.map((n) => `/notes/${n.slug}`),
     "/network",

@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
 import matter from "gray-matter";
+import { care } from "@/data/care";
+import { services } from "@/data/services";
 import { figureId } from "./figure-id";
 import { getMedia, type Media } from "./media";
 
@@ -19,6 +21,13 @@ export const TAG_LABELS: Record<Tag, string> = {
   VERMONT: "Vermont",
   COMMUNITY: "Community",
 };
+
+/** The service pages a note can point at: the services, plus website care. */
+function serviceLink(slug: string): { href: string; label: string } | undefined {
+  if (slug === "website-care") return { href: "/website-care", label: care.title };
+  const s = Object.values(services).find((x) => x.slug === slug);
+  return s ? { href: `/${s.slug}`, label: s.title } : undefined;
+}
 
 export type NoteMeta = {
   slug: string;
@@ -51,6 +60,8 @@ export type NoteMeta = {
   role?: string;
   year?: string;
   link?: string;
+  /** Resolved from the `service:` frontmatter key (a service slug or `website-care`): the page this work is an example of. */
+  service?: { href: string; label: string };
 };
 
 export type TocItem = { id: string; label: string };
@@ -77,6 +88,11 @@ function parse(file: string) {
     throw new Error(`notes/${file}: ${(err as Error).message}`);
   }
 
+  const service = data.service ? serviceLink(String(data.service)) : undefined;
+  if (data.service && !service) {
+    throw new Error(`notes/${file}: service "${data.service}" isn't a service page or "website-care"`);
+  }
+
   const meta: NoteMeta = {
     slug: slugName,
     title: String(data.title),
@@ -99,6 +115,7 @@ function parse(file: string) {
     role: data.role,
     year: data.year ? String(data.year) : undefined,
     link: data.link,
+    service,
   };
   return { meta, content };
 }

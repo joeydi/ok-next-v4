@@ -91,7 +91,7 @@ function frame(t: number): Item[] {
 }
 
 export const bounceRow: SceneDef = {
-  labels: ["AGENCIES", "CAMPAIGNS", "REPORTING"],
+  labels: ["SITES", "CAMPAIGNS", "SPECIAL BUILDS"],
   // Column, bounce and spin loops all line up every 78s.
   duration: 78,
   // The centre column at its hit, flashing pink under the ball.
