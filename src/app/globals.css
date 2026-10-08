@@ -18,10 +18,13 @@
 
 @theme {
   /* The palette's hues. The neutrals run from the cool hue at black to the warm hue
-     at white, and the pinks take the accent hue, so turning one turns its family. */
+     at white, and the pinks take the accent hue, so turning one turns its family.
+     The terminal hues are Moonlight's green and yellow, one colour each. */
   --hue-neutral-warm: 30;
   --hue-neutral-cool: 240;
   --hue-accent: 350;
+  --hue-term-green: 84.4;
+  --hue-term-yellow: 35.3;
 
   /* The turn from cool to warm, the shorter way round the wheel (−180 to 180), as CSS
      interpolates hues. A neutral's hue is cool + span × its lightness. */
@@ -47,9 +50,9 @@
   --color-pink: hsl(var(--hue-accent) 100% 65%);
   --color-pink-ink: hsl(var(--hue-accent) 74% 46%);
 
-  /* Terminal marks on ink: Moonlight's green and yellow, shared with the code blocks. */
-  --color-term-green: #c3e88d;
-  --color-term-yellow: #ffc777;
+  /* Terminal marks on ink: Moonlight's green and yellow (#c3e88d, #ffc777), shared with the code blocks. */
+  --color-term-green: hsl(var(--hue-term-green) 66.4% 73.1%);
+  --color-term-yellow: hsl(var(--hue-term-yellow) 100% 73.3%);
 
   --font-display: gelica, "Gelica Fallback", Georgia, serif;
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;

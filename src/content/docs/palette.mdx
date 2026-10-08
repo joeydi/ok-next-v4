@@ -7,7 +7,9 @@ size: large
 
 The tokens are the `--color-*` variables in the `@theme` block of `src/app/globals.css`, and every value on this page is read from there. Use them as Tailwind classes (`bg-paper`, `text-muted`) or as `var(--color-…)`, never as a hex.
 
-Their hues come from three tokens above them. The pinks are `hsl(var(--hue-accent) S% L%)`. The papers, rules and inks run from `--hue-neutral-cool` at black to `--hue-neutral-warm` at white: `--neutral-hue-span` is the turn between the two, the shorter way round the wheel as CSS interpolates hues, and each neutral's hue is the cool one plus that span times its lightness, written as `hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.925) S% 92.5%)`. Change a hue and its family follows, keeping its saturation and lightness. A new neutral needs only a lightness: its saturation is the rule below, and its hue the ramp.
+Their hues come from the `--hue-*` tokens above them. The pinks are `hsl(var(--hue-accent) S% L%)`. The papers, rules and inks run from `--hue-neutral-cool` at black to `--hue-neutral-warm` at white: `--neutral-hue-span` is the turn between the two, the shorter way round the wheel as CSS interpolates hues, and each neutral's hue is the cool one plus that span times its lightness, written as `hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.925) S% 92.5%)`. Change a hue and its family follows, keeping its saturation and lightness. A new neutral needs only a lightness: its saturation is the rule below, and its hue the ramp.
+
+The terminal colours, for the marks the site check draws on ink, are Moonlight's green and yellow from the code blocks (see Syntax below), each on a hue of its own, `--hue-term-green` and `--hue-term-yellow`.
 
 ## Swatches
 
@@ -19,6 +21,7 @@ Each swatch shows its best contrast, against paper or ink, and copies its hex wh
     Rules: ["rule", "guide"],
     "Ink & text": ["ink", "ink-2", "body", "muted", "muted-light"],
     Accent: ["pink", "pink-ink"],
+    Terminal: ["term-green", "term-yellow"],
   }}
 />
 
@@ -29,13 +32,13 @@ The neutrals are set from their lightness rather than picked by eye. Hover a dot
 <DocGrid>
   <DocFigure
     title="Saturation × lightness"
-    caption="The dashed line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)), rounded to a tenth. It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. The pinks are set by eye and sit off the rule."
+    caption="The dashed line is the rule every neutral is set from: saturation = 10% + 35% × (1 − √(1 − L²)), rounded to a tenth. It holds near 10% through the inks and mids, then bends up toward 45% at white, so only the papers carry much colour. The pinks are set by eye and the terminal colours taken from Moonlight, so they sit off the rule."
   >
     <SaturationPlot />
   </DocFigure>
   <DocFigure
     title="Hue wheel"
-    caption="Angle is hue and distance from the centre is saturation. The lines are the hue tokens. The dashed path is every neutral the ramp and the rule allow, from black on the cool line, near the centre, to white on the warm one, and the neutrals sit along it. The pinks sit on --hue-accent."
+    caption="Angle is hue and distance from the centre is saturation. The lines are the hue tokens. The dashed path is every neutral the ramp and the rule allow, from black on the cool line, near the centre, to white on the warm one, and the neutrals sit along it. The pinks sit on --hue-accent, and each terminal colour on its own hue."
   >
     <HueWheel />
   </DocFigure>
@@ -49,7 +52,7 @@ Sorted by lightness. Contrast below 4.5:1, the WCAG minimum for body text, is ma
 
 ## Syntax
 
-Code blocks in notes are highlighted in a palette of their own, based on atomiks' Moonlight theme. `src/lib/code-theme.json` maps every kind of token to a `--code-*` variable, and the values are set in `src/app/globals.css`, in the `.note-body` code rules. Moonlight's text colours, comments and reds are replaced by the site's neutrals and pink, so a block sits on ink like the rest of the page. Its other hues are kept as hex values, because nothing else on the site uses them. Contrast is measured against `--code-background`, the only ground they're drawn on, and anything under 4.5:1 is marked in pink.
+Code blocks in notes are highlighted in a palette of their own, based on atomiks' Moonlight theme. `src/lib/code-theme.json` maps every kind of token to a `--code-*` variable, and the values are set in `src/app/globals.css`, in the `.note-body` code rules. Moonlight's text colours, comments and reds are replaced by the site's neutrals and pink, so a block sits on ink like the rest of the page. Its other hues are kept as hex values. Only its green and yellow are used elsewhere, by the site check, so those two are `--color-term-*` tokens the blocks read. Contrast is measured against `--code-background`, the only ground they're drawn on, and anything under 4.5:1 is marked in pink.
 
 <SyntaxSwatches />
 
