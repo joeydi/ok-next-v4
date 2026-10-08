@@ -1076,17 +1076,31 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/site-check-0a2b2cdb.png": {
+  "og/site-check-a2696683.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 44675,
-    "etag": "39069776b3aed47d879153760a8a23c2",
-    "blurDataURL": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAQCdASoQAAgAA4BaJQBOgCHgDVywAP70zygeG6gkZzHVUAAEexIA",
+    "bytes": 146302,
+    "etag": "847d44dea54884fc93830953e6e5dce7",
+    "blurDataURL": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAQCdASoQAAgAA4BaJQBOgCHgDH5uAAD+9M8oHhungO/U2pzFrDXKXAA=",
     "color": "#f8e8e8",
     "alt": "Free site check — Okayplus",
     "caption": "",
     "context": "Open Graph card for /site-check",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "site-check/report-cascade-v4.png": {
+    "type": "image",
+    "width": 2400,
+    "height": 1260,
+    "bytes": 302747,
+    "etag": "c27735c8f3605f963863e4f1a4918b11",
+    "blurDataURL": "data:image/webp;base64,UklGRigAAABXRUJQVlA4IBwAAABwAQCdASoQAAgAA4BaJZwC7AF1AAD+8fjj0UAA",
+    "color": "#f8e8e8",
+    "alt": "Three pages of a monthly website report, stacked in perspective: a summary with uptime, response time, Lighthouse, SSL and accessibility figures in front, with performance scores and uptime monitoring behind.",
+    "caption": "",
+    "context": "Backdrop for the /site-check Open Graph card, a still of the website care report diagram",
     "altSource": "human",
     "reviewed": true
   }

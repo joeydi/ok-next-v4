@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { type ServiceSlug, services } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
-import type { Media } from "./media";
+import { getMedia, type Media } from "./media";
 import { formatDate, getNote } from "./notes";
 
 // What each route's Open Graph card says. The card is drawn twice from this: in
@@ -77,7 +77,14 @@ function content(path: string): OgCard | null {
   if (path === "/network")
     return { eyebrow: "Network", title: "Stay eager*.*", alt: "Network — Okayplus", network: true };
   if (path === "/site-check")
-    return { eyebrow: siteCheck.eyebrow, title: siteCheck.h1, alt: `${siteCheck.metaTitle} — Okayplus` };
+    return {
+      eyebrow: siteCheck.eyebrow,
+      title: siteCheck.h1,
+      alt: `${siteCheck.metaTitle} — Okayplus`,
+      // A one-off still of the website care page's report cascade, composed to clear the title.
+      image: getMedia("site-check/report-cascade-v4.png"),
+      backdrop: true,
+    };
 
   const slug = path.slice(1);
   if (slug in services) {
