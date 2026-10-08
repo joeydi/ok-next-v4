@@ -256,6 +256,10 @@ export class Renderer {
    * KHR_parallel_shader_compile, instead of blocking on the first draw.
    * `dither` breaks up banding on screen; poster exports turn it off, since
    * noise is what image codecs compress worst.
+   * Null without WebGL2, or when only a software renderer is on offer: drawn
+   * on the CPU, the loop pins the main thread and the page never settles.
+   * A lost context comes back with the same attributes, so a restore onto
+   * software fails the same way.
    */
   static async create(canvas: HTMLCanvasElement, { preserveDrawingBuffer = false, dither = true } = {}) {
     const gl = canvas.getContext("webgl2", {
@@ -264,8 +268,9 @@ export class Renderer {
       antialias: true,
       stencil: true,
       preserveDrawingBuffer,
+      failIfMajorPerformanceCaveat: true,
     });
-    if (!gl) throw new Error("WebGL2 unavailable");
+    if (!gl) return null;
     const ext = gl.getExtension("KHR_parallel_shader_compile");
     const lit = startProgram(gl, LIT_VS, LIT_FS);
     if (ext)

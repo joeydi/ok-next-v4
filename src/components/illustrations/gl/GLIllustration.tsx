@@ -92,7 +92,11 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
     let player: Player | null = null;
     let loading = false,
       disposed = false,
-      near = false;
+      near = false,
+      // No renderer to be had (no WebGL2, software only, or it failed to start): the poster stays for good.
+      failed = false,
+      // Between a lost context and its restore, when there's nothing to start a renderer on.
+      lostContext = false;
     let raf = 0,
       origin = 0,
       last: number | null = null;
@@ -125,19 +129,26 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       if (r.resize(Math.round(w * dpr), Math.round(((w * 660) / 620) * dpr)) && last !== null) draw(last);
     };
     const start = () => {
-      if (loading || r) return;
+      if (loading || r || failed || lostContext) return;
       loading = true;
       const go = async () => {
+        let created: Renderer | null = null;
         try {
-          const created = await Renderer.create(canvas);
-          if (disposed) return created.dispose();
-          r = created;
+          created = await Renderer.create(canvas);
         } catch (e) {
           console.warn("Illustration stays a poster:", e);
-          return;
         } finally {
           loading = false;
         }
+        if (disposed) return created?.dispose();
+        // An expected fallback, so it stays quiet. Nothing will start now, so stop watching.
+        if (!created) {
+          failed = true;
+          ro.disconnect();
+          io.disconnect();
+          return;
+        }
+        r = created;
         resize();
         update();
       };
@@ -182,10 +193,15 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       e.preventDefault();
       cancelAnimationFrame(raf);
       r = null;
+      lostContext = true;
       delete box.dataset.live;
     };
+    const restored = () => {
+      lostContext = false;
+      update();
+    };
     canvas.addEventListener("webglcontextlost", lost);
-    canvas.addEventListener("webglcontextrestored", update);
+    canvas.addEventListener("webglcontextrestored", restored);
 
     // Pointer input for the player, in canvas px. The canvas's box includes the Stage's scaling.
     const at = (e: PointerEvent): [number, number] => {
@@ -240,7 +256,7 @@ export function GLIllustration({ scene: name, className, sizes = DEFAULT_SIZES, 
       io.disconnect();
       reduce.removeEventListener("change", update);
       canvas.removeEventListener("webglcontextlost", lost);
-      canvas.removeEventListener("webglcontextrestored", update);
+      canvas.removeEventListener("webglcontextrestored", restored);
       redraw.current = () => {};
       r?.dispose();
       delete box.dataset.live;

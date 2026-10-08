@@ -60,6 +60,7 @@ export function IllustrationLab() {
     canvas.width = POSTER_WIDTHS.at(-1)!;
     canvas.height = Math.round((canvas.width * 660) / 620);
     const r = await Renderer.create(canvas, { preserveDrawingBuffer: true, dither: false });
+    if (!r) return setPoster("No hardware WebGL2");
     r.render(scene, scene.frame(scene.posterTime), DEFAULT_SETTINGS);
     const png = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/png"));
     r.dispose();
