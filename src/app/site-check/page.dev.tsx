@@ -8,10 +8,11 @@ import { siteCheck as c } from "@/data/site-check";
 import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
-// Dev-only (see pageExtensions in next.config.ts) while runs are sample data: once
-// the checker exists, swap playSample for its stream, rename this to page.tsx, and
-// add an opengraph-image.tsx and its card, a JSON-LD node and the sitemap entry.
-// `?stage=running|result|sent|failed` opens on a state, for reviewing the design.
+// Dev-only (see pageExtensions in next.config.ts) until the check goes live: then
+// rename this and the two routes in src/app/api/site-check/ to drop `.dev`, and add
+// an opengraph-image.tsx and its card, a JSON-LD node and the sitemap entry.
+// `?stage=running|result|sent|failed` opens on a state from the sample run, for
+// reviewing the design.
 
 export const metadata: Metadata = {
   title: c.metaTitle,

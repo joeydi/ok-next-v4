@@ -57,6 +57,7 @@ export function ScoreCard({ run, animate }: { run: SiteCheckRun; animate: boolea
 
         <ul className="flex min-w-0 flex-[2_1_300px] flex-col">
           {CATEGORIES.map((cat) => {
+            // undefined while its checks run; null once scored if none of them applied.
             const scored = run.categories.find((c) => c.id === cat.id)?.score;
             return (
               <li
@@ -68,17 +69,24 @@ export function ScoreCard({ run, animate }: { run: SiteCheckRun; animate: boolea
                   <span
                     className={cn(
                       "site-check-bar block h-1.5",
-                      scored !== undefined && scored < 60 ? "bg-pink-ink" : "bg-ink",
+                      scored != null && scored < 60 ? "bg-pink-ink" : "bg-ink",
                     )}
                     style={{ width: `${scored ?? 0}%` }}
                   />
                 </span>
-                <span className="mono-text text-right">
-                  {scored ?? (
+                <span className={cn("mono-text text-right", scored === null && "text-muted")}>
+                  {scored === undefined ? (
                     <>
                       <span aria-hidden="true">··</span>
                       <span className="sr-only">pending</span>
                     </>
+                  ) : scored === null ? (
+                    <>
+                      <span aria-hidden="true">n/a</span>
+                      <span className="sr-only">doesn’t apply</span>
+                    </>
+                  ) : (
+                    scored
                   )}
                 </span>
               </li>

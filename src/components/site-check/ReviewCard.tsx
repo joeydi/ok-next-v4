@@ -8,7 +8,7 @@ import { SITE } from "@/data/site";
 import { siteCheck as copy } from "@/data/site-check";
 import { cn } from "@/lib/cn";
 import type { Media } from "@/lib/media";
-import { sendReviewRequest } from "@/lib/site-check/sample";
+import { sendReviewRequest } from "@/lib/site-check/client";
 import type { SiteCheckRun } from "@/lib/site-check/schema";
 
 /** Ink card on paper; its focus rings take the pink that holds up on ink. */
@@ -28,6 +28,7 @@ export function ReviewCard({
 }) {
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
+  const [failed, setFailed] = useState(false);
   const thanks = useRef<HTMLHeadingElement>(null);
   const [moveFocus, setMoveFocus] = useState(false);
 
@@ -39,13 +40,14 @@ export function ReviewCard({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    await sendReviewRequest({
-      runId: run.id,
-      host: run.host,
-      email,
-      score: run.score ?? 0,
-      requestedAt: new Date().toISOString(),
-    });
+    setFailed(false);
+    try {
+      await sendReviewRequest({ runId: run.id, email });
+    } catch {
+      setFailed(true);
+      setSending(false);
+      return;
+    }
     setSending(false);
     setMoveFocus(true);
     onSent(email);
@@ -113,6 +115,11 @@ export function ReviewCard({
           </button>
         </div>
       </form>
+      {failed && (
+        <p role="alert" className="mt-fl-12 text-fl-18 leading-copy text-pink">
+          {copy.review.error} <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        </p>
+      )}
       <p className="mt-fl-16 text-fl-14 leading-copy text-muted-light">{copy.review.note}</p>
     </div>
   );

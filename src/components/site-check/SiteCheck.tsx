@@ -4,7 +4,8 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import { Eyebrow } from "@/components/Eyebrow";
 import { siteCheck as copy } from "@/data/site-check";
 import type { Media } from "@/lib/media";
-import { playSample, STAGE_AT, sampleRunAt } from "@/lib/site-check/sample";
+import { streamCheck } from "@/lib/site-check/client";
+import { STAGE_AT, sampleRunAt } from "@/lib/site-check/sample";
 import { normalizeUrl, reduceRun, type SiteCheckRun } from "@/lib/site-check/schema";
 import { CheckLog, seconds, tally } from "./CheckLog";
 import { ReviewCard } from "./ReviewCard";
@@ -16,9 +17,9 @@ export type SiteCheckStage = "running" | "result" | "sent" | "failed";
 const TICK = 80; // ms between clock updates while a run streams: the spinner's frame rate
 
 /**
- * The free site check: the URL field, then the run as it streams in (the log, the
- * score) and the ask for a personal review. Runs are fed by `playSample` for now;
- * the checker's own event stream replaces it without changing anything here.
+ * The free site check: the URL field, then the run as it streams in from the checker
+ * (the log, the score) and the ask for a personal review. A pinned `stage` shows the
+ * sample run instead, for reviewing the design.
  */
 export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headshot: Media }) {
   const [run, dispatch] = useReducer(reduceRun, null, () =>
@@ -28,7 +29,9 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
   const [invalid, setInvalid] = useState(false);
   const [sentTo, setSentTo] = useState(stage === "sent" ? "comms@yourorganization.org" : null);
   // A pinned run holds its clock where the stage stops it; a live one reads the time.
+  // A live run's clock is the browser's own, from when it was asked for.
   const [live, setLive] = useState(false);
+  const [startedAt, setStartedAt] = useState(0);
   const [now, setNow] = useState(0);
   const stop = useRef<() => void>(undefined);
 
@@ -50,8 +53,9 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
     stop.current?.();
     setSentTo(null);
     setLive(true);
+    setStartedAt(Date.now());
     setNow(Date.now());
-    stop.current = playSample(target.url, target.host, dispatch);
+    stop.current = streamCheck(target.url, target.host, dispatch);
   };
 
   const elapsed = !run
@@ -59,7 +63,7 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
     : run.duration !== null
       ? run.duration
       : live
-        ? Math.max(0, now - Date.parse(run.startedAt))
+        ? Math.max(0, now - startedAt)
         : STAGE_AT.running;
 
   const label = running

@@ -106,7 +106,7 @@ export function CheckLog({ run, elapsed }: { run: SiteCheckRun; elapsed: number 
             <div>
               <span className="text-pink">✕</span> {run.failure.message}
             </div>
-            <div className="text-muted-light">→ {copy.failed}</div>
+            <div className="text-muted-light">→ {copy.failed[run.failure.reason]}</div>
           </div>
         )}
       </div>

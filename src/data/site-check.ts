@@ -1,7 +1,7 @@
 import { care } from "./care";
 
 /**
- * Copy for the free site check, `/site-check` (dev-only until the checker exists).
+ * Copy for the free site check, `/site-check` (dev-only until it goes live).
  * What it looks at is the website care page's list, so the two can't drift.
  * `*word*` in a heading renders pink.
  */
@@ -29,7 +29,14 @@ export const siteCheck = {
   resultsLabel: "Results",
   logLabel: "Check log",
   done: "These checks are automated. For a person’s review, leave your email.",
-  failed: "Check the address and try again, or email me and I’ll take a look.",
+  /** Under a failed run, by why it failed. */
+  failed: {
+    "invalid-url": "Check the address and try again.",
+    unreachable: "Check the address and try again, or email me and I’ll take a look.",
+    timeout: "Try again in a minute, or email me and I’ll take a look.",
+    blocked: "Its firewall turns automated checks away. Email me and I’ll take a look myself.",
+    "rate-limited": "Try again a little later, or email me and I’ll take a look.",
+  },
 
   scoreLabel: "Your score",
   scoreNote: "Each bar fills in as its checks finish. Your score lands when the last one does.",
@@ -49,6 +56,7 @@ export const siteCheck = {
     placeholder: "you@yourorganization.org",
     cta: "Send me the review",
     note: "No cost and no obligation. If your site is in good shape, I’ll tell you that too.",
+    error: "That didn’t send. Try again, or email me at",
   },
   sent: {
     label: "On my list",
