@@ -2,6 +2,7 @@ import type { BlogPosting, BreadcrumbList, Graph, Offer, Thing } from "schema-dt
 import { care } from "@/data/care";
 import type { Service } from "@/data/services";
 import { SITE } from "@/data/site";
+import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
 import { mediaImageUrl } from "./media-url";
 import type { NoteMeta } from "./notes";
@@ -218,6 +219,28 @@ export function notesIndexGraph(notes: NoteMeta[]): Graph {
         })),
       },
       breadcrumbs([["Notes", "/notes"]]),
+    ],
+  };
+}
+
+export function siteCheckGraph(): Graph {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": abs("/site-check#app"),
+        name: siteCheck.metaTitle,
+        description: siteCheck.metaDescription,
+        url: abs("/site-check"),
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Any",
+        isAccessibleForFree: true,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        provider: ref(ids.org),
+        creator: ref(ids.person),
+      },
+      breadcrumbs([[siteCheck.metaTitle, "/site-check"]]),
     ],
   };
 }

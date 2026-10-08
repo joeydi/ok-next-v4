@@ -11,8 +11,7 @@ import {
 import { clientIp, countRun, hasRunLeft, lockHost, recentRun, saveRun, unlockHost } from "@/lib/site-check/store";
 
 // POST { url } → the run as server-sent events (`data: <SiteCheckEvent>`), read by
-// streamCheck in src/lib/site-check/client.ts. Dev-only alongside the page; rename
-// both when the check goes live. A host checked in the last 15 minutes is replayed
+// streamCheck in src/lib/site-check/client.ts. A host checked in the last 15 minutes is replayed
 // from the store rather than checked again; otherwise the visitor's rate limit and
 // a per-host lock come first. A run only counts towards the limit once the site
 // has answered.

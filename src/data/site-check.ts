@@ -1,7 +1,7 @@
 import { care } from "./care";
 
 /**
- * Copy for the free site check, `/site-check` (dev-only until it goes live).
+ * Copy for the free site check, `/site-check`.
  * What it looks at is the website care page's list, so the two can't drift.
  * `*word*` in a heading renders pink.
  */

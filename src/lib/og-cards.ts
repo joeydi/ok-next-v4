@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { type ServiceSlug, services } from "@/data/services";
+import { siteCheck } from "@/data/site-check";
 import type { Media } from "./media";
 import { formatDate, getAllNotes, getNote } from "./notes";
 
@@ -66,6 +67,7 @@ export function ogPaths() {
     "/notes",
     ...getAllNotes().map((n) => `/notes/${n.slug}`),
     "/network",
+    "/site-check",
   ];
 }
 
@@ -88,6 +90,8 @@ function content(path: string): OgCard | null {
   if (path === "/notes") return { eyebrow: "Notes", title: "Notes*.*", alt: "Notes — Okayplus" };
   if (path === "/network")
     return { eyebrow: "Network", title: "Stay eager*.*", alt: "Network — Okayplus", network: true };
+  if (path === "/site-check")
+    return { eyebrow: siteCheck.eyebrow, title: siteCheck.h1, alt: `${siteCheck.metaTitle} — Okayplus` };
 
   const slug = path.slice(1);
   if (slug in services) {

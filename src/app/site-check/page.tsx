@@ -5,14 +5,13 @@ import { Eyebrow } from "@/components/Eyebrow";
 import { Contact, SiteFooter } from "@/components/Footer";
 import { SiteCheck, type SiteCheckStage } from "@/components/site-check/SiteCheck";
 import { siteCheck as c } from "@/data/site-check";
+import { JsonLd, siteCheckGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
-// Dev-only (see pageExtensions in next.config.ts) until the check goes live: then
-// rename this and the two routes in src/app/api/site-check/ to drop `.dev`, and add
-// an opengraph-image.tsx and its card, a JSON-LD node and the sitemap entry.
-// `?stage=running|result|sent|failed` opens on a state from the sample run, for
-// reviewing the design.
+// Live, but not linked from anywhere yet, so it's left out of the sitemap. Under
+// `next dev`, `?stage=running|result|sent|failed` opens on a state from the sample
+// run, for reviewing the design; production ignores it, so the page stays static.
 
 export const metadata: Metadata = {
   title: c.metaTitle,
@@ -26,10 +25,12 @@ const headshot = getMedia("home/headshot.jpg");
 const STAGES: readonly SiteCheckStage[] = ["running", "result", "sent", "failed"];
 
 export default async function SiteCheckPage({ searchParams }: { searchParams: Promise<{ stage?: string }> }) {
-  const { stage } = await searchParams;
+  // Only read in development: reading searchParams would make the page dynamic.
+  const { stage } = process.env.NODE_ENV === "development" ? await searchParams : {};
   const pinned = STAGES.find((s) => s === stage);
   return (
     <>
+      <JsonLd data={siteCheckGraph()} />
       <main id="main">
         {/* A single column, so the log reads like a terminal session, top to bottom: 840px
             at 1440, and past it growing with the fluid type so lines wrap the same. */}

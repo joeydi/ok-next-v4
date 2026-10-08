@@ -4,7 +4,7 @@ import { allowReview, clientIp, getRun } from "@/lib/site-check/store";
 
 // POST { runId, email } → emails Joe the stored run for a personal review. The run
 // is looked up by id, so what's sent is what the checker found, not what the page
-// says it found. Dev-only alongside the page.
+// says it found.
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
