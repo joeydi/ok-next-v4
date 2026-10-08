@@ -35,7 +35,7 @@ export const care = {
   /** Who it's for, in the JSON-LD; `audience` above is the hero's label. */
   audienceType: "Non-profits, foundations and other organizations without a web team",
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
-  h1: ["Keep it running.", "*Keep it moving.*"],
+  h1: ["Nothing slips", "*through the*", "*cracks.*"],
   intro:
     "Ongoing WordPress maintenance, monitoring, and hands-on support for non-profits, foundations, and other organizations that rely on their website but don’t need a full-time web team.",
   tagline: "For the website that’s nobody’s full-time job.",
