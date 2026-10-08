@@ -293,20 +293,6 @@
     "altSource": "ai",
     "reviewed": true
   },
-  "notes/frank-lloyd-wright-foundation/home-header.jpg": {
-    "type": "image",
-    "width": 2560,
-    "height": 1056,
-    "bytes": 569037,
-    "etag": "ab0b37320f8819ae49cff86183cd8a6d",
-    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAABQAgCdASoQAAcAA4BaJbACdH8GJ/geGdr6wAAAyUhjAIxE9nwlRny0Q/s6NEfbv2JrELiHokgqvvO6RE912s6WH94xbLGRKeUoAAAA",
-    "color": "#8898b8",
-    "alt": "Taliesin West at golden hour, its desert-stone walls and red beams reflected in the long reflecting pool.",
-    "caption": "",
-    "context": "taliesin west reflecting pool",
-    "altSource": "ai",
-    "reviewed": true
-  },
   "notes/frank-lloyd-wright-foundation/members-issue-scroll.mp4": {
     "type": "video",
     "width": 1628,
@@ -838,13 +824,27 @@
     "altSource": "ai",
     "reviewed": true
   },
-  "og/business-tools-b7109429.png": {
+  "og/agencies-1d0f0f14.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 100146,
-    "etag": "43297356cfbfdb7b22c65d0a5f6826c0",
-    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAgAA4BaJQBOgCHep0eMAAD+9NEJsPIyCraOsAZrx+ZnbEJCBvUqls0HGh8LWAA=",
+    "bytes": 111624,
+    "etag": "af8d8f7e27f5f9998fec826d5a6759eb",
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAACwAQCdASoQAAgAA4BaJQBOgCHUXlXYAP70z1L/ihi2jPtX12ENecxbZ1GX+HkBnJFBBrhh/AA=",
+    "color": "#e8e8e8",
+    "alt": "Agencies — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /agencies",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "og/business-tools-0be5cb98.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 99373,
+    "etag": "07894610efe42e42c9ce081171ff9f90",
+    "blurDataURL": "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAACQAQCdASoQAAgAA4BaJQbgchwBFAAA/vD0Uy5y7G7mfd7ysrFmy+1WhTZf404Q02+GuUkpDigAAA==",
     "color": "#e8e8e8",
     "alt": "Business tools — Okayplus",
     "caption": "",
@@ -852,13 +852,13 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/cms-integrations-1e0ffcd6.png": {
+  "og/cms-integrations-5c99c064.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 106252,
-    "etag": "7a97bfea55958ddc80c325dc5ef250c7",
-    "blurDataURL": "data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAADQAQCdASoQAAgAA4BaJQBOgCHE1YHB8AD+9M9TAuZio8m87Njk3yBD4owaq7lR4uv0QIAA",
+    "bytes": 105212,
+    "etag": "60caf735553bfd5da6843fc90466f3ad",
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAABQAQCdASoQAAgAA4BaJQBOgCgAAP7w81PKN59ZY1sN2pTCsriIYw/ol/bIPBhweB+H8ITgAAA=",
     "color": "#e8e8e8",
     "alt": "CMS & integrations — Okayplus",
     "caption": "",
@@ -866,17 +866,17 @@
     "altSource": "human",
     "reviewed": true
   },
-  "og/digital-production-65be2dfd.png": {
+  "og/design-development-a1de6054.png": {
     "type": "image",
     "width": 1200,
     "height": 630,
-    "bytes": 93343,
-    "etag": "bc4c24f6f5101673249cbc7188adfb61",
+    "bytes": 91304,
+    "etag": "13ab67b2e08744762ff15b0b2f6563d0",
     "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAAAQAgCdASoQAAgAA4BaJYwCdAEO9XJ5NFYAAP70z0tFhJH+G3g0+Acjh3MP2iyh9xEsvO644iYGDCIAAAA=",
     "color": "#e8e8e8",
-    "alt": "Digital production — Okayplus",
+    "alt": "Design & development — Okayplus",
     "caption": "",
-    "context": "Open Graph card for /digital-production",
+    "context": "Open Graph card for /design-development",
     "altSource": "human",
     "reviewed": true
   },
