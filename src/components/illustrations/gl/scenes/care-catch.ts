@@ -38,7 +38,10 @@ const SETTLE = 0.25; // and slows to a stop on it over this long (s)
 // Gravity (px/s²) that takes it from leaving the corner, along the corner's tangent at V, onto the pink column at CATCH.
 const G = (2 * (BR * Math.cos(PHI) + DROP - BR - V * Math.tan(PHI) * FLY)) / FLY ** 2;
 const UP = CATCH + 0.85; // the pink column is level with the rest (s)
-const BACK = 0.9; // and the ball rolls back to the centre over this long (s)
+// The ball starts rolling back to the centre as soon as it's settled, while the pink
+// column is still rising, so the two overlap (s). Not before: it sets off at the row's speed.
+const BACK_AT = CATCH + SETTLE;
+const BACK = 1.5; // and takes this long (s)
 
 const EASE_IN = bezier(0.55, 0, 1, 0.45);
 const EASE_OUT = bezier(0.2, 0.8, 0.3, 1);
@@ -74,10 +77,6 @@ const slideFade = track([
   [CATCH - 0.8, 0],
   [CATCH - 0.6, 1],
 ]);
-const back = track([
-  [UP, 0, EASE_IO],
-  [UP + BACK, 1],
-]);
 
 /** A column's x, by time into its loop. */
 const colX = (s: number) => 150 + V * (HIT - s);
@@ -98,10 +97,14 @@ function fallZ(s: number) {
 }
 
 function ballX(s: number) {
-  if (s < S0 || s >= UP + BACK) return 150;
-  const carried = colX(s) + gapX(s);
-  // Rolls back from going with the row, without a jolt as it sets off.
-  return carried + (150 - carried) * back(s);
+  if (s < S0 || s >= BACK_AT + BACK) return 150;
+  if (s < BACK_AT) return colX(s) + gapX(s);
+  // Rolls back along a cubic that sets off moving with the row, so it starts rolling
+  // without a jolt, and comes to rest at the centre; starting early and taking its
+  // time keeps the catch-up to about one and a half times its rolling speed.
+  const u = (s - BACK_AT) / BACK,
+    x0 = colX(BACK_AT) + gapX(BACK_AT);
+  return x0 + (150 - x0) * u * u * (3 - 2 * u) - V * BACK * u * (1 - u) ** 2;
 }
 
 function frame(t: number): Item[] {
