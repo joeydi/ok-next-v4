@@ -1,9 +1,7 @@
+import { audiences } from "./catalog";
 import { type Testimonial, testimonials } from "./home";
 
-/**
- * Copy for the agencies page, `/agencies`: how agencies work with me.
- * Like website care, its sections don't fit the `Service` shape, so it isn't in `services`.
- */
+/** Copy for the agencies page, `/agencies` (how agencies work with me), on top of its catalog entry. */
 
 export type AgencyUse = {
   /** The service it leads to. */
@@ -14,12 +12,7 @@ export type AgencyUse = {
 };
 
 export const agencies = {
-  title: "Agencies",
-  /** The `<title>`, before the layout's " — Okayplus". */
-  metaTitle: "White-label web development for agencies",
-  metaDescription:
-    "Development help for agencies: overflow builds, special projects and white-label website care, from a designer-developer who has worked inside an agency.",
-  audience: "Agencies",
+  ...audiences.agencies,
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: ["An extra", "*pair of hands.*"],
   intro:

@@ -1,7 +1,7 @@
 import type { BlogPosting, BreadcrumbList, Graph, Offer, Thing } from "schema-dts";
 import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
-import type { Service } from "@/data/services";
+import type { ServiceSummary } from "@/data/catalog";
 import { SITE } from "@/data/site";
 import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
@@ -99,7 +99,7 @@ export function siteGraph(): Graph {
   };
 }
 
-export function serviceGraph(s: Service): Graph {
+export function serviceGraph(s: ServiceSummary): Graph {
   const url = abs(`/${s.slug}`);
   return {
     "@context": "https://schema.org",
@@ -130,10 +130,10 @@ export function agenciesGraph(): Graph {
         "@type": "Service",
         "@id": `${url}#service`,
         name: agencies.title,
-        serviceType: "White-label web development",
+        serviceType: agencies.serviceType,
         description: agencies.metaDescription,
         url,
-        audience: { "@type": "Audience", audienceType: "Creative, marketing and digital agencies" },
+        audience: { "@type": "Audience", audienceType: agencies.audienceType },
         provider: ref(ids.org),
         areaServed: [...areaServed],
         isRelatedTo: [

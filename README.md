@@ -63,7 +63,8 @@ design_handoff_okayplus_site/   the original design handoff and 1440px comps
 ## Editing copy
 
 - **Site constants** (`src/data/site.ts`): name, email, booking link, description and the nav.
-- **Service pages** (`src/data/services.ts`): all copy for the three service pages, plus the homepage service cards built from them (website care’s card comes from `src/data/care.ts`; the agencies page copy is in `src/data/agencies.ts`). Words wrapped in `*asterisks*` in an `h1` line render pink.
+- **Catalog** (`src/data/catalog.ts`): what every service and audience page shares (title, meta title and description, audience, intro, tagline), in nav order. The homepage service cards, sitemap, llms.txt, notes’ service links and JSON-LD read it.
+- **Service pages** (`src/data/services.ts`): the rest of the copy for the three templated service pages, on top of their catalog entries. Website care’s is in `src/data/care.ts` and the agencies page’s in `src/data/agencies.ts`. Words wrapped in `*asterisks*` in an `h1` line render pink.
 - **Home** (`src/data/home.ts`): the approach principles and testimonials, which the service pages also quote. The hero and about copy is inline in `src/app/page.tsx`. The contact block shared by every page is in `src/components/Footer.tsx`, and each service page adds its own `contactNote`.
 
 ## Writing notes

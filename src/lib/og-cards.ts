@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
-import { type ServiceSlug, services } from "@/data/services";
+import { type ServicePageSlug, servicePages } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
 import { formatDate, getNote } from "./notes";
@@ -103,8 +103,8 @@ function content(path: string): OgCard | null {
     };
 
   const slug = path.slice(1);
-  if (slug in services) {
-    const s = services[slug as ServiceSlug];
+  if (slug in servicePages) {
+    const s = servicePages[slug as ServicePageSlug];
     return {
       eyebrow: `Services  ${s.audience}`,
       title: s.h1.join(" "),

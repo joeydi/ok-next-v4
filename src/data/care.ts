@@ -1,9 +1,9 @@
+import { services } from "./catalog";
 import { type Testimonial, testimonials } from "./home";
 
 /**
- * Copy for the website care page, `/website-care`.
- * Its sections don't fit the `Service` shape, so it isn't in `services`; the home page's
- * service cards and llms.txt list it by hand.
+ * Copy for the website care page, `/website-care`, on top of its catalog entry.
+ * Its sections don't fit the `ServicePage` template, so it has its own page and copy.
  */
 
 export type CareTier = {
@@ -26,20 +26,9 @@ export type CareClient = {
 };
 
 export const care = {
-  title: "Website care",
-  /** The `<title>`, before the layout's " — Okayplus": what people search for, not the page's name. */
-  metaTitle: "WordPress maintenance & care plans for non-profits",
-  metaDescription:
-    "WordPress maintenance for non-profits and teams that rely on their website: updates, security, monitoring, a monthly report, and someone who knows your site.",
-  audience: "WordPress sites",
-  /** Who it's for, in the JSON-LD; `audience` above is the hero's label. */
-  audienceType: "Non-profits, foundations and other organizations without a web team",
+  ...services["website-care"],
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: ["Nothing slips", "*through the*", "*cracks.*"],
-  intro:
-    "Ongoing WordPress maintenance, monitoring, and hands-on support for non-profits, foundations, and other organizations that rely on their website but don’t need a full-time web team.",
-  tagline: "For the website that’s nobody’s full-time job.",
-
   overview: {
     eyebrow: "Website care",
     heading: "Your website isn’t finished when it launches.",

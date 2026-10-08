@@ -4,7 +4,7 @@ import { Accent } from "@/components/Accent";
 import { Eyebrow } from "@/components/Eyebrow";
 import { posterPath } from "@/components/illustrations/gl/poster";
 import { Logo } from "@/components/Logo";
-import { services } from "@/data/services";
+import { servicePages } from "@/data/services";
 import { NAV } from "@/data/site";
 import { viewTransition } from "@/lib/tokens";
 import { RevealPlayer } from "./RevealPlayer";
@@ -36,7 +36,7 @@ function Home() {
         <h2 className="display text-[60px] leading-heading-60 tracking-display-60">Where I fit in.</h2>
       </div>
       <div className="grid grid-cols-3 gap-6">
-        {Object.values(services).map((s) => (
+        {Object.values(servicePages).map((s) => (
           <button
             key={s.slug}
             type="button"
@@ -55,7 +55,7 @@ function Home() {
 }
 
 function Service() {
-  const s = services["design-development"];
+  const s = servicePages["design-development"];
   return (
     <div className="relative h-full px-18 pt-36">
       <Eyebrow details={[s.audience]}>Services</Eyebrow>

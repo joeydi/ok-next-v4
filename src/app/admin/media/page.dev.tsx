@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
-import { services } from "@/data/services";
+import { servicePages } from "@/data/services";
 import { readManifest } from "../../../../scripts/media.mjs";
 import { AdminShell } from "../AdminShell";
 import { type AdminItem, MediaAdmin } from "./MediaAdmin";
@@ -33,7 +33,7 @@ export default async function MediaAdminPage({
         .readdirSync(path.join(process.cwd(), "src/content/notes"))
         .filter((f) => f.endsWith(".mdx"))
         .map((f) => `notes/${f.replace(/\.mdx$/, "")}`),
-      ...Object.keys(services).map((slug) => `services/${slug}`),
+      ...Object.keys(servicePages).map((slug) => `services/${slug}`),
       ...Object.keys(manifest).flatMap((k) => (k.includes("/") ? [k.slice(0, k.lastIndexOf("/"))] : [])),
     ]),
   ].sort();

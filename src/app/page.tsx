@@ -6,9 +6,8 @@ import { Contact, DarkSection, SiteFooter } from "@/components/Footer";
 import { GLIllustration } from "@/components/illustrations";
 import { MediaImage } from "@/components/MediaImage";
 import { Cite } from "@/components/Testimonial";
-import { care } from "@/data/care";
+import { services } from "@/data/catalog";
 import { principles, testimonials } from "@/data/home";
-import { services } from "@/data/services";
 import { SITE } from "@/data/site";
 import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
@@ -107,11 +106,6 @@ function Approach() {
 }
 
 function Services() {
-  // In the nav's order: website care first, then the services.
-  const cards = [
-    { href: "/website-care", ...care },
-    ...Object.values(services).map((s) => ({ href: `/${s.slug}`, ...s })),
-  ];
   return (
     <Container as="section" id="services" className="py-fl-96">
       <div className="mb-fl-48 flex flex-col justify-between gap-fl-24 md:flex-row md:items-end">
@@ -124,10 +118,10 @@ function Services() {
         </p>
       </div>
       <div className="grid gap-fl-24 md:grid-cols-2 xl:grid-cols-4">
-        {cards.map((s) => (
+        {Object.values(services).map((s) => (
           <Link
-            key={s.href}
-            href={s.href}
+            key={s.slug}
+            href={`/${s.slug}`}
             className="frame hover-card hover-lift flex flex-col gap-fl-18 bg-clip-padding border border-rule/50 bg-linear-to-b from-paper-light to-paper-raised px-fl-28 pt-fl-28 pb-fl-32 xl:min-h-[calc(30.56*var(--pvw))]"
           >
             <div className="mono-label text-muted">{s.audience}</div>

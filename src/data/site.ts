@@ -19,7 +19,7 @@ export const SITE = {
 
 export type NavLink = { label: string; href: string; children?: readonly NavLink[] };
 
-/** `children` show in a dropdown under their parent on desktop. Service titles match `src/data/services.ts`, kept apart so the client nav doesn't bundle the page copy. */
+/** `children` show in a dropdown under their parent on desktop. Labels match the titles in `src/data/catalog.ts`, kept apart so the client nav doesn't bundle the catalog. */
 export const NAV: readonly NavLink[] = [
   {
     label: "Services",

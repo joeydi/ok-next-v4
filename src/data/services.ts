@@ -1,27 +1,19 @@
 import type { MediaKey } from "@/lib/media";
+import { services as catalog, type ServiceSlug, type ServiceSummary } from "./catalog";
 import { type Testimonial, testimonials } from "./home";
 
-export type ServiceSlug = "design-development" | "cms-integrations" | "business-tools";
+/** The service pages drawn by the `ServicePage` template; website care has its own page. */
+export type ServicePageSlug = Exclude<ServiceSlug, "website-care">;
 
 /** `imageLabel` labels the placeholder until there's media: `image` (an R2 key), or else the image of the note `href` links to. */
 export type Work = { title: string; d: string; tags: string; image?: MediaKey; imageLabel: string; href?: string };
 
-export type Service = {
-  slug: ServiceSlug;
-  title: string;
-  /** The <title> (before " — Okayplus"), when the page title would read better as what people search for. Defaults to `title`. */
-  metaTitle?: string;
-  metaDescription: string;
-  audience: string;
-  /** Who the service is for, in the JSON-LD (defaults to `audience`). */
-  audienceType?: string;
-  /** What the service is, in the JSON-LD (defaults to `title`). */
-  serviceType?: string;
+/** A service page: its entry in the catalog plus the template's copy. */
+export type Service = ServiceSummary & {
+  slug: ServicePageSlug;
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: string[];
   illustration: "bounce-row" | "conveyor" | "ring";
-  intro: string;
-  tagline: string;
   capabilities: {
     heading: string;
     eyebrow: string;
@@ -35,21 +27,12 @@ export type Service = {
   contactNote: string;
 };
 
-export const services: Record<ServiceSlug, Service> = {
+export const servicePages: Record<ServicePageSlug, Service> = {
   "design-development": {
+    ...catalog["design-development"],
     slug: "design-development",
-    title: "Design & development",
-    metaTitle: "Website design, development & redesigns",
-    metaDescription:
-      "New websites, redesigns and campaign builds for non-profits, foundations and marketing teams, designed and built by one person from first call to launch.",
-    audience: "New sites + redesigns",
-    audienceType: "Non-profits, foundations and marketing teams",
-    serviceType: "Website design and development",
     h1: ["Build the", "*big idea.*"],
     illustration: "bounce-row",
-    intro:
-      "Marketing teams and non-profits bring me in to turn a plan, a brand or a campaign idea into a website that ships on time and stays easy to run. I design it, build it, and stick around after launch.",
-    tagline: "For when the launch date is already on the calendar.",
     capabilities: {
       eyebrow: "What I build",
       heading: "Everything the launch needs.",
@@ -152,16 +135,10 @@ export const services: Record<ServiceSlug, Service> = {
   },
 
   "cms-integrations": {
+    ...catalog["cms-integrations"],
     slug: "cms-integrations",
-    title: "CMS & integrations",
-    metaDescription:
-      "Large CMS projects, content migrations, and backend integrations for non-profits and other large organizations.",
-    audience: "Non-profits + large orgs",
     h1: ["Content,", "*connected.*"],
     illustration: "conveyor",
-    intro:
-      "I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations, connecting content and systems without disrupting the people who depend on them.",
-    tagline: "For when nobody remembers why it works that way.",
     capabilities: {
       eyebrow: "What I do",
       heading: "Four ways in.",
@@ -248,16 +225,10 @@ export const services: Record<ServiceSlug, Service> = {
   },
 
   "business-tools": {
+    ...catalog["business-tools"],
     slug: "business-tools",
-    title: "Business tools",
-    metaDescription:
-      "Internal tools that help teams work better: visibility into your data and knowledge, automation that clears bottlenecks, and monitoring for critical processes.",
-    audience: "Internal teams",
     h1: ["Tools for", "*better work.*"],
     illustration: "ring",
-    intro:
-      "I build internal tools that give teams better access to their data and knowledge, automate repetitive work, and monitor the processes they depend on.",
-    tagline: "For the spreadsheet everyone’s afraid to touch.",
     capabilities: {
       eyebrow: "What I build",
       heading: "Three kinds of tools.",

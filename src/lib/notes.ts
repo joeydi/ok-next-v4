@@ -2,8 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
 import matter from "gray-matter";
-import { care } from "@/data/care";
-import { services } from "@/data/services";
+import { type ServiceSlug, services } from "@/data/catalog";
 import { figureId } from "./figure-id";
 import { getMedia, type Media } from "./media";
 
@@ -22,10 +21,9 @@ export const TAG_LABELS: Record<Tag, string> = {
   COMMUNITY: "Community",
 };
 
-/** The service pages a note can point at: the services, plus website care. */
+/** The service page a note can point at. */
 function serviceLink(slug: string): { href: string; label: string } | undefined {
-  if (slug === "website-care") return { href: "/website-care", label: care.title };
-  const s = Object.values(services).find((x) => x.slug === slug);
+  const s = slug in services ? services[slug as ServiceSlug] : undefined;
   return s ? { href: `/${s.slug}`, label: s.title } : undefined;
 }
 
@@ -60,7 +58,7 @@ export type NoteMeta = {
   role?: string;
   year?: string;
   link?: string;
-  /** Resolved from the `service:` frontmatter key (a service slug or `website-care`): the page this work is an example of. */
+  /** Resolved from the `service:` frontmatter key (a service slug): the page this work is an example of. */
   service?: { href: string; label: string };
 };
 
@@ -90,7 +88,7 @@ function parse(file: string) {
 
   const service = data.service ? serviceLink(String(data.service)) : undefined;
   if (data.service && !service) {
-    throw new Error(`notes/${file}: service "${data.service}" isn't a service page or "website-care"`);
+    throw new Error(`notes/${file}: service "${data.service}" isn't a service page`);
   }
 
   const meta: NoteMeta = {

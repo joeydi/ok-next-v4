@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { ServicePage } from "@/components/ServicePage";
-import { services } from "@/data/services";
+import { servicePages } from "@/data/services";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
-const service = services["business-tools"];
+const service = servicePages["business-tools"];
 
 export const metadata: Metadata = {
   title: service.metaTitle ?? service.title,
