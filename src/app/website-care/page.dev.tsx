@@ -78,7 +78,7 @@ function Hero() {
         ))}
       </h1>
       <GLIllustration
-        scene="care-stack"
+        scene="care-catch"
         sizes="(min-width: 1024px) min(49.51vw, 951px), 100vw"
         className="mx-auto w-full scale-120 lg:scale-100 lg:absolute lg:top-[calc(2.78*var(--pvw))] lg:w-[calc(49.51*var(--pvw))] lg:right-0"
       />

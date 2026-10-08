@@ -1,4 +1,5 @@
 import { bounceRow } from "./bounce-row";
+import { careCatch } from "./care-catch";
 import { carePatch } from "./care-patch";
 import { carePing } from "./care-ping";
 import { careSeesaw } from "./care-seesaw";
@@ -17,5 +18,6 @@ export const SCENES = {
   "care-stack": careStack,
   "care-ping": carePing,
   "care-seesaw": careSeesaw,
+  "care-catch": careCatch,
 };
 export type SceneName = keyof typeof SCENES;
