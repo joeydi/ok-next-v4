@@ -1090,6 +1090,20 @@
     "altSource": "human",
     "reviewed": true
   },
+  "og/website-care-5c5c9027.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 94008,
+    "etag": "fb6b9ecca2e71739097b32b3f1a14058",
+    "blurDataURL": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAQCdASoQAAgAA4BaJYwCdAEO+4AmyWAA/vTO4IiEiFL4riIdK6urTZVgFyRAAAA=",
+    "color": "#e8e8e8",
+    "alt": "Website care — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /website-care",
+    "altSource": "human",
+    "reviewed": true
+  },
   "site-check/report-cascade-v4.png": {
     "type": "image",
     "width": 2400,

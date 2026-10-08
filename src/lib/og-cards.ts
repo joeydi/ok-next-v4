@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
+import { care } from "@/data/care";
 import { type ServiceSlug, services } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
@@ -76,6 +77,13 @@ function content(path: string): OgCard | null {
   if (path === "/notes") return { eyebrow: "Notes", title: "Notes*.*", alt: "Notes — Okayplus" };
   if (path === "/network")
     return { eyebrow: "Network", title: "Stay eager*.*", alt: "Network — Okayplus", network: true };
+  if (path === "/website-care")
+    return {
+      eyebrow: `Services  ${care.audience}`,
+      title: care.h1.join(" "),
+      alt: `${care.title} — Okayplus`,
+      illustration: "care-catch",
+    };
   if (path === "/site-check")
     return {
       eyebrow: siteCheck.eyebrow,

@@ -15,10 +15,6 @@ import { cn } from "@/lib/cn";
 import { careGraph, JsonLd } from "@/lib/jsonld";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
-// Dev-only (see pageExtensions in next.config.ts) until it launches: then rename to
-// page.tsx, add an opengraph-image.tsx and its card, and list it in the nav, the
-// home page's services and the sitemap.
-
 export const metadata: Metadata = {
   title: c.metaTitle,
   description: c.metaDescription,

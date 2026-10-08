@@ -1,7 +1,7 @@
 import { type Testimonial, testimonials } from "./home";
 
 /**
- * Copy for the website care page, `/website-care` (dev-only until it launches).
+ * Copy for the website care page, `/website-care`.
  * Its sections don't fit the `Service` shape, so it isn't in `services` yet, which
  * also keeps it off the home page's service cards and llms.txt.
  */
