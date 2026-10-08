@@ -34,10 +34,17 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
   const [startedAt, setStartedAt] = useState(0);
   const [now, setNow] = useState(0);
   const stop = useRef<() => void>(undefined);
+  const field = useRef<HTMLInputElement>(null);
 
   const running = run?.status === "running";
 
   useEffect(() => () => stop.current?.(), []);
+
+  // Ready to type on arrival. Not on touch screens, where it would open the keyboard
+  // over the intro, and not for a pinned stage, which is for looking at.
+  useEffect(() => {
+    if (!stage && matchMedia("(pointer: fine)").matches) field.current?.focus({ preventScroll: true });
+  }, [stage]);
 
   useEffect(() => {
     if (!live || !running) return;
@@ -76,36 +83,40 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
 
   return (
     <>
-      <form
-        onSubmit={start}
-        noValidate
-        className="frame mt-fl-40 flex flex-wrap items-center gap-x-fl-16 gap-y-2 bg-ink py-2 pr-2 pl-fl-24 focus-within:outline-3 focus-within:outline-offset-3 focus-within:outline-pink-ink/69"
-      >
-        <label htmlFor="site-check-url" className="font-mono text-fl-18 font-medium whitespace-nowrap text-pink">
-          <span aria-hidden="true">{copy.prompt}</span>
-          <span className="sr-only">{copy.field}</span>
-        </label>
-        <input
-          id="site-check-url"
-          type="text"
-          inputMode="url"
-          autoComplete="url"
-          spellCheck={false}
-          placeholder={copy.placeholder}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          aria-invalid={invalid || undefined}
-          aria-describedby={invalid ? "site-check-url-error" : undefined}
-          className="h-14 min-w-0 flex-[1_1_220px] bg-transparent font-mono text-fl-18 font-medium tracking-label-tight text-paper placeholder:text-muted-light focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={running}
-          className="mono-label min-h-14 shrink-0 cursor-pointer rounded-xs bg-pink px-fl-24 text-ink focus-visible:outline-pink/80 disabled:cursor-default disabled:opacity-70"
+      <div className="frame mt-fl-40 overflow-hidden bg-ink has-[input:focus]:outline-3 has-[input:focus]:outline-offset-3 has-[input:focus]:outline-pink-ink/69">
+        <form
+          onSubmit={start}
+          noValidate
+          className="flex flex-wrap items-center gap-x-fl-16 gap-y-2 py-2 pr-2 pl-fl-24"
         >
-          {label} <span className="nudge">→</span>
-        </button>
-      </form>
+          <label htmlFor="site-check-url" className="font-mono text-fl-18 font-medium whitespace-nowrap text-pink">
+            <span aria-hidden="true">{copy.prompt}</span>
+            <span className="sr-only">{copy.field}</span>
+          </label>
+          <input
+            ref={field}
+            id="site-check-url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            spellCheck={false}
+            placeholder={copy.placeholder}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            aria-invalid={invalid || undefined}
+            aria-describedby={invalid ? "site-check-url-error" : undefined}
+            className="h-14 min-w-0 flex-[1_1_220px] bg-transparent font-mono text-fl-18 font-medium tracking-label-tight text-paper placeholder:text-muted-light focus:outline-none"
+          />
+          <button
+            type="submit"
+            disabled={running}
+            className="mono-label min-h-14 shrink-0 cursor-pointer rounded-xs bg-pink px-fl-24 text-ink focus-visible:outline-pink/80 disabled:cursor-default disabled:opacity-70"
+          >
+            {label} <span className="nudge">→</span>
+          </button>
+        </form>
+        {run && <CheckLog run={run} elapsed={elapsed} animate={live} />}
+      </div>
       {invalid && (
         <p id="site-check-url-error" role="alert" className="mt-fl-12 text-fl-18 leading-copy text-pink-ink">
           {copy.invalid}
@@ -117,22 +128,18 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
       </p>
 
       {run ? (
-        <section className="pt-fl-64 pb-fl-96">
-          <Eyebrow details={[run.host]}>{copy.resultsLabel}</Eyebrow>
-          <div className="mt-fl-28 flex flex-col gap-fl-24">
-            <CheckLog run={run} elapsed={elapsed} />
-            <aside className="flex flex-col gap-fl-24">
-              {run.status !== "failed" && <ScoreCard key={run.id} run={run} animate={live} />}
-              {running && (
-                <p className="rounded-sm border border-dashed border-guide px-fl-20 py-fl-18 text-fl-18 leading-copy text-muted">
-                  {copy.scoreNote}
-                </p>
-              )}
-              {run.status === "complete" && (
-                <ReviewCard run={run} headshot={headshot} sentTo={sentTo} onSent={setSentTo} />
-              )}
-            </aside>
-          </div>
+        <section className="pt-fl-24 pb-fl-96">
+          <aside className="flex flex-col gap-fl-24">
+            {run.status !== "failed" && <ScoreCard key={run.id} run={run} animate={live} />}
+            {running && (
+              <p className="rounded-sm border border-dashed border-guide px-fl-20 py-fl-18 text-fl-18 leading-copy text-muted">
+                {copy.scoreNote}
+              </p>
+            )}
+            {run.status === "complete" && (
+              <ReviewCard run={run} headshot={headshot} sentTo={sentTo} onSent={setSentTo} />
+            )}
+          </aside>
         </section>
       ) : (
         <section className="py-fl-96">

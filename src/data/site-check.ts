@@ -26,7 +26,6 @@ export const siteCheck = {
   items: care.siteCheck.items,
   closing: care.siteCheck.closing,
 
-  resultsLabel: "Results",
   logLabel: "Check log",
   done: "These checks are automated. For a personal review, leave your email below.",
   /** Under a failed run, by why it failed. */
@@ -60,7 +59,7 @@ export const siteCheck = {
   },
   sent: {
     label: "On my list",
-    heading: "Thanks. I’ll take it *from here.*",
+    heading: "*Thanks.* I’ll take it from here.",
     booking: "Rather talk it through? Book a 20-min call",
   },
 } as const;
