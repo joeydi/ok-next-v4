@@ -31,20 +31,20 @@
   --neutral-hue-span: calc(mod(var(--hue-neutral-warm) - var(--hue-neutral-cool) + 180, 360) - 180);
 
   /* Neutrals: each sets a lightness, and its saturation follows from it by one rule,
-     10% + 35% × (1 − √(1 − L²)) rounded to a tenth, so they get more saturated as
+     10% + 25% × (1 − √(1 − L²)) rounded to a tenth, so they get more saturated as
      they get lighter. The factor on the span is the lightness again, as a fraction.
      The Palette doc plots them against both. */
-  --color-paper-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.96) 35.2% 96%);
-  --color-paper-raised: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.94) 33.1% 94%);
-  --color-paper: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.92) 31.3% 92%);
-  --color-sand: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.9) 29.7% 90%);
-  --color-rule: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.8) 24% 80%);
-  --color-guide: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.75) 21.8% 75%);
-  --color-muted-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.64) 18.1% 64%);
-  --color-muted: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.435) 13.5% 43.5%);
-  --color-body: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.32) 11.8% 32%);
-  --color-ink-2: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.24) 11% 24%);
-  --color-ink: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.16) 10.5% 16%);
+  --color-paper-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.96) 28% 96%);
+  --color-paper-raised: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.94) 26.5% 94%);
+  --color-paper: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.92) 25.2% 92%);
+  --color-sand: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.9) 24.1% 90%);
+  --color-rule: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.8) 20% 80%);
+  --color-guide: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.75) 18.5% 75%);
+  --color-muted-light: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.64) 15.8% 64%);
+  --color-muted: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.435) 12.5% 43.5%);
+  --color-body: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.32) 11.3% 32%);
+  --color-ink-2: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.24) 10.7% 24%);
+  --color-ink: hsl(calc(var(--hue-neutral-cool) + var(--neutral-hue-span) * 0.16) 10.3% 16%);
 
   /* Accent: pink, and a darker pink-ink that holds 4.5:1 on paper for text. */
   --color-pink: hsl(var(--hue-accent) 100% 65%);

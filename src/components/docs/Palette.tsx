@@ -13,7 +13,7 @@ const n1 = (n: number) => String(Math.round(n * 10) / 10);
 const hslText = (t: ColorToken) => `hsl(${n1(t.h)} ${n1(t.s)}% ${n1(t.l)}%)`;
 const fill = (name: string) => ({ fill: `var(--color-${name})` });
 /** The saturation every neutral is set from, for a lightness in percent. */
-const rule = (l: number) => 10 + 35 * (1 - Math.sqrt(1 - (l / 100) ** 2));
+const rule = (l: number) => 10 + 25 * (1 - Math.sqrt(1 - (l / 100) ** 2));
 
 /** One point per distinct value: tokens with the same hex share a dot. */
 function points() {
@@ -253,7 +253,7 @@ function Labels({ items }: { items: { x: number; y: number; text: string }[] }) 
   ));
 }
 
-/** Saturation against lightness, over the rule the neutrals are set from: 10% + 35% × (1 − √(1 − L²)). */
+/** Saturation against lightness, over the rule the neutrals are set from: 10% + 25% × (1 − √(1 − L²)). */
 export function SaturationPlot() {
   const W = 560;
   const H = 420;

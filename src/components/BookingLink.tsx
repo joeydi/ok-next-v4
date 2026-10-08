@@ -23,7 +23,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
     url.searchParams.set("embed_type", "PopupText");
     url.searchParams.set("hide_gdpr_banner", "1");
     // Colours only apply on paid Calendly plans; ignored otherwise.
-    url.searchParams.set("background_color", "f8f4f1");
+    url.searchParams.set("background_color", "f8f4f2");
     url.searchParams.set("text_color", "28252d");
     url.searchParams.set("primary_color", "cc1e3b");
     setSrc(url.href);

@@ -104,7 +104,7 @@ export const DEFAULT_SETTINGS: Settings = {
 
 const W = 620,
   H = 660;
-const PAPER = "#F1E8E4";
+const PAPER = "#F0E9E5";
 const TINT = "#AB899A";
 /** The floor beyond the tiles, out past every canvas edge (integers, so seams are exact). */
 const FLOOR_MIN = -1500,
