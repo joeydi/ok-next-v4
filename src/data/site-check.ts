@@ -6,7 +6,7 @@ import { care } from "./care";
  * `*word*` in a heading renders pink.
  */
 export const siteCheck = {
-  metaTitle: "Free site check",
+  metaTitle: "Free website health check: security, speed & SEO",
   metaDescription:
     "Paste your URL and watch an outside-in check of your website’s security, updates, speed, accessibility, links and SEO. Free, with no logins.",
 
