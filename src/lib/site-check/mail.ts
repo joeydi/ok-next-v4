@@ -18,7 +18,8 @@ function body(run: SiteCheckRun, email: string) {
   }).join(" · ");
   const lines = run.results.map((r) => `${MARK[r.status]} ${checkMeta(r.id).name}: ${r.summary}`);
   return [
-    `${email} asked for a review of ${run.url}.`,
+    // No full stop after the URL: mail clients link it along with the address.
+    `${email} asked for a review of ${run.url}`,
     "",
     `Score: ${run.score ?? "–"} / 100. ${run.score === null ? "" : verdictFor(run.score)}`,
     categories,
