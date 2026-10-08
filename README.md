@@ -163,7 +163,7 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 
 ## Site check
 
-The free site check (`/site-check`) checks any URL from the outside in about a minute and streams the results as it goes, from `src/app/api/site-check/route.ts`; review requests go through `review/route.ts`. It's live but not linked from anywhere yet, so it's left out of the sitemap: add it to `src/app/sitemap.ts` once it is.
+The free site check (`/site-check`) checks any URL from the outside in about a minute and streams the results as it goes, from `src/app/api/site-check/route.ts`; review requests go through `review/route.ts`.
 
 - **The contract** (`src/lib/site-check/schema.ts`): every check, what it reports and the events streamed while it runs. The page folds those events into a run with `reduceRun`. `sample.ts` lays out a sample run on the same events, for reviewing the page's states with `?stage=running|result|sent|failed` (under `next dev` only).
 - **The checker** (`src/lib/site-check/checker/`): `run.ts` resolves the host and fetches the home page, then starts every check at once and reports them in the log's order, so the slow Lighthouse checks come last. It only reads public pages and the files they link to, at most 20 pages, and every request goes through `fetch.ts`, which refuses private addresses. Each check scores itself out of 100 (its rubric is beside it), a category is the mean of its checks, and a category where nothing applies (Updates on Squarespace) is left out of the score.

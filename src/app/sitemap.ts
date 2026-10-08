@@ -1,18 +1,15 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/data/site";
 import { getAllNotes } from "@/lib/notes";
+import { sitePaths } from "@/lib/routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = ["", "/digital-production", "/cms-integrations", "/business-tools", "/notes", "/network"].map((p) => ({
-    url: `${SITE.url}${p}`,
-    changeFrequency: "monthly" as const,
-    priority: p === "" ? 1 : 0.8,
-  }));
-  const notes = getAllNotes().map((n) => ({
-    url: `${SITE.url}/notes/${n.slug}`,
-    lastModified: n.date,
-    changeFrequency: "yearly" as const,
-    priority: 0.6,
-  }));
-  return [...pages, ...notes];
+  const notes = getAllNotes();
+  const dates = new Map(notes.map((n) => [`/notes/${n.slug}`, n.date]));
+  return sitePaths(notes).map((path) => {
+    const url = `${SITE.url}${path === "/" ? "" : path}`;
+    const date = dates.get(path);
+    if (date) return { url, lastModified: date, changeFrequency: "yearly", priority: 0.6 };
+    return { url, changeFrequency: "monthly", priority: path === "/" ? 1 : 0.8 };
+  });
 }

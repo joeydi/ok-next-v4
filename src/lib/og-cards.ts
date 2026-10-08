@@ -5,7 +5,7 @@ import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { type ServiceSlug, services } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
 import type { Media } from "./media";
-import { formatDate, getAllNotes, getNote } from "./notes";
+import { formatDate, getNote } from "./notes";
 
 // What each route's Open Graph card says. The card is drawn twice from this: in
 // Gelica by the browser (/admin/og saves that to the media store as og/<name>-<hash>.png)
@@ -56,20 +56,6 @@ export function setTitleWidth(path: string, width: number | undefined) {
 
 /** The route as a key-safe name: home, notes, notes-<slug>, network, … */
 const cardName = (path: string) => (path === "/" ? "home" : path.slice(1).replaceAll("/", "-"));
-
-const SERVICE_SLUGS = Object.keys(services) as ServiceSlug[];
-
-/** Every route with a card. */
-export function ogPaths() {
-  return [
-    "/",
-    ...SERVICE_SLUGS.map((s) => `/${s}`),
-    "/notes",
-    ...getAllNotes().map((n) => `/notes/${n.slug}`),
-    "/network",
-    "/site-check",
-  ];
-}
 
 /** The card for a route, or null if it has none. */
 export function ogCard(path: string): OgCard | null {

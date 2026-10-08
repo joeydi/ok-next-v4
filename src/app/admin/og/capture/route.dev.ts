@@ -1,7 +1,8 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { chromium } from "playwright-core";
 import { setNoteFlag } from "@/lib/notes";
-import { isOgKeyFor, ogCard, ogMediaKey, ogPaths, setTitleWidth } from "@/lib/og-cards";
+import { isOgKeyFor, ogCard, ogMediaKey, setTitleWidth } from "@/lib/og-cards";
+import { sitePaths } from "@/lib/routes";
 import {
   CACHE_CONTROL,
   deleteMedia,
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   const manifest = readManifest();
   const paths =
     url.searchParams.get("all") === "stale"
-      ? ogPaths().filter((p) => !manifest[ogMediaKey(p, ogCard(p)!)])
+      ? sitePaths().filter((p) => !manifest[ogMediaKey(p, ogCard(p)!)])
       : path && ogCard(path)
         ? [path]
         : null;

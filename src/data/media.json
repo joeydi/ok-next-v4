@@ -1075,5 +1075,19 @@
     "context": "Open Graph card for /notes/vermont-made-ideas",
     "altSource": "human",
     "reviewed": true
+  },
+  "og/site-check-0a2b2cdb.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 44675,
+    "etag": "39069776b3aed47d879153760a8a23c2",
+    "blurDataURL": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAQCdASoQAAgAA4BaJQBOgCHgDVywAP70zygeG6gkZzHVUAAEexIA",
+    "color": "#f8e8e8",
+    "alt": "Free site check — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /site-check",
+    "altSource": "human",
+    "reviewed": true
   }
 }

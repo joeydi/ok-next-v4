@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { SCENES } from "@/components/illustrations/gl/scenes";
 import manifest from "@/data/media.json";
-import { services } from "@/data/services";
 import { getAllNotes } from "@/lib/notes";
 import { isOgKeyFor, ogCard, ogMediaKey } from "@/lib/og-cards";
+import { sitePaths } from "@/lib/routes";
 import { readManifest } from "../../../../scripts/media.mjs";
 import { AdminShell } from "../AdminShell";
 import { type CardStatus, OgAdmin, type OgPage } from "./OgAdmin";
@@ -16,20 +16,21 @@ export const metadata: Metadata = { title: "Open Graph", robots: { index: false,
 type Listed = Pick<OgPage, "path" | "label" | "draft">;
 
 export default function OgAdminPage() {
-  let notes: Listed[] = [];
+  // A note that fails to parse costs the list its notes, not every route.
+  let notes: ReturnType<typeof getAllNotes> = [];
   let notesError: string | null = null;
   try {
-    notes = getAllNotes().map((n) => ({ path: `/notes/${n.slug}`, label: n.plainTitle, draft: n.draft }));
+    notes = getAllNotes();
   } catch (e) {
     notesError = (e as Error).message;
   }
-  const listed: Listed[] = [
-    { path: "/", label: "Home" },
-    ...Object.entries(services).map(([slug, s]) => ({ path: `/${slug}`, label: s.title })),
-    { path: "/notes", label: "Notes" },
-    ...notes,
-    { path: "/network", label: "Network" },
-  ];
+  const drafts = new Set(notes.filter((n) => n.draft).map((n) => `/notes/${n.slug}`));
+  // Each route is labelled by its card's alt text, less the site name; home's alt is a whole sentence.
+  const listed: Listed[] = sitePaths(notes).map((path) => ({
+    path,
+    label: path === "/" ? "Home" : (ogCard(path)?.alt.replace(/ — Okayplus$/, "") ?? path),
+    draft: drafts.has(path) || undefined,
+  }));
   // Whether each route's Gelica card is saved for the card as it is now. Read fresh,
   // since the capture route rewrites media.json while this page is open.
   const keys = Object.keys(readManifest());

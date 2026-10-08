@@ -9,9 +9,8 @@ import { JsonLd, siteCheckGraph } from "@/lib/jsonld";
 import { getMedia } from "@/lib/media";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
-// Live, but not linked from anywhere yet, so it's left out of the sitemap. Under
-// `next dev`, `?stage=running|result|sent|failed` opens on a state from the sample
-// run, for reviewing the design; production ignores it, so the page stays static.
+// Under `next dev`, `?stage=running|result|sent|failed` opens on a state from the
+// sample run, for reviewing the design; production ignores it, so the page stays static.
 
 export const metadata: Metadata = {
   title: c.metaTitle,
