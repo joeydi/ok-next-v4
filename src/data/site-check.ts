@@ -28,7 +28,7 @@ export const siteCheck = {
 
   resultsLabel: "Results",
   logLabel: "Check log",
-  done: "These checks are automated. For a person’s review, leave your email.",
+  done: "These checks are automated. For a personal review, leave your email below.",
   /** Under a failed run, by why it failed. */
   failed: {
     "invalid-url": "Check the address and try again.",
