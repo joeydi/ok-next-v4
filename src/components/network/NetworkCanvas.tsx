@@ -20,13 +20,15 @@ function rgb(color: string): [number, number, number] {
  * Canvas that fills its positioned parent. Nodes and lines take the canvas's text colour,
  * steer out of any `[data-network-avoid]` element in that parent, and gather around the
  * pointer. It runs while on screen; under prefers-reduced-motion it draws one still frame.
+ * Without hardware WebGL2 it stays empty.
  */
 export function NetworkCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
-    const gl = canvas.getContext("webgl2", { antialias: false });
+    // Software rendering counts as none: drawn on the CPU, the loop pins the main thread.
+    const gl = canvas.getContext("webgl2", { antialias: false, failIfMajorPerformanceCaveat: true });
     if (!gl) return;
 
     const renderer = new NetworkRenderer(gl, rgb(getComputedStyle(canvas).color));
