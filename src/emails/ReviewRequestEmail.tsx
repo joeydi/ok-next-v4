@@ -56,6 +56,8 @@ function ScoreBreakdown({ categories }: { categories: ReviewRequestEmailProps["c
       <tbody>
         {categories.map((category, index) => {
           const isLast = index === categories.length - 1;
+          const value = Math.max(0, Math.min(100, category.score ?? 0));
+          const remainder = 100 - value;
           return (
             <tr key={category.name}>
               <td width="124" style={isLast ? breakdownNameLast : breakdownName}>
@@ -72,8 +74,20 @@ function ScoreBreakdown({ categories }: { categories: ReviewRequestEmailProps["c
                 >
                   <tbody>
                     <tr>
-                      <td width={`${category.score ?? 0}%`} height="6" style={breakdownFill} />
-                      <td height="6" />
+                      {value > 0 && (
+                        <td width={`${value}%`} height="6" style={{ ...breakdownFill, width: `${value}%` }}>
+                          &nbsp;
+                        </td>
+                      )}
+                      {remainder > 0 && (
+                        <td
+                          width={`${remainder}%`}
+                          height="6"
+                          style={{ ...breakdownRemainder, width: `${remainder}%` }}
+                        >
+                          &nbsp;
+                        </td>
+                      )}
                     </tr>
                   </tbody>
                 </table>
@@ -115,8 +129,13 @@ const breakdownBarCell = {
   borderBottom: `1px solid ${EMAIL_COLOR.rule}`,
 };
 const breakdownBarCellLast = { ...breakdownBarCell, borderBottom: 0 };
-const breakdownTrack = { width: "100%", backgroundColor: EMAIL_COLOR.paperLight };
+const breakdownTrack = {
+  width: "100%",
+  tableLayout: "fixed" as const,
+  backgroundColor: EMAIL_COLOR.paperLight,
+};
 const breakdownFill = { backgroundColor: EMAIL_COLOR.ink, fontSize: 0, lineHeight: 0 };
+const breakdownRemainder = { fontSize: 0, lineHeight: 0 };
 const breakdownValue = {
   padding: "12px 0 12px 8px",
   borderBottom: `1px solid ${EMAIL_COLOR.rule}`,
