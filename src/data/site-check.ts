@@ -35,6 +35,7 @@ export const siteCheck = {
     timeout: "Try again in a minute, or email me and I’ll take a look.",
     blocked: "Its firewall turns automated checks away. Email me and I’ll take a look myself.",
     "rate-limited": "Try again a little later, or email me and I’ll take a look.",
+    busy: "Lots of people are checking sites right now. Try again in a few minutes, or email me and I’ll take a look.",
   },
 
   scoreLabel: "Your score",

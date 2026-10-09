@@ -172,7 +172,7 @@ The free site check (`/site-check`) checks any URL from the outside in about a m
 - **The contract** (`src/lib/site-check/schema.ts`): every check, what it reports and the events streamed while it runs. The page folds those events into a run with `reduceRun`. `sample.ts` lays out a sample run on the same events, for reviewing the page's states with `?stage=running|result|sent|failed` (under `next dev` only).
 - **The checker** (`src/lib/site-check/checker/`): `run.ts` resolves the host and fetches the home page, then starts every check at once and reports them in the log's order, so the slow Lighthouse checks come last. It only reads public pages and the files they link to, at most 20 pages, and every request goes through `fetch.ts`, which refuses private addresses. Each check scores itself out of 100 (its rubric is beside it), a category is the mean of its checks, and a category where nothing applies (Updates on Squarespace) is left out of the score.
 - **Lighthouse** comes from Google's PageSpeed Insights API. Without `GOOGLE_PAGESPEED_API_KEY` the performance, image and accessibility checks are skipped. The shared quota for keyless requests is always used up.
-- **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis (local development) it keeps them in memory and doesn't rate limit.
+- **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis (local development) it keeps them in memory and doesn't rate limit.
 - **Review requests** (`mail.ts`) email the run, with its evidence attached as JSON, through SendGrid. The sender must be verified there.
 
 Environment variables (in `.env.local` and Vercel):
@@ -182,6 +182,8 @@ GOOGLE_PAGESPEED_API_KEY=… # Google Cloud API key with the PageSpeed Insights 
 KV_REST_API_URL=…          # set by the Upstash integration on Vercel
 KV_REST_API_TOKEN=…
 SENDGRID_API_KEY=…
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=… # Cloudflare Turnstile widget keys; without them the bot check is skipped
+TURNSTILE_SECRET_KEY=…
 SITE_CHECK_FROM=…          # optional: the verified sender, else the site's email
 SITE_CHECK_TO=…            # optional: where review requests go, else the site's email
 ```

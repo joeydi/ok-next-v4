@@ -2,6 +2,7 @@ import { checkOrigin } from "@/lib/site-check/guard";
 import { sendReviewRequest } from "@/lib/site-check/mail";
 import type { ReviewRequest } from "@/lib/site-check/schema";
 import { allowReview, clientIp, getRun } from "@/lib/site-check/store";
+import { checkBot } from "@/lib/site-check/turnstile";
 
 // POST { runId, email } → emails Joe the stored run for a personal review. The run
 // is looked up by id, so what's sent is what the checker found, not what the page
@@ -13,6 +14,8 @@ export async function POST(request: Request) {
   const refused = checkOrigin(request);
   if (refused) return refused;
   const body = (await request.json().catch(() => null)) as Partial<ReviewRequest> | null;
+  const botCheck = await checkBot(request, body);
+  if (botCheck) return botCheck;
   const { runId, email } = body ?? {};
   if (typeof runId !== "string" || !/^sc_[\w-]{8,64}$/.test(runId)) {
     return Response.json({ error: "bad-run" }, { status: 400 });
