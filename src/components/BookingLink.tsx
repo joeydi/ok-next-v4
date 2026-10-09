@@ -10,7 +10,16 @@ import { cn } from "@/lib/cn";
  * hover or focus so it's usually loaded by the click, then stays mounted so
  * reopening is instant. Modified clicks and no-JS still follow the link.
  */
-export function BookingLink({ children, className }: { children: ReactNode; className?: string }) {
+export function BookingLink({
+  children,
+  className,
+  onOpen,
+}: {
+  children: ReactNode;
+  className?: string;
+  /** Called when the modal opens, for tracking. */
+  onOpen?: () => void;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   const [src, setSrc] = useState<string>();
   const [open, setOpen] = useState(false);
@@ -34,6 +43,7 @@ export function BookingLink({ children, className }: { children: ReactNode; clas
     e.preventDefault();
     warm();
     setOpen(true);
+    onOpen?.();
   };
 
   useEffect(() => {

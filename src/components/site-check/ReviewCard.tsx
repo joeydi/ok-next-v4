@@ -8,6 +8,7 @@ import { SITE } from "@/data/site";
 import { siteCheck as copy } from "@/data/site-check";
 import { cn } from "@/lib/cn";
 import type { Media } from "@/lib/media";
+import { trackSiteCheck } from "@/lib/site-check/analytics";
 import { sendReviewRequest } from "@/lib/site-check/client";
 import type { SiteCheckRun } from "@/lib/site-check/schema";
 
@@ -44,10 +45,12 @@ export function ReviewCard({
     try {
       await sendReviewRequest({ runId: run.id, email });
     } catch {
+      trackSiteCheck("Site check review failed", { host: run.host });
       setFailed(true);
       setSending(false);
       return;
     }
+    trackSiteCheck("Site check review requested", { host: run.host, score: run.score });
     setSending(false);
     setMoveFocus(true);
     onSent(email);
@@ -70,7 +73,10 @@ export function ReviewCard({
         <p className="mt-fl-16 text-fl-18 leading-copy">
           Your report goes to <span className="font-semibold">{sentTo}</span> once I’ve been through {run.host} myself.
         </p>
-        <BookingLink className="mt-fl-20 inline-block text-fl-18 leading-copy">
+        <BookingLink
+          className="mt-fl-20 inline-block text-fl-18 leading-copy"
+          onOpen={() => trackSiteCheck("Site check booking opened")}
+        >
           <span className="border-b-2 border-pink box-decoration-clone">{copy.sent.booking}</span>{" "}
           <span className="nudge">→</span>
         </BookingLink>
