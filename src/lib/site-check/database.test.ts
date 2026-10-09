@@ -1,15 +1,16 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { type Client, createClient } from "@libsql/client";
-import { applyMigrations } from "../../../../ok-next-admin/scripts/migrations.mjs";
 import { cleanupExpiredSiteCheckData, saveConfirmedReview, saveSiteCheckRun, setDatabaseClient } from "./database";
 import type { SiteCheckRun } from "./schema";
 
 // Runs against a throwaway local libSQL file, with the same migrations as production. ok-next-admin
-// owns the schema, so it has to be checked out next to this repo.
+// owns the schema, so it has to be checked out next to this repo. The SQL is read at runtime rather
+// than imported, so the build, which typechecks this file without the admin, doesn't need it.
+const migrations = join(process.cwd(), "../ok-next-admin/migrations");
 
 let directory: string;
 let database: Client;
@@ -33,7 +34,9 @@ const count = async (table: string) => Number((await database.execute(`SELECT co
 beforeEach(async () => {
   directory = await mkdtemp(join(tmpdir(), "site-check-"));
   database = createClient({ url: `file:${join(directory, "test.db")}` });
-  await applyMigrations(database, () => {});
+  for (const name of (await readdir(migrations)).filter((f) => f.endsWith(".sql")).sort()) {
+    await database.executeMultiple(await readFile(join(migrations, name), "utf8"));
+  }
   setDatabaseClient(database);
 });
 
