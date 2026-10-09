@@ -12,10 +12,14 @@ const SOURCE =
 const QUOTE =
   "Do stuff. Be clenched, curious. Not waiting for inspiration’s shove or society’s kiss on your forehead. Pay attention. It’s all about paying attention. Attention is vitality. It connects you with others. It makes you eager. *Stay eager.*";
 
+/** Within the 110–160 characters Google shows; the full quote is on the page. */
+const DESCRIPTION =
+  "Susan Sontag’s 2003 Vassar commencement advice: pay attention, because it connects you with others and makes you eager. Stay eager.";
+
 // A holdover from the old site. Deliberately left out of the nav and sitemap.
 export const metadata: Metadata = {
   title: "Network",
-  description: QUOTE.replaceAll("*", ""),
+  description: DESCRIPTION,
   alternates: { canonical: "/network" },
   openGraph: { ...OPEN_GRAPH, url: "/network" },
 };
