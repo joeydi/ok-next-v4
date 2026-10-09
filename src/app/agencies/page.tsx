@@ -10,7 +10,7 @@ import { List, SectionHead, SituationList } from "@/components/ServicePage";
 import { Cite } from "@/components/Testimonial";
 import { agencies as a } from "@/data/agencies";
 import { cn } from "@/lib/cn";
-import { agenciesGraph, JsonLd } from "@/lib/jsonld";
+import { audienceGraph, JsonLd } from "@/lib/jsonld";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ const card = "frame bg-clip-padding border border-rule/50 bg-linear-to-b from-pa
 export default function AgenciesPage() {
   return (
     <>
-      <JsonLd data={agenciesGraph()} />
+      <JsonLd data={audienceGraph(a, ["design-development", "cms-integrations", "website-care"])} />
       <main id="main">
         <Hero />
         <Uses />

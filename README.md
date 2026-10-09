@@ -42,7 +42,8 @@ src/
     design-development/   service pages, one folder each, rendered by ServicePage
     cms-integrations/
     business-tools/
-    website-care/         website care and agencies: pages with their own layouts (data in care.ts, agencies.ts)
+    website-care/         website care, non-profits and agencies: pages with their own layouts (data in care.ts, non-profits.ts, agencies.ts)
+    non-profits/
     agencies/
     notes/                index, [slug] post page, rss.xml
     admin/                dev-only tools (media, Open Graph, illustrations) and docs viewer (*.dev.tsx)
@@ -64,7 +65,7 @@ design_handoff_okayplus_site/   the original design handoff and 1440px comps
 
 - **Site constants** (`src/data/site.ts`): name, email, booking link, description and the nav.
 - **Catalog** (`src/data/catalog.ts`): what every service and audience page shares (title, meta title and description, audience, intro, tagline), in nav order. The homepage service cards, sitemap, llms.txt, notes’ service links and JSON-LD read it.
-- **Service pages** (`src/data/services.ts`): the rest of the copy for the three templated service pages, on top of their catalog entries. Website care’s is in `src/data/care.ts` and the agencies page’s in `src/data/agencies.ts`. Words wrapped in `*asterisks*` in an `h1` line render pink.
+- **Service pages** (`src/data/services.ts`): the rest of the copy for the three templated service pages, on top of their catalog entries. Website care’s is in `src/data/care.ts`, the non-profits page’s in `src/data/non-profits.ts` and the agencies page’s in `src/data/agencies.ts`. Words wrapped in `*asterisks*` in an `h1` line render pink.
 - **Home** (`src/data/home.ts`): the approach principles and testimonials, which the service pages also quote. The hero and about copy is inline in `src/app/page.tsx`. The contact block shared by every page is in `src/components/Footer.tsx`, and each service page adds its own `contactNote`.
 
 ## Writing notes
@@ -157,7 +158,7 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
 
 ## Illustrations
 
-The isometric block illustrations in each hero are small WebGL2 scenes in `src/components/illustrations/gl/`: the puzzle cube on the home page, bounce-row, conveyor and ring on the service pages, care-catch on website care and care-stack on agencies. Each scene (`scenes/*.ts`) is a `frame(t)` function that returns the boxes and balls at time `t`. A small renderer draws them with soft shadows and ambient occlusion.
+The isometric block illustrations in each hero are small WebGL2 scenes in `src/components/illustrations/gl/`: the puzzle cube on the home page, bounce-row, conveyor and ring on the service pages, care-catch on website care, care-patch on non-profits and care-stack on agencies. Each scene (`scenes/*.ts`) is a `frame(t)` function that returns the boxes and balls at time `t`. A small renderer draws them with soft shadows and ambient occlusion.
 
 - The server renders a **poster** (the scene's `posterTime` frame, from `public/illustrations/`) so something shows at once. WebGL starts once the page is idle and the illustration is near the viewport, and stops off screen. Under `prefers-reduced-motion`, or without WebGL2, the poster stays.
 - The puzzle cube is interactive: it defines `play()` and a `hitArea`, so on the page you can drag its slices. Posters and the lab still use `frame(t)`.

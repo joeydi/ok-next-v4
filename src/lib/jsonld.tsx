@@ -1,7 +1,6 @@
 import type { BlogPosting, BreadcrumbList, Graph, Offer, Thing } from "schema-dts";
-import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
-import type { ServiceSummary } from "@/data/catalog";
+import type { AudienceSummary, ServiceSlug, ServiceSummary } from "@/data/catalog";
 import { SITE } from "@/data/site";
 import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
@@ -120,29 +119,25 @@ export function serviceGraph(s: ServiceSummary): Graph {
   };
 }
 
-/** Agencies: a Service for agencies, related to the services they hire me for. */
-export function agenciesGraph(): Graph {
-  const url = abs("/agencies");
+/** A "Who I work with" page: a Service for that audience, related to the services they hire me for. */
+export function audienceGraph(a: AudienceSummary, related: ServiceSlug[]): Graph {
+  const url = abs(`/${a.slug}`);
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Service",
         "@id": `${url}#service`,
-        name: agencies.title,
-        serviceType: agencies.serviceType,
-        description: agencies.metaDescription,
+        name: a.title,
+        serviceType: a.serviceType,
+        description: a.metaDescription,
         url,
-        audience: { "@type": "Audience", audienceType: agencies.audienceType },
+        audience: { "@type": "Audience", audienceType: a.audienceType },
         provider: ref(ids.org),
         areaServed: [...areaServed],
-        isRelatedTo: [
-          ref(`${abs("/design-development")}#service`),
-          ref(`${abs("/cms-integrations")}#service`),
-          ref(`${abs("/website-care")}#service`),
-        ],
+        isRelatedTo: related.map((slug) => ref(`${abs(`/${slug}`)}#service`)),
       },
-      breadcrumbs([[agencies.title, "/agencies"]]),
+      breadcrumbs([[a.title, `/${a.slug}`]]),
     ],
   };
 }

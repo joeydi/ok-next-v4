@@ -4,6 +4,7 @@ import { join } from "node:path";
 import type { SceneName } from "@/components/illustrations/gl/scenes";
 import { agencies } from "@/data/agencies";
 import { care } from "@/data/care";
+import { nonProfits } from "@/data/non-profits";
 import { type ServicePageSlug, servicePages } from "@/data/services";
 import { siteCheck } from "@/data/site-check";
 import { getMedia, type Media } from "./media";
@@ -84,6 +85,13 @@ function content(path: string): OgCard | null {
       title: care.h1.join(" "),
       alt: `${care.title} — Okayplus`,
       illustration: "care-catch",
+    };
+  if (path === "/non-profits")
+    return {
+      eyebrow: `Who I work with  ${nonProfits.audience}`,
+      title: nonProfits.h1.join(" "),
+      alt: `${nonProfits.title} — Okayplus`,
+      illustration: "care-patch",
     };
   if (path === "/agencies")
     return {

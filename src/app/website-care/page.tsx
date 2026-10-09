@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { Accent } from "@/components/Accent";
 import { BookingLink } from "@/components/BookingLink";
+import { ClientCards } from "@/components/ClientCards";
 import { Container } from "@/components/Container";
 import { ReportDiagram } from "@/components/diagrams/website-care/ReportDiagram";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -351,38 +352,7 @@ function Clients() {
         </SectionHead>
         <p className="col-span-12 text-fl-20 leading-copy text-pretty text-body lg:col-span-6">{cl.intro}</p>
       </div>
-      <ul className="grid gap-fl-24 lg:grid-cols-3">
-        {cl.items.map((client) => {
-          const body = (
-            <>
-              <div className="mono-label text-muted">{client.place}</div>
-              <h3 className="display mt-fl-40 flex-1 text-fl-36 leading-heading-36 tracking-display-36">
-                <span className={cn(client.href && "hover-title")}>{client.name}</span>
-              </h3>
-              <div className="mono-label flex justify-between gap-fl-16 border-t border-rule pt-fl-18">
-                <span className="text-body">Since {client.since}</span>
-                {client.href && (
-                  <span className="text-pink-ink">
-                    Case study <span className="nudge">→</span>
-                  </span>
-                )}
-              </div>
-            </>
-          );
-          const className = cn(card, "flex h-full flex-col gap-fl-18 px-fl-32 pt-fl-28 pb-fl-32");
-          return (
-            <li key={client.name}>
-              {client.href ? (
-                <Link href={client.href} className={cn(className, "hover-card hover-lift")}>
-                  {body}
-                </Link>
-              ) : (
-                <div className={className}>{body}</div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <ClientCards items={cl.items} />
     </Container>
   );
 }

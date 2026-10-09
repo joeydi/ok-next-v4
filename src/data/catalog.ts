@@ -2,7 +2,7 @@
  * What every service and audience page shares, listed once in the nav's order: the
  * home cards, sitemap, llms.txt, notes' service links and JSON-LD all read it. Each
  * page's own copy builds on its entry: the templated service pages in `services.ts`,
- * website care in `care.ts`, agencies in `agencies.ts`. The nav (`site.ts`) keeps
+ * website care in `care.ts`, non-profits in `non-profits.ts`, agencies in `agencies.ts`. The nav (`site.ts`) keeps
  * its own labels, so the client bundle doesn't carry this.
  */
 
@@ -75,7 +75,7 @@ export const services: Record<ServiceSlug, ServiceSummary> = {
   },
 };
 
-export type AudienceSlug = "agencies";
+export type AudienceSlug = "non-profits" | "agencies";
 
 export type AudienceSummary = {
   slug: AudienceSlug;
@@ -93,6 +93,17 @@ export type AudienceSummary = {
 
 /** The "Who I work with" pages. */
 export const audiences: Record<AudienceSlug, AudienceSummary> = {
+  "non-profits": {
+    slug: "non-profits",
+    title: "Non-profits",
+    metaTitle: "Websites for non-profits & foundations",
+    metaDescription:
+      "For non-profits and foundations without a web team: WordPress care, Salesforce and CMS integrations, and redesigns. Start with a free site check.",
+    audience: "Non-profits + foundations",
+    audienceType: "Non-profits, foundations, museums and education organizations without a web team",
+    serviceType: "Website care, integrations and redesigns for non-profits",
+  },
+
   agencies: {
     slug: "agencies",
     title: "Agencies",

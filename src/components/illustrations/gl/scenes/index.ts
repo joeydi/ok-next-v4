@@ -15,8 +15,8 @@ export const SCENES = {
   ring,
   "care-stack": careStack,
   "care-catch": careCatch,
-  // Website care concepts, exploring; the page uses care-catch, so drop the rest once settled.
   "care-patch": carePatch,
+  // Website care concepts, exploring; the page uses care-catch, so drop these once settled.
   "care-ping": carePing,
   "care-seesaw": careSeesaw,
 };
