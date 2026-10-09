@@ -11,6 +11,8 @@ export const LIMITS = {
   runsPerIpPerHour: limit("SITE_CHECK_RUNS_PER_IP_HOUR", 5),
   /** Review requests one visitor may send an hour. */
   reviewsPerIpPerHour: limit("SITE_CHECK_REVIEWS_PER_IP_HOUR", 3),
+  /** Review requests one email address may have a day. */
+  reviewsPerEmailPerDay: limit("SITE_CHECK_REVIEWS_PER_EMAIL_DAY", 2),
   /** Runs across all visitors a day. */
   runsPerDay: limit("SITE_CHECK_RUNS_PER_DAY", 500),
   /** Runs of one host an hour, so no one else's site gets hammered. */

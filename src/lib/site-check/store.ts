@@ -42,6 +42,11 @@ const mem = {
     return hit && hit.until > Date.now() ? (hit.value as T) : null;
   },
   set: (key: string, value: unknown, seconds: number) => memory.set(key, { value, until: Date.now() + seconds * 1000 }),
+  take: <T>(key: string) => {
+    const value = mem.get<T>(key);
+    memory.delete(key);
+    return value;
+  },
 };
 
 const limiters = redis && {
@@ -148,3 +153,58 @@ export function ipKey(raw: string) {
 /** The visitor's address, as Vercel passes it on, as a rate-limit key. */
 export const clientIp = (request: Request) =>
   ipKey(request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown");
+
+/** How long a confirmation link works. */
+const PENDING_S = 60 * 60;
+const DAY_S = 24 * 60 * 60;
+
+/** A review request waiting on its confirmation link. */
+export type PendingReview = { runId: string; email: string };
+
+/** Keeps a request until its link is used or an hour passes. */
+export async function savePending(token: string, pending: PendingReview) {
+  const key = `sc:pending:${token}`;
+  if (!redis) return mem.set(key, pending, PENDING_S);
+  await redis.set(key, pending, { ex: PENDING_S });
+}
+
+/** The request behind a token, removing it so the link works once; null if it's used or expired. */
+export async function takePending(token: string) {
+  const key = `sc:pending:${token}`;
+  if (!redis) return mem.take<PendingReview>(key);
+  return safely("read a pending review", null, () => redis.getdel<PendingReview>(key));
+}
+
+/** Claims the one review request a run gets; false if it already has one. */
+export async function claimReviewRun(runId: string) {
+  const key = `sc:review:run:${runId}`;
+  if (!redis) {
+    if (mem.get(key)) return false;
+    mem.set(key, 1, KEEP_S);
+    return true;
+  }
+  return safely("claim a run", true, async () => (await redis.set(key, 1, { nx: true, ex: KEEP_S })) === "OK");
+}
+
+/** Gives a run's claim back, when its confirmation email didn't send. */
+export async function releaseReviewRun(runId: string) {
+  const key = `sc:review:run:${runId}`;
+  if (redis) await safely("release a run", 0, () => redis.del(key));
+  else memory.delete(key);
+}
+
+/** Whether `email` has a review request left today, spending one if so. */
+export async function allowReviewEmail(email: string) {
+  const key = `sc:review:email:${email}`;
+  if (!redis) {
+    const used = mem.get<number>(key) ?? 0;
+    if (used >= LIMITS.reviewsPerEmailPerDay) return false;
+    mem.set(key, used + 1, DAY_S);
+    return true;
+  }
+  return safely("count an email", true, async () => {
+    const used = await redis.incr(key);
+    if (used === 1) await redis.expire(key, DAY_S);
+    return used <= LIMITS.reviewsPerEmailPerDay;
+  });
+}

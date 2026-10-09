@@ -59,12 +59,22 @@ export function streamCheck(url: string, host: string, onEvent: (event: SiteChec
   return () => controller.abort();
 }
 
-/** Asks for the personal review of a finished run. Throws if it didn't send. */
+/** Why a review request was refused: the `error` the route answered with, or "failed" if it didn't answer. */
+export class ReviewError extends Error {
+  constructor(readonly code: string) {
+    super(`Review request failed (${code})`);
+  }
+}
+
+/** Asks for the personal review of a finished run; a confirmation link goes to the visitor first. Throws a `ReviewError` if it didn't send. */
 export async function sendReviewRequest(request: ReviewRequest) {
   const res = await fetch("/api/site-check/review", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(request),
   });
-  if (!res.ok) throw new Error(`Review request failed (${res.status})`);
+  if (!res.ok) {
+    const { error } = (await res.json().catch(() => null)) ?? {};
+    throw new ReviewError(typeof error === "string" ? error : "failed");
+  }
 }
