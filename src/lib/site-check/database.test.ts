@@ -1,14 +1,15 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import { type Client, createClient } from "@libsql/client";
-import { applyMigrations } from "../../../scripts/site-check-migrations.mjs";
+import { applyMigrations } from "../../../../ok-next-admin/scripts/migrations.mjs";
 import { cleanupExpiredSiteCheckData, saveConfirmedReview, saveSiteCheckRun, setDatabaseClient } from "./database";
 import type { SiteCheckRun } from "./schema";
 
-// Runs against a throwaway local libSQL file, with the same migrations as production.
+// Runs against a throwaway local libSQL file, with the same migrations as production. ok-next-admin
+// owns the schema, so it has to be checked out next to this repo.
 
 let directory: string;
 let database: Client;
@@ -40,35 +41,6 @@ afterEach(async () => {
   setDatabaseClient(undefined);
   database.close();
   await rm(directory, { recursive: true, force: true });
-});
-
-describe("migrations", () => {
-  it("record what they applied and do nothing the second time", async () => {
-    assert.deepEqual(await applyMigrations(database, () => {}), []);
-    assert.equal(await count("schema_migrations"), 2);
-  });
-});
-
-describe("migration 002", () => {
-  it("keeps reviews saved under the first schema", async () => {
-    const old = createClient({ url: `file:${join(directory, "old.db")}` });
-    await old.executeMultiple(await readFile("migrations/001_site_check_storage.sql", "utf8"));
-    await old.executeMultiple(`
-      INSERT INTO site_check_runs (id, url, host, checked_at, duration, score, verdict, schema_version, checker_version, results_json)
-        VALUES ('sc_old', 'https://example.com/', 'example.com', '2026-01-01T00:00:00Z', 1, 50, 'ok', 1, '1', '{}');
-      INSERT INTO review_requests (id, run_id, email, confirmed_at) VALUES ('review_sc_old', 'sc_old', 'A@Example.com', '2026-01-01T00:00:00Z');
-    `);
-    assert.deepEqual(await applyMigrations(old, () => {}), [
-      "001_site_check_storage.sql",
-      "002_review_requests_per_email.sql",
-    ]);
-    const rows = (await old.execute("SELECT id, email FROM review_requests")).rows;
-    assert.deepEqual(
-      rows.map((r) => [r.id, r.email]),
-      [["review_sc_old", "a@example.com"]],
-    );
-    old.close();
-  });
 });
 
 describe("saveSiteCheckRun", () => {
