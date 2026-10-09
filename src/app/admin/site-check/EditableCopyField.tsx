@@ -72,7 +72,7 @@ export function EditableCopyField({
             type="button"
             onClick={begin}
             aria-label={`Edit ${label}`}
-            className="grid size-8 shrink-0 place-items-center rounded-full border border-rule text-ink hover:border-ink"
+            className="grid size-8 shrink-0 place-items-center rounded-full bg-sand text-body hover:bg-rule"
           >
             <Pencil />
           </button>
