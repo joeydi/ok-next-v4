@@ -55,7 +55,13 @@ export async function POST(request: Request) {
   if (!(await claimReviewRun(runId))) return Response.json({ error: "already-requested" }, { status: 409 });
 
   const token = randomBytes(24).toString("base64url");
-  const origin = process.env.NODE_ENV === "production" ? SITE.url : new URL(request.url).origin;
+  // Never built from the request's Host header. Previews run with NODE_ENV=production too, so they use their own URL.
+  const previewHost = process.env.VERCEL_ENV === "preview" ? process.env.VERCEL_URL : undefined;
+  const origin = previewHost
+    ? `https://${previewHost}`
+    : process.env.NODE_ENV === "production"
+      ? SITE.url
+      : new URL(request.url).origin;
   try {
     await savePending(token, { runId, email });
     await sendConfirmation(email, run.host, `${origin}/api/site-check/review/confirm?token=${token}`);
