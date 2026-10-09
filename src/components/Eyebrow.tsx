@@ -40,7 +40,13 @@ export function Eyebrow({
     </span>
   );
   return (
-    <div className={cn("mono-label flex flex-wrap text-muted", nested ? "gap-x-[2ch] sm:gap-x-[3ch]" : "gap-x-fl-24", className)}>
+    <div
+      className={cn(
+        "mono-label flex flex-wrap text-muted",
+        nested ? "gap-x-[2ch] sm:gap-x-[3ch]" : "gap-x-fl-24",
+        className,
+      )}
+    >
       {href ? <Link href={href}>{lead}</Link> : lead}
       {details?.map((d, i) => (
         <span key={i}>
