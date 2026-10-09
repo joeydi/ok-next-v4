@@ -10,6 +10,7 @@ import { cn } from "@/lib/cn";
 import type { Media } from "@/lib/media";
 import { trackSiteCheck } from "@/lib/site-check/analytics";
 import { ReviewError, sendReviewRequest } from "@/lib/site-check/client";
+import { templateParts } from "@/lib/site-check/copy-schema";
 import type { SiteCheckRun } from "@/lib/site-check/schema";
 import { useBotCheck } from "./BotCheck";
 
@@ -59,6 +60,7 @@ export function ReviewCard({
   };
 
   if (sentTo) {
+    const message = templateParts(copy.sent.message, { email: sentTo, host: run.host });
     return (
       <div className={cn(card, "site-check-rise")}>
         <div className="flex items-center gap-fl-12">
@@ -73,8 +75,15 @@ export function ReviewCard({
           <Accent text={copy.sent.heading} />
         </h2>
         <p className="mt-fl-16 text-fl-18 leading-copy">
-          I’ve sent a link to <span className="font-semibold">{sentTo}</span>. Open it to confirm, and I’ll send your
-          report once I’ve been through {run.host} myself. It expires in an hour.
+          {message.map((part, index) =>
+            part.key === "email" ? (
+              <span key={`${part.key}-${index}`} className="font-semibold">
+                {part.text}
+              </span>
+            ) : (
+              <span key={`${part.key}-${index}`}>{part.text}</span>
+            ),
+          )}
         </p>
         <BookingLink
           className="mt-fl-20 inline-block text-fl-18 leading-copy"

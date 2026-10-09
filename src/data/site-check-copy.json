@@ -1,0 +1,83 @@
+{
+  "score": {
+    "label": "Your score",
+    "note": "Each bar fills in as its checks finish. Your score lands when the last one does.",
+    "pending": "Working it out…",
+    "verdicts": [
+      {
+        "min": 90,
+        "message": "In good shape."
+      },
+      {
+        "min": 70,
+        "message": "Mostly healthy, with a few things I’d fix soon."
+      },
+      {
+        "min": 50,
+        "message": "Holding up, but a few things need attention."
+      },
+      {
+        "min": 0,
+        "message": "Worth a closer look soon."
+      }
+    ]
+  },
+  "review": {
+    "heading": "Now let me take a look.",
+    "body": "The score covers what a script can see. Leave your email and I’ll go through the site myself, then send a one-page report: what’s healthy, what’s at risk, and what I’d fix first.",
+    "label": "Email",
+    "placeholder": "you@yourorganization.org",
+    "cta": "Send me the review",
+    "note": "No cost and no obligation. If your site is in good shape, I’ll tell you that too.",
+    "error": "That didn’t send. Try again, or email me at",
+    "errors": {
+      "bad-email": "That doesn’t look like an email address. Check it for typos and try again.",
+      "disposable-email": "That looks like a temporary inbox. Could you use an address you check? That’s where I’ll send the report.",
+      "no-mail-server": "That domain doesn’t seem to receive email. Check the address for typos.",
+      "email-limit": "I’ve already received a few requests from that address today. Check your inbox, or try again tomorrow.",
+      "already-requested": "I’ve already got a review request for this check. Look for the confirmation email.",
+      "rate-limited": "That’s a lot of requests. Give it a little while and try again."
+    }
+  },
+  "sent": {
+    "label": "Check your inbox",
+    "heading": "*Almost there.* Confirm your email.",
+    "message": "I’ve sent a link to {{email}}. Open it to confirm, and I’ll send your report once I’ve been through {{host}} myself. It expires in an hour.",
+    "booking": "Rather talk it through? Book a 20-min call"
+  },
+  "confirmation": {
+    "back": "Back to the site check",
+    "expired": {
+      "title": "That link has expired.",
+      "message": "Confirmation links work once and last an hour. Run the site check again to get a new one, or email {{supportEmail}}."
+    },
+    "prompt": {
+      "title": "Confirm your review request.",
+      "message": "One more click and I’ll go through your site myself.",
+      "action": "Confirm my email"
+    },
+    "failed": {
+      "title": "That didn’t send.",
+      "message": "Sorry, something went wrong on my end. Email me at {{supportEmail}}."
+    },
+    "confirmed": {
+      "title": "You’re confirmed.",
+      "message": "You’re all set—thanks. I’ll go through {{host}} myself and send what I find to {{email}}."
+    }
+  },
+  "emails": {
+    "confirmation": {
+      "subject": "Confirm your review request for {{host}}",
+      "intro": "You asked me to take a personal look at {{host}}. Before I dig in, I just want to make sure you’re a real person and have access to this email address:",
+      "expiry": "The link works once and expires in an hour. If you didn’t request this, you can ignore it—nothing else will happen.",
+      "signature": "{{author}}, {{siteName}}"
+    },
+    "review": {
+      "subject": "Site check review: {{host}} ({{score}})",
+      "request": "{{email}} asked for a review of {{url}}",
+      "score": "Score: {{score}} / 100. {{verdict}}",
+      "run": "Run {{runId}}, checked {{checkedAt}}.",
+      "attachment": "Each check’s evidence is attached as JSON. Reply to answer them directly."
+    }
+  }
+}
