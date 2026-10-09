@@ -9,11 +9,13 @@
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
     "check": "biome check && node scripts/check-docs.mjs",
+    "migrate:site-check": "node --env-file-if-exists=.env.local scripts/migrate-site-check.mjs",
     "media": "node --env-file-if-exists=.env.local scripts/media.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1141.0",
     "@aws-sdk/s3-request-presigner": "^3.1141.0",
+    "@libsql/client": "^0.18.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.3.6",
