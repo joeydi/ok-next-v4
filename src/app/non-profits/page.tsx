@@ -58,7 +58,9 @@ export default function NonProfitsPage() {
 function Hero() {
   return (
     <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
-      <Eyebrow details={[n.audience]}>Who I work with</Eyebrow>
+      <Eyebrow details={[n.audience]} nested>
+        Who I work with
+      </Eyebrow>
       <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display-144">
         {n.h1.map((line, i) => (
           <Fragment key={i}>

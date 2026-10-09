@@ -17,16 +17,19 @@ export function Plus({ className }: { className?: string }) {
 /**
  * Section label: `+ SECTION NAME` in mono. `n` (the section number) is no longer shown.
  * `href` links the first segment; `details` adds segments after it: `+ NOTES   MAY 19, 2026`.
+ * `nested` marks a page under the first segment and slashes the details: `+ NOTES / MAY 19, 2026`.
  */
 export function Eyebrow({
   href,
   details,
+  nested,
   children,
   className,
 }: {
   n?: string;
   href?: string;
   details?: ReactNode[];
+  nested?: boolean;
   children: ReactNode;
   className?: string;
 }) {
@@ -37,10 +40,17 @@ export function Eyebrow({
     </span>
   );
   return (
-    <div className={cn("mono-label flex flex-wrap gap-x-fl-24 text-muted", className)}>
+    <div className={cn("mono-label flex flex-wrap text-muted", nested ? "gap-x-[2ch] sm:gap-x-[3ch]" : "gap-x-fl-24", className)}>
       {href ? <Link href={href}>{lead}</Link> : lead}
       {details?.map((d, i) => (
-        <span key={i}>{d}</span>
+        <span key={i}>
+          {nested && (
+            <span aria-hidden="true" className="mr-[2ch] sm:mr-[3ch]">
+              /
+            </span>
+          )}
+          {d}
+        </span>
       ))}
     </div>
   );
