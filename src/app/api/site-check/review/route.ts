@@ -1,3 +1,4 @@
+import { checkOrigin } from "@/lib/site-check/guard";
 import { sendReviewRequest } from "@/lib/site-check/mail";
 import type { ReviewRequest } from "@/lib/site-check/schema";
 import { allowReview, clientIp, getRun } from "@/lib/site-check/store";
@@ -9,6 +10,8 @@ import { allowReview, clientIp, getRun } from "@/lib/site-check/store";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
+  const refused = checkOrigin(request);
+  if (refused) return refused;
   const body = (await request.json().catch(() => null)) as Partial<ReviewRequest> | null;
   const { runId, email } = body ?? {};
   if (typeof runId !== "string" || !/^sc_[\w-]{8,64}$/.test(runId)) {

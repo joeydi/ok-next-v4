@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { LIMITS } from "./limits";
 import type { SiteCheckRun } from "./schema";
 
 // The checker's state, in Upstash Redis (the Vercel Marketplace integration sets
@@ -20,7 +21,7 @@ async function safely<T>(what: string, fallback: T, fn: () => Promise<T>): Promi
   try {
     return await fn();
   } catch (error) {
-    console.error(`[site check] Redis failed to ${what}`, error);
+    console.error(`[site check] fail-open: Redis failed to ${what}`, error);
     return fallback;
   }
 }
@@ -44,11 +45,21 @@ const mem = {
 };
 
 const limiters = redis && {
-  run: new Ratelimit({ redis, prefix: "sc:rl:run", limiter: Ratelimit.slidingWindow(5, "1 h"), timeout: 3000 }),
-  review: new Ratelimit({ redis, prefix: "sc:rl:review", limiter: Ratelimit.slidingWindow(3, "1 h"), timeout: 3000 }),
+  run: new Ratelimit({
+    redis,
+    prefix: "sc:rl:run",
+    limiter: Ratelimit.slidingWindow(LIMITS.runsPerIpPerHour, "1 h"),
+    timeout: 3000,
+  }),
+  review: new Ratelimit({
+    redis,
+    prefix: "sc:rl:review",
+    limiter: Ratelimit.slidingWindow(LIMITS.reviewsPerIpPerHour, "1 h"),
+    timeout: 3000,
+  }),
 };
 
-/** Whether `ip` has a run left this hour (5), without spending it. */
+/** Whether `ip` has a run left this hour, without spending it. */
 export async function hasRunLeft(ip: string) {
   if (!limiters) return true;
   const limiter = limiters.run;
@@ -65,7 +76,7 @@ export async function countRun(ip: string) {
   });
 }
 
-/** Whether `ip` may send another review request (3 an hour), spending one if so. */
+/** Whether `ip` may send another review request, spending one if so. */
 export async function allowReview(ip: string) {
   if (!limiters) return true;
   const limiter = limiters.review;
@@ -116,6 +127,24 @@ export async function recentRun(host: string) {
   return id ? getRun(id) : null;
 }
 
-/** The visitor's address, as Vercel passes it on. */
+/** The address `x-forwarded-for` gave, with IPv6 collapsed to its /64 (one subscriber's whole block, so rotating within it doesn't dodge a limit). */
+export function ipKey(raw: string) {
+  const ip = raw.split("%")[0].toLowerCase();
+  if (!ip.includes(":")) return ip;
+  const mapped = ip.match(/^(?:0*:)*ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (mapped) return mapped[1];
+  // Expand "::" and an embedded dotted tail into eight groups, then keep the first four.
+  const [head, tail = ""] = ip.split("::");
+  const groups = (part: string) => (part ? part.split(":") : []);
+  const first = groups(head);
+  const last = groups(tail);
+  const missing = 8 - first.length - last.length;
+  if (ip.includes(".") || (!ip.includes("::") && first.length !== 8) || missing < 0) return ip;
+  const all = [...first, ...Array(ip.includes("::") ? missing : 0).fill("0"), ...last];
+  const prefix = all.slice(0, 4).map((g) => (Number.parseInt(g, 16) || 0).toString(16));
+  return `${prefix.join(":")}::/64`;
+}
+
+/** The visitor's address, as Vercel passes it on, as a rate-limit key. */
 export const clientIp = (request: Request) =>
-  request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+  ipKey(request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown");

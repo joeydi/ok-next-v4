@@ -1,4 +1,6 @@
 import { runCheck } from "@/lib/site-check/checker/run";
+import { checkOrigin } from "@/lib/site-check/guard";
+import { LIMITS, spell } from "@/lib/site-check/limits";
 import {
   checkMeta,
   type FailReason,
@@ -70,7 +72,11 @@ async function* events(request: Request, target: { url: string; host: string }):
   }
   const ip = clientIp(request);
   if (!(await hasRunLeft(ip))) {
-    yield* refuse(target, "rate-limited", "That’s five checks in the last hour from your connection");
+    yield* refuse(
+      target,
+      "rate-limited",
+      `That’s ${spell(LIMITS.runsPerIpPerHour)} ${LIMITS.runsPerIpPerHour === 1 ? "check" : "checks"} in the last hour from your connection`,
+    );
     return;
   }
   if (!(await lockHost(target.host))) {
@@ -93,6 +99,8 @@ async function* events(request: Request, target: { url: string; host: string }):
 }
 
 export async function POST(request: Request) {
+  const refused = checkOrigin(request);
+  if (refused) return refused;
   const body = await request.json().catch(() => null);
   const target = typeof body?.url === "string" ? normalizeUrl(body.url) : null;
   if (!target) return Response.json({ error: "invalid-url" }, { status: 400 });
