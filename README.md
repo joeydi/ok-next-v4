@@ -175,18 +175,61 @@ The free site check (`/site-check`) checks any URL from the outside in about a m
 - **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis (local development) it keeps them in memory and doesn't rate limit.
 - **Review requests** (`mail.ts`) email the run, with its evidence attached as JSON, through SendGrid. The sender must be verified there.
 
-Environment variables (in `.env.local` and Vercel):
+Environment variables are listed under [Site check protection](#site-check-protection).
 
-```bash
-GOOGLE_PAGESPEED_API_KEY=… # Google Cloud API key with the PageSpeed Insights API enabled
-KV_REST_API_URL=…          # set by the Upstash integration on Vercel
-KV_REST_API_TOKEN=…
-SENDGRID_API_KEY=…
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=… # Cloudflare Turnstile widget keys; without them the bot check is skipped
-TURNSTILE_SECRET_KEY=…
-SITE_CHECK_FROM=…          # optional: the verified sender, else the site's email
-SITE_CHECK_TO=…            # optional: where review requests go, else the site's email
-```
+## Site check protection
+
+`/api/site-check` runs a crawl against someone else's site and `/api/site-check/review` sends email, so both are layered against abuse. Every layer is code in `src/lib/site-check/` except the Vercel Firewall, which is set up in the dashboard.
+
+### Environment variables
+
+Set in `.env.local` and Vercel. Without Redis or the Turnstile keys (local development) the matching layers are skipped.
+
+| Variable                                                 | Default               | What it does                                                                                                     |
+| -------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | unset (bot check off) | Cloudflare Turnstile widget and server verification. Set both or neither.                                        |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN`                   | unset (in memory)     | Upstash Redis, set by the Vercel Marketplace integration. Holds every counter and lock.                          |
+| `SENDGRID_API_KEY`                                       | unset                 | Sends confirmation and review emails. Required in production; in development the confirm link is logged instead. |
+| `SITE_CHECK_FROM`                                        | the site's email      | Verified SendGrid sender.                                                                                        |
+| `SITE_CHECK_TO`                                          | the site's email      | Where confirmed review requests go.                                                                              |
+| `SITE_CHECK_RUNS_PER_IP_HOUR`                            | 5                     | Runs one visitor (IPv4 address or IPv6 /64) may start an hour.                                                   |
+| `SITE_CHECK_REVIEWS_PER_IP_HOUR`                         | 3                     | Review requests one visitor may send an hour.                                                                    |
+| `SITE_CHECK_REVIEWS_PER_EMAIL_DAY`                       | 2                     | Review requests one email address may have a day.                                                                |
+| `SITE_CHECK_RUNS_PER_DAY`                                | 500                   | Runs across all visitors a day (UTC).                                                                            |
+| `SITE_CHECK_RUNS_PER_HOST_HOUR`                          | 3                     | Runs of one host an hour, so no one else's site is hammered.                                                     |
+| `SITE_CHECK_MAX_CONCURRENT`                              | 5                     | Runs under way at once, across all instances.                                                                    |
+
+`GOOGLE_PAGESPEED_API_KEY` is covered under [Site check](#site-check).
+
+### Layers
+
+1. **Vercel Firewall** (dashboard): a rate limit on `/api/site-check*` and bot protection, in front of the code.
+2. **Origin check** (`guard.ts`): POSTs must carry an Origin or Referer from okaypl.us (previews and localhost in development). Not authentication, but it stops other sites embedding the endpoints.
+3. **Bot check** (`turnstile.ts`): a hidden honeypot field and a single-use Turnstile token, verified before any work on both endpoints.
+4. **Per-visitor limits** (`store.ts`): sliding windows keyed by IP, with IPv6 collapsed to its /64. A run only counts once the site has answered, so a typo costs nothing.
+5. **Caps**: a daily cap on all runs and an hourly cap per host, plus a lock so one host is never checked twice at once. A host checked in the last 15 minutes is replayed from the store and spends none of these.
+6. **Concurrency** (`store.ts`): a Redis semaphore of `SITE_CHECK_MAX_CONCURRENT` slots, each lapsing after 100 seconds so a crashed run can't hold one, and released when the visitor leaves.
+7. **Email** (`email.ts`, `review/`): syntax and length, a disposable-domain blocklist (`src/data/disposable-domains.ts`), an MX (or A/AAAA) lookup, a per-email daily limit and one request per run. The request only reaches Joe after the visitor opens an emailed link, which works once for an hour; the page behind it needs a click so mail scanners don't use it up.
+
+### When it's overloaded
+
+The run still starts and then fails with a reason the page shows: `rate-limited` for a visitor's, a host's or a host-in-progress limit, and `busy` when the day's cap is reached or every concurrent slot is taken. Nothing is queued; the visitor tries again later. Replays of recent runs keep working while it's busy.
+
+If Redis or Turnstile can't be reached, or an MX lookup fails, the request **fails open**: it goes through unlimited rather than not at all. That is logged (below), so a sustained outage is visible.
+
+### Logs
+
+`log.ts` writes one JSON line per event, `{"source":"site-check","event":…,"host":…,"ip":…,"reason":…}`, to Vercel's runtime logs. `ip` is a short hash of the rate-limit key, so one visitor repeating is visible without the address. Emails are never logged, only their domain. Events: `rate-limited`, `host-capped`, `day-capped`, `busy`, `bot-check-failed`, `bad-origin`, `bad-email`, `disposable-email`, `no-mail-server`, `email-limit`, `review-requested`, `review-confirmed`, `fail-open` (warning) and `error` (error). In Vercel, search for `site-check` and filter by event. A spike of `bot-check-failed` or `bad-origin` means someone is poking at the endpoints; any `fail-open` is worth a look.
+
+### Manual setup
+
+These live outside the code:
+
+- [ ] Create a Turnstile site in Cloudflare for okaypl.us (managed mode) and set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` on Vercel (and in `.env.local` to try it locally). Redeploy.
+- [ ] In the Vercel dashboard under Firewall, add a rate-limit rule on paths starting with `/api/site-check` (suggested: 20 requests a minute per IP) and turn on Bot Protection.
+- [ ] Set Vercel usage and spend alerts (Settings, Billing), so a flood shows up before the invoice does.
+- [ ] Confirm the SendGrid sender is verified and can email arbitrary recipients: send a review request to an address that isn't yours and check it arrives.
+- [ ] After launch, watch the logs for the events above for a week or two and adjust the `SITE_CHECK_*` limits.
 
 ## Styling
 

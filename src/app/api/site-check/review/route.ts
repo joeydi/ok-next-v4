@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { SITE } from "@/data/site";
 import { validateEmail } from "@/lib/site-check/email";
 import { checkOrigin } from "@/lib/site-check/guard";
+import { logEvent, reasonOf } from "@/lib/site-check/log";
 import { sendConfirmation } from "@/lib/site-check/mail";
 import type { ReviewRequest } from "@/lib/site-check/schema";
 import {
@@ -31,13 +32,23 @@ export async function POST(request: Request) {
     return Response.json({ error: "bad-run" }, { status: 400 });
   }
   if (typeof given !== "string") return Response.json({ error: "bad-email" }, { status: 400 });
-  if (!(await allowReview(clientIp(request)))) return Response.json({ error: "rate-limited" }, { status: 429 });
+  const ip = clientIp(request);
+  if (!(await allowReview(ip))) {
+    logEvent("rate-limited", { ip, reason: "review" });
+    return Response.json({ error: "rate-limited" }, { status: 429 });
+  }
   const valid = await validateEmail(given);
-  if (!valid.ok) return Response.json({ error: valid.error }, { status: 400 });
+  if (!valid.ok) {
+    logEvent(valid.error, { ip, domain: given.split("@").pop()?.trim().toLowerCase().slice(0, 100) });
+    return Response.json({ error: valid.error }, { status: 400 });
+  }
   const { email } = valid;
   const run = await getRun(runId);
   if (!run) return Response.json({ error: "not-found" }, { status: 404 });
-  if (!(await allowReviewEmail(email))) return Response.json({ error: "email-limit" }, { status: 429 });
+  if (!(await allowReviewEmail(email))) {
+    logEvent("email-limit", { ip, host: run.host, domain: email.split("@")[1] });
+    return Response.json({ error: "email-limit" }, { status: 429 });
+  }
   if (!(await claimReviewRun(runId))) return Response.json({ error: "already-requested" }, { status: 409 });
 
   const token = randomBytes(24).toString("base64url");
@@ -46,9 +57,10 @@ export async function POST(request: Request) {
     await savePending(token, { runId, email });
     await sendConfirmation(email, run.host, `${origin}/api/site-check/review/confirm?token=${token}`);
   } catch (error) {
-    console.error(`[site check] confirmation for ${run.host} didn’t send`, error);
+    logEvent("error", { ip, host: run.host, reason: `confirmation didn’t send: ${reasonOf(error)}` });
     await releaseReviewRun(runId);
     return Response.json({ error: "not-sent" }, { status: 502 });
   }
+  logEvent("review-requested", { ip, host: run.host, domain: email.split("@")[1] });
   return Response.json({ ok: true, confirm: true });
 }

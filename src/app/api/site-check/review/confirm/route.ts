@@ -1,5 +1,6 @@
 import { SITE } from "@/data/site";
 import { checkOrigin } from "@/lib/site-check/guard";
+import { logEvent, reasonOf } from "@/lib/site-check/log";
 import { sendReviewRequest } from "@/lib/site-check/mail";
 import { getRun, releaseReviewRun, takePending } from "@/lib/site-check/store";
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     if (!run) throw new Error(`run ${pending.runId} is gone`);
     await sendReviewRequest(run, pending.email);
   } catch (error) {
-    console.error("[site check] confirmed review request didn’t send", error);
+    logEvent("error", { host: run?.host, reason: `confirmed review request didn’t send: ${reasonOf(error)}` });
     await releaseReviewRun(pending.runId);
     return page(
       "That didn’t send.",
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
       502,
     );
   }
+  logEvent("review-confirmed", { host: run.host, domain: pending.email.split("@")[1] });
   return page(
     "You’re confirmed.",
     `Thanks. I’ll go through ${esc(run.host)} and send your report to ${esc(pending.email)}.`,

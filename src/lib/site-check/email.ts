@@ -1,5 +1,6 @@
 import { promises as dns } from "node:dns";
 import { DISPOSABLE_DOMAINS } from "@/data/disposable-domains";
+import { logEvent, reasonOf } from "./log";
 
 // Checks an address before a confirmation goes to it: syntax and length, a
 // throwaway-provider blocklist, then whether the domain can receive mail.
@@ -53,7 +54,7 @@ async function acceptsMail(domain: string) {
     return mx.some((r) => r.exchange && r.exchange !== ".");
   } catch (error) {
     if (!absent(error)) {
-      console.warn(`[site check] MX lookup for ${domain} failed, letting it through`, error);
+      logEvent("fail-open", { domain, reason: `MX lookup failed: ${reasonOf(error)}` });
       return true;
     }
   }

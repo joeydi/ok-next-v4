@@ -1,6 +1,7 @@
 import { runCheck } from "@/lib/site-check/checker/run";
 import { checkOrigin } from "@/lib/site-check/guard";
 import { LIMITS, spell } from "@/lib/site-check/limits";
+import { logEvent, reasonOf } from "@/lib/site-check/log";
 import {
   checkMeta,
   type FailReason,
@@ -86,6 +87,7 @@ async function* events(request: Request, target: { url: string; host: string }):
   }
   const ip = clientIp(request);
   if (!(await hasRunLeft(ip))) {
+    logEvent("rate-limited", { ip, host: target.host, reason: "ip" });
     yield* refuse(
       target,
       "rate-limited",
@@ -95,10 +97,12 @@ async function* events(request: Request, target: { url: string; host: string }):
   }
   const cap = await capReached(target.host);
   if (cap === "day") {
+    logEvent("day-capped", { ip, host: target.host });
     yield* refuse(target, "busy", "The checker has reached its limit for today");
     return;
   }
   if (cap === "host") {
+    logEvent("host-capped", { ip, host: target.host });
     const n = LIMITS.runsPerHostPerHour;
     yield* refuse(
       target,
@@ -108,12 +112,14 @@ async function* events(request: Request, target: { url: string; host: string }):
     return;
   }
   if (!(await lockHost(target.host))) {
+    logEvent("rate-limited", { ip, host: target.host, reason: "host-locked" });
     yield* refuse(target, "rate-limited", `${target.host} is being checked right now`);
     return;
   }
   const slot = await claimSlot();
   if (!slot) {
     await unlockHost(target.host);
+    logEvent("busy", { ip, host: target.host });
     yield* refuse(target, "busy", "The checker is busy right now");
     return;
   }
@@ -160,7 +166,7 @@ export async function POST(request: Request) {
       try {
         for await (const event of events(request, target)) send(event);
       } catch (error) {
-        console.error(`[site check] run for ${target.host} crashed`, error);
+        logEvent("error", { host: target.host, reason: `run crashed: ${reasonOf(error)}` });
         send({ type: "run.failed", reason: "unreachable", message: "The check broke partway through", at: 0 });
       } finally {
         try {

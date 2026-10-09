@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { LIMITS } from "./limits";
+import { logEvent, reasonOf } from "./log";
 import type { SiteCheckRun } from "./schema";
 
 // The checker's state, in Upstash Redis (the Vercel Marketplace integration sets
@@ -22,7 +23,7 @@ async function safely<T>(what: string, fallback: T, fn: () => Promise<T>): Promi
   try {
     return await fn();
   } catch (error) {
-    console.error(`[site check] fail-open: Redis failed to ${what}`, error);
+    logEvent("fail-open", { reason: `Redis failed to ${what}: ${reasonOf(error)}` });
     return fallback;
   }
 }

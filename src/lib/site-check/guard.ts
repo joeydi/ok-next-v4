@@ -1,4 +1,6 @@
 import { SITE } from "@/data/site";
+import { logEvent } from "./log";
+import { clientIp } from "./store";
 
 // Refuses POSTs that didn't come from a page on this site, before any work: a
 // browser always sends Origin (or at least Referer) with a fetch from our pages.
@@ -32,6 +34,12 @@ function allowed(source: string) {
 export function checkOrigin(request: Request) {
   const source = request.headers.get("origin") ?? request.headers.get("referer");
   if (source && allowed(source)) return null;
-  console.warn(`[site check] bad-origin: ${source ?? "no Origin or Referer"}`);
+  let from = "no Origin or Referer";
+  try {
+    if (source) from = new URL(source).hostname;
+  } catch {
+    from = "unparseable";
+  }
+  logEvent("bad-origin", { ip: clientIp(request), reason: from });
   return Response.json({ error: "bad-origin" }, { status: 403 });
 }
