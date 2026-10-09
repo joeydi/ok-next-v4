@@ -69,6 +69,11 @@ export const siteCheck = {
   sent: {
     label: "Check your inbox",
     heading: "*Almost there.* Confirm your email.",
+    message: (email: string, host: string) => ({
+      beforeEmail: "I’ve sent a link to",
+      email,
+      afterEmail: `. Open it to confirm, and I’ll send your report once I’ve been through ${host} myself. It expires in an hour.`,
+    }),
     booking: "Rather talk it through? Book a 20-min call",
   },
 } as const;

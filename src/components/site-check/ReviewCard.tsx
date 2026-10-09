@@ -59,6 +59,7 @@ export function ReviewCard({
   };
 
   if (sentTo) {
+    const message = copy.sent.message(sentTo, run.host);
     return (
       <div className={cn(card, "site-check-rise")}>
         <div className="flex items-center gap-fl-12">
@@ -73,8 +74,8 @@ export function ReviewCard({
           <Accent text={copy.sent.heading} />
         </h2>
         <p className="mt-fl-16 text-fl-18 leading-copy">
-          I’ve sent a link to <span className="font-semibold">{sentTo}</span>. Open it to confirm, and I’ll send your
-          report once I’ve been through {run.host} myself. It expires in an hour.
+          {message.beforeEmail} <span className="font-semibold">{message.email}</span>
+          {message.afterEmail}
         </p>
         <BookingLink
           className="mt-fl-20 inline-block text-fl-18 leading-copy"

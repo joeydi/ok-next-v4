@@ -52,4 +52,5 @@ export const ADMIN_NAV: readonly NavLink[] = [
   { label: "Illustrations", href: "/admin/illustrations" },
   { label: "Diagrams", href: "/admin/diagrams" },
   { label: "Logo", href: "/admin/logo" },
+  { label: "Site Check", href: "/admin/site-check" },
 ];
