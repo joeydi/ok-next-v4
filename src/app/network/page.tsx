@@ -26,6 +26,8 @@ export default function NetworkPage() {
       <main id="main">
         {/* Pulled up so the canvas runs under the nav. */}
         <section className="relative isolate -mt-(--nav-h) flex min-h-svh items-center overflow-hidden pt-(--nav-h)">
+          {/* The quote stands in for a visible title, so the page's heading is for screen readers and crawlers. */}
+          <h1 className="sr-only">Good websites start with paying attention</h1>
           <NetworkCanvas className="pointer-events-none absolute inset-0 z-10 size-full text-pink" />
           <Container className="grid-12 w-full py-fl-96">
             {/* Set like the notes' PullQuote (.note-quote). */}
