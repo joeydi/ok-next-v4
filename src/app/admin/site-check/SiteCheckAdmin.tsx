@@ -1,8 +1,11 @@
 import { Accent } from "@/components/Accent";
 import { SITE } from "@/data/site";
-import { siteCheck as copy } from "@/data/site-check";
+import { siteCheck as copy, siteCheckCopy } from "@/data/site-check";
+import { formatTemplate, templateParts } from "@/lib/site-check/copy-schema";
 import { confirmationEmail, confirmationUi, reviewRequestEmail } from "@/lib/site-check/messages";
 import { sampleRunAt } from "@/lib/site-check/sample";
+import { EditableCopyField } from "./EditableCopyField";
+import { EmailHtmlPreview } from "./EmailHtmlPreview";
 
 const sampleEmail = "hello@yourorganization.org";
 const sampleLink = `${SITE.url}/api/site-check/review/confirm?token=[confirmation-token]`;
@@ -10,14 +13,15 @@ const sampleLink = `${SITE.url}/api/site-check/review/confirm?token=[confirmatio
 const surface = "rounded-lg border border-rule bg-paper-light/60 px-fl-24 py-fl-24";
 const smallLabel = "mono-label text-muted";
 
-/** A read-only inventory of every user-facing score and review-email message. */
-export function SiteCheckAdmin() {
+/** Every user-facing score and review-email message, editable in development. */
+export async function SiteCheckAdmin() {
   const run = sampleRunAt("result");
   if (!run) throw new Error("The complete Site Check sample is missing");
 
-  const sent = copy.sent.message(sampleEmail, run.host);
-  const visitorEmail = confirmationEmail(run.host, sampleLink);
-  const reviewEmail = reviewRequestEmail(run, sampleEmail);
+  const [visitorEmail, reviewEmail] = await Promise.all([
+    confirmationEmail(run.host, sampleLink),
+    reviewRequestEmail(run, sampleEmail),
+  ]);
 
   return (
     <div className="pt-fl-56 pb-fl-96 font-mono text-[12px]">
@@ -25,7 +29,7 @@ export function SiteCheckAdmin() {
         <span className={smallLabel}>/ Admin · dev only</span>
         <h1 className="display text-fl-48 leading-heading-48 tracking-display-48">Site Check</h1>
         <p className="max-w-3xl font-mono text-fl-14 leading-copy text-muted">
-          Read-only review of the production score, email capture, confirmation, and email-template copy.
+          Review and edit the production score, email capture, confirmation, and email-template copy.
         </p>
       </header>
 
@@ -45,9 +49,14 @@ export function SiteCheckAdmin() {
       <div className="flex flex-col gap-fl-64">
         <Section id="score" number="01" title="Your Score">
           <div className="grid gap-fl-16 xl:grid-cols-3">
-            <CopyCard label="Card label" text={copy.scoreLabel} />
-            <CopyCard label="Pending score" text={copy.pending} />
-            <CopyCard label="Helper · defined, not currently shown" text={copy.scoreNote} />
+            <EditableCopyField fieldPath="score.label" label="Card label" value={siteCheckCopy.score.label} />
+            <EditableCopyField fieldPath="score.pending" label="Pending score" value={siteCheckCopy.score.pending} />
+            <EditableCopyField
+              fieldPath="score.note"
+              label="Helper · defined, not currently shown"
+              value={siteCheckCopy.score.note}
+              multiline
+            />
           </div>
 
           <div className="mt-fl-24 overflow-hidden rounded-lg border border-rule">
@@ -68,10 +77,23 @@ export function SiteCheckAdmin() {
                   const ceiling = index === 0 ? 100 : copy.verdicts[index - 1].min - 1;
                   return (
                     <tr key={verdict.min} className="border-t border-rule bg-paper-light/40">
-                      <th scope="row" className="whitespace-nowrap px-fl-20 py-fl-16 font-normal tabular-nums">
-                        {verdict.min}–{ceiling}
+                      <th scope="row" className="w-52 px-fl-20 py-fl-16 font-normal">
+                        <EditableCopyField
+                          fieldPath={`score.verdicts.${index}.min`}
+                          label={`${verdict.min}–${ceiling}`}
+                          value={verdict.min}
+                          numeric
+                          compact
+                        />
                       </th>
-                      <td className="px-fl-20 py-fl-16 font-sans text-fl-18">{verdict.t}</td>
+                      <td className="px-fl-20 py-fl-16">
+                        <EditableCopyField
+                          fieldPath={`score.verdicts.${index}.message`}
+                          label="Verdict"
+                          value={verdict.t}
+                          compact
+                        />
+                      </td>
                     </tr>
                   );
                 })}
@@ -83,46 +105,127 @@ export function SiteCheckAdmin() {
         <Section id="email-box" number="02" title="Email box">
           <div className={surface}>
             <p className={smallLabel}>Default state</p>
-            <h3 className="display mt-fl-16 text-fl-30 leading-heading-30 tracking-display-30">
-              <Accent text={copy.review.heading} />
-            </h3>
-            <p className="mt-fl-12 max-w-3xl font-sans text-fl-18 leading-copy">{copy.review.body}</p>
-            <dl className="mt-fl-24 grid gap-x-fl-24 gap-y-fl-16 sm:grid-cols-2">
-              <CopyDetail term="Field label" text={copy.review.label} />
-              <CopyDetail term="Placeholder" text={copy.review.placeholder} />
-              <CopyDetail term="Button" text={copy.review.cta} />
-              <CopyDetail term="Note" text={copy.review.note} />
-            </dl>
+            <div className="mt-fl-16 grid gap-fl-16 xl:grid-cols-2">
+              <EditableCopyField fieldPath="review.heading" label="Heading" value={copy.review.heading} />
+              <EditableCopyField fieldPath="review.body" label="Body" value={copy.review.body} multiline />
+              <EditableCopyField fieldPath="review.label" label="Field label" value={copy.review.label} />
+              <EditableCopyField fieldPath="review.placeholder" label="Placeholder" value={copy.review.placeholder} />
+              <EditableCopyField fieldPath="review.cta" label="Button" value={copy.review.cta} />
+              <EditableCopyField fieldPath="review.note" label="Note" value={copy.review.note} multiline />
+            </div>
           </div>
 
           <div className="mt-fl-16 grid gap-fl-16 xl:grid-cols-2">
             <div className={surface}>
               <h3 className={smallLabel}>Validation and request errors</h3>
-              <dl className="mt-fl-16 flex flex-col gap-fl-16">
+              <div className="mt-fl-16 flex flex-col gap-fl-16">
                 {Object.entries(copy.review.errors).map(([code, message]) => (
-                  <CopyDetail key={code} term={code} text={message} />
+                  <EditableCopyField
+                    key={code}
+                    fieldPath={`review.errors.${code}`}
+                    label={code}
+                    value={message}
+                    multiline
+                  />
                 ))}
-              </dl>
+              </div>
             </div>
             <div className={surface}>
               <h3 className={smallLabel}>Fallback error</h3>
-              <p className="mt-fl-16 font-sans text-fl-18 leading-copy">
-                {copy.review.error} {SITE.email}.
-              </p>
+              <div className="mt-fl-16">
+                <EditableCopyField fieldPath="review.error" label="Message before email" value={copy.review.error} />
+                <p className="mt-fl-12 font-sans text-fl-18 leading-copy text-muted">
+                  Preview: {copy.review.error} {SITE.email}.
+                </p>
+              </div>
             </div>
           </div>
         </Section>
 
         <Section id="confirmation-ui" number="03" title="Confirmation UI">
-          <MessageCard label={copy.sent.label} title={copy.sent.heading}>
-            <p>
-              {sent.beforeEmail} <strong>{sent.email}</strong>
-              {sent.afterEmail}
-            </p>
-            <p className="mt-fl-12">{copy.sent.booking} →</p>
-          </MessageCard>
+          <div className="grid gap-fl-16 xl:grid-cols-2">
+            <EditableCopyField fieldPath="sent.label" label="Inbox label" value={copy.sent.label} />
+            <EditableCopyField fieldPath="sent.heading" label="Inbox heading" value={copy.sent.heading} />
+            <EditableCopyField
+              fieldPath="sent.message"
+              label="Inbox message"
+              value={copy.sent.message}
+              multiline
+              tokens={["email", "host"]}
+            />
+            <EditableCopyField fieldPath="sent.booking" label="Booking link" value={copy.sent.booking} />
+          </div>
+          <div className="mt-fl-16">
+            <MessageCard label={copy.sent.label} title={copy.sent.heading}>
+              <p>
+                <TemplatePreview
+                  template={copy.sent.message}
+                  values={{ email: sampleEmail, host: run.host }}
+                  strong={["email"]}
+                />
+              </p>
+              <p className="mt-fl-12">{copy.sent.booking} →</p>
+            </MessageCard>
+          </div>
 
-          <h3 className="mt-fl-32 mb-fl-16 mono-label text-muted">Confirmation-link pages</h3>
+          <h3 className="mt-fl-32 mb-fl-16 mono-label text-muted">Confirmation-link copy</h3>
+          <div className="grid gap-fl-16 xl:grid-cols-2">
+            <EditableCopyField fieldPath="confirmation.back" label="Shared back link" value={confirmationUi.back} />
+            <EditableCopyField
+              fieldPath="confirmation.prompt.title"
+              label="Ready · title"
+              value={confirmationUi.prompt.title}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.prompt.message"
+              label="Ready · message"
+              value={confirmationUi.prompt.message}
+              multiline
+            />
+            <EditableCopyField
+              fieldPath="confirmation.prompt.action"
+              label="Ready · button"
+              value={confirmationUi.prompt.action}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.expired.title"
+              label="Expired · title"
+              value={confirmationUi.expired.title}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.expired.message"
+              label="Expired · message"
+              value={confirmationUi.expired.message}
+              multiline
+              tokens={["supportEmail"]}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.failed.title"
+              label="Failed · title"
+              value={confirmationUi.failed.title}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.failed.message"
+              label="Failed · message"
+              value={confirmationUi.failed.message}
+              multiline
+              tokens={["supportEmail"]}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.confirmed.title"
+              label="Confirmed · title"
+              value={confirmationUi.confirmed.title}
+            />
+            <EditableCopyField
+              fieldPath="confirmation.confirmed.message"
+              label="Confirmed · message"
+              value={confirmationUi.confirmed.message}
+              multiline
+              tokens={["host", "email"]}
+            />
+          </div>
+
+          <h3 className="mt-fl-32 mb-fl-16 mono-label text-muted">Rendered confirmation-link pages</h3>
           <div className="grid gap-fl-16 xl:grid-cols-2">
             <ConfirmationPagePreview
               label="Ready · 200"
@@ -132,13 +235,21 @@ export function SiteCheckAdmin() {
               {confirmationUi.prompt.message}
             </ConfirmationPagePreview>
             <ConfirmationPagePreview label="Expired or used · 410" title={confirmationUi.expired.title}>
-              {confirmationUi.expired.messageBeforeEmail} <span className="underline">{SITE.email}</span>.
+              <TemplatePreview
+                template={confirmationUi.expired.message}
+                values={{ supportEmail: SITE.email }}
+                underline={["supportEmail"]}
+              />
             </ConfirmationPagePreview>
             <ConfirmationPagePreview label="Send failed · 502" title={confirmationUi.failed.title}>
-              {confirmationUi.failed.messageBeforeEmail} <span className="underline">{SITE.email}</span>.
+              <TemplatePreview
+                template={confirmationUi.failed.message}
+                values={{ supportEmail: SITE.email }}
+                underline={["supportEmail"]}
+              />
             </ConfirmationPagePreview>
             <ConfirmationPagePreview label="Confirmed · 200" title={confirmationUi.confirmed.title}>
-              {confirmationUi.confirmed.message(run.host, sampleEmail)}
+              {formatTemplate(confirmationUi.confirmed.message, { host: run.host, email: sampleEmail })}
             </ConfirmationPagePreview>
           </div>
         </Section>
@@ -151,6 +262,34 @@ export function SiteCheckAdmin() {
               reply="Reply-to: not set"
               subject={visitorEmail.subject}
               text={visitorEmail.text}
+              html={visitorEmail.html}
+              fields={[
+                {
+                  fieldPath: "emails.confirmation.subject",
+                  label: "Subject",
+                  value: siteCheckCopy.emails.confirmation.subject,
+                  tokens: ["host"],
+                },
+                {
+                  fieldPath: "emails.confirmation.intro",
+                  label: "Opening",
+                  value: siteCheckCopy.emails.confirmation.intro,
+                  multiline: true,
+                  tokens: ["host"],
+                },
+                {
+                  fieldPath: "emails.confirmation.expiry",
+                  label: "Expiry note",
+                  value: siteCheckCopy.emails.confirmation.expiry,
+                  multiline: true,
+                },
+                {
+                  fieldPath: "emails.confirmation.signature",
+                  label: "Signature",
+                  value: siteCheckCopy.emails.confirmation.signature,
+                  tokens: ["author", "siteName"],
+                },
+              ]}
             />
             <EmailTemplate
               title="Confirmed review request"
@@ -158,7 +297,40 @@ export function SiteCheckAdmin() {
               reply={`Reply-to: ${sampleEmail}`}
               subject={reviewEmail.subject}
               text={reviewEmail.text}
+              html={reviewEmail.html}
               attachment={reviewEmail.filename}
+              fields={[
+                {
+                  fieldPath: "emails.review.subject",
+                  label: "Subject",
+                  value: siteCheckCopy.emails.review.subject,
+                  tokens: ["host", "score"],
+                },
+                {
+                  fieldPath: "emails.review.request",
+                  label: "Request line",
+                  value: siteCheckCopy.emails.review.request,
+                  tokens: ["email", "url"],
+                },
+                {
+                  fieldPath: "emails.review.score",
+                  label: "Score line",
+                  value: siteCheckCopy.emails.review.score,
+                  tokens: ["score", "verdict"],
+                },
+                {
+                  fieldPath: "emails.review.run",
+                  label: "Run line",
+                  value: siteCheckCopy.emails.review.run,
+                  tokens: ["runId", "checkedAt"],
+                },
+                {
+                  fieldPath: "emails.review.attachment",
+                  label: "Attachment note",
+                  value: siteCheckCopy.emails.review.attachment,
+                  multiline: true,
+                },
+              ]}
             />
           </div>
         </Section>
@@ -189,22 +361,30 @@ function Section({
   );
 }
 
-function CopyCard({ label, text }: { label: string; text: string }) {
-  return (
-    <div className={surface}>
-      <p className={smallLabel}>{label}</p>
-      <p className="mt-fl-12 font-sans text-fl-18 leading-copy">{text}</p>
-    </div>
-  );
-}
-
-function CopyDetail({ term, text }: { term: string; text: string }) {
-  return (
-    <div>
-      <dt className={smallLabel}>{term}</dt>
-      <dd className="mt-fl-8 font-sans text-fl-18 leading-copy">{text}</dd>
-    </div>
-  );
+function TemplatePreview({
+  template,
+  values,
+  strong = [],
+  underline = [],
+}: {
+  template: string;
+  values: Record<string, string | number>;
+  strong?: readonly string[];
+  underline?: readonly string[];
+}) {
+  return templateParts(template, values).map((part, index) => {
+    const className = [
+      strong.includes(part.key ?? "") && "font-semibold",
+      underline.includes(part.key ?? "") && "underline",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <span key={`${part.key ?? "copy"}-${index}`} className={className || undefined}>
+        {part.text}
+      </span>
+    );
+  });
 }
 
 function MessageCard({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
@@ -255,18 +435,33 @@ function EmailTemplate({
   reply,
   subject,
   text,
+  html,
   attachment,
+  fields,
 }: {
   title: string;
   audience: string;
   reply: string;
   subject: string;
   text: string;
+  html: string;
   attachment?: string;
+  fields: {
+    fieldPath: string;
+    label: string;
+    value: string;
+    multiline?: boolean;
+    tokens?: readonly string[];
+  }[];
 }) {
   return (
     <article className={surface}>
       <h3 className="display text-fl-30 leading-heading-30 tracking-display-30">{title}</h3>
+      <div className="mt-fl-20 grid gap-fl-16 xl:grid-cols-2">
+        {fields.map((field) => (
+          <EditableCopyField key={field.fieldPath} {...field} />
+        ))}
+      </div>
       <dl className="mt-fl-20 grid gap-x-fl-24 gap-y-fl-12 md:grid-cols-[8rem_minmax(0,1fr)]">
         <dt className={smallLabel}>Delivery</dt>
         <dd className="text-fl-14">
@@ -283,21 +478,8 @@ function EmailTemplate({
       </dl>
       <div className="mt-fl-24 grid gap-fl-20 xl:grid-cols-2">
         <div>
-          <p className={smallLabel}>Rendered email · text/plain</p>
-          <div className="mt-fl-8 overflow-hidden rounded-md border border-rule bg-paper-light shadow-sm">
-            <div className="border-b border-rule px-fl-20 py-fl-16">
-              <p className="font-sans text-fl-18 leading-copy font-semibold">{subject}</p>
-              <dl className="mt-fl-8 grid grid-cols-[auto_minmax(0,1fr)] gap-x-fl-8 text-fl-12 leading-copy text-muted">
-                <dt>From</dt>
-                <dd>
-                  {SITE.name} site check &lt;{process.env.SITE_CHECK_FROM ?? SITE.email}&gt;
-                </dd>
-                <dt>To</dt>
-                <dd>{audience.replace("To: ", "")}</dd>
-              </dl>
-            </div>
-            <div className="whitespace-pre-wrap px-fl-20 py-fl-24 font-sans text-fl-16 leading-copy">{text}</div>
-          </div>
+          <p className={smallLabel}>Rendered email · HTML</p>
+          <EmailHtmlPreview title={`${title} HTML preview`} html={html} />
         </div>
         <div>
           <p className={smallLabel}>Plain-text source</p>

@@ -1,69 +1,86 @@
 import { SITE } from "@/data/site";
-import { verdictFor } from "@/data/site-check";
+import { siteCheckCopy, verdictFor } from "@/data/site-check";
+import { renderConfirmationEmail } from "@/emails/ConfirmationEmail";
+import { renderReviewRequestEmail } from "@/emails/ReviewRequestEmail";
+import { formatTemplate } from "./copy-schema";
 import { CATEGORIES, checkMeta, type SiteCheckRun } from "./schema";
 
 /** Copy shown by the confirmation-link route. Kept here so the admin review is the route's source of truth. */
-export const confirmationUi = {
-  back: "Back to the site check",
-  expired: {
-    title: "That link has expired.",
-    messageBeforeEmail:
-      "Confirmation links work once and last an hour. Run the site check again to get a new one, or email",
-  },
-  prompt: {
-    title: "Confirm your review request.",
-    message: "One more click and I’ll go through your site myself.",
-    action: "Confirm my email",
-  },
-  failed: {
-    title: "That didn’t send.",
-    messageBeforeEmail: "Sorry, something went wrong on my end. Email me at",
-  },
-  confirmed: {
-    title: "You’re confirmed.",
-    message: (host: string, email: string) => `Thanks. I’ll go through ${host} and send your report to ${email}.`,
-  },
-} as const;
+export const confirmationUi = siteCheckCopy.confirmation;
 
 const MARK = { ok: "✓", warn: "!", fail: "✕", skipped: "–" } as const;
 
 /** The email sent to the visitor before their personal-review request reaches Joe. */
-export function confirmationEmail(host: string, link: string) {
+export async function confirmationEmail(host: string, link: string) {
+  const copy = siteCheckCopy.emails.confirmation;
+  const subject = formatTemplate(copy.subject, { host });
+  const intro = formatTemplate(copy.intro, { host });
   return {
-    subject: `Confirm your review request for ${host}`,
+    subject,
     text: [
-      `You asked for a personal review of ${host}. Confirm your email to send the request:`,
+      intro,
       "",
       link,
       "",
-      "The link works once and expires in an hour. If you didn’t ask, ignore this and nothing happens.",
+      copy.expiry,
       "",
-      `${SITE.author}, ${SITE.name}`,
+      formatTemplate(copy.signature, { author: SITE.author, siteName: SITE.name }),
     ].join("\n"),
+    html: await renderConfirmationEmail({
+      title: confirmationUi.prompt.title,
+      subject,
+      intro,
+      action: confirmationUi.prompt.action,
+      link,
+      expiry: copy.expiry,
+    }),
   };
 }
 
 /** The email sent to Joe after the visitor confirms, including the check's evidence summary. */
-export function reviewRequestEmail(run: SiteCheckRun, email: string) {
-  const categories = CATEGORIES.map((c) => {
+export async function reviewRequestEmail(run: SiteCheckRun, email: string) {
+  const copy = siteCheckCopy.emails.review;
+  const categoryScores = CATEGORIES.map((c) => {
     const score = run.categories.find((s) => s.id === c.id)?.score;
-    return `${c.name} ${score ?? "n/a"}`;
-  }).join(" · ");
+    return { name: c.name, score: score ?? null };
+  });
+  const categories = categoryScores.map(({ name, score }) => `${name} ${score ?? "n/a"}`).join(" · ");
   const lines = run.results.map((r) => `${MARK[r.status]} ${checkMeta(r.id).name}: ${r.summary}`);
+  const score = run.score ?? "–";
+  const subject = formatTemplate(copy.subject, { host: run.host, score });
+  const request = formatTemplate(copy.request, { email, url: run.url });
+  const scoreLine = formatTemplate(copy.score, {
+    score,
+    verdict: run.score === null ? "" : verdictFor(run.score),
+  });
+  const runLine = formatTemplate(copy.run, { runId: run.id, checkedAt: new Date(run.startedAt).toUTCString() });
   return {
-    subject: `Site check review: ${run.host} (${run.score ?? "–"})`,
+    subject,
     text: [
       // No full stop after the URL: mail clients link it along with the address.
-      `${email} asked for a review of ${run.url}`,
+      request,
       "",
-      `Score: ${run.score ?? "–"} / 100. ${run.score === null ? "" : verdictFor(run.score)}`,
+      scoreLine,
       categories,
       "",
       ...lines,
       "",
-      `Run ${run.id}, checked ${new Date(run.startedAt).toUTCString()}.`,
-      "Each check’s evidence is attached as JSON. Reply to answer them directly.",
+      runLine,
+      copy.attachment,
     ].join("\n"),
+    html: await renderReviewRequestEmail({
+      subject,
+      request,
+      scoreLine,
+      categories: categoryScores,
+      results: run.results.map((result) => ({
+        mark: MARK[result.status],
+        status: result.status,
+        summary: `${checkMeta(result.id).name}: ${result.summary}`,
+      })),
+      runLine,
+      attachment: copy.attachment,
+    }),
     filename: `${run.host}-${run.id}.json`,
   };
 }
