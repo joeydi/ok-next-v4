@@ -39,7 +39,10 @@ export async function POST(request: Request) {
   }
   const valid = await validateEmail(given);
   if (!valid.ok) {
-    logEvent(valid.error, { ip, domain: given.split("@").pop()?.trim().toLowerCase().slice(0, 100) });
+    logEvent(valid.error, {
+      ip,
+      domain: given.includes("@") ? given.split("@").pop()?.trim().toLowerCase().slice(0, 100) : undefined,
+    });
     return Response.json({ error: valid.error }, { status: 400 });
   }
   const { email } = valid;
