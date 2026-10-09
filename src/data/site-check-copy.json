@@ -32,10 +32,10 @@
     "error": "That didn’t send. Try again, or email me at",
     "errors": {
       "bad-email": "That doesn’t look like an email address. Check it for typos and try again.",
-      "disposable-email": "That looks like a temporary inbox. Use an address you read, so I can send the report.",
+      "disposable-email": "That looks like a temporary inbox. Could you use an address you check? That’s where I’ll send the report.",
       "no-mail-server": "That domain doesn’t seem to receive email. Check the address for typos.",
-      "email-limit": "That address already has requests in today. Check your inbox, or try again tomorrow.",
-      "already-requested": "A review is already on its way for this check. Look for the confirmation email.",
+      "email-limit": "I’ve already received a few requests from that address today. Check your inbox, or try again tomorrow.",
+      "already-requested": "I’ve already got a review request for this check. Look for the confirmation email.",
       "rate-limited": "That’s a lot of requests. Give it a little while and try again."
     }
   },
@@ -62,14 +62,14 @@
     },
     "confirmed": {
       "title": "You’re confirmed.",
-      "message": "Thanks. I’ll go through {{host}} and send your report to {{email}}."
+      "message": "You’re all set—thanks. I’ll go through {{host}} myself and send what I find to {{email}}."
     }
   },
   "emails": {
     "confirmation": {
       "subject": "Confirm your review request for {{host}}",
       "intro": "You asked me to take a personal look at {{host}}. Before I dig in, I just want to make sure you’re a real person and have access to this email address:",
-      "expiry": "The link works once and expires in an hour. If you didn’t ask, ignore this and nothing happens.",
+      "expiry": "The link works once and expires in an hour. If you didn’t request this, you can ignore it—nothing else will happen.",
       "signature": "{{author}}, {{siteName}}"
     },
     "review": {
