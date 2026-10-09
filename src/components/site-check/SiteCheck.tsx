@@ -8,6 +8,7 @@ import { trackSiteCheck } from "@/lib/site-check/analytics";
 import { streamCheck } from "@/lib/site-check/client";
 import { STAGE_AT, sampleRunAt } from "@/lib/site-check/sample";
 import { normalizeUrl, reduceRun, type SiteCheckRun } from "@/lib/site-check/schema";
+import { useBotCheck } from "./BotCheck";
 import { CheckLog, seconds, tally } from "./CheckLog";
 import { ReviewCard } from "./ReviewCard";
 import { ScoreCard } from "./ScoreCard";
@@ -36,6 +37,7 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
   const [now, setNow] = useState(0);
   const stop = useRef<() => void>(undefined);
   const field = useRef<HTMLInputElement>(null);
+  const bot = useBotCheck();
 
   const running = run?.status === "running";
 
@@ -66,7 +68,7 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
     setStartedAt(Date.now());
     setNow(Date.now());
     const { host } = target;
-    stop.current = streamCheck(target.url, host, (event) => {
+    stop.current = streamCheck(target.url, host, bot.check, (event) => {
       dispatch(event);
       // One event as a live run ends, either way; a pinned run is only for looking at.
       if (event.type === "run.finished") {
@@ -99,7 +101,7 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
         <form
           onSubmit={start}
           noValidate
-          className="flex flex-wrap items-center gap-x-fl-16 gap-y-2 py-2 pr-2 pl-fl-24"
+          className="relative flex flex-wrap items-center gap-x-fl-16 gap-y-2 py-2 pr-2 pl-fl-24"
         >
           <label htmlFor="site-check-url" className="font-mono text-fl-18 font-medium whitespace-nowrap text-pink">
             <span aria-hidden="true">{copy.prompt}</span>
@@ -126,6 +128,7 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
           >
             {label} <span className="nudge">→</span>
           </button>
+          {bot.fields}
         </form>
         {run && <CheckLog run={run} elapsed={elapsed} animate={live} />}
       </div>
@@ -175,6 +178,6 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
 function announce(run: SiteCheckRun | null) {
   if (!run) return "";
   if (run.status === "running") return `Checking ${run.host}…`;
-  if (run.failure) return `Check failed. ${run.failure.message}.`;
+  if (run.failure) return `Check failed. ${run.failure.message}. ${copy.failed[run.failure.reason]}`;
   return `Done in ${seconds(run.duration ?? 0)}. Score ${run.score} out of 100. ${tally(run)}.`;
 }

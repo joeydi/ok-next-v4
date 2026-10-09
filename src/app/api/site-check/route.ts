@@ -1,4 +1,7 @@
 import { runCheck } from "@/lib/site-check/checker/run";
+import { checkOrigin } from "@/lib/site-check/guard";
+import { LIMITS, spell } from "@/lib/site-check/limits";
+import { logEvent, reasonOf } from "@/lib/site-check/log";
 import {
   checkMeta,
   type FailReason,
@@ -8,13 +11,27 @@ import {
   type SiteCheckEvent,
   type SiteCheckRun,
 } from "@/lib/site-check/schema";
-import { clientIp, countRun, hasRunLeft, lockHost, recentRun, saveRun, unlockHost } from "@/lib/site-check/store";
+import {
+  capReached,
+  claimSlot,
+  clientIp,
+  countCaps,
+  countRun,
+  hasRunLeft,
+  lockHost,
+  recentRun,
+  releaseSlot,
+  saveRun,
+  unlockHost,
+} from "@/lib/site-check/store";
+import { checkBot } from "@/lib/site-check/turnstile";
 
 // POST { url } → the run as server-sent events (`data: <SiteCheckEvent>`), read by
 // streamCheck in src/lib/site-check/client.ts. A host checked in the last 15 minutes is replayed
 // from the store rather than checked again; otherwise the visitor's rate limit and
-// a per-host lock come first. A run only counts towards the limit once the site
-// has answered.
+// a per-host lock come first, then the day's and the host's caps and the limit on
+// runs under way at once. A replay spends none of those. A run only counts towards
+// the limits once the site has answered.
 
 export const maxDuration = 90;
 
@@ -70,30 +87,69 @@ async function* events(request: Request, target: { url: string; host: string }):
   }
   const ip = clientIp(request);
   if (!(await hasRunLeft(ip))) {
-    yield* refuse(target, "rate-limited", "That’s five checks in the last hour from your connection");
+    logEvent("rate-limited", { ip, host: target.host, reason: "ip" });
+    yield* refuse(
+      target,
+      "rate-limited",
+      `That’s ${spell(LIMITS.runsPerIpPerHour)} ${LIMITS.runsPerIpPerHour === 1 ? "check" : "checks"} in the last hour from your connection`,
+    );
+    return;
+  }
+  const cap = await capReached(target.host);
+  if (cap === "day") {
+    logEvent("day-capped", { ip, host: target.host });
+    yield* refuse(target, "busy", "The checker has reached its limit for today");
+    return;
+  }
+  if (cap === "host") {
+    logEvent("host-capped", { ip, host: target.host });
+    const n = LIMITS.runsPerHostPerHour;
+    yield* refuse(
+      target,
+      "rate-limited",
+      `${target.host} has been checked ${spell(n)} ${n === 1 ? "time" : "times"} in the last hour`,
+    );
     return;
   }
   if (!(await lockHost(target.host))) {
+    logEvent("rate-limited", { ip, host: target.host, reason: "host-locked" });
     yield* refuse(target, "rate-limited", `${target.host} is being checked right now`);
     return;
   }
+  const slot = await claimSlot();
+  if (!slot) {
+    await unlockHost(target.host);
+    logEvent("busy", { ip, host: target.host });
+    yield* refuse(target, "busy", "The checker is busy right now");
+    return;
+  }
+  // Freed as soon as the visitor leaves, not only when the generator winds down.
+  const release = () => releaseSlot(slot);
+  request.signal.addEventListener("abort", release, { once: true });
   let run: SiteCheckRun | null = null;
   try {
     for await (const event of runCheck(target, { signal: request.signal })) {
       run = reduceRun(run, event);
       // DNS finishes once the home page has answered: only then does the run count.
-      if (event.type === "check.finished" && event.result.id === "dns") await countRun(ip);
+      if (event.type === "check.finished" && event.result.id === "dns") {
+        await Promise.all([countRun(ip), countCaps(target.host)]);
+      }
       yield event;
     }
     // Only a complete run can be reviewed or replayed.
     if (run?.status === "complete") await saveRun(run);
   } finally {
-    await unlockHost(target.host);
+    request.signal.removeEventListener("abort", release);
+    await Promise.all([releaseSlot(slot), unlockHost(target.host)]);
   }
 }
 
 export async function POST(request: Request) {
+  const refused = checkOrigin(request);
+  if (refused) return refused;
   const body = await request.json().catch(() => null);
+  const botCheck = await checkBot(request, body);
+  if (botCheck) return botCheck;
   const target = typeof body?.url === "string" ? normalizeUrl(body.url) : null;
   if (!target) return Response.json({ error: "invalid-url" }, { status: 400 });
 
@@ -110,7 +166,7 @@ export async function POST(request: Request) {
       try {
         for await (const event of events(request, target)) send(event);
       } catch (error) {
-        console.error(`[site check] run for ${target.host} crashed`, error);
+        logEvent("error", { host: target.host, reason: `run crashed: ${reasonOf(error)}` });
         send({ type: "run.failed", reason: "unreachable", message: "The check broke partway through", at: 0 });
       } finally {
         try {

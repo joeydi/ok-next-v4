@@ -172,7 +172,7 @@ export function overallScore(categories: readonly CategoryScore[]) {
 export const lastOfCategory = (id: CategoryId) => CHECKS.findLast((c) => c.category === id)?.id;
 
 export type RunStatus = "running" | "complete" | "failed";
-export type FailReason = "invalid-url" | "unreachable" | "timeout" | "blocked" | "rate-limited";
+export type FailReason = "invalid-url" | "unreachable" | "timeout" | "blocked" | "rate-limited" | "busy";
 
 export type SiteCheckRun = {
   id: string;

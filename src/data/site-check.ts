@@ -35,6 +35,7 @@ export const siteCheck = {
     timeout: "Try again in a minute, or email me and I’ll take a look.",
     blocked: "Its firewall turns automated checks away. Email me and I’ll take a look myself.",
     "rate-limited": "Try again a little later, or email me and I’ll take a look.",
+    busy: "Lots of people are checking sites right now. Try again in a few minutes, or email me and I’ll take a look.",
   },
 
   scoreLabel: "Your score",
@@ -56,10 +57,18 @@ export const siteCheck = {
     cta: "Send me the review",
     note: "No cost and no obligation. If your site is in good shape, I’ll tell you that too.",
     error: "That didn’t send. Try again, or email me at",
+    errors: {
+      "bad-email": "That doesn’t look like an email address. Check it for typos and try again.",
+      "disposable-email": "That looks like a temporary inbox. Use an address you read, so I can send the report.",
+      "no-mail-server": "That domain doesn’t seem to receive email. Check the address for typos.",
+      "email-limit": "That address already has requests in today. Check your inbox, or try again tomorrow.",
+      "already-requested": "A review is already on its way for this check. Look for the confirmation email.",
+      "rate-limited": "That’s a lot of requests. Give it a little while and try again.",
+    },
   },
   sent: {
-    label: "On my list",
-    heading: "*Thanks.* I’ll take it from here.",
+    label: "Check your inbox",
+    heading: "*Almost there.* Confirm your email.",
     booking: "Rather talk it through? Book a 20-min call",
   },
 } as const;
