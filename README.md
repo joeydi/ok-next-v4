@@ -171,7 +171,7 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 
 Animated diagrams used inside notes live in `src/components/diagrams/<note-slug>/` and build on the shared stack, parts, figure, loop and jog-wheel components in `src/components/diagrams/`. A note imports its diagram directly; diagrams are not global MDX components.
 
-[localhost:3000/admin/diagrams](http://localhost:3000/admin/diagrams) (dev only) lists the registered diagrams for comparison and tuning. Add each finished diagram to `src/app/admin/diagrams/registry.tsx`, and remove exploration variants after choosing one. See `.claude/skills/diagram/SKILL.md` for the house style and workflow.
+[localhost:3000/admin/diagrams](http://localhost:3000/admin/diagrams) (dev only) lists the registered diagrams for comparison and tuning. Add each finished diagram to `src/app/admin/diagrams/registry.tsx`, and remove exploration variants after choosing one. See `.agents/skills/diagram/SKILL.md` for the house style and workflow.
 
 ## Site check
 
@@ -270,7 +270,7 @@ Design docs explain parts of the design system. They're MDX files in `src/conten
 - **View transitions** (`view-transitions`): how the page transition reveals the next page from the click point, with a playable preview and every animation's timing and easing on one timeline.
 - **Notes** (`notes`): frontmatter, Markdown, shared MDX components, the table of contents and publishing checks.
 
-They read token values from `src/app/globals.css` and generated `src/app/fluid.css` through `src/lib/tokens.ts`; the Notes, typography and spacing references also scan the source they document. Their visuals are the components in `src/components/docs/`. `npm run check` fails if a doc copies a colour or curve instead of reading it. To write a new one, see `.claude/skills/design-doc/SKILL.md`.
+They read token values from `src/app/globals.css` and generated `src/app/fluid.css` through `src/lib/tokens.ts`; the Notes, typography and spacing references also scan the source they document. Their visuals are the components in `src/components/docs/`. `npm run check` fails if a doc copies a colour or curve instead of reading it. To write a new one, see `.agents/skills/design-doc/SKILL.md`.
 
 ## Deployment
 
