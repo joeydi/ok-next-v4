@@ -44,6 +44,11 @@ export type StoredReviewRequest = {
 
 let client: Client | null | undefined;
 
+/** Swaps the connection, so tests can run against a local database. */
+export function setDatabaseClient(next: Client | null | undefined) {
+  client = next;
+}
+
 function databaseClient() {
   if (client !== undefined) return client;
   const url = process.env.TURSO_DATABASE_URL;
@@ -134,20 +139,32 @@ export async function saveSiteCheckRun(run: SiteCheckRun) {
   });
 }
 
-/** Adds the confirmed address after the one-time Redis token has been consumed. */
+/**
+ * Adds the confirmed address after the one-time Redis token has been consumed. A replayed run is
+ * shared by everyone who checks that host within 15 minutes, so a run can have several requests:
+ * one per address, and confirming the same address again changes nothing.
+ */
 export async function saveConfirmedReview(runId: string, email: string, confirmedAt = new Date().toISOString()) {
   return safely("save a confirmed review", false, async (database) => {
     const result = await database.execute({
       sql: `INSERT INTO review_requests (id, run_id, email, confirmed_at, status)
         SELECT ?, id, ?, ?, 'confirmed' FROM site_check_runs WHERE id = ?
-        ON CONFLICT (run_id) DO UPDATE SET
-          email = excluded.email,
-          updated_at = excluded.updated_at`,
-      args: [`review_${runId}`, email, confirmedAt, runId],
+        ON CONFLICT (run_id, email) DO NOTHING`,
+      args: [`review_${crypto.randomUUID()}`, email.toLowerCase(), confirmedAt, runId],
     });
-    if (result.rowsAffected !== 1) throw new Error(`completed run ${runId} is not in Turso`);
+    if (result.rowsAffected === 0 && !(await hasReview(database, runId, email))) {
+      throw new Error(`completed run ${runId} is not in Turso`);
+    }
     return result.rowsAffected === 1;
   });
+}
+
+async function hasReview(database: Client, runId: string, email: string) {
+  const result = await database.execute({
+    sql: "SELECT 1 FROM review_requests WHERE run_id = ? AND email = ?",
+    args: [runId, email.toLowerCase()],
+  });
+  return result.rows.length > 0;
 }
 
 export async function updateReviewStatus(

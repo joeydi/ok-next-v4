@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { runCheck } from "@/lib/site-check/checker/run";
 import { saveSiteCheckRun } from "@/lib/site-check/database";
 import { checkOrigin } from "@/lib/site-check/guard";
@@ -80,7 +81,11 @@ function* refuse(
   yield { type: "run.failed", reason, message, at: 0 };
 }
 
-async function* events(request: Request, target: { url: string; host: string }): AsyncGenerator<SiteCheckEvent> {
+async function* events(
+  request: Request,
+  target: { url: string; host: string },
+  onComplete: (run: SiteCheckRun) => void,
+): AsyncGenerator<SiteCheckEvent> {
   const cached = await recentRun(target.host);
   if (cached) {
     yield* replay(cached, request.signal);
@@ -138,7 +143,10 @@ async function* events(request: Request, target: { url: string; host: string }):
       yield event;
     }
     // Only a complete run can be reviewed or replayed.
-    if (run?.status === "complete") await Promise.all([saveRun(run), saveSiteCheckRun(run)]);
+    if (run?.status === "complete") {
+      await saveRun(run);
+      onComplete(run);
+    }
   } finally {
     request.signal.removeEventListener("abort", release);
     await Promise.all([releaseSlot(slot), unlockHost(target.host)]);
@@ -154,6 +162,14 @@ export async function POST(request: Request) {
   const target = typeof body?.url === "string" ? normalizeUrl(body.url) : null;
   if (!target) return Response.json({ error: "invalid-url" }, { status: 400 });
 
+  // Turso is written once the stream has closed, so a slow database never holds the visitor's connection.
+  let completed: SiteCheckRun | null = null;
+  const closed = Promise.withResolvers<void>();
+  after(async () => {
+    await closed.promise;
+    if (completed) await saveSiteCheckRun(completed);
+  });
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
@@ -165,7 +181,7 @@ export async function POST(request: Request) {
         }
       };
       try {
-        for await (const event of events(request, target)) send(event);
+        for await (const event of events(request, target, (run) => (completed = run))) send(event);
       } catch (error) {
         logEvent("error", { host: target.host, reason: `run crashed: ${reasonOf(error)}` });
         send({ type: "run.failed", reason: "unreachable", message: "The check broke partway through", at: 0 });
@@ -173,6 +189,7 @@ export async function POST(request: Request) {
         try {
           controller.close();
         } catch {}
+        closed.resolve();
       }
     },
   });

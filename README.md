@@ -227,7 +227,7 @@ The run still starts and then fails with a reason the page shows: `rate-limited`
 
 If Redis or Turnstile can't be reached, or an MX lookup fails, the request **fails open**: it goes through unlimited rather than not at all. That is logged (below), so a sustained outage is visible.
 
-Turso also fails open. A completed check is still returned and cached in Redis if its durable write fails; after confirmation, the administrator email is sent before the review record is written. Turso credentials are server-only and must not use a `NEXT_PUBLIC_` prefix.
+Turso also fails open. A completed check is still returned and cached in Redis if its durable write fails; after confirmation, the administrator email is sent first and the review record is written once the page has been sent (the run is written again with it, in case its own write failed). Completed runs are written the same way, after the stream closes. Turso credentials are server-only and must not use a `NEXT_PUBLIC_` prefix.
 
 ### Logs
 
@@ -237,9 +237,9 @@ Turso also fails open. A completed check is still returned and cached in Redis i
 
 1. Provision a Turso Cloud database through the Vercel Marketplace, or create one with `turso db create okayplus-site-check`. For a direct Turso setup, get its values with `turso db show okayplus-site-check --url` and `turso db tokens create okayplus-site-check`.
 2. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Vercel project for each runtime environment that should retain checks. Put the same values in the root `.env.local` only when local development should use the cloud database.
-3. Apply the idempotent schema with `npm run migrate:site-check`. The command loads `.env.local` when it exists and runs `migrations/001_site_check_storage.sql`; run it once for every separate preview or production database before deploying code that writes to it.
+3. Apply the schema with `npm run migrate:site-check`. The command loads `.env.local` when it exists and runs every file in `migrations/` that the database's `schema_migrations` table doesn't list yet, in filename order; add a change as the next numbered file rather than editing an applied one. Run it for every separate preview or production database before deploying code that writes to it. It is not part of `npm run build`, so a forgotten run shows up as `fail-open` log lines. `npm test` runs the storage tests against a throwaway local libSQL file.
 
-`site_check_runs` holds normalized technical results and no email address. `review_requests` holds confirmed contact data separately and has one unique row per run. Confirmation tokens, IP-derived rate-limit keys, Turnstile tokens, locks and counters remain transient in Redis and are never copied to Turso.
+`site_check_runs` holds normalized technical results and no email address. `review_requests` holds confirmed contact data separately, one row per run and address (a replayed run is shared by everyone who checks that host within 15 minutes). Confirmation tokens, IP-derived rate-limit keys, Turnstile tokens, locks and counters remain transient in Redis and are never copied to Turso.
 
 Unconfirmed runs are retained for 90 days. Confirmed review requests and their associated runs follow a two-year business-retention period. `cleanupExpiredSiteCheckData()` in `database.ts` implements both rules as one transaction-ready operation for a future authenticated Vercel Cron route or other scheduled task; this implementation does not schedule deletion. The cleanup removes expired confirmed contact rows first, then removes old runs without a retained review request.
 

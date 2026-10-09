@@ -1,5 +1,6 @@
+import { after } from "next/server";
 import { SITE } from "@/data/site";
-import { saveConfirmedReview } from "@/lib/site-check/database";
+import { saveConfirmedReview, saveSiteCheckRun } from "@/lib/site-check/database";
 import { checkOrigin } from "@/lib/site-check/guard";
 import { logEvent, reasonOf } from "@/lib/site-check/log";
 import { sendReviewRequest } from "@/lib/site-check/mail";
@@ -79,8 +80,13 @@ export async function POST(request: Request) {
       502,
     );
   }
-  // The administrator email is the primary workflow; Turso persistence is fail-open and comes after it.
-  await saveConfirmedReview(run.id, pending.email);
+  // The administrator email is the primary workflow; Turso persistence is fail-open and runs once the page
+  // has been sent. The run is saved again first, in case its own write failed when the check finished.
+  const confirmed = { run, email: pending.email };
+  after(async () => {
+    await saveSiteCheckRun(confirmed.run);
+    await saveConfirmedReview(confirmed.run.id, confirmed.email);
+  });
   logEvent("review-confirmed", { host: run.host, domain: pending.email.split("@")[1] });
   return page(
     copy.confirmed.title,

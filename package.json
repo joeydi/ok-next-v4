@@ -9,6 +9,7 @@
     "lint": "biome lint",
     "format": "biome check --write --linter-enabled=false",
     "check": "biome check && node scripts/check-docs.mjs",
+    "test": "node --require ./scripts/test-setup.cjs --import tsx --test src/lib/site-check/database.test.ts",
     "migrate:site-check": "node --env-file-if-exists=.env.local scripts/migrate-site-check.mjs",
     "media": "node --env-file-if-exists=.env.local scripts/media.mjs"
   },
@@ -51,6 +52,7 @@
     "schema-dts": "^2.0.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
