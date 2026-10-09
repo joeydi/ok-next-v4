@@ -44,7 +44,7 @@ export function SiteCheckEmailShell({
   const headshot = mediaImageUrl("home/headshot.jpg", { width: 96, quality: 85, format: "jpeg" });
 
   return (
-    <Html lang="en">
+    <Html lang="en" style={html}>
       <Head />
       <Preview>{preview}</Preview>
       <Body style={body}>
@@ -97,6 +97,8 @@ const body = {
   backgroundColor: EMAIL_COLOR.paperLight,
   color: EMAIL_COLOR.ink,
 };
+
+const html = { backgroundColor: EMAIL_COLOR.paperLight };
 
 const container = {
   width: "100%",
