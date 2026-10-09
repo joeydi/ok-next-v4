@@ -636,6 +636,66 @@
     }
   }
 
+  /* ---------- Command menu (see CommandMenu.tsx) ---------- */
+
+  /* The ⌘K dialog fades and drops in like the nav menus, over a dimmed page, and
+     fades out quickly. Closed, it keeps its place in the top layer and its display
+     (allow-discrete) until the fade ends; the open state's timings are the way in. */
+  .command-menu {
+    opacity: 0;
+    transition:
+      opacity 75ms var(--ease-out),
+      overlay 75ms allow-discrete,
+      display 75ms allow-discrete;
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--color-ink) 10%, transparent);
+      backdrop-filter: blur(var(--blur-sm));
+      opacity: 0;
+      transition:
+        opacity 75ms var(--ease-out),
+        overlay 75ms allow-discrete,
+        display 75ms allow-discrete;
+    }
+  }
+
+  .command-menu[open] {
+    opacity: 1;
+    transition:
+      opacity 0.35s var(--ease-in-out-quart),
+      translate 0.35s var(--ease-in-out-quart),
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete;
+
+    &::backdrop {
+      opacity: 1;
+      transition:
+        opacity 0.35s var(--ease-in-out-quart),
+        overlay 0.35s allow-discrete,
+        display 0.35s allow-discrete;
+    }
+  }
+
+  @starting-style {
+    .command-menu[open] {
+      opacity: 0;
+      translate: 0 -4px;
+
+      &::backdrop {
+        opacity: 0;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .command-menu,
+    .command-menu[open],
+    .command-menu::backdrop,
+    .command-menu[open]::backdrop {
+      transition: none;
+    }
+  }
+
   /* ---------- Site check (see components/site-check) ---------- */
 
   /* Log lines and cards rise in as they arrive; the caret blinks on the running

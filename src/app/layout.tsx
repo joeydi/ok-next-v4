@@ -3,11 +3,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { preload } from "react-dom";
+import { CommandMenu } from "@/components/CommandMenu";
 import { Nav } from "@/components/Nav";
 import { PageTransition } from "@/components/PageTransition";
 import { SITE } from "@/data/site";
 import { JsonLd, siteGraph } from "@/lib/jsonld";
 import { OPEN_GRAPH } from "@/lib/metadata";
+import { commandGroups } from "@/lib/routes";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -79,6 +81,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Nav />
         {/* Each page renders its own <main id="main"> followed by its footer variant. */}
         <PageTransition>{children}</PageTransition>
+        <CommandMenu groups={commandGroups()} />
         <JsonLd data={siteGraph()} />
         <Analytics />
         <SpeedInsights />
