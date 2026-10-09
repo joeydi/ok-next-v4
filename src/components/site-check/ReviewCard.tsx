@@ -11,6 +11,7 @@ import type { Media } from "@/lib/media";
 import { trackSiteCheck } from "@/lib/site-check/analytics";
 import { ReviewError, sendReviewRequest } from "@/lib/site-check/client";
 import type { SiteCheckRun } from "@/lib/site-check/schema";
+import { useBotCheck } from "./BotCheck";
 
 /** Ink card on paper; its focus rings take the pink that holds up on ink. */
 const card = "frame bg-ink px-fl-32 pt-fl-28 pb-fl-32 text-paper [&_:focus-visible]:outline-pink/80";
@@ -32,6 +33,7 @@ export function ReviewCard({
   const [failed, setFailed] = useState<string | null>(null);
   const thanks = useRef<HTMLHeadingElement>(null);
   const [moveFocus, setMoveFocus] = useState(false);
+  const bot = useBotCheck();
 
   // The form goes away once it's sent, so focus moves to the thanks rather than the page.
   useEffect(() => {
@@ -43,7 +45,7 @@ export function ReviewCard({
     setSending(true);
     setFailed(null);
     try {
-      await sendReviewRequest({ runId: run.id, email });
+      await sendReviewRequest({ runId: run.id, email }, await bot.check());
     } catch (error) {
       trackSiteCheck("Site check review failed", { host: run.host });
       setFailed(error instanceof ReviewError ? error.code : "failed");
@@ -98,7 +100,7 @@ export function ReviewCard({
         <Accent text={copy.review.heading} />
       </h2>
       <p className="mt-fl-16 text-fl-18 leading-copy text-pretty">{copy.review.body}</p>
-      <form onSubmit={submit} className="mt-fl-24">
+      <form onSubmit={submit} className="relative mt-fl-24">
         <label htmlFor="site-check-email" className="mono-label block text-muted-light">
           {copy.review.label}
         </label>
@@ -121,6 +123,7 @@ export function ReviewCard({
             {copy.review.cta} <span className="nudge">→</span>
           </button>
         </div>
+        {bot.fields}
       </form>
       {failed && (
         <p role="alert" className="mt-fl-12 text-fl-18 leading-copy text-pink">

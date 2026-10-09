@@ -13,6 +13,7 @@ import {
   releaseReviewRun,
   savePending,
 } from "@/lib/site-check/store";
+import { checkBot } from "@/lib/site-check/turnstile";
 
 // POST { runId, email } → emails the visitor a confirmation link. The request only
 // goes to Joe once they open it (./confirm), so no one can send him mail as someone
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
   const refused = checkOrigin(request);
   if (refused) return refused;
   const body = (await request.json().catch(() => null)) as Partial<ReviewRequest> | null;
+  const botCheck = await checkBot(request, body);
+  if (botCheck) return botCheck;
   const { runId, email: given } = body ?? {};
   if (typeof runId !== "string" || !/^sc_[\w-]{8,64}$/.test(runId)) {
     return Response.json({ error: "bad-run" }, { status: 400 });
