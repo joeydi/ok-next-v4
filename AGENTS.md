@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # okaypl.us
 
-Next.js 16 (App Router) + React 19 + Tailwind v4 + MDX, deployed on Vercel. Every route is statically generated. The README covers setup, the notes frontmatter and the media workflow in more detail.
+Next.js 16 (App Router) + React 19 + Tailwind v4 + MDX, deployed on Vercel. Every public page is statically generated; the site-check API routes run on demand. The README covers setup, the notes frontmatter and the media workflow in more detail.
 The original design handoff lives in `design_handoff_okayplus_site/`. Treat it as the visual reference (1440px comps in `screenshots/`). Two service pages were renamed after the handoff: `02-creative-production` is now `/design-development` (the old `/digital-production` URL redirects to `/agencies`) and `04-tools-for-better-work` is now `/business-tools`.
 
 - **Tokens** — colours (`--color-*`), easing (`--ease-*`), fonts and utilities (`px-page`, `grid-12`, `mono-label`, `mono-text`, `display`, `stripes`, `nudge`) and the shared hover treatment (`hover-card`, `hover-title`, `hover-lift`) are in `src/app/globals.css`. Use existing tokens rather than raw hex values or cubic-beziers.

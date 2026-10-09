@@ -50,6 +50,15 @@ const FIELDS: Field[] = [
     shows: "Post heading and social card, with the accent. Index, More notes, RSS and the page title, without it",
   },
   {
+    key: "metaTitle",
+    value: (
+      <>
+        Text. Defaults to <Code>title</Code> without its accent marks
+      </>
+    ),
+    shows: "The page title before — Okayplus, for a headline that is too long for search listings",
+  },
+  {
     key: "description",
     value: "One or two sentences of plain text",
     shows: "Index list and featured block, meta description, RSS, JSON-LD. Not on the post itself",
@@ -105,6 +114,21 @@ const FIELDS: Field[] = [
     shows: "The striped placeholder's label until image is set",
   },
   {
+    key: "ogImage",
+    value: "Media key from src/data/media.json",
+    shows: "Social card instead of image, when the card needs a different frame",
+  },
+  {
+    key: "ogBackdrop",
+    value: <Code>true</Code>,
+    shows: "Fills the social card with its image behind the title instead of framing it beside the title",
+  },
+  {
+    key: "ogDarkMode",
+    value: <Code>true</Code>,
+    shows: "Uses light text on a dark social-card backdrop",
+  },
+  {
     key: "byline",
     value: (
       <>
@@ -129,6 +153,11 @@ const FIELDS: Field[] = [
     key: "link",
     value: "URL",
     shows: "Sidebar, as Visit the site ↗, but only alongside client, role or year. The client's url in JSON-LD",
+  },
+  {
+    key: "service",
+    value: "Service slug from src/data/catalog.ts",
+    shows: "A service link in the sidebar and the page's JSON-LD",
   },
   {
     key: "draft",

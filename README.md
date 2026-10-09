@@ -4,7 +4,7 @@ The Okayplus site: Joe di Stefano, designer + developer, Burlington, Vermont.
 
 Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · MDX · WebGL2 · Cloudflare R2 · Vercel
 
-Every route is statically generated, including the social cards and the RSS feed. The admin tools exist only under `next dev` and never ship.
+Every public page is statically generated, along with the social cards, sitemap, `llms.txt` and RSS feed. The site-check API routes run on demand. The admin tools exist only under `next dev` and never ship.
 
 ## Getting started
 
@@ -16,13 +16,13 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-`NEXT_PUBLIC_MEDIA_HOST` is the only variable needed to run or build the site. Media URLs are built from it, and pages with media fail without it. `media.json` is committed, so nothing else touches the bucket. The media admin and `npm run media` need the R2 and Anthropic keys too (see [One-time setup](#one-time-setup)).
+`NEXT_PUBLIC_MEDIA_HOST` is the only variable needed to render or build the public pages. Media URLs are built from it, and pages with media fail without it. `media.json` is committed, so a normal build never touches the bucket. The media admin and `npm run media` need the R2 credentials; generating alt-text drafts in the admin additionally needs the Anthropic key (see [One-time setup](#one-time-setup)). The site check has its own runtime variables under [Site check protection](#site-check-protection).
 
 ### Commands
 
 ```bash
 npm run dev      # dev server, including the /admin tools
-npm run build    # production build: type-checks, validates note frontmatter and media keys, prerenders every route
+npm run build    # production build: type-checks, validates notes/media, prerenders public pages and static feeds/cards
 npm run start    # serve the production build
 npm run lint     # Biome lint
 npm run format   # Biome: format and sort imports (writes)
@@ -46,7 +46,8 @@ src/
     non-profits/
     agencies/
     notes/                index, [slug] post page, rss.xml
-    admin/                dev-only tools (media, Open Graph, illustrations) and docs viewer (*.dev.tsx)
+    admin/                dev-only media, Open Graph, illustration, diagram and logo tools, plus docs (*.dev.tsx)
+    api/site-check/       runtime checker and review-email endpoints
     */opengraph-image.tsx social cards, built on src/lib/og.tsx
   components/             shared UI; illustrations/ holds the WebGL renderer and scenes
   content/notes/          notes and case studies (MDX)
@@ -93,6 +94,7 @@ client: Columbia Capital
 role: Design + development
 year: 2025
 link: https://colcap.com
+service: design-development # optional — links the work back to a service page
 draft: true # optional — shows in dev, hidden from production builds
 ---
 
@@ -154,7 +156,7 @@ Images and videos live in a Cloudflare R2 bucket, not in the repo. `src/data/med
    NEXT_PUBLIC_MEDIA_HOST=media.okaypl.us
    ANTHROPIC_API_KEY=…      # for alt text drafts
    ```
-6. In Vercel, set `NEXT_PUBLIC_MEDIA_HOST` only. The build reads everything else from `media.json`.
+6. In Vercel, media only needs `NEXT_PUBLIC_MEDIA_HOST`; the build reads everything else from `media.json`. The site check's runtime variables are separate and listed below.
 
 ## Illustrations
 
@@ -165,6 +167,12 @@ The isometric block illustrations in each hero are small WebGL2 scenes in `src/c
 - **Lab:** [localhost:3000/admin/illustrations](http://localhost:3000/admin/illustrations) (dev only) shows each scene with a time scrubber, width presets and the lighting controls. **Copy settings** copies the current lighting to paste into `DEFAULT_SETTINGS` in `gl/renderer.ts`. **Save poster** writes the scene's AVIF/WebP posters into `public/illustrations/`.
 - After changing a scene or `DEFAULT_SETTINGS`, re-save the affected posters in the lab and commit them. The home and service social cards draw the 1240px WebP poster: bump `CARD_VERSION` in `src/lib/og-cards.ts` and re-save them in `/admin/og`.
 
+## Technique diagrams
+
+Animated diagrams used inside notes live in `src/components/diagrams/<note-slug>/` and build on the shared stack, parts, figure, loop and jog-wheel components in `src/components/diagrams/`. A note imports its diagram directly; diagrams are not global MDX components.
+
+[localhost:3000/admin/diagrams](http://localhost:3000/admin/diagrams) (dev only) lists the registered diagrams for comparison and tuning. Add each finished diagram to `src/app/admin/diagrams/registry.tsx`, and remove exploration variants after choosing one. See `.claude/skills/diagram/SKILL.md` for the house style and workflow.
+
 ## Site check
 
 The free site check (`/site-check`) checks any URL from the outside in about a minute and streams the results as it goes, from `src/app/api/site-check/route.ts`; review requests go through `review/route.ts`.
@@ -172,7 +180,7 @@ The free site check (`/site-check`) checks any URL from the outside in about a m
 - **The contract** (`src/lib/site-check/schema.ts`): every check, what it reports and the events streamed while it runs. The page folds those events into a run with `reduceRun`. `sample.ts` lays out a sample run on the same events, for reviewing the page's states with `?stage=running|result|sent|failed` (under `next dev` only).
 - **The checker** (`src/lib/site-check/checker/`): `run.ts` resolves the host and fetches the home page, then starts every check at once and reports them in the log's order, so the slow Lighthouse checks come last. It only reads public pages and the files they link to, at most 20 pages, and every request goes through `fetch.ts`, which refuses private addresses. Each check scores itself out of 100 (its rubric is beside it), a category is the mean of its checks, and a category where nothing applies (Updates on Squarespace) is left out of the score.
 - **Lighthouse** comes from Google's PageSpeed Insights API. Without `GOOGLE_PAGESPEED_API_KEY` the performance, image and accessibility checks are skipped. The shared quota for keyless requests is always used up.
-- **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis (local development) it keeps them in memory and doesn't rate limit.
+- **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis, local development keeps caps, locks, cached runs and review claims in memory; only the per-visitor IP limits are disabled.
 - **Review requests** (`mail.ts`) email the run, with its evidence attached as JSON, through SendGrid. The sender must be verified there.
 
 Environment variables are listed under [Site check protection](#site-check-protection).
@@ -256,19 +264,21 @@ The original design handoff is in `design_handoff_okayplus_site/`, with 1440px c
 Design docs explain parts of the design system. They're MDX files in `src/content/docs/`, shown in the dev-only admin at `/admin/docs/<slug>` and listed in its sidebar:
 
 - **Palette** (`palette`): every `--color-*` token with its HSL position and contrast against paper and ink.
+- **Typography** (`typography`): the three faces, fluid type scale, Gelica tracking and leading, and every type style in use.
+- **Spacing & layout** (`spacing-and-layout`): the fluid spacing scale, page frame, grid and off-scale values in use.
 - **Easing curves** (`easing-curves`): the five easing tokens (`--ease-*`), with where each one is used.
 - **View transitions** (`view-transitions`): how the page transition reveals the next page from the click point, with a playable preview and every animation's timing and easing on one timeline.
+- **Notes** (`notes`): frontmatter, Markdown, shared MDX components, the table of contents and publishing checks.
 
-They read every value from `src/app/globals.css` (through `src/lib/tokens.ts`), so they follow the tokens as they change. Their visuals are the components in `src/components/docs/`. `npm run check` fails if a doc copies a colour or curve instead of reading it. To write a new one, see `.claude/skills/design-doc/SKILL.md`.
+They read token values from `src/app/globals.css` and generated `src/app/fluid.css` through `src/lib/tokens.ts`; the Notes, typography and spacing references also scan the source they document. Their visuals are the components in `src/components/docs/`. `npm run check` fails if a doc copies a colour or curve instead of reading it. To write a new one, see `.claude/skills/design-doc/SKILL.md`.
 
 ## Deployment
 
-Vercel runs `npm run build`. Only `NEXT_PUBLIC_MEDIA_HOST` needs setting there. Preview deployments build their social card URLs from their own deployment URL; production uses `https://okaypl.us`. Vercel Web Analytics and Speed Insights are included in the root layout.
+Vercel runs `npm run build`. `NEXT_PUBLIC_MEDIA_HOST` is the only variable the static pages need; a working production site check also needs the Redis, SendGrid and optional Turnstile/PageSpeed variables listed above. Preview deployments build their social card URLs and review-confirmation links from their own deployment URL; production uses `https://okaypl.us`. Vercel Web Analytics and Speed Insights are included in the root layout.
 
 ## Before launch
 
 - Add `okaypl.us` (and the Vercel preview domain) to the Adobe Fonts kit `llb6krb`, or Gelica won't load.
-- Replace the last striped placeholder: the River video in `src/content/notes/poetry-in-motion.mdx`.
 - Check note dates and bodies in `src/content/notes/`.
 - Set `NEXT_PUBLIC_MEDIA_HOST` in the Vercel project (see Media).
 - Enable Web Analytics and Speed Insights in the Vercel project.

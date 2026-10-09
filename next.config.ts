@@ -6,7 +6,7 @@ import codeTheme from "./src/lib/code-theme.json";
 
 // Hardening headers for production builds; `next dev` skips them, since the admin
 // tools frame the site's own pages and upload straight to R2. Scripts and styles
-// allow 'unsafe-inline' because every page is static, so there's no per-request
+// allow 'unsafe-inline' because every HTML page is static, so there's no per-request
 // nonce. Typekit serves Gelica, the media host serves images and video, Calendly
 // is framed by BookingLink, Cloudflare Turnstile guards the site check, and preview
 // builds also load the Vercel toolbar.

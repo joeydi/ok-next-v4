@@ -10,7 +10,7 @@ import { viewTransition } from "@/lib/tokens";
 import { RevealPlayer } from "./RevealPlayer";
 
 // The page transition played between two sketches of real pages (the homepage's
-// services and the Digital production hero), built from the site's own copy and
+// services and the Design & development hero), built from the site's own copy and
 // classes. The masks, zooms and blurs are the real .page rules in globals.css.
 
 function Nav() {
