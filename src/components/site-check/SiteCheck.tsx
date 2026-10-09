@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import { Eyebrow } from "@/components/Eyebrow";
 import { siteCheck as copy } from "@/data/site-check";
 import type { Media } from "@/lib/media";
+import { trackSiteCheck } from "@/lib/site-check/analytics";
 import { streamCheck } from "@/lib/site-check/client";
 import { STAGE_AT, sampleRunAt } from "@/lib/site-check/sample";
 import { normalizeUrl, reduceRun, type SiteCheckRun } from "@/lib/site-check/schema";
@@ -56,13 +57,24 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
     e.preventDefault();
     const target = normalizeUrl(input);
     setInvalid(!target);
-    if (!target || running) return;
+    if (!target) return trackSiteCheck("Site check invalid URL");
+    if (running) return;
+    trackSiteCheck("Site check started", { host: target.host });
     stop.current?.();
     setSentTo(null);
     setLive(true);
     setStartedAt(Date.now());
     setNow(Date.now());
-    stop.current = streamCheck(target.url, target.host, dispatch);
+    const { host } = target;
+    stop.current = streamCheck(target.url, host, (event) => {
+      dispatch(event);
+      // One event as a live run ends, either way; a pinned run is only for looking at.
+      if (event.type === "run.finished") {
+        trackSiteCheck("Site check completed", { host, score: event.score, seconds: Math.round(event.at / 1000) });
+      } else if (event.type === "run.failed") {
+        trackSiteCheck("Site check failed", { host, reason: event.reason });
+      }
+    });
   };
 
   const elapsed = !run

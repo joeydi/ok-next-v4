@@ -69,43 +69,50 @@ function WorkCards({ heading, items }: { heading?: string; items: Work[] }) {
       <SectionHead n="04" eyebrow="Recent work" className="mb-fl-48">
         {heading ?? "Recent work."}
       </SectionHead>
-      <ul className="grid gap-fl-24 lg:grid-cols-3">
-        {items.map((w) => {
-          const body = (
-            <>
-              <Placeholder
-                label={w.imageLabel}
-                media={workImage(w)}
-                sizes="(min-width: 1024px) 33vw, 100vw"
-                className={cn("aspect-4/3", w.href && "hover-lift")}
-              />
-              <h3 className="display mt-fl-8 text-fl-36 leading-heading-36 tracking-display-36">
-                <span className="hover-title">{w.title}</span>
-              </h3>
-              <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{w.d}</p>
-              <div className="mono-label border-t border-rule pt-fl-16 text-body">{w.tags}</div>
-              {w.href && (
-                <span className="mono-label text-pink-ink">
-                  Read the case study <span className="nudge">→</span>
-                </span>
-              )}
-            </>
-          );
-          const className = "flex h-full flex-col gap-fl-18";
-          return (
-            <li key={w.title}>
-              {w.href ? (
-                <Link href={w.href} className={cn(className, "hover-card")}>
-                  {body}
-                </Link>
-              ) : (
-                <div className={className}>{body}</div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <WorkGrid items={items} />
     </>
+  );
+}
+
+/** Work items as a row of cards, each linking to its case study. Also used by the non-profits page. */
+export function WorkGrid({ items, className }: { items: Work[]; className?: string }) {
+  return (
+    <ul className={cn("grid gap-fl-24 lg:grid-cols-3", className)}>
+      {items.map((w) => {
+        const body = (
+          <>
+            <Placeholder
+              label={w.imageLabel}
+              media={workImage(w)}
+              sizes="(min-width: 1024px) 33vw, 100vw"
+              className={cn("aspect-4/3", w.href && "hover-lift")}
+            />
+            <h3 className="display mt-fl-8 text-fl-36 leading-heading-36 tracking-display-36">
+              <span className="hover-title">{w.title}</span>
+            </h3>
+            <p className="flex-1 text-fl-18 leading-copy text-pretty text-body">{w.d}</p>
+            <div className="mono-label border-t border-rule pt-fl-16 text-body">{w.tags}</div>
+            {w.href && (
+              <span className="mono-label text-pink-ink">
+                Read the case study <span className="nudge">→</span>
+              </span>
+            )}
+          </>
+        );
+        const className = "flex h-full flex-col gap-fl-18";
+        return (
+          <li key={w.title}>
+            {w.href ? (
+              <Link href={w.href} className={cn(className, "hover-card")}>
+                {body}
+              </Link>
+            ) : (
+              <div className={className}>{body}</div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -119,7 +126,7 @@ export function ServicePage({ service: s }: { service: Service }) {
       <main id="main">
         {/* Hero */}
         <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
-          <Eyebrow href="/#services" details={[s.audience]}>
+          <Eyebrow href="/#services" details={[s.audience]} nested>
             Services
           </Eyebrow>
           <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display-144">
@@ -238,7 +245,7 @@ export function ServicePage({ service: s }: { service: Service }) {
   );
 }
 
-/** Eyebrow over a Gelica heading, opening a section. Also used by the website care page. */
+/** Eyebrow over a Gelica heading, opening a section. Also used by the website care and audience pages. */
 export function SectionHead({
   n,
   eyebrow,
@@ -262,7 +269,7 @@ export function SectionHead({
   );
 }
 
-/** Numbered statements, each under a rule. Used for "Sound familiar?" on the service pages. */
+/** Numbered statements, each under a rule. Used for "Sound familiar?" on the service and audience pages. */
 export function SituationList({
   items,
   className,
@@ -285,7 +292,7 @@ export function SituationList({
   );
 }
 
-/** A bulleted list with pink-square markers. Also used by the website care and agencies pages. */
+/** A bulleted list with pink-square markers. Also used by the website care and audience pages. */
 export function List({ items, className }: { items: readonly string[]; className?: string }) {
   return (
     <ul className={cn("flex flex-col gap-fl-8", className)}>

@@ -10,7 +10,7 @@ import { List, SectionHead, SituationList } from "@/components/ServicePage";
 import { Cite } from "@/components/Testimonial";
 import { agencies as a } from "@/data/agencies";
 import { cn } from "@/lib/cn";
-import { agenciesGraph, JsonLd } from "@/lib/jsonld";
+import { audienceGraph, JsonLd } from "@/lib/jsonld";
 import { OPEN_GRAPH } from "@/lib/metadata";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ const card = "frame bg-clip-padding border border-rule/50 bg-linear-to-b from-pa
 export default function AgenciesPage() {
   return (
     <>
-      <JsonLd data={agenciesGraph()} />
+      <JsonLd data={audienceGraph(a, ["design-development", "cms-integrations", "website-care"])} />
       <main id="main">
         <Hero />
         <Uses />
@@ -54,7 +54,9 @@ export default function AgenciesPage() {
 function Hero() {
   return (
     <Container as="header" className="relative overflow-x-clip pt-fl-56 pb-fl-96 lg:min-h-[calc(59.72*var(--pvw))]">
-      <Eyebrow details={[a.audience]}>Who I work with</Eyebrow>
+      <Eyebrow details={[a.audience]} nested>
+        Who I work with
+      </Eyebrow>
       <h1 className="display relative z-10 mt-fl-48 w-fit text-fl-144 leading-heading-144 tracking-display-144">
         {a.h1.map((line, i) => (
           <Fragment key={i}>

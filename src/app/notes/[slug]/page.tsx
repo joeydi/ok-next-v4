@@ -71,6 +71,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           <Container as="header" className="pt-fl-56 pb-fl-64">
             <Eyebrow
               href="/notes"
+              nested
               details={[
                 <time key="date" dateTime={meta.date}>
                   {formatDate(meta.date)}

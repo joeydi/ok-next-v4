@@ -33,8 +33,11 @@ export const NAV: readonly NavLink[] = [
   },
   {
     label: "Who I work with",
-    href: "/agencies",
-    children: [{ label: "Agencies", href: "/agencies" }],
+    href: "/non-profits",
+    children: [
+      { label: "Non-profits", href: "/non-profits" },
+      { label: "Agencies", href: "/agencies" },
+    ],
   },
   { label: "Notes", href: "/notes" },
   { label: "About", href: "/#about" },

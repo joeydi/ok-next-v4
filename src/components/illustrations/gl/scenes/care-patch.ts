@@ -3,7 +3,7 @@ import { quat, scale } from "../math";
 import type { Item, SceneDef } from "../renderer";
 import { bezier, track, wrap } from "../timeline";
 
-// Website care, concept — a 3×3 grid of tiles. One at a time, a tile sags and
+// Non-profits — a 3×3 grid of tiles. One at a time, a tile sags and
 // dulls; the pink ball hops over to it, lands, and the tile springs back up
 // with a pink flash. The ball tours the outer eight by knight's moves, so every
 // hop is the same length and the tour closes on itself. Drawn at 120%. 16s loop.
@@ -95,7 +95,7 @@ function frame(t: number): Item[] {
 }
 
 export const carePatch: SceneDef = {
-  labels: ["UPDATES", "FIXES", "SUPPORT"],
+  labels: ["CARE", "CONNECT", "REBUILD"],
   duration: T,
   // Mid-hop, the tile below sagging and waiting.
   posterTime: 0.95,
