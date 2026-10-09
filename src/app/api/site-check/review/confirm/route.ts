@@ -1,4 +1,5 @@
 import { SITE } from "@/data/site";
+import { saveConfirmedReview } from "@/lib/site-check/database";
 import { checkOrigin } from "@/lib/site-check/guard";
 import { logEvent, reasonOf } from "@/lib/site-check/log";
 import { sendReviewRequest } from "@/lib/site-check/mail";
@@ -78,6 +79,8 @@ export async function POST(request: Request) {
       502,
     );
   }
+  // The administrator email is the primary workflow; Turso persistence is fail-open and comes after it.
+  await saveConfirmedReview(run.id, pending.email);
   logEvent("review-confirmed", { host: run.host, domain: pending.email.split("@")[1] });
   return page(
     copy.confirmed.title,

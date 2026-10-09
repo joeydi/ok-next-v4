@@ -1,4 +1,5 @@
 import { runCheck } from "@/lib/site-check/checker/run";
+import { saveSiteCheckRun } from "@/lib/site-check/database";
 import { checkOrigin } from "@/lib/site-check/guard";
 import { LIMITS, spell } from "@/lib/site-check/limits";
 import { logEvent, reasonOf } from "@/lib/site-check/log";
@@ -137,7 +138,7 @@ async function* events(request: Request, target: { url: string; host: string }):
       yield event;
     }
     // Only a complete run can be reviewed or replayed.
-    if (run?.status === "complete") await saveRun(run);
+    if (run?.status === "complete") await Promise.all([saveRun(run), saveSiteCheckRun(run)]);
   } finally {
     request.signal.removeEventListener("abort", release);
     await Promise.all([releaseSlot(slot), unlockHost(target.host)]);

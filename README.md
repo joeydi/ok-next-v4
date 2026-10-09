@@ -180,7 +180,8 @@ The free site check (`/site-check`) checks any URL from the outside in about a m
 - **The contract** (`src/lib/site-check/schema.ts`): every check, what it reports and the events streamed while it runs. The page folds those events into a run with `reduceRun`. `sample.ts` lays out a sample run on the same events, for reviewing the page's states with `?stage=running|result|sent|failed` (under `next dev` only).
 - **The checker** (`src/lib/site-check/checker/`): `run.ts` resolves the host and fetches the home page, then starts every check at once and reports them in the log's order, so the slow Lighthouse checks come last. It only reads public pages and the files they link to, at most 20 pages, and every request goes through `fetch.ts`, which refuses private addresses. Each check scores itself out of 100 (its rubric is beside it), a category is the mean of its checks, and a category where nothing applies (Updates on Squarespace) is left out of the score.
 - **Lighthouse** comes from Google's PageSpeed Insights API. Without `GOOGLE_PAGESPEED_API_KEY` the performance, image and accessibility checks are skipped. The shared quota for keyless requests is always used up.
-- **State** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again) and every run for 30 days, so a review request can send what the checker found. Without Redis, local development keeps caps, locks, cached runs and review claims in memory; only the per-visitor IP limits are disabled.
+- **Operational state** (`store.ts`): Upstash Redis holds rate limits (5 runs and 3 review requests an hour per visitor), a cap of 500 runs a day and 3 an hour per host, a semaphore of 5 runs at once (their "busy" failure), a lock per host, each host's last run for 15 minutes (replayed instead of checked again), one-hour confirmation tokens and every run for 30 days, so a review request can send what the checker found. Without Redis, local development keeps caps, locks, cached runs and review claims in memory; only the per-visitor IP limits are disabled.
+- **Durable state** (`database.ts`): Turso stores each newly completed run once and adds the visitor's email only after they use the Redis confirmation token. A replay only reads Redis and never writes another durable run. Missing Turso credentials and database errors fail open, so results and email keep working.
 - **Review requests** (`mail.ts`) email the run, with its evidence attached as JSON, through SendGrid. The sender must be verified there.
 
 Environment variables are listed under [Site check protection](#site-check-protection).
@@ -191,12 +192,13 @@ Environment variables are listed under [Site check protection](#site-check-prote
 
 ### Environment variables
 
-Set in `.env.local` and Vercel. Without Redis or the Turnstile keys (local development) the matching layers are skipped.
+Set in `.env.local` and Vercel. Without Redis, Turso or the Turnstile keys (local development) the matching layers are skipped.
 
 | Variable                                                 | Default               | What it does                                                                                                     |
 | -------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | unset (bot check off) | Cloudflare Turnstile widget and server verification. Set both or neither.                                        |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN`                   | unset (in memory)     | Upstash Redis, set by the Vercel Marketplace integration. Holds every counter and lock.                          |
+| `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`                  | unset (no durable DB) | Server-only Turso connection for completed runs and confirmed review requests. Set both or neither.              |
 | `SENDGRID_API_KEY`                                       | unset                 | Sends confirmation and review emails. Required in production; in development the confirm link is logged instead. |
 | `SITE_CHECK_FROM`                                        | the site's email      | Verified SendGrid sender.                                                                                        |
 | `SITE_CHECK_TO`                                          | the site's email      | Where confirmed review requests go.                                                                              |
@@ -225,9 +227,23 @@ The run still starts and then fails with a reason the page shows: `rate-limited`
 
 If Redis or Turnstile can't be reached, or an MX lookup fails, the request **fails open**: it goes through unlimited rather than not at all. That is logged (below), so a sustained outage is visible.
 
+Turso also fails open. A completed check is still returned and cached in Redis if its durable write fails; after confirmation, the administrator email is sent before the review record is written. Turso credentials are server-only and must not use a `NEXT_PUBLIC_` prefix.
+
 ### Logs
 
-`log.ts` writes one JSON line per event, `{"source":"site-check","event":…,"host":…,"ip":…,"reason":…}`, to Vercel's runtime logs. `ip` is a short hash of the rate-limit key, so one visitor repeating is visible without the address. Emails are never logged, only their domain. Events: `rate-limited`, `host-capped`, `day-capped`, `busy`, `bot-check-failed`, `bad-origin`, `bad-email`, `disposable-email`, `no-mail-server`, `email-limit`, `review-requested`, `review-confirmed`, `fail-open` (warning) and `error` (error). In Vercel, search for `site-check` and filter by event. A spike of `bot-check-failed` or `bad-origin` means someone is poking at the endpoints; any `fail-open` is worth a look.
+`log.ts` writes one JSON line per event, `{"source":"site-check","event":…,"host":…,"ip":…,"reason":…}`, to Vercel's runtime logs. `ip` is a short hash of the rate-limit key, so one visitor repeating is visible without the address. Emails are never logged, only their domain. Events: `rate-limited`, `host-capped`, `day-capped`, `busy`, `bot-check-failed`, `bad-origin`, `bad-email`, `disposable-email`, `no-mail-server`, `email-limit`, `review-requested`, `review-confirmed`, `fail-open` (warning) and `error` (error). In Vercel, search for `site-check` and filter by event. A spike of `bot-check-failed` or `bad-origin` means someone is poking at the endpoints; any `fail-open`, including a Turso read or write failure, is worth a look.
+
+### Turso setup and retention
+
+1. Provision a Turso Cloud database through the Vercel Marketplace, or create one with `turso db create okayplus-site-check`. For a direct Turso setup, get its values with `turso db show okayplus-site-check --url` and `turso db tokens create okayplus-site-check`.
+2. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Vercel project for each runtime environment that should retain checks. Put the same values in the root `.env.local` only when local development should use the cloud database.
+3. Apply the idempotent schema with `npm run migrate:site-check`. The command loads `.env.local` when it exists and runs `migrations/001_site_check_storage.sql`; run it once for every separate preview or production database before deploying code that writes to it.
+
+`site_check_runs` holds normalized technical results and no email address. `review_requests` holds confirmed contact data separately and has one unique row per run. Confirmation tokens, IP-derived rate-limit keys, Turnstile tokens, locks and counters remain transient in Redis and are never copied to Turso.
+
+Unconfirmed runs are retained for 90 days. Confirmed review requests and their associated runs follow a two-year business-retention period. `cleanupExpiredSiteCheckData()` in `database.ts` implements both rules as one transaction-ready operation for a future authenticated Vercel Cron route or other scheduled task; this implementation does not schedule deletion. The cleanup removes expired confirmed contact rows first, then removes old runs without a retained review request.
+
+Turso is the durable history, not a replacement for Redis. Restoring or recreating Turso does not reconstruct active rate limits, locks, confirmation tokens or the 15-minute replay cache, and a Redis loss does not delete durable history. Use Turso's own backup/recovery facilities for database recovery; the JSON attachment on the administrator email remains an independent copy of each confirmed run's evidence. After a restore, rerun `npm run migrate:site-check` safely to ensure the schema exists.
 
 ### Manual setup
 
