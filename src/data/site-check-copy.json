@@ -68,7 +68,7 @@
   "emails": {
     "confirmation": {
       "subject": "Confirm your review request for {{host}}",
-      "intro": "You asked for a personal review of {{host}}. Confirm your email to send the request:",
+      "intro": "You asked me to take a personal look at {{host}}. Before I dig in, I just want to make sure you’re a real person and have access to this email address:",
       "expiry": "The link works once and expires in an hour. If you didn’t ask, ignore this and nothing happens.",
       "signature": "{{author}}, {{siteName}}"
     },
