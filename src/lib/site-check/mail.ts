@@ -58,7 +58,7 @@ export async function sendReviewRequest(run: SiteCheckRun, email: string) {
 export async function sendConfirmation(email: string, host: string, link: string) {
   if (!process.env.SENDGRID_API_KEY) {
     if (process.env.NODE_ENV === "production") throw new Error("SENDGRID_API_KEY isn’t set");
-    console.log(`[site check] no SENDGRID_API_KEY; confirm link for ${email}: ${link}`);
+    console.log(`[site check] no SENDGRID_API_KEY; confirm link for ${host}: ${link}`);
     return;
   }
   const text = [
