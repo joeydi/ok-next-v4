@@ -9,6 +9,7 @@ export const EMAIL_COLOR = {
   muted: "#706970",
   paper: "#eee9e6",
   paperLight: "#f8f5f3",
+  sand: "#ece2df",
   pink: "#ff4d6a",
   rule: "#d8cfca",
   termGreen: "#c3e88d",
@@ -110,7 +111,7 @@ const container = {
 const header = { padding: "0 0 28px" };
 const logoLink = { display: "inline-block", color: EMAIL_COLOR.ink, textDecoration: "none" };
 const logoImage = { display: "block", width: "132px", height: "auto", border: 0 };
-const rule = { margin: 0, borderColor: EMAIL_COLOR.rule };
+const rule = { margin: 0, borderTop: `1px solid ${EMAIL_COLOR.sand}` };
 const content = { padding: "36px 0 12px" };
 const heading = {
   margin: "0 0 24px",
