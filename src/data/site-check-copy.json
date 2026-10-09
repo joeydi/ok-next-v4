@@ -1,7 +1,7 @@
 {
   "score": {
     "label": "Your score",
-    "note": "Each bar fills in as its checks finish. Your score lands when the last one does.",
+    "note": "Each bar fills in as its checks finish. Your score lands when the last check is complete.",
     "pending": "Working it out…",
     "verdicts": [
       {
