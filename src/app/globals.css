@@ -912,7 +912,6 @@
     line-height: var(--leading-display-text-30);
     letter-spacing: var(--tracking-display-30);
     color: var(--color-ink);
-    text-wrap: balance;
   }
   .note-body > blockquote:not(.note-quote) > * {
     padding-left: var(--spacing-fl-24);
@@ -1006,7 +1005,6 @@
     font-size: var(--text-fl-60);
     line-height: var(--leading-display-text-60);
     letter-spacing: var(--tracking-display-60);
-    text-wrap: balance;
     color: var(--color-ink);
   }
   .note-quote em {
