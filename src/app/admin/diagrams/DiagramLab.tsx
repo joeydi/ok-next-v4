@@ -122,9 +122,9 @@ function Entry({ entry: { href, title, loop, nudge: initial, render } }: { entry
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="w-24 shrink-0 text-muted">{label}</span>
-      {children}
+    <div className="flex items-start gap-2">
+      <span className="flex min-h-6.5 w-24 shrink-0 items-center text-muted">{label}</span>
+      <div className="flex min-h-6.5 min-w-0 flex-1 flex-wrap items-center gap-2">{children}</div>
     </div>
   );
 }
