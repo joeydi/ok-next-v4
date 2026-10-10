@@ -35,7 +35,7 @@ export const services: Record<ServiceSlug, ServiceSummary> = {
     audienceType: "Non-profits, foundations and other organizations without a web team",
     intro:
       "Ongoing WordPress maintenance, monitoring, and hands-on support for non-profits, foundations, and other organizations that rely on their website but don’t need a full-time web team.",
-    tagline: "For the website that’s nobody’s full-time job.",
+    tagline: "When you need someone to handle the technical stuff for you.",
   },
 
   "design-development": {
@@ -49,7 +49,7 @@ export const services: Record<ServiceSlug, ServiceSummary> = {
     serviceType: "Website design and development",
     intro:
       "Marketing teams and non-profits bring me in to turn a plan, a brand or a campaign idea into a website that ships on time and stays easy to run. I design it, build it, and stick around after launch.",
-    tagline: "For when the launch date is already on the calendar.",
+    tagline: "When you need it live, and the deadline’s a little crazy.",
   },
 
   "cms-integrations": {
@@ -60,7 +60,7 @@ export const services: Record<ServiceSlug, ServiceSummary> = {
     audience: "Non-profits + large orgs",
     intro:
       "I manage large CMS projects, content migrations, and backend integrations for non-profits and other large organizations, connecting content and systems without disrupting the people who depend on them.",
-    tagline: "For when nobody remembers why it works that way.",
+    tagline: "When you need to move everything without breaking anything.",
   },
 
   "business-tools": {
@@ -71,7 +71,7 @@ export const services: Record<ServiceSlug, ServiceSummary> = {
     audience: "Internal teams",
     intro:
       "I build internal tools that give teams better access to their data and knowledge, automate repetitive work, and monitor the processes they depend on.",
-    tagline: "For the spreadsheet everyone’s afraid to touch.",
+    tagline: "When you need the Monday report to write itself.",
   },
 };
 
