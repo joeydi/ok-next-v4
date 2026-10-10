@@ -824,6 +824,27 @@
     "altSource": "ai",
     "reviewed": true
   },
+  "notes/website-observability/observability-v2.mp4": {
+    "type": "video",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 9460392,
+    "etag": "09230cf41204c2c8396a9b6ecdb7a2f0",
+    "duration": 37.1,
+    "hasAudio": false,
+    "poster": "_posters/notes/website-observability/observability-v2.jpg",
+    "blurDataURL": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAABQAQCdASoQAAkAA4BaJZwABAAAAP7xQqqnmhQJchS3rcpD5ggP/X/Byqam3uD8czuAYyub0AA=",
+    "color": "#f8e8e8",
+    "encode": "1",
+    "original": "_originals/notes/website-observability/observability-v2.mp4",
+    "alt": "Video headlined \"Know when things change,\" showing an archived screenshot of franklloydwright.org dated Oct 8, 2026 beside a timeline scrubber that steps through captured dates.",
+    "caption": "",
+    "context": "",
+    "altSource": "ai",
+    "reviewed": true,
+    "audio": null,
+    "posterAt": null
+  },
   "og/agencies-1d0f0f14.png": {
     "type": "image",
     "width": 1200,
