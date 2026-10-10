@@ -50,7 +50,8 @@ export function CommandMenu({ groups }: { groups: readonly CommandGroup[] }) {
 
   useEffect(() => {
     function onKeyDown(e: globalThis.KeyboardEvent) {
-      if (e.key.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      // Browser autofill can dispatch keydown events with no `key`.
+      if (e.key?.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
       e.preventDefault();
       const dialog = dialogRef.current;
       if (!dialog) return;
