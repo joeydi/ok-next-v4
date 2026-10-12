@@ -1,12 +1,11 @@
 ---
-title: "Treat your website with *care*: know when things change, who changed them, and how to get them back"
+title: "*Website observability:* know when things change, who changed them, and how to get them back"
 metaTitle: Website monitoring, version history and backups
 description: Your website does real work for your organization. Daily snapshots, a source code repo, analytics and rolling backups show what changed, who changed it, and how to get it back.
 date: 2026-10-10
 tag: PROCESS
 topic: Website care
 service: website-care
-draft: true
 imageLabel: video — website observability
 ---
 
@@ -45,11 +44,18 @@ A visual change is only half the story. Behind it might be a developer fixing a 
 
 Forms stop sending. Emails bounce. A certificate quietly expires. These problems rarely announce themselves, and a visitor often notices before anyone inside the organization does.
 
-- **Observe the trends.** Form submissions, traffic and conversions have a normal rhythm. Once you can see it, you can tell when something changes.
-- **Spot issues early.** When a contact form that usually gets a dozen submissions a day gets none, that's a signal worth investigating. Sometimes the problem is on the site, sometimes it's the mail provider. Either way, the data gives you somewhere to start.
+Analytics tells you how many people visit. Events tell you what they do once they're there, and they're what make a quiet failure visible.
+
+- **Track the events that matter.** A form submitted, a donation completed, a newsletter signup confirmed, a file downloaded. Each one is recorded as it happens, so the actions your site exists for are counted instead of guessed at.
+- **Observe the trends.** Events and traffic have a normal rhythm. Once you can see it, you can tell when something changes.
+- **Spot issues early.** When an event that normally happens stops happening, that's a signal worth investigating. A contact form that usually gets a dozen submissions a day suddenly gets none. Sometimes the problem is on the site, sometimes it's the mail provider. Either way, the data gives you somewhere to start.
 - **Get alerted when your site goes down.** Automated uptime checks keep watch around the clock and send an alert when your site stops responding. No waiting for a visitor to report it.
 
+All of that watching adds up to something quieter than you might expect. You aren't checking dashboards every morning. The checks run on their own and only speak up when something is off.
+
 <PullQuote>Most of the time, what you'll see is *a whole lot of green dials.*</PullQuote>
+
+That's the goal: less checking, more green dials. Behind those dials, every page of your site is captured and analyzed, so there's always something to compare against.
 
 <Figure media="notes/website-observability/educationforwardarizona.org-v2.mp4" caption="02 / Every page, captured and analyzed" dark />
 
