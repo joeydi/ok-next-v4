@@ -1,5 +1,5 @@
 import { render, Section, Text } from "react-email";
-import { EMAIL_COLOR, emailMeta, emailText, SiteCheckEmailShell } from "./SiteCheckEmailShell";
+import { EMAIL_COLOR, EmailShell, emailMeta, emailText } from "./EmailShell";
 
 export type ReviewRequestEmailProps = {
   subject: string;
@@ -21,7 +21,7 @@ export function ReviewRequestEmail({
   attachment,
 }: ReviewRequestEmailProps) {
   return (
-    <SiteCheckEmailShell title={subject} preview={request}>
+    <EmailShell title={subject} preview={request}>
       <Text style={emailText}>{request}</Text>
       <Section style={scoreCard}>
         <Text style={score}>{scoreLine}</Text>
@@ -44,7 +44,7 @@ export function ReviewRequestEmail({
         <br />
         {attachment}
       </Text>
-    </SiteCheckEmailShell>
+    </EmailShell>
   );
 }
 

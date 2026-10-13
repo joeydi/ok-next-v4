@@ -8,10 +8,12 @@ import codeTheme from "./src/lib/code-theme.json";
 // tools frame the site's own pages and upload straight to R2. Scripts and styles
 // allow 'unsafe-inline' because every HTML page is static, so there's no per-request
 // nonce. Typekit serves Gelica, the media host serves images and video, Calendly
-// is framed by BookingLink, Cloudflare Turnstile guards the site check, and preview
-// builds also load the Vercel toolbar.
+// is framed by BookingLink until the site's own booking page replaces it,
+// Cloudflare Turnstile guards the site check and booking, and preview builds also
+// load the Vercel toolbar.
 const media = `https://${process.env.NEXT_PUBLIC_MEDIA_HOST}`;
 const toolbar = process.env.VERCEL_ENV === "preview" ? "https://vercel.live" : "";
+const calendly = process.env.NEXT_PUBLIC_BOOKING === "native" ? "" : "https://calendly.com";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com ${toolbar}`,
@@ -20,7 +22,7 @@ const csp = [
   `img-src 'self' data: blob: ${media} ${toolbar && "https://vercel.live https://vercel.com"}`,
   `media-src 'self' ${media}`,
   `connect-src 'self' https://challenges.cloudflare.com ${toolbar && "https://vercel.live wss://ws-us3.pusher.com"}`,
-  `frame-src https://calendly.com https://challenges.cloudflare.com ${toolbar}`,
+  `frame-src ${calendly} https://challenges.cloudflare.com ${toolbar}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

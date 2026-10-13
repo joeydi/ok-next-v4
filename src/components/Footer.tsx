@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { SITE } from "@/data/site";
 import { cn } from "@/lib/cn";
@@ -57,7 +58,12 @@ export function Contact({
       <div className="mono-label mt-fl-120 flex flex-wrap justify-between gap-x-6 gap-y-fl-8 border-t border-ink-2 pt-fl-24 text-muted-light">
         <span>{SITE.name}</span>
         <span>{SITE.location}</span>
-        <span>© {new Date().getFullYear()}</span>
+        <span>
+          © {new Date().getFullYear()} ·{" "}
+          <Link href="/privacy" className="hover:text-paper">
+            Privacy
+          </Link>
+        </span>
       </div>
     </div>
   );

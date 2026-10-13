@@ -1,3 +1,10 @@
+/**
+ * Whether the site's own booking page (/book, src/lib/booking) replaces Calendly. Set
+ * NEXT_PUBLIC_BOOKING=native once Google Calendar, Turso and SendGrid are set up for it.
+ */
+export const NATIVE_BOOKING = process.env.NEXT_PUBLIC_BOOKING === "native";
+export const CALENDLY_URL = "https://calendly.com/joe-simplecreature/20-minute-discovery-call";
+
 export const SITE = {
   name: "Okayplus",
   /** How people may spell the name when they search for it; in the JSON-LD only. */
@@ -14,7 +21,8 @@ export const SITE = {
   sameAs: ["https://www.linkedin.com/in/joeydi/", "https://x.com/joeydi", "https://github.com/joeydi"],
   /** Okayplus's own profiles, listed on the ProfessionalService in the JSON-LD. */
   orgSameAs: ["https://www.facebook.com/okayplusdesign/"],
-  bookingUrl: "https://calendly.com/joe-simplecreature/20-minute-discovery-call",
+  /** Where "Book a 20-min call" leads: the site's own booking page, or Calendly until it's switched on. */
+  bookingUrl: NATIVE_BOOKING ? "/book" : CALENDLY_URL,
 } as const;
 
 export type NavLink = { label: string; href: string; children?: readonly NavLink[] };
@@ -53,4 +61,5 @@ export const ADMIN_NAV: readonly NavLink[] = [
   { label: "Diagrams", href: "/admin/diagrams" },
   { label: "Logo", href: "/admin/logo" },
   { label: "Site Check", href: "/admin/site-check" },
+  { label: "Booking", href: "/admin/booking" },
 ];

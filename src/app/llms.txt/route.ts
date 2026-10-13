@@ -13,7 +13,7 @@ export function GET() {
 
 > ${SITE.description}
 
-${SITE.author} works directly with each client, from the first call to launch and after. Get in touch at ${SITE.email} or book a call at ${SITE.bookingUrl}.
+${SITE.author} works directly with each client, from the first call to launch and after. Get in touch at ${SITE.email} or book a call at ${new URL(SITE.bookingUrl, SITE.url)}.
 
 ## Services
 
@@ -37,6 +37,7 @@ ${getAllNotes()
 ## Optional
 
 ${link("Notes RSS feed", "/notes/rss.xml")}
+${link("Privacy policy", "/privacy", "What the site collects when you book a call or check your site, and how long it’s kept.")}
 `;
   return new Response(txt, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }

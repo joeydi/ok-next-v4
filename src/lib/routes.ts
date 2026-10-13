@@ -1,6 +1,7 @@
 import { audiences, services } from "@/data/catalog";
 import manifest from "@/data/media.json";
-import { ADMIN_NAV, type NavLink, SITE } from "@/data/site";
+import { privacy } from "@/data/privacy";
+import { ADMIN_NAV, NATIVE_BOOKING, type NavLink, SITE } from "@/data/site";
 import { siteCheck } from "@/data/site-check";
 import { getAllDocs } from "./docs";
 import { formatDate, getAllNotes } from "./notes";
@@ -25,6 +26,9 @@ export function sitePaths(notes: { slug: string }[] = getAllNotes()) {
     ...notes.map((n) => `/notes/${n.slug}`),
     "/network",
     "/site-check",
+    "/privacy",
+    // Only a page of its own once it replaces Calendly; until then it redirects there.
+    ...(NATIVE_BOOKING ? ["/book"] : []),
   ];
 }
 
@@ -44,6 +48,8 @@ const PAGES: Record<string, { label: string; description?: string }> = {
   "/notes": { label: "Notes" },
   "/network": { label: "Network" },
   "/site-check": { label: "Site check", description: siteCheck.metaDescription },
+  "/book": { label: "Book a call" },
+  "/privacy": { label: "Privacy", description: privacy.metaDescription },
 };
 
 /** The route's saved Gelica social card, if media.json has one for the card as it is now. */
