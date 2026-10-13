@@ -16,7 +16,7 @@ export const agencies = {
   /** H1 lines; text wrapped in *asterisks* renders in pink. */
   h1: ["An extra", "*pair of hands.*"],
   intro:
-    "Agencies call me when the team is booked, the deadline isn’t moving, or the idea needs something nobody in-house has built before. I spent years on the agency side at Park&Co, so I know how a project moves between strategy, design and the client, and I fit into yours without slowing it down.",
+    "Agencies call me when the team is booked, the deadline isn’t moving, or the idea needs something nobody in-house has built before. I spent years on the agency side, so I know how a project moves between strategy, design and the client, and I fit into yours without slowing it down.",
   uses: {
     eyebrow: "How agencies use me",
     heading: "Wherever you’re stretched.",
