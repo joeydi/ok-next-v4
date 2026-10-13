@@ -1132,6 +1132,20 @@
     "altSource": "human",
     "reviewed": true
   },
+  "og/notes-website-observability-1275906c.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 173082,
+    "etag": "801aecd6fca5eb253ce180a5dd24c639",
+    "blurDataURL": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAABQAQCdASoQAAgAA4BaJZwABAAAAP7xQ9nHmza4/Isbs1+RPe21P4VgAAA=",
+    "color": "#e8e8e8",
+    "alt": "Website observability: know when things change, who changed them, and how to get them back — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /notes/website-observability",
+    "altSource": "human",
+    "reviewed": true
+  },
   "og/site-check-035b6a38.png": {
     "type": "image",
     "width": 1200,
