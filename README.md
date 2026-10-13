@@ -268,6 +268,7 @@ It's off until `NEXT_PUBLIC_BOOKING=native`; until then the links open Calendly 
 ### Booking setup
 
 - [ ] In Google Cloud, create a project, enable the Google Calendar API, set up the OAuth consent screen (internal, for a Workspace account) and create an OAuth client of the Desktop app type. Put its id and secret in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local`.
+- [ ] On the consent screen's Branding page, set the home page to `https://okaypl.us` and the privacy policy to `https://okaypl.us/privacy` (`src/app/privacy`, copy in `src/data/privacy.ts`), and add `okaypl.us` as an authorized domain. Verification for an External app checks both, and that the home page links to the policy (the footer does). Keep the policy in step with the code: it promises the retention windows, including bookings deleted two years after the call by the reminder job.
 - [ ] Run `node --env-file-if-exists=.env.local scripts/google-auth.mjs`, sign in as the calendar's account, and put the printed token in `GOOGLE_REFRESH_TOKEN`.
 - [ ] Open `/admin/booking`, choose the calendars and hours, and commit `src/data/booking.json`.
 - [ ] Apply `bookings.sql` through ok-next-admin's migrations.

@@ -236,3 +236,14 @@ export async function releaseReminder(id: string, which: "day" | "hour") {
   const column = which === "day" ? "reminder_day_at" : "reminder_hour_at";
   await db.execute({ sql: `UPDATE bookings SET ${column} = NULL WHERE id = ?`, args: [id] });
 }
+
+/** How long a booking is kept after its call, as the privacy policy says. */
+export const BOOKING_RETENTION_DAYS = 2 * 365;
+
+/** Deletes bookings, cancelled ones included, whose call ended over BOOKING_RETENTION_DAYS ago. */
+export async function deleteOldBookings(now = new Date()) {
+  const db = await database();
+  const before = new Date(now.getTime() - BOOKING_RETENTION_DAYS * 86_400_000).toISOString();
+  const result = await db.execute({ sql: "DELETE FROM bookings WHERE end_at < ?", args: [before] });
+  return result.rowsAffected;
+}

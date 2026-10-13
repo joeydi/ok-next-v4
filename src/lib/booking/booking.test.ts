@@ -10,6 +10,7 @@ import {
   claimReminder,
   confirmBooking,
   confirmedBetween,
+  deleteOldBookings,
   holdSlot,
   liveBookings,
   moveBooking,
@@ -269,5 +270,14 @@ describe("bookings database", () => {
     assert.equal(await cancelBooking(a.id), true);
     assert.equal(await cancelBooking(a.id), false);
     assert.deepEqual(await confirmedBetween("2026-10-19T00:00:00.000Z", "2026-10-20T00:00:00.000Z"), []);
+  });
+
+  it("deletes bookings two years after their call, and keeps newer ones", async () => {
+    await holdSlot(booking("bk_aaaaaaaa", "2024-01-10T14:00:00.000Z", "2024-01-10T14:20:00.000Z"), buffer);
+    await holdSlot(booking("bk_bbbbbbbb", "2025-06-10T14:00:00.000Z", "2025-06-10T14:20:00.000Z"), buffer);
+    assert.equal(await deleteOldBookings(new Date("2026-03-01T00:00:00Z")), 1);
+    assert.deepEqual(await liveBookings("2020-01-01T00:00:00Z"), [
+      { start: "2025-06-10T14:00:00.000Z", end: "2025-06-10T14:20:00.000Z" },
+    ]);
   });
 });

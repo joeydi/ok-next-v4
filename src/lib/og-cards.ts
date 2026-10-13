@@ -100,6 +100,8 @@ function content(path: string): OgCard | null {
       alt: `${agencies.title} — Okayplus`,
       illustration: "care-stack",
     };
+  if (path === "/privacy")
+    return { eyebrow: "Privacy", title: "Your data, *plainly.*", alt: "Privacy policy — Okayplus" };
   if (path === "/book")
     return {
       eyebrow: "Book a call  20 minutes",

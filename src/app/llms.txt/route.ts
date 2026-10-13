@@ -37,6 +37,7 @@ ${getAllNotes()
 ## Optional
 
 ${link("Notes RSS feed", "/notes/rss.xml")}
+${link("Privacy policy", "/privacy", "What the site collects when you book a call or check your site, and how long it’s kept.")}
 `;
   return new Response(txt, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }
