@@ -32,15 +32,23 @@ export const emailMeta = {
   lineHeight: "1.55",
 };
 
-export function SiteCheckEmailShell({
-  title,
-  preview,
-  children,
-}: {
-  title: string;
-  preview: string;
-  children: ReactNode;
-}) {
+/** The pink call to action. */
+export const emailButton = {
+  margin: "8px 0 28px",
+  padding: "17px 24px",
+  borderRadius: "2px",
+  backgroundColor: EMAIL_COLOR.pink,
+  color: EMAIL_COLOR.ink,
+  fontFamily: "Arial, sans-serif",
+  fontSize: "13px",
+  fontWeight: 700,
+  letterSpacing: ".06em",
+  lineHeight: "1",
+  textDecoration: "none",
+  textTransform: "uppercase" as const,
+};
+
+export function EmailShell({ title, preview, children }: { title: string; preview: string; children: ReactNode }) {
   const logo = `${SITE.url}/assets/okayplus.svg`;
   const headshot = mediaImageUrl("home/headshot.jpg", { width: 96, quality: 85, format: "jpeg" });
 

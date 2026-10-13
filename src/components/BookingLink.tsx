@@ -1,14 +1,19 @@
 "use client";
 
-import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { SITE } from "@/data/site";
+import { lazy, type MouseEvent, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
+import { CALENDLY_URL, NATIVE_BOOKING, SITE } from "@/data/site";
+import { trackBooking } from "@/lib/booking/analytics";
 import { cn } from "@/lib/cn";
 
+const loadPicker = () => import("./booking/BookingPicker");
+const BookingPicker = lazy(() => loadPicker().then((m) => ({ default: m.BookingPicker })));
+
 /**
- * Link to the Calendly booking page that opens it in a modal instead. The page
- * is framed directly (no Calendly widget script); the iframe mounts on first
- * hover or focus so it's usually loaded by the click, then stays mounted so
- * reopening is instant. Modified clicks and no-JS still follow the link.
+ * Link to the booking page that opens it in a modal instead: the site's own
+ * picker, or while NEXT_PUBLIC_BOOKING isn't "native", Calendly's page, framed
+ * directly (no Calendly widget script). Either mounts on first hover or focus so
+ * it's usually loaded by the click, then stays mounted so reopening is instant.
+ * Modified clicks and no-JS still follow the link.
  */
 export function BookingLink({
   children,
@@ -27,7 +32,12 @@ export function BookingLink({
 
   const warm = () => {
     if (src) return;
-    const url = new URL(SITE.bookingUrl);
+    if (NATIVE_BOOKING) {
+      loadPicker();
+      setSrc(SITE.bookingUrl);
+      return;
+    }
+    const url = new URL(CALENDLY_URL);
     url.searchParams.set("embed_domain", location.host);
     url.searchParams.set("embed_type", "PopupText");
     url.searchParams.set("hide_gdpr_banner", "1");
@@ -43,6 +53,7 @@ export function BookingLink({
     e.preventDefault();
     warm();
     setOpen(true);
+    if (NATIVE_BOOKING) trackBooking("Booking opened");
     onOpen?.();
   };
 
@@ -63,8 +74,7 @@ export function BookingLink({
     <>
       <a
         href={SITE.bookingUrl}
-        target="_blank"
-        rel="noopener"
+        {...(!NATIVE_BOOKING && { target: "_blank", rel: "noopener" })}
         onClick={onClick}
         onPointerEnter={warm}
         onFocus={warm}
@@ -99,20 +109,28 @@ export function BookingLink({
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
-          <div className="frame relative size-full overflow-hidden bg-paper-light pb-fl-40">
-            {!loaded && (
-              <p className="mono-label absolute inset-0 grid place-items-center text-muted" aria-live="polite">
-                Loading…
-              </p>
-            )}
-            <iframe
-              src={src}
-              title="Book a 20-min call"
-              allow="payment"
-              onLoad={() => setLoaded(true)}
-              className={cn("relative size-full transition-opacity duration-300", !loaded && "opacity-0")}
-            />
-          </div>
+          {NATIVE_BOOKING ? (
+            <div className="frame relative size-full overflow-hidden bg-paper-light">
+              <Suspense fallback={<p className="mono-label grid size-full place-items-center text-muted">Loading…</p>}>
+                <BookingPicker className="size-full" />
+              </Suspense>
+            </div>
+          ) : (
+            <div className="frame relative size-full overflow-hidden bg-paper-light pb-fl-40">
+              {!loaded && (
+                <p className="mono-label absolute inset-0 grid place-items-center text-muted" aria-live="polite">
+                  Loading…
+                </p>
+              )}
+              <iframe
+                src={src}
+                title="Book a 20-min call"
+                allow="payment"
+                onLoad={() => setLoaded(true)}
+                className={cn("relative size-full transition-opacity duration-300", !loaded && "opacity-0")}
+              />
+            </div>
+          )}
         </dialog>
       )}
     </>

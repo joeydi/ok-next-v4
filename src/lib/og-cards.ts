@@ -100,6 +100,13 @@ function content(path: string): OgCard | null {
       alt: `${agencies.title} — Okayplus`,
       illustration: "care-stack",
     };
+  if (path === "/book")
+    return {
+      eyebrow: "Book a call  20 minutes",
+      title: "Let’s *talk.*",
+      alt: "Book a 20-min call — Okayplus",
+      illustration: "puzzle-cube",
+    };
   if (path === "/site-check")
     return {
       eyebrow: siteCheck.eyebrow,

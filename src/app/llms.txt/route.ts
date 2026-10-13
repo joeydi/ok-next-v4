@@ -13,7 +13,7 @@ export function GET() {
 
 > ${SITE.description}
 
-${SITE.author} works directly with each client, from the first call to launch and after. Get in touch at ${SITE.email} or book a call at ${SITE.bookingUrl}.
+${SITE.author} works directly with each client, from the first call to launch and after. Get in touch at ${SITE.email} or book a call at ${new URL(SITE.bookingUrl, SITE.url)}.
 
 ## Services
 

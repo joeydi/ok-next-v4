@@ -255,6 +255,26 @@ These live outside the code:
 - [ ] Confirm the SendGrid sender is verified and can email arbitrary recipients: send a review request to an address that isn't yours and check it arrives.
 - [ ] After launch, watch the logs for the events above for a week or two and adjust the `SITE_CHECK_*` limits.
 
+## Booking
+
+The site's own replacement for Calendly: `/book`, and the dialog every "Book a 20-min call" link opens (`BookingLink`). It reads busy times from Google Calendar, creates the event with a Google Meet link, and sends its own emails with a calendar file, so Google sends no invitations of its own. Guests get a private link in every email to move or cancel the call, and a reminder a day and an hour before it.
+
+It's off until `NEXT_PUBLIC_BOOKING=native`; until then the links open Calendly as before and `/book` redirects there. Turn it on in a preview deploy first.
+
+- **Settings** live in `src/data/booking.json`: the calendar bookings go on, the calendars that count as busy, the timezone and weekly hours, the call length, buffer, notice, booking window and daily limit, blackout dates and the intake questions. Edit them in the dev-only `/admin/booking`, which lists your calendars and previews the times a change would offer, then commit the file. `src/lib/booking/settings.ts` checks it, so a bad edit fails the build.
+- **Code** is in `src/lib/booking/`: `slots.ts` (pure, the timezone maths), `google.ts`, `database.ts`, `service.ts` (the flow), `messages.ts` (the emails, drawn by `src/emails/BookingEmail.tsx`) and `ics.ts`. Routes are under `src/app/api/booking/`. `npm test` covers the slot rules (daylight saving, buffers, limits), the calendar file and the database.
+- **Bookings** are stored in Turso, in a `bookings` table whose schema is `src/lib/booking/bookings.sql`: copy it into ok-next-admin's `migrations/` and run `npm run migrate` there before turning booking on. Under `next dev` without Turso, bookings go in `.data/bookings.db`; without Google, slots ignore busy times and no event is made; without SendGrid, emails are logged.
+
+### Booking setup
+
+- [ ] In Google Cloud, create a project, enable the Google Calendar API, set up the OAuth consent screen (internal, for a Workspace account) and create an OAuth client of the Desktop app type. Put its id and secret in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local`.
+- [ ] Run `node --env-file-if-exists=.env.local scripts/google-auth.mjs`, sign in as the calendar's account, and put the printed token in `GOOGLE_REFRESH_TOKEN`.
+- [ ] Open `/admin/booking`, choose the calendars and hours, and commit `src/data/booking.json`.
+- [ ] Apply `bookings.sql` through ok-next-admin's migrations.
+- [ ] On Vercel set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, `BOOKING_SECRET` (a long random string that signs the manage links; changing it breaks links already sent) and `CRON_SECRET` (Vercel sends it to the reminder job). Optionally `BOOKING_FROM` (the sender, which must be verified in SendGrid; defaults to the site's address) and `BOOKING_TO` (where booking notices go). The Turso, Redis, SendGrid and Turnstile variables are shared with the site check.
+- [ ] The reminder job in `vercel.json` runs every 15 minutes, which needs a Pro plan; on Hobby, crons run at most daily, so the hour-ahead reminder wouldn't work.
+- [ ] Set `NEXT_PUBLIC_BOOKING=native` on a preview, book, move and cancel a call, check the event and the emails, then turn it on in production. Cancel Calendly once its last bookings have passed.
+
 ## Styling
 
 - **Tokens** (`src/app/globals.css`): colours (`--color-*`), easing curves (`--ease-*`), fonts, shared utilities (`px-page`, `grid-12`, `mono-label`, `display`, `stripes`, `nudge`) and the hover treatment (`hover-card`, `hover-title`, `hover-lift`).

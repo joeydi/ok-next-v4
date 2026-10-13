@@ -1,0 +1,37 @@
+{
+  "calendarId": "primary",
+  "busyCalendarIds": ["primary"],
+  "timezone": "America/New_York",
+  "title": "20-min call",
+  "durationMinutes": 20,
+  "stepMinutes": 30,
+  "bufferMinutes": 10,
+  "minNoticeHours": 12,
+  "windowDays": 21,
+  "maxPerDay": 3,
+  "weeklyHours": {
+    "mon": [{ "start": "10:00", "end": "16:00" }],
+    "tue": [{ "start": "10:00", "end": "16:00" }],
+    "wed": [{ "start": "10:00", "end": "16:00" }],
+    "thu": [{ "start": "10:00", "end": "16:00" }],
+    "fri": [],
+    "sat": [],
+    "sun": []
+  },
+  "blackouts": [],
+  "questions": [
+    {
+      "id": "project",
+      "label": "What are you working on?",
+      "type": "textarea",
+      "required": true
+    },
+    {
+      "id": "source",
+      "label": "How did you hear about me?",
+      "type": "select",
+      "required": false,
+      "options": ["A search", "A referral", "LinkedIn", "Something I wrote", "Somewhere else"]
+    }
+  ]
+}

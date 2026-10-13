@@ -1,7 +1,8 @@
 import "server-only";
 
-import { type Client, createClient } from "@libsql/client/http";
+import type { Client } from "@libsql/client/http";
 import { verdictFor } from "@/data/site-check";
+import { databaseClient } from "@/lib/database";
 import { logEvent, reasonOf } from "./log";
 import type { SiteCheckRun } from "./schema";
 
@@ -10,30 +11,8 @@ export const SITE_CHECK_CHECKER_VERSION = "1";
 export const UNCONFIRMED_RUN_RETENTION_DAYS = 90;
 export const CONFIRMED_REVIEW_RETENTION_DAYS = 2 * 365;
 
-let client: Client | null | undefined;
-
-/** Swaps the connection, so tests can run against a local database. */
-export function setDatabaseClient(next: Client | null | undefined) {
-  client = next;
-}
-
-function databaseClient() {
-  if (client !== undefined) return client;
-  const url = process.env.TURSO_DATABASE_URL;
-  const authToken = process.env.TURSO_AUTH_TOKEN;
-  if (!url && !authToken) {
-    client = null;
-    return client;
-  }
-  if (!url || !authToken) throw new Error("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN must be set together");
-  client = createClient({
-    url,
-    authToken,
-    fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-      fetch(input, { ...init, signal: AbortSignal.timeout(3000) }),
-  });
-  return client;
-}
+/** Re-exported for the tests, which swap in a local database. */
+export { setDatabaseClient } from "@/lib/database";
 
 async function safely<T>(what: string, fallback: T, operation: (database: Client) => Promise<T>): Promise<T> {
   try {
