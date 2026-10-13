@@ -11,16 +11,16 @@ imageLabel: video — website observability
 ---
 
 <Lead>
-Your website does real work for your organization. It takes donations, collects applications, answers questions and makes first impressions. That's a lot to ask of something nobody is watching. And it's why the first step toward getting a handle on your digital presence is monitoring.
+Your website does real work for your organization. It takes donations, collects applications, answers questions and makes first impressions. That's a lot to ask of something nobody is watching.
 </Lead>
 
-A form that quietly stops sending can mean a lost donation or an unanswered family. A change that gets overwritten can mean hours of someone's work gone. And downtime has a way of happening at exactly the wrong moment.
+A form that quietly stops sending can mean a lost donation or a family left waiting for an answer. A change that gets overwritten can mean hours of someone's work gone. And downtime has a way of happening at exactly the wrong moment.
 
 Plenty of websites still run the old way: edits made directly on the live server, a "cowboy coding on production" workflow where the only record of what happened is somebody's memory, and no backup until the day you wish you had one.
 
 The modern approach is a workflow where changes are visible, problems are caught early, and nothing important depends on somebody remembering what happened.
 
-"Observability" is not a pretty word for it, but it's the closest one I have. It comes down to four questions you should be able to answer at any time: What changed? Who changed it, and why? Is everything working? Can we go back?
+Engineers call this observability, a clunky word for a simple idea. At any time, you should be able to answer four questions: What changed? Who changed it, and why? Is everything working? Can we go back?
 
 ## Daily snapshots show you what changed
 
@@ -29,12 +29,16 @@ Every day, a snapshot of your site is saved next to the one before it. Scroll ba
 - **A loading timeline.** Each snapshot records how the page loaded, frame by frame, so you can see what a visitor sees while they wait. A page that feels slower gets a date you can trace it back to.
 - **Visual comparison.** Two days sit side by side, and the parts that moved are outlined. The change you'd never spot by clicking around becomes obvious, along with the date it happened.
 
+Every page of your site is captured and analyzed, so there's always something to compare against.
+
+<Figure media="notes/website-observability/educationforwardarizona.org-v2.mp4" caption="01 / Every page, captured and analyzed" dark />
+
 ## A source code repo shows who changed it, and why
 
 A visual change is only half the story. Behind it might be a developer fixing a bug, a new feature going live, or a plugin being upgraded. Keeping the site's code in a source code repository gives those changes a history.
 
 - **Every code change is tracked.** Each committed change is saved as its own step, with the exact lines that moved.
-- **Every change has context.** Each commit carries a note explaining what changed and why, so "what happened here?" has a one-line answer. Most of the time it's a good one, a deliberate update that's worth remembering.
+- **Every change has context.** Each commit records who made it and when, along with a note explaining what changed and why. "What happened here?" has a one-line answer, and most of the time that answer is a deliberate update worth remembering.
 - **Recover when something gets overwritten.** If an edit turns out to be a mistake, or someone's work gets overwritten, the earlier version is still there. You can find it and put it back.
 
 ## Analytics and events show you when something breaks
@@ -52,21 +56,17 @@ The point of all that monitoring is that you don't have to do it yourself. Nobod
 
 <PullQuote>Most of the time, what you'll see is *a whole lot of green dials.*</PullQuote>
 
-That's the goal: less checking, more green dials. Behind those dials, every page of your site is captured and analyzed, so there's always something to compare against.
-
-<Figure media="notes/website-observability/educationforwardarizona.org-v2.mp4" caption="01 / Every page, captured and analyzed" dark />
-
 ## Rolling backups let you get it back
 
 Everything above helps you notice a problem. Backups are how you undo it.
 
-- **Peace of mind.** Offsite backups run on a schedule and are checked to make sure they actually restore. You don't have to wonder whether a working copy exists.
+- **Peace of mind.** Offsite backups run on a schedule and are checked to make sure they actually restore. You don't have to wonder whether a working backup exists.
 - **A history worth keeping.** Daily backups are retained for a month, monthly backups for a year, and yearly backups indefinitely. Together with the repo and visual snapshots, they give you a record of where the site has been, and a way back when you need one.
 
 ## Look back
 
 It's nice to be able to look back, even if only to see how far you've come. The launches, the growth, the years of steady work, all on one timeline. Most organizations have never seen their website that way.
 
-And when something does go wrong, you don't have to guess what happened or hope someone kept a copy. You have a record, a starting point, and a way forward.
+And when something does go wrong, you don't have to guess what happened or hope someone kept a copy. You can see exactly what changed, and you have a copy to put back.
 
 Want this kind of visibility? [Request a free site check](/site-check) and I'll show you where your site stands today. If you'd like someone to keep an eye on it from here, that's what [website care](/website-care) is for.
