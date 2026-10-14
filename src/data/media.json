@@ -880,6 +880,20 @@
     "altSource": "human",
     "reviewed": true
   },
+  "og/book-1fa25254.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 108048,
+    "etag": "b731d10013c9326296cf2de3106f42fe",
+    "blurDataURL": "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADwAQCdASoQAAgAA4BaJYwC7AEO9++VHkAA/vTOII+Tb0hm4wTlZfJsFewQspUr4rq6b9a6RF+fgAAA",
+    "color": "#e8e8e8",
+    "alt": "Book a 20-min call — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /book",
+    "altSource": "human",
+    "reviewed": true
+  },
   "og/business-tools-0be5cb98.png": {
     "type": "image",
     "width": 1200,
@@ -1143,6 +1157,20 @@
     "alt": "Website observability: know when things change, who changed them, and how to get them back — Okayplus",
     "caption": "",
     "context": "Open Graph card for /notes/website-observability",
+    "altSource": "human",
+    "reviewed": true
+  },
+  "og/privacy-75e6d74b.png": {
+    "type": "image",
+    "width": 1200,
+    "height": 630,
+    "bytes": 33266,
+    "etag": "99c7ec5ca1ffc75bbefd3752b30e8535",
+    "blurDataURL": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAADQAQCdASoQAAgAA4BaJZQC7AEO/DFXQAD+9M4gee0piTLfDdnsqYAA",
+    "color": "#e8e8e8",
+    "alt": "Privacy policy — Okayplus",
+    "caption": "",
+    "context": "Open Graph card for /privacy",
     "altSource": "human",
     "reviewed": true
   },
