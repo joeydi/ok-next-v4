@@ -360,19 +360,29 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
                       Wednesday, September 30
                     </div>
                     <div className="mono-label text-muted lg:whitespace-nowrap">{longDate(activeDay)}</div>
-                    <ul className="mt-fl-12 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1">
-                      {byDay.get(activeDay)!.map((s) => (
-                        <li key={s}>
-                          <button
-                            type="button"
-                            onClick={() => pickSlot(s)}
-                            className="mono-text w-full cursor-pointer rounded-xs border border-rule/70 bg-paper-light px-3 py-2.5 text-ink transition-colors duration-200 hover:border-ink hover:bg-paper focus-visible:border-ink"
-                          >
-                            {timeIn(s, zone)}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    {/* An unseen list as long as the busiest day's sits under this one, so the card keeps its height from day to day. */}
+                    <div className="mt-fl-12 grid *:col-start-1 *:row-start-1">
+                      <ul aria-hidden className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1 invisible">
+                        {Array.from({ length: Math.max(...[...byDay.values()].map((d) => d.length)) }, (_, i) => (
+                          <li key={i} className="mono-text border px-3 py-2.5">
+                            &nbsp;
+                          </li>
+                        ))}
+                      </ul>
+                      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1 content-start">
+                        {byDay.get(activeDay)!.map((s) => (
+                          <li key={s}>
+                            <button
+                              type="button"
+                              onClick={() => pickSlot(s)}
+                              className="mono-text w-full cursor-pointer rounded-xs border border-rule/70 bg-paper-light px-3 py-2.5 text-ink transition-colors duration-200 hover:border-ink hover:bg-paper focus-visible:border-ink"
+                            >
+                              {timeIn(s, zone)}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>
