@@ -30,7 +30,7 @@ export default function BookPage() {
           <h1 className="display mt-fl-20 max-w-[11em] text-fl-96 leading-heading-96 tracking-display-96">
             <Accent text="Let’s *talk.*" />
           </h1>
-          <p className="mt-fl-28 max-w-[36em] text-fl-24 leading-intro text-pretty text-body">
+          <p className="mt-fl-28 max-w-[23.5em] text-fl-24 leading-intro text-pretty text-body">
             Twenty minutes on a video call, about your website, a project or an idea. Pick a time that suits you.
           </p>
           <div className="frame mt-fl-48 overflow-hidden bg-paper-light">
