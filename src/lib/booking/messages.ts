@@ -87,11 +87,13 @@ export function calendarFile(
   });
 }
 
+// SendGrid refuses parameters on an attachment's type, so the method is only in
+// the file's own METHOD line.
 function ics(booking: Booking, settings: BookingSettings, method: "REQUEST" | "CANCEL", links: Links) {
   return {
     content: Buffer.from(calendarFile(booking, settings, method, links)).toString("base64"),
     filename: method === "CANCEL" ? "cancel.ics" : "invite.ics",
-    type: `text/calendar; charset=utf-8; method=${method}`,
+    type: "text/calendar",
   };
 }
 
