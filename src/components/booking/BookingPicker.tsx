@@ -192,7 +192,10 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
   }
 
   if (!data) {
-    return shell(<span aria-live="polite">Loading…</span>, "mono-label grid min-h-80 place-items-center text-muted");
+    return shell(
+      <span aria-live="polite">Checking my calendar…</span>,
+      "mono-label grid min-h-80 place-items-center text-muted",
+    );
   }
 
   const { settings } = data;

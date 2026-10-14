@@ -111,7 +111,11 @@ export function BookingLink({
           </button>
           {NATIVE_BOOKING ? (
             <div className="frame relative w-full overflow-hidden bg-paper-light">
-              <Suspense fallback={<p className="mono-label grid min-h-80 place-items-center text-muted">Loading…</p>}>
+              <Suspense
+                fallback={
+                  <p className="mono-label grid min-h-80 place-items-center text-muted">Checking my calendar…</p>
+                }
+              >
                 <BookingPicker className="max-h-[calc(100dvh-2rem)]" />
               </Suspense>
             </div>

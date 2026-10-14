@@ -7,7 +7,9 @@ import { BookingPicker } from "./BookingPicker";
 /** The picker on /book, reading a reschedule link's token from the address in the browser. */
 export function BookPicker() {
   return (
-    <Suspense fallback={<p className="mono-label grid min-h-80 place-items-center text-muted">Loading…</p>}>
+    <Suspense
+      fallback={<p className="mono-label grid min-h-80 place-items-center text-muted">Checking my calendar…</p>}
+    >
       <WithToken />
     </Suspense>
   );
