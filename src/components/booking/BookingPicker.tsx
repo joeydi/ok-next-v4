@@ -92,10 +92,10 @@ const addDays = (date: string, days: number) => {
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
 };
 
-/** Monday is 0. */
-const weekdayOf = (date: string) => (new Date(`${date}T12:00:00Z`).getUTCDay() + 6) % 7;
+/** Sunday is 0. */
+const weekdayOf = (date: string) => new Date(`${date}T12:00:00Z`).getUTCDay();
 
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const zoneLabel = (zone: string) => zone.replaceAll("_", " ").replace("/", " / ");
 
@@ -562,7 +562,7 @@ function Select({ className, wrapperClassName, ...props }: ComponentProps<"selec
   );
 }
 
-/** The weeks from today to the last open day, Monday first; days with open times are buttons. */
+/** The weeks from today to the last open day, Sunday first; days with open times are buttons. */
 function Calendar({
   days,
   active,
