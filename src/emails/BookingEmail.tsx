@@ -2,7 +2,7 @@ import { Button, Link, render, Section, Text } from "react-email";
 import { EMAIL_COLOR, EmailShell, emailButton, emailMeta, emailText } from "./EmailShell";
 
 // Every booking email, to the guest and to Joe: a heading, a few paragraphs, the
-// call's details as label/value rows, then an optional button and links.
+// call's details as stacked label/value pairs, then an optional button and links.
 
 export type BookingEmailProps = {
   title: string;
@@ -27,17 +27,17 @@ export function BookingEmail({ title, preview, paragraphs, details, action, link
           <tbody>
             {details.map((d) => (
               <tr key={d.label}>
-                <td width="96" valign="top" style={labelCell}>
-                  {d.label}
-                </td>
-                <td style={valueCell}>
-                  {d.href ? (
-                    <Link href={d.href} style={valueLink}>
-                      {d.value}
-                    </Link>
-                  ) : (
-                    d.value
-                  )}
+                <td style={detailCell}>
+                  <div style={label}>{d.label}</div>
+                  <div style={value}>
+                    {d.href ? (
+                      <Link href={d.href} style={valueLink}>
+                        {d.value}
+                      </Link>
+                    ) : (
+                      d.value
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -74,8 +74,9 @@ const card = {
   borderRadius: "4px",
   backgroundColor: EMAIL_COLOR.paper,
 };
-const labelCell = {
-  padding: "6px 12px 6px 0",
+const detailCell = { padding: "8px 0" };
+const label = {
+  margin: "0 0 2px",
   color: EMAIL_COLOR.muted,
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   fontSize: "12px",
@@ -83,8 +84,7 @@ const labelCell = {
   lineHeight: "1.55",
   textTransform: "uppercase" as const,
 };
-const valueCell = {
-  padding: "4px 0",
+const value = {
   color: EMAIL_COLOR.ink,
   fontFamily: "Arial, sans-serif",
   fontSize: "16px",
