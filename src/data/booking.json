@@ -1,8 +1,11 @@
 {
   "calendarId": "primary",
-  "busyCalendarIds": ["primary"],
+  "busyCalendarIds": [
+    "primary",
+    "c_fb43e30321ffb7e7aed93d679a2c0c909fb6e43a6c3f854ed800b0dce54c0fb8@group.calendar.google.com"
+  ],
   "timezone": "America/New_York",
-  "title": "20-min call",
+  "title": "20-minute call",
   "durationMinutes": 20,
   "stepMinutes": 30,
   "bufferMinutes": 10,
@@ -10,10 +13,46 @@
   "windowDays": 21,
   "maxPerDay": 3,
   "weeklyHours": {
-    "mon": [{ "start": "10:00", "end": "16:00" }],
-    "tue": [{ "start": "10:00", "end": "16:00" }],
-    "wed": [{ "start": "10:00", "end": "16:00" }],
-    "thu": [{ "start": "10:00", "end": "16:00" }],
+    "mon": [
+      {
+        "start": "10:00",
+        "end": "13:00"
+      },
+      {
+        "start": "14:00",
+        "end": "16:00"
+      }
+    ],
+    "tue": [
+      {
+        "start": "10:00",
+        "end": "13:00"
+      },
+      {
+        "start": "14:00",
+        "end": "16:00"
+      }
+    ],
+    "wed": [
+      {
+        "start": "10:00",
+        "end": "13:00"
+      },
+      {
+        "start": "14:00",
+        "end": "16:00"
+      }
+    ],
+    "thu": [
+      {
+        "start": "10:00",
+        "end": "13:00"
+      },
+      {
+        "start": "14:00",
+        "end": "16:00"
+      }
+    ],
     "fri": [],
     "sat": [],
     "sun": []
