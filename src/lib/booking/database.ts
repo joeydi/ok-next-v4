@@ -19,6 +19,7 @@ export type Booking = {
   guestName: string;
   guestEmail: string;
   guestTimezone: string;
+  guestWebsite: string | null;
   answers: Record<string, string>;
   meetLink: string | null;
   status: BookingStatus;
@@ -38,6 +39,11 @@ async function localDatabase() {
   await mkdir(directory, { recursive: true });
   const client = createClient({ url: `file:${join(directory, "bookings.db")}` }) as unknown as Client;
   await client.executeMultiple(await readFile(join(process.cwd(), "src/lib/booking/bookings.sql"), "utf8"));
+  // A file made before guest_website existed keeps its old table, so add the column it's missing.
+  const columns = await client.execute("PRAGMA table_info(bookings)");
+  if (!columns.rows.some((c) => c.name === "guest_website")) {
+    await client.execute("ALTER TABLE bookings ADD COLUMN guest_website TEXT");
+  }
   return client;
 }
 
@@ -59,6 +65,7 @@ const toBooking = (row: Row): Booking => ({
   guestName: String(row.guest_name),
   guestEmail: String(row.guest_email),
   guestTimezone: String(row.guest_timezone),
+  guestWebsite: row.guest_website == null ? null : String(row.guest_website),
   answers: JSON.parse(String(row.answers_json)),
   meetLink: row.meet_link === null ? null : String(row.meet_link),
   status: String(row.status) as BookingStatus,
@@ -104,8 +111,8 @@ export async function holdSlot(booking: NewBooking, bufferMs: number, now = new 
   try {
     await db.execute({
       sql: `INSERT INTO bookings (id, event_id, calendar_id, start_at, end_at, guest_name, guest_email, guest_timezone,
-          answers_json, status, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
+          guest_website, answers_json, status, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
       args: [
         booking.id,
         booking.eventId,
@@ -115,6 +122,7 @@ export async function holdSlot(booking: NewBooking, bufferMs: number, now = new 
         booking.guestName,
         booking.guestEmail,
         booking.guestTimezone,
+        booking.guestWebsite,
         JSON.stringify(booking.answers),
         now.toISOString(),
         now.toISOString(),

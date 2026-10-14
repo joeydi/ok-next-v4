@@ -93,6 +93,7 @@ export type BookingRequest = {
   name: string;
   email: string;
   timezone: string;
+  website: string | null;
   answers: Record<string, string>;
 };
 
@@ -124,6 +125,7 @@ export async function book(request: BookingRequest, origin: string): Promise<Boo
     guestName: request.name,
     guestEmail: request.email,
     guestTimezone: request.timezone,
+    guestWebsite: request.website,
     answers: request.answers,
   };
   if (!(await holdSlot(pending, settings.bufferMinutes * MINUTE))) return { ok: false, error: "slot-taken" };
@@ -135,7 +137,10 @@ export async function book(request: BookingRequest, origin: string): Promise<Boo
       ({ iCalUID: icalUid, meetLink } = await insertEvent(settings.calendarId, {
         id: pending.eventId,
         summary: eventSummary(request.name, settings),
-        description: eventDescription({ ...request, guestName: request.name, guestEmail: request.email }, settings),
+        description: eventDescription(
+          { ...request, guestName: request.name, guestEmail: request.email, guestWebsite: request.website },
+          settings,
+        ),
         start,
         end,
         attendee: { email: request.email, name: request.name },

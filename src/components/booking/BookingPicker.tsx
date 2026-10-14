@@ -1,6 +1,16 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import {
+  type ComponentProps,
+  type FormEvent,
+  Fragment,
+  type ReactNode,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { flushSync } from "react-dom";
 import { useBotCheck } from "@/components/site-check/BotCheck";
 import { SITE } from "@/data/site";
@@ -31,6 +41,7 @@ const ERRORS: Record<string, string> = {
   "slot-taken": "Someone just took that time. Pick another one.",
   "email-limit": "That address already has calls coming up. Write to me if you need another.",
   "bad-email": "That email address doesn’t look right.",
+  "bad-website": "That website address doesn’t look right.",
   "disposable-email": "Please use an address you’ll keep.",
   "no-mail-server": "That address can’t receive email. Is it spelled right?",
   "missing-answer": "Please answer the questions marked as required.",
@@ -103,6 +114,7 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
   const [step, setStep] = useState<Step>("pick");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -166,6 +178,24 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
   }
 
   const { settings } = data;
+  // The website field follows the notes (the last long-answer question), or ends the form without one.
+  const notesId = settings.questions.findLast((q) => q.type === "textarea")?.id;
+  const websiteField = (
+    <Field id={`${id}-website`} label="Your website">
+      <input
+        id={`${id}-website`}
+        inputMode="url"
+        autoComplete="url"
+        autoCapitalize="none"
+        spellCheck={false}
+        maxLength={200}
+        placeholder="example.com"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        className={cn(field, "h-12")}
+      />
+    </Field>
+  );
   const byDay = new Map<string, string[]>();
   for (const s of data.slots) {
     const d = dateIn(s, zone);
@@ -207,7 +237,15 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
         : await fetch("/api/booking", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ start: slot, name, email, timezone: zone, answers, ...(await bot.check()) }),
+            body: JSON.stringify({
+              start: slot,
+              name,
+              email,
+              site: website,
+              timezone: zone,
+              answers,
+              ...(await bot.check()),
+            }),
           });
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.ok) return fail(json?.error ?? "failed");
@@ -293,11 +331,15 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
                 <a href={`mailto:${SITE.email}`}>{SITE.email}</a> and we’ll find one.
               </p>
             ) : (
-              <div className="mt-fl-20 grid gap-fl-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)]">
+              <div className="mt-fl-20 grid gap-fl-24 lg:grid-cols-[minmax(0,1fr)_auto]">
                 <Calendar days={byDay} active={activeDay} zone={zone} onPick={setDay} />
                 {activeDay && (
                   <div>
-                    <div className="mono-label text-muted">{longDate(activeDay)}</div>
+                    {/* Holds the column at the width of the longest date, so it doesn't shift from day to day. */}
+                    <div aria-hidden className="mono-label invisible hidden h-0 whitespace-nowrap lg:block">
+                      Wednesday, September 30
+                    </div>
+                    <div className="mono-label text-muted lg:whitespace-nowrap">{longDate(activeDay)}</div>
                     <ul className="mt-fl-12 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-1">
                       {byDay.get(activeDay)!.map((s) => (
                         <li key={s}>
@@ -336,65 +378,71 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
             </h3>
             {!reschedule && (
               <div className="mt-fl-20 space-y-fl-16">
-                <Field id={`${id}-name`} label="Your name" required>
-                  <input
-                    id={`${id}-name`}
-                    required
-                    autoComplete="name"
-                    maxLength={120}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={cn(field, "h-12")}
-                  />
-                </Field>
-                <Field id={`${id}-email`} label="Email" required>
-                  <input
-                    id={`${id}-email`}
-                    required
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={cn(field, "h-12")}
-                  />
-                </Field>
-                {settings.questions.map((q) => (
-                  <Field key={q.id} id={`${id}-${q.id}`} label={q.label} required={q.required}>
-                    {q.type === "textarea" ? (
-                      <textarea
-                        id={`${id}-${q.id}`}
-                        required={q.required}
-                        rows={4}
-                        maxLength={2000}
-                        value={answers[q.id] ?? ""}
-                        onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                        className={cn(field, "py-3 leading-copy")}
-                      />
-                    ) : q.type === "select" ? (
-                      <select
-                        id={`${id}-${q.id}`}
-                        required={q.required}
-                        value={answers[q.id] ?? ""}
-                        onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                        className={cn(field, "h-12")}
-                      >
-                        <option value="">Choose one</option>
-                        {q.options?.map((o) => (
-                          <option key={o}>{o}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        id={`${id}-${q.id}`}
-                        required={q.required}
-                        maxLength={2000}
-                        value={answers[q.id] ?? ""}
-                        onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                        className={cn(field, "h-12")}
-                      />
-                    )}
+                <div className="grid gap-fl-16 sm:grid-cols-2">
+                  <Field id={`${id}-name`} label="Your name" required>
+                    <input
+                      id={`${id}-name`}
+                      required
+                      autoComplete="name"
+                      maxLength={120}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className={cn(field, "h-12")}
+                    />
                   </Field>
+                  <Field id={`${id}-email`} label="Email" required>
+                    <input
+                      id={`${id}-email`}
+                      required
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={cn(field, "h-12")}
+                    />
+                  </Field>
+                </div>
+                {settings.questions.map((q) => (
+                  <Fragment key={q.id}>
+                    <Field id={`${id}-${q.id}`} label={q.label} required={q.required}>
+                      {q.type === "textarea" ? (
+                        <textarea
+                          id={`${id}-${q.id}`}
+                          required={q.required}
+                          rows={4}
+                          maxLength={2000}
+                          value={answers[q.id] ?? ""}
+                          onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                          className={cn(field, "block py-3 leading-copy")}
+                        />
+                      ) : q.type === "select" ? (
+                        <Select
+                          id={`${id}-${q.id}`}
+                          required={q.required}
+                          value={answers[q.id] ?? ""}
+                          onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                          className="h-12"
+                        >
+                          <option value="">Choose one</option>
+                          {q.options?.map((o) => (
+                            <option key={o}>{o}</option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <input
+                          id={`${id}-${q.id}`}
+                          required={q.required}
+                          maxLength={2000}
+                          value={answers[q.id] ?? ""}
+                          onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                          className={cn(field, "h-12")}
+                        />
+                      )}
+                    </Field>
+                    {q.id === notesId && websiteField}
+                  </Fragment>
                 ))}
+                {!notesId && websiteField}
                 {bot.fields}
               </div>
             )}
@@ -464,7 +512,12 @@ function Field({
     <div>
       <label htmlFor={id} className="mono-label mb-1.5 block text-muted">
         {label}
-        {!required && <span className="normal-case tracking-normal"> (optional)</span>}
+        {required && (
+          <span aria-hidden className="text-pink-ink">
+            {" "}
+            *
+          </span>
+        )}
       </label>
       {children}
     </div>
@@ -475,18 +528,37 @@ function ZoneSelect({ id, value, onChange }: { id: string; value: string; onChan
   const zones = Intl.supportedValuesOf("timeZone");
   const options = zones.includes(value) ? zones : [value, ...zones];
   return (
-    <select
+    <Select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={cn(field, "mt-1.5 h-11 text-fl-14")}
+      className="h-11 text-fl-14"
+      wrapperClassName="mt-1.5"
     >
       {options.map((z) => (
         <option key={z} value={z}>
           {zoneLabel(z)}
         </option>
       ))}
-    </select>
+    </Select>
+  );
+}
+
+/** A field-styled select with the site's mono arrow in place of the browser's caret. */
+function Select({ className, wrapperClassName, ...props }: ComponentProps<"select"> & { wrapperClassName?: string }) {
+  return (
+    <div className={cn("group relative", wrapperClassName)}>
+      <select
+        {...props}
+        className={cn(field, "cursor-pointer appearance-none truncate pr-fl-40 hover:border-ink", className)}
+      />
+      <span
+        aria-hidden
+        className="mono-text pointer-events-none absolute inset-y-0 right-fl-16 flex items-center text-muted transition-colors duration-200 group-hover:text-ink group-focus-within:text-ink"
+      >
+        ↓
+      </span>
+    </div>
   );
 }
 

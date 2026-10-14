@@ -209,6 +209,7 @@ describe("bookings database", () => {
     guestName: "Ana",
     guestEmail: "ana@example.com",
     guestTimezone: "Europe/Lisbon",
+    guestWebsite: null,
     answers: { project: "A site" },
   });
 

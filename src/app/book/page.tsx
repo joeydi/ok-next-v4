@@ -25,7 +25,7 @@ export default function BookPage() {
   return (
     <>
       <main id="main">
-        <Container className="pt-fl-56">
+        <Container className="pt-fl-56 pb-fl-96">
           <Eyebrow>Book a call</Eyebrow>
           <h1 className="display mt-fl-20 max-w-[11em] text-fl-96 leading-heading-96 tracking-display-96">
             <Accent text="Let’s *talk.*" />
@@ -33,7 +33,7 @@ export default function BookPage() {
           <p className="mt-fl-28 max-w-[36em] text-fl-24 leading-intro text-pretty text-body">
             Twenty minutes on a video call, about your website, a project or an idea. Pick a time that suits you.
           </p>
-          <div className="frame mt-fl-48 overflow-hidden bg-paper-light md:h-[min(760px,100dvh-4rem)]">
+          <div className="frame mt-fl-48 overflow-hidden bg-paper-light md:h-[min(800px,100dvh-4rem)]">
             <BookPicker />
           </div>
           <noscript>
