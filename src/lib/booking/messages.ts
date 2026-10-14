@@ -46,11 +46,12 @@ const answerRows = (booking: Booking, settings: BookingSettings) =>
 
 /** What the calendar event says, on Joe's calendar and the guest's. */
 export function eventDescription(
-  booking: Pick<Booking, "answers" | "guestName" | "guestEmail">,
+  booking: Pick<Booking, "answers" | "guestName" | "guestEmail" | "guestWebsite">,
   settings: BookingSettings,
 ) {
   return [
     `${booking.guestName} <${booking.guestEmail}>`,
+    ...(booking.guestWebsite ? [booking.guestWebsite] : []),
     ...settings.questions.filter((q) => booking.answers[q.id]).flatMap((q) => ["", q.label, booking.answers[q.id]]),
     "",
     `Booked through ${SITE.url.replace("https://", "")}`,
@@ -219,6 +220,7 @@ export function ownerBooked(booking: Booking, settings: BookingSettings) {
       { label: "When", value: formatWhen(booking.start, booking.end, settings.timezone) },
       { label: "Who", value: `${booking.guestName} <${booking.guestEmail}>`, href: `mailto:${booking.guestEmail}` },
       { label: "Their time", value: formatWhen(booking.start, booking.end, booking.guestTimezone) },
+      ...(booking.guestWebsite ? [{ label: "Website", value: booking.guestWebsite, href: booking.guestWebsite }] : []),
       ...(booking.meetLink ? [{ label: "Meet", value: booking.meetLink, href: booking.meetLink }] : []),
       ...answerRows(booking, settings),
     ],

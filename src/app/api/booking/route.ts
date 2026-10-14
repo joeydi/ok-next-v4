@@ -10,8 +10,9 @@ import { checkOrigin } from "@/lib/site-check/guard";
 import { clientIp } from "@/lib/site-check/store";
 import { checkBot } from "@/lib/site-check/turnstile";
 
-// POST { start, name, email, timezone, answers, token, website } → books the call.
-// The bot check and origin check are the site check's. The answer carries the
+// POST { start, name, email, site, timezone, answers, token, website } → books the call.
+// `site` is the guest's website; `website` is the bot check's honeypot, which people
+// never see. The bot check and origin check are the site check's. The answer carries the
 // call's details and a calendar file for the confirmation step; the emails go
 // out after the response.
 
@@ -19,11 +20,27 @@ type Body = {
   start?: unknown;
   name?: unknown;
   email?: unknown;
+  site?: unknown;
   timezone?: unknown;
   answers?: unknown;
 };
 
 const bad = (error: string, status = 400) => Response.json({ error }, { status });
+
+/** The guest's website as a full https:// address, null when left blank, or false when it isn't one. */
+function websiteOf(given: unknown): string | null | false {
+  if (given === undefined || given === null) return null;
+  if (typeof given !== "string") return false;
+  const trimmed = given.trim();
+  if (!trimmed) return null;
+  if (trimmed.length > 200) return false;
+  try {
+    const url = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
+    return url.hostname.includes(".") ? url.href.replace(/\/$/, "") : false;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: Request) {
   const refused = checkOrigin(request);
@@ -33,10 +50,12 @@ export async function POST(request: Request) {
   if (botCheck) return botCheck;
   if (!body) return bad("bad-request");
 
-  const { start, name, email: given, timezone, answers } = body;
+  const { start, name, email: given, site, timezone, answers } = body;
   if (typeof start !== "string" || Number.isNaN(Date.parse(start))) return bad("bad-start");
   if (typeof name !== "string" || !name.trim() || name.length > 120) return bad("bad-name");
   if (typeof given !== "string") return bad("bad-email");
+  const website = websiteOf(site);
+  if (website === false) return bad("bad-website");
   const zone = typeof timezone === "string" && isTimeZone(timezone) ? timezone : BOOKING.timezone;
   const givenAnswers = (answers && typeof answers === "object" ? answers : {}) as Record<string, unknown>;
   const checked: Record<string, string> = {};
@@ -66,7 +85,7 @@ export async function POST(request: Request) {
       return bad("email-limit", 429);
     }
     const origin = siteOrigin(request);
-    const result = await book({ start, name: name.trim(), email, timezone: zone, answers: checked }, origin);
+    const result = await book({ start, name: name.trim(), email, website, timezone: zone, answers: checked }, origin);
     if (!result.ok) {
       if (result.error === "slot-taken") bookingLog("slot-taken", { ip });
       return bad(result.error, result.error === "slot-taken" ? 409 : 502);

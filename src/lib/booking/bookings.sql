@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS bookings (
   guest_name TEXT NOT NULL,
   guest_email TEXT NOT NULL,
   guest_timezone TEXT NOT NULL,
+  -- Their website, as they typed it but with https:// added when they left it off. Optional.
+  guest_website TEXT,
   answers_json TEXT NOT NULL,
   meet_link TEXT,
   -- pending holds the slot while the calendar event is made; confirmed once it is.
