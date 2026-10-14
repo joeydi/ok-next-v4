@@ -15,5 +15,5 @@ export function BookPicker() {
 
 function WithToken() {
   const reschedule = useSearchParams().get("reschedule");
-  return <BookingPicker key={reschedule ?? "new"} reschedule={reschedule} className="md:size-full" />;
+  return <BookingPicker key={reschedule ?? "new"} reschedule={reschedule} className="max-h-[min(800px,100dvh-4rem)]" />;
 }

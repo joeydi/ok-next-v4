@@ -12,6 +12,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { flushSync } from "react-dom";
+import { MediaImage } from "@/components/MediaImage";
 import { useBotCheck } from "@/components/site-check/BotCheck";
 import { SITE } from "@/data/site";
 import { trackBooking } from "@/lib/booking/analytics";
@@ -122,6 +123,28 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
   const heading = useRef<HTMLHeadingElement>(null);
   const id = useId();
   const bot = useBotCheck();
+  const [height, setHeight] = useState<number>();
+  /** Tracks the content's height; the first measure sets it without a transition (auto to a number doesn't animate). */
+  const measure = (el: HTMLDivElement | null) => {
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setHeight(entry.borderBoxSize[0].blockSize));
+    observer.observe(el);
+    return () => observer.disconnect();
+  };
+  /** The card around a state (loading, error or a step). Its height follows the content so it eases between them. */
+  const shell = (content: ReactNode, innerClassName: string) => (
+    <div
+      style={height ? { height } : undefined}
+      className={cn(
+        "overflow-hidden transition-[height] duration-500 ease-out-expo motion-reduce:transition-none",
+        className,
+      )}
+    >
+      <div ref={measure} className={cn("max-h-[inherit]", innerClassName)}>
+        {content}
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -148,33 +171,28 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
   };
 
   if (loadError) {
-    return (
-      <div className={cn("grid place-items-center p-fl-32 text-center", className)}>
-        <div className="max-w-sm">
-          <p className="text-fl-18 leading-copy text-body" role="alert">
-            {ERRORS[loadError] ?? "The calendar couldn’t load just now."}{" "}
-            {loadError !== "not-found" && (
-              <>
-                Try again, or write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
-              </>
-            )}
-          </p>
+    return shell(
+      <div className="max-w-sm">
+        <p className="text-fl-18 leading-copy text-body" role="alert">
+          {ERRORS[loadError] ?? "The calendar couldn’t load just now."}{" "}
           {loadError !== "not-found" && (
-            <button type="button" className={cn(primary, "mt-fl-20")} onClick={reload}>
-              Try again
-            </button>
+            <>
+              Try again, or write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+            </>
           )}
-        </div>
-      </div>
+        </p>
+        {loadError !== "not-found" && (
+          <button type="button" className={cn(primary, "mt-fl-20")} onClick={reload}>
+            Try again
+          </button>
+        )}
+      </div>,
+      "grid min-h-80 place-items-center p-fl-32 text-center",
     );
   }
 
   if (!data) {
-    return (
-      <p className={cn("mono-label grid place-items-center text-muted", className)} aria-live="polite">
-        Loading…
-      </p>
-    );
+    return shell(<span aria-live="polite">Loading…</span>, "mono-label grid min-h-80 place-items-center text-muted");
   }
 
   const { settings } = data;
@@ -268,25 +286,27 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
     </p>
   );
 
-  return (
-    <div
-      className={cn(
-        "grid min-h-full overflow-y-auto md:h-full md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:overflow-hidden",
-        className,
-      )}
-    >
+  return shell(
+    <>
       <aside className="flex flex-col gap-fl-20 border-rule/60 border-b p-fl-32 md:border-r md:border-b-0">
         <div>
           <div className="mono-label text-muted">/ {reschedule ? "Move your call" : "Book a call"}</div>
-          <h2 className="display mt-fl-16 text-fl-36 leading-heading-36 tracking-display-36 text-ink">
-            {settings.title}
-          </h2>
+          <div className="mt-fl-20 flex items-center gap-fl-16">
+            <MediaImage
+              src="home/headshot.jpg"
+              alt=""
+              width={64}
+              height={64}
+              className="frame size-16 shrink-0 rounded-full object-cover"
+            />
+            <div>
+              <h2 className="display text-fl-30 leading-heading-30 tracking-display-30 text-ink">{SITE.author}</h2>
+              <div className="mono-text mt-1 leading-body text-muted">
+                {settings.durationMinutes} minutes • Google Meet
+              </div>
+            </div>
+          </div>
         </div>
-        <ul className="mono-text space-y-1 text-body">
-          <li>{settings.durationMinutes} minutes</li>
-          <li>Google Meet</li>
-          <li>with {SITE.author}</li>
-        </ul>
         {data.booking && (
           <p className="text-fl-18 leading-copy text-body">
             Now:{" "}
@@ -493,7 +513,8 @@ export function BookingPicker({ reschedule, className }: { reschedule?: string |
           </div>
         )}
       </section>
-    </div>
+    </>,
+    "grid overflow-y-auto md:grid-cols-[minmax(0,5fr)_minmax(0,8fr)] md:grid-rows-[minmax(0,1fr)] md:overflow-hidden",
   );
 }
 

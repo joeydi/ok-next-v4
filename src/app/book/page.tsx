@@ -33,7 +33,7 @@ export default function BookPage() {
           <p className="mt-fl-28 max-w-[36em] text-fl-24 leading-intro text-pretty text-body">
             Twenty minutes on a video call, about your website, a project or an idea. Pick a time that suits you.
           </p>
-          <div className="frame mt-fl-48 overflow-hidden bg-paper-light md:h-[min(800px,100dvh-4rem)]">
+          <div className="frame mt-fl-48 overflow-hidden bg-paper-light">
             <BookPicker />
           </div>
           <noscript>

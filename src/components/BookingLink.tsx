@@ -89,7 +89,7 @@ export function BookingLink({
           aria-label="Book a 20-min call"
           onClose={() => setOpen(false)}
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
-          className="m-auto h-[min(760px,100dvh-2rem)] max-h-none w-[min(1040px,100vw-2rem)] max-w-none overflow-visible border-0 bg-transparent p-0 opacity-0 transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-out backdrop:bg-ink/60 backdrop:opacity-0 backdrop:backdrop-blur-sm backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:opacity-100 open:backdrop:opacity-100 translate-y-4 open:translate-y-0 starting:open:translate-y-4 starting:open:opacity-0 starting:open:backdrop:opacity-0 motion-reduce:transition-none motion-reduce:backdrop:transition-none"
+          className="m-auto h-fit max-h-[calc(100dvh-2rem)] w-[min(1040px,100vw-2rem)] max-w-none overflow-visible border-0 bg-transparent p-0 opacity-0 transition-[opacity,translate,display,overlay] transition-discrete duration-300 ease-out backdrop:bg-ink/60 backdrop:opacity-0 backdrop:backdrop-blur-sm backdrop:transition-[opacity,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:opacity-100 open:backdrop:opacity-100 translate-y-4 open:translate-y-0 starting:open:translate-y-4 starting:open:opacity-0 starting:open:backdrop:opacity-0 motion-reduce:transition-none motion-reduce:backdrop:transition-none"
         >
           {/* First in the dialog so showModal() focuses it, not the iframe — Esc only reaches the dialog from outside the frame. */}
           <button
@@ -110,9 +110,9 @@ export function BookingLink({
             </svg>
           </button>
           {NATIVE_BOOKING ? (
-            <div className="frame relative size-full overflow-hidden bg-paper-light">
-              <Suspense fallback={<p className="mono-label grid size-full place-items-center text-muted">Loading…</p>}>
-                <BookingPicker className="size-full" />
+            <div className="frame relative w-full overflow-hidden bg-paper-light">
+              <Suspense fallback={<p className="mono-label grid min-h-80 place-items-center text-muted">Loading…</p>}>
+                <BookingPicker className="max-h-[calc(100dvh-2rem)]" />
               </Suspense>
             </div>
           ) : (

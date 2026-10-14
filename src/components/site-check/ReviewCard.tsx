@@ -160,7 +160,7 @@ function Headshot({ media }: { media: Media }) {
       height={48}
       placeholder="blur"
       blurDataURL={media.blurDataURL}
-      className="size-12 shrink-0 rounded-full object-cover saturate-[.85]"
+      className="size-12 shrink-0 rounded-full object-cover"
     />
   );
 }
