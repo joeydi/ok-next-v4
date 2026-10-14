@@ -70,7 +70,7 @@ function Hero() {
               loading="eager"
               placeholder="blur"
               blurDataURL={headshot.blurDataURL}
-              className="frame object-cover saturate-[.85]"
+              className="frame object-cover"
             />
           </div>
           <p className="text-fl-24 leading-intro text-pretty text-body">
