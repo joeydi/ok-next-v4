@@ -13,8 +13,8 @@ import { bezier } from "../timeline";
 // On the page it's also a toy (play()): drag a cube sideways to turn its
 // horizontal layer, up or down to turn a vertical slice (which then turns
 // with the pointer round its axis, like a dial, so the cube stays under it),
-// and let go to have the slice coast into the nearest quarter turn. Left alone for a few
-// seconds, it undoes the turns until the pink layer is whole, then loops again.
+// and let go to have the slice coast into the nearest quarter turn. Left alone for a second, it
+// undoes the turns until the pink layer is whole, then loops again.
 // Hovering a cube rings the slices a drag could turn (strokes()): dashed
 // circles round each axis that glide from cube to cube, narrow to one once a
 // drag picks its slice, and turn with it.
@@ -51,7 +51,7 @@ const HALF = 32; // cube half-size (px)
 const CENTER: Vec = [150, 150, 122]; // the cube's middle; the bottom layer sits on the floor
 const QUARTER = Math.PI / 2;
 
-const IDLE = 3; // untouched this long (s), it starts undoing
+const IDLE = 1; // untouched this long (s), it starts undoing
 const FRICTION = 5; // a throw coasts as if slowed by this (1/s): how far a flick carries
 const SPRING = 6; // the critically damped spring that lands a slice on its quarter (rad/s)
 const MAX_SPIN = 25; // fastest throw (rad/s)
