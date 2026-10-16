@@ -84,7 +84,7 @@ function Hero() {
         <p className="font-display border-t border-rule pt-fl-20 text-fl-24 leading-display-text-24 tracking-display-24 text-pink-ink">
           {c.tagline}
         </p>
-        <Link href="#site-check" className="mono-label text-pink-ink">
+        <Link href="/site-check" className="mono-label text-pink-ink">
           {c.siteCheck.hero} <span className="nudge">↓</span>
         </Link>
       </div>
