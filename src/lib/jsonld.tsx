@@ -263,6 +263,15 @@ export function siteCheckGraph(): Graph {
         provider: ref(ids.org),
         creator: ref(ids.person),
       },
+      {
+        "@type": "FAQPage",
+        "@id": abs("/site-check#faq"),
+        mainEntity: siteCheck.faq.items.map(({ q, a }) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a },
+        })),
+      },
       breadcrumbs([[siteCheck.metaTitle, "/site-check"]]),
     ],
   };

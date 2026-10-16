@@ -158,7 +158,9 @@ export function SiteCheck({ stage, headshot }: { stage?: SiteCheckStage; headsho
         </section>
       ) : (
         <section className="py-fl-96">
-          <Eyebrow>{copy.lookLabel}</Eyebrow>
+          <Eyebrow>
+            <h2>{copy.lookLabel}</h2>
+          </Eyebrow>
           <ol className="mt-fl-28 grid gap-x-fl-24 sm:grid-cols-2">
             {copy.items.map((t, i) => (
               <li key={t} className="flex gap-fl-16 border-t border-rule pt-fl-18 pb-fl-22">

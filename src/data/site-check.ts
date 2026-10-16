@@ -30,6 +30,32 @@ export const siteCheck = {
   items: care.siteCheck.items,
   closing: care.siteCheck.closing,
 
+  /** Under the email field on the review card; `privacy` is the part that links to /privacy. */
+  emailNote: {
+    text: "I’ll only use your email to send your report and reply to you.",
+    privacy: "No newsletter, no sharing.",
+  },
+
+  faq: {
+    heading: "Questions",
+    items: [
+      { q: "Is it really free?", a: "Yes. No logins, no cost, and no obligation." },
+      { q: "What do you need from me?", a: "Just your site URL and email." },
+      { q: "How long does it take?", a: "You’ll get a short written report in a few days." },
+      {
+        q: "Do you look inside my site?",
+        a: "No. It’s outside-in only: public pages, headers, speed, security and SEO.",
+      },
+    ],
+  },
+  nextSteps: { heading: "Next steps" },
+  careLink: {
+    lead: "Want someone to keep it healthy?",
+    body: "Updates, uptime, security and included hours every month, from someone who already knows your site.",
+    label: "Website care plans",
+    href: "/website-care",
+  },
+
   logLabel: "Check log",
   done: "These checks are automated. For a personal review, leave your email below.",
   /** Under a failed run, by why it failed. */

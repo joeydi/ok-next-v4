@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Accent } from "@/components/Accent";
 import { BookingLink } from "@/components/BookingLink";
@@ -132,6 +133,12 @@ export function ReviewCard({
             {copy.review.cta} <span className="nudge">→</span>
           </button>
         </div>
+        <p className="mt-fl-12 text-fl-14 leading-copy text-muted-light">
+          {copy.emailNote.text}{" "}
+          <Link href="/privacy" className="underline underline-offset-2">
+            {copy.emailNote.privacy}
+          </Link>
+        </p>
         {bot.fields}
       </form>
       {failed && (

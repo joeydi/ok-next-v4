@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Accent } from "@/components/Accent";
 import { Container } from "@/components/Container";
 import { Eyebrow } from "@/components/Eyebrow";
@@ -41,6 +42,37 @@ export default async function SiteCheckPage({ searchParams }: { searchParams: Pr
           <p className="mt-fl-28 text-fl-24 leading-intro text-pretty text-body">{c.intro}</p>
           {/* Keyed so moving between stages starts the state over. */}
           <SiteCheck key={pinned ?? "live"} stage={pinned} headshot={headshot} />
+
+          <section className="pb-fl-96">
+            <Eyebrow>
+              <h2>{c.faq.heading}</h2>
+            </Eyebrow>
+            <dl className="mt-fl-28 flex flex-col">
+              {c.faq.items.map((item) => (
+                <div key={item.q} className="flex flex-col gap-fl-8 border-t border-rule py-fl-22">
+                  <dt className="font-display text-fl-24 leading-display-text-30 tracking-display-30 text-pretty">
+                    {item.q}
+                  </dt>
+                  <dd className="text-fl-18 leading-copy text-pretty text-body">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <section className="pb-fl-96">
+            <Eyebrow>
+              <h2>{c.nextSteps.heading}</h2>
+            </Eyebrow>
+            <div className="mt-fl-28 flex flex-col gap-fl-16">
+              <p className="display text-fl-36 leading-heading-36 tracking-display-36 text-pretty">{c.careLink.lead}</p>
+              <p className="max-w-[34em] text-fl-18 leading-copy text-pretty text-body">{c.careLink.body}</p>
+              <Link href={c.careLink.href} className="self-start text-fl-24 leading-intro text-ink">
+                <span className="border-b-2 border-pink pb-fl-4 box-decoration-clone">
+                  {c.careLink.label} <span className="nudge">→</span>
+                </span>
+              </Link>
+            </div>
+          </section>
         </Container>
       </main>
 
