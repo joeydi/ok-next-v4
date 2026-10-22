@@ -61,7 +61,8 @@ function Hero() {
       />
       <div className="lg:mt-fl-72">
         <div className="grid gap-fl-24 md:grid-cols-[auto_1fr] md:gap-fl-32 max-w-[clamp(43.75rem,16.25vw+40.5rem,60rem)]">
-          <div className="relative size-24 md:aspect-square md:size-auto md:h-full md:max-w-full">
+          {/* Three of the intro's lines square: an aspect-square at the row's full height sizes the auto column to nothing in Safari. */}
+          <div className="relative size-24 md:text-fl-24 md:leading-intro md:size-[3lh]">
             <MediaImage
               src={headshot.key}
               alt={headshot.alt}
