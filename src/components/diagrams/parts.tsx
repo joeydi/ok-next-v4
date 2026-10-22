@@ -21,7 +21,12 @@ export function Surface({
     <div aria-hidden="true" className="ok-illo" style={{ aspectRatio: `${w} / ${h}` }}>
       <div
         className="ok-illo-canvas"
-        style={{ width: w, height: h, scale: `tan(atan2(100cqw, ${w}px))`, overflow: open ? "visible" : undefined }}
+        style={{
+          width: w,
+          height: h,
+          scale: `tan(atan2(var(--illo-w), ${w}px))`,
+          overflow: open ? "visible" : undefined,
+        }}
       >
         {children}
       </div>

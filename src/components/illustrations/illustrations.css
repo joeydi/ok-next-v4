@@ -1,5 +1,14 @@
 /* Hero illustrations — the Stage frame is in primitives.tsx, the scenes in gl/. */
 
+/* The container's width, computed to px before any maths sees it. Safari 26 gets
+   tan(atan2(100cqw, …)) wrong (atan2 answers in degrees, tan reads it as radians),
+   but atan2 of two px lengths is fine. */
+@property --illo-w {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @layer components {
   .ok-illo {
     position: relative;
@@ -18,7 +27,8 @@
     height: 660px;
     overflow: hidden;
     transform-origin: 0 0;
-    scale: tan(atan2(100cqw, 620px));
+    --illo-w: 100cqw;
+    scale: tan(atan2(var(--illo-w), 620px));
   }
 
   /* The floor grid, poster and canvas all fill the drawing surface. The poster
